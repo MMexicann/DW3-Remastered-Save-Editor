@@ -1,0 +1,220 @@
+{
+  "version": "0.3.1-preview",
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 155,
+      "sha256": "3dcecdfb2ee953f8a97d4f680a6715ef97333f3cbf84b2321f44bb93fe575ded"
+    },
+    {
+      "path": "BODYGUARDS.md",
+      "bytes": 11009,
+      "sha256": "c2440847206cf0c31b7f49760b33526924c6c071a4286c0dd8fba706ff5db7c5"
+    },
+    {
+      "path": "BODYGUARD_WEAPONS.md",
+      "bytes": 9149,
+      "sha256": "7bce9ee040122fd71a34840471ee42fae5a7f8c1854d6637ed578561d8f8a371"
+    },
+    {
+      "path": "BUG_REVIEW.md",
+      "bytes": 4710,
+      "sha256": "70cb378d9c461a5aab0b919af3892489d9b340ac34ee19c942e00e8dfad8c9a0"
+    },
+    {
+      "path": "BUILDING.md",
+      "bytes": 1652,
+      "sha256": "53cbe5ef94dda46c31244fa799a5e8eefd20e45840f24b5237c0c016615dedcb"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1085,
+      "sha256": "4f52fe9f3d2910a9c8bae5678562297317cbdb35fff976df3869ab4795945717"
+    },
+    {
+      "path": "README.md",
+      "bytes": 8113,
+      "sha256": "2edf6bde03db1f42fd1e46a65fc1d9046fe735850ed4ad0653e0a536ee1a741f"
+    },
+    {
+      "path": "SAVE_FORMAT.md",
+      "bytes": 24407,
+      "sha256": "5847381b3f5f61becee158849484b5fc4b905275cd0cb7a412bdba53bc461aa8"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "bytes": 453,
+      "sha256": "ba5008c294550ce7a2deda3e94b571b9b7b98a7c1acdae851d8d2d6c33589466"
+    },
+    {
+      "path": "VALIDATION.md",
+      "bytes": 7799,
+      "sha256": "7fb17d6c3ff8bc9117ea2f4f8388a02a1088039f55d1a4e58f0fb7a18e0422ac"
+    },
+    {
+      "path": "WEAPON_ROLLS.md",
+      "bytes": 5449,
+      "sha256": "f68876fa944579176315efc973bbbb7c6fc2e1434299e75302f3270c49d9219c"
+    },
+    {
+      "path": "app_self_test.py",
+      "bytes": 19596,
+      "sha256": "bf31fbab3b89b1e35581c025134b2d083f04cf644e1162b8ee63adef1ebf7baa"
+    },
+    {
+      "path": "bodyguard_editor.py",
+      "bytes": 13754,
+      "sha256": "7a17cdff0cea3d73a832cc790e38f88f70fcb59d516ddfaeb1e7ce7407f91e50"
+    },
+    {
+      "path": "bodyguard_growth.json",
+      "bytes": 5781,
+      "sha256": "f6b6825e502822b16f52c3f327474580a705a878f6becee67de2e57fd0baec58"
+    },
+    {
+      "path": "bodyguard_growth.py",
+      "bytes": 5561,
+      "sha256": "439ce30972c977783410f9bd5fc22564089ca7b600342ec642004489f4b169f6"
+    },
+    {
+      "path": "bodyguard_items.json",
+      "bytes": 9120,
+      "sha256": "ed29f6cc1ba844665112f72b132267adadf4e6c1d5f24662738da01bf8f84c17"
+    },
+    {
+      "path": "bodyguard_weapons.json",
+      "bytes": 46928,
+      "sha256": "69a55513f8d5038e178604ff1e1133c4723f3e7259e3943c6a0096668f7ee539"
+    },
+    {
+      "path": "build-requirements.txt",
+      "bytes": 20,
+      "sha256": "4439c693c19271e4b0bdc56c641c36b3b06010b1b22eae6733cd244d752e85d5"
+    },
+    {
+      "path": "build_windows.py",
+      "bytes": 864,
+      "sha256": "fac33a55138b9d3e5e674523b484d55167ae055a30bb65b713ab18879149f1f4"
+    },
+    {
+      "path": "game_metadata.json",
+      "bytes": 101542,
+      "sha256": "96ecc3cd923a73154e01256e7bb9dd88b898dec115ecb3cb25b975c0c91ff02b"
+    },
+    {
+      "path": "gui.py",
+      "bytes": 72077,
+      "sha256": "d7c5de3a25c0e6658111805ecc8335d249a1975bb769d979d782aa7fd3c248a6"
+    },
+    {
+      "path": "item_limits.json",
+      "bytes": 478,
+      "sha256": "3664d082cf23710c483634d955f72fb9986229d13335c8a0a156d6283ac17072"
+    },
+    {
+      "path": "launch.pyw",
+      "bytes": 29,
+      "sha256": "f6c75c700ec7aeb45261f6946e948e8ca1e885235845def11b7a993799541818"
+    },
+    {
+      "path": "licenses/PyInstaller-COPYING.txt",
+      "bytes": 32604,
+      "sha256": "0598064c7d2718e38d7914a7d08343b2fa008e3bea9ebba2aa7a6ffa5900dd64"
+    },
+    {
+      "path": "licenses/Python-LICENSE.txt",
+      "bytes": 35407,
+      "sha256": "935cf13e19f8c31b497d20b05d73623431a226b230c3599bc30fa3348979bc68"
+    },
+    {
+      "path": "licenses/Tk-license.terms",
+      "bytes": 2307,
+      "sha256": "0d1e4405f6273f091732764ed89b57066be63ce64869be6c71ea337dc4f2f9b5"
+    },
+    {
+      "path": "models.py",
+      "bytes": 954,
+      "sha256": "1b99a4e04f6609b37df4fe9cafe604a92641b042396b8707f309cd9015f2b468"
+    },
+    {
+      "path": "native_enums.json",
+      "bytes": 12964,
+      "sha256": "2d2f33e9eb96815076acb79807337d4a68c19d59a47a0f53918c546955c53f0a"
+    },
+    {
+      "path": "officer_names.json",
+      "bytes": 871,
+      "sha256": "dda29d4a232d42ca655e32e3142e2cc89ece1eb2f7b656430663658821798cc8"
+    },
+    {
+      "path": "officer_weapon_editor.py",
+      "bytes": 9817,
+      "sha256": "4b1169243325da6b1c7712d1d86c96aadf4209aec956cdce3ca2b2aadc263ada"
+    },
+    {
+      "path": "save_codec.py",
+      "bytes": 5791,
+      "sha256": "538d7973231b3589add2f75ec775e54751c0442234fea28dda19ca417723e2a8"
+    },
+    {
+      "path": "save_parser.py",
+      "bytes": 12680,
+      "sha256": "e065ee1825806cdf5311619f49b15a2cd63f3a8f8f1788f060fe5a3ca61dfdb5"
+    },
+    {
+      "path": "save_writer.py",
+      "bytes": 17202,
+      "sha256": "fe64f4bbfd3dca479072bd8aeaf30f7e9ad2c425e6f4fdb4843b58249888ecab"
+    },
+    {
+      "path": "tests/test_bodyguard_rules.py",
+      "bytes": 10387,
+      "sha256": "ebb73b292bcd4c90c42ea13083615c47016a24518d8dd894b198df01f6ac13b5"
+    },
+    {
+      "path": "tests/test_bodyguards.py",
+      "bytes": 27094,
+      "sha256": "8ac548bdbac4bb02af2e92a7c4021fd49f158fcc7a03dd954e2e540a63d9c6c4"
+    },
+    {
+      "path": "tests/test_editor.py",
+      "bytes": 15927,
+      "sha256": "2fde2cef0c3dbe40f0e8ebc788a3c837898368cbc2dd983b74d7e6c5b5219449"
+    },
+    {
+      "path": "tests/test_review_regressions.py",
+      "bytes": 13182,
+      "sha256": "f76441c5a9e28b06a77f570100400b36e4c825e05304041a97dba94ffcdcc047"
+    },
+    {
+      "path": "tests/test_weapon_rolls.py",
+      "bytes": 19683,
+      "sha256": "fb2d57bf929a11079350e9cd9f3ffbb4b6eac8f242f2d352037d3e81523b3ff8"
+    },
+    {
+      "path": "tests/test_weapon_rules.py",
+      "bytes": 1998,
+      "sha256": "7efe5f7c8bbc0fd8a51fbc78b11d218bf98a927dd76f7d7e89917ce6622085c4"
+    },
+    {
+      "path": "unique_weapons.json",
+      "bytes": 138660,
+      "sha256": "14dc96990e8cdf0c66af6e8d26cef6120a63878a7652ca5913165e83a550c85d"
+    },
+    {
+      "path": "unreal.py",
+      "bytes": 6476,
+      "sha256": "b09f4486e7daad599f7a74d5040599f126d26bdc7cfa2428cd7b97ab899ea8f1"
+    },
+    {
+      "path": "verified_limits.json",
+      "bytes": 656,
+      "sha256": "492460447129e7a9270bc89d1c83095d319f919814732f2e5f3ea066438e8a63"
+    },
+    {
+      "path": "weapon_bonus_rules.json",
+      "bytes": 82397,
+      "sha256": "7a99cde6f257c18f5c8bcc535a49f953834eddb3bbce80efd672ef23ee71ee37"
+    }
+  ]
+}

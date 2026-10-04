@@ -1,0 +1,9 @@
+{
+  "officers": {
+    "SPoint": {"max": 99999, "confirmed": true, "evidence": "PC record clamp RVA0x1508832/0x150883B"},
+    "MaxHealth": {"max": 250, "confirmed": true, "evidence": "Permanent stat clamp RVA0x15DFC95..0x15DFD26; record getter0x1514C40"},
+    "MaxMusou": {"max": 250, "confirmed": true, "evidence": "Permanent stat clamp RVA0x15DFC95..0x15DFD26; record getter0x1514C40"},
+    "Attack": {"max": 150, "confirmed": true, "evidence": "Permanent stat clamp RVA0x15DFC95..0x15DFD26; record getter0x1514C40"},
+    "Defence": {"max": 150, "confirmed": true, "evidence": "Permanent stat clamp RVA0x15DFC95..0x15DFD26; record getter0x1514C40"}
+  }
+}

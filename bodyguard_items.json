@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "supported_game": "Dynasty Warriors 3: Complete Edition Remastered, supplied UE5.6.1 build",
+  "inventory_property": "GuardEquipItemDataArray",
+  "inventory_count": 10,
+  "equip_reference": "GuardDataArray[].MemberItem",
+  "empty_enum": "EGuardEquipItemID::NUM",
+  "normal_item_enum": "EEquipItemID::NUM",
+  "ownership_field": "GuardEquipItemID",
+  "normal_value_minimum": 1,
+  "unowned_value": 0,
+  "rare_value": 0,
+  "items": [
+    {
+      "id": 0,
+      "name": "BG Peacock Urn",
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_SUZAKUYOKU",
+      "kind": "normal",
+      "max_value": 40,
+      "min_value": 1,
+      "effect": "Max HP ",
+      "value_rand": 8,
+      "weapon_random_seed": [
+        2,
+        4,
+        4,
+        5
+      ],
+      "weapon_bonus_max": 30,
+      "sourceproof": "Shipped DT_GuardEquipItemBaseData and English Game.locres; native EGuardEquipItemID numeric enum. Ordinary acquisition RVA 0x15175D0..0x15176F0: tier*ValueRand+random[1..ValueRand]; five thresholds, reachable stage13 selects tier4.",
+      "confidence": "high_static_verified"
+    },
+    {
+      "id": 1,
+      "name": "BG Dragon Amulet",
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_SEIRYUTAN",
+      "kind": "normal",
+      "max_value": 40,
+      "min_value": 1,
+      "effect": "Max Musou",
+      "value_rand": 8,
+      "weapon_random_seed": [
+        2,
+        4,
+        4,
+        5
+      ],
+      "weapon_bonus_max": 30,
+      "sourceproof": "Shipped DT_GuardEquipItemBaseData and English Game.locres; native EGuardEquipItemID numeric enum. Ordinary acquisition RVA 0x15175D0..0x15176F0: tier*ValueRand+random[1..ValueRand]; five thresholds, reachable stage13 selects tier4.",
+      "confidence": "high_static_verified"
+    },
+    {
+      "id": 2,
+      "name": "BG Tiger Amulet",
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_BYAKKOGA",
+      "kind": "normal",
+      "max_value": 25,
+      "min_value": 1,
+      "effect": "Attack",
+      "value_rand": 5,
+      "weapon_random_seed": [
+        2,
+        2,
+        4,
+        4
+      ],
+      "weapon_bonus_max": 20,
+      "sourceproof": "Shipped DT_GuardEquipItemBaseData and English Game.locres; native EGuardEquipItemID numeric enum. Ordinary acquisition RVA 0x15175D0..0x15176F0: tier*ValueRand+random[1..ValueRand]; five thresholds, reachable stage13 selects tier4.",
+      "confidence": "high_static_verified"
+    },
+    {
+      "id": 3,
+      "name": "BG Tortoise Amulet",
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_GENBUKOU",
+      "kind": "normal",
+      "max_value": 25,
+      "min_value": 1,
+      "effect": "Defense",
+      "value_rand": 5,
+      "weapon_random_seed": [
+        2,
+        2,
+        4,
+        4
+      ],
+      "weapon_bonus_max": 20,
+      "sourceproof": "Shipped DT_GuardEquipItemBaseData and English Game.locres; native EGuardEquipItemID numeric enum. Ordinary acquisition RVA 0x15175D0..0x15176F0: tier*ValueRand+random[1..ValueRand]; five thresholds, reachable stage13 selects tier4.",
+      "confidence": "high_static_verified"
+    },
+    {
+      "id": 4,
+      "name": "BG Huang's Bow",
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_KOUTYUYUMI",
+      "kind": "normal",
+      "max_value": 15,
+      "min_value": 1,
+      "effect": "Bow Attack",
+      "value_rand": 3,
+      "weapon_random_seed": [
+        1,
+        1,
+        2,
+        3
+      ],
+      "weapon_bonus_max": 10,
+      "sourceproof": "Shipped DT_GuardEquipItemBaseData and English Game.locres; native EGuardEquipItemID numeric enum. Ordinary acquisition RVA 0x15175D0..0x15176F0: tier*ValueRand+random[1..ValueRand]; five thresholds, reachable stage13 selects tier4.",
+      "confidence": "high_static_verified"
+    },
+    {
+      "id": 5,
+      "name": "BG Shell Armor",
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_TOUKOUYOROI",
+      "kind": "normal",
+      "max_value": 15,
+      "min_value": 1,
+      "effect": "Bow Defense",
+      "value_rand": 3,
+      "weapon_random_seed": [
+        1,
+        1,
+        2,
+        3
+      ],
+      "weapon_bonus_max": 10,
+      "sourceproof": "Shipped DT_GuardEquipItemBaseData and English Game.locres; native EGuardEquipItemID numeric enum. Ordinary acquisition RVA 0x15175D0..0x15176F0: tier*ValueRand+random[1..ValueRand]; five thresholds, reachable stage13 selects tier4.",
+      "confidence": "high_static_verified"
+    },
+    {
+      "id": 6,
+      "name": "BG Speed Scroll",
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_SHINSOKUHU",
+      "kind": "normal",
+      "max_value": 15,
+      "min_value": 1,
+      "effect": "Speed",
+      "value_rand": 3,
+      "weapon_random_seed": [
+        1,
+        1,
+        2,
+        3
+      ],
+      "weapon_bonus_max": 10,
+      "sourceproof": "Shipped DT_GuardEquipItemBaseData and English Game.locres; native EGuardEquipItemID numeric enum. Ordinary acquisition RVA 0x15175D0..0x15176F0: tier*ValueRand+random[1..ValueRand]; five thresholds, reachable stage13 selects tier4.",
+      "confidence": "high_static_verified"
+    },
+    {
+      "id": 7,
+      "name": "BG Wind Scroll",
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_SHINKUSHO",
+      "kind": "normal",
+      "max_value": 15,
+      "min_value": 1,
+      "effect": "Reach",
+      "value_rand": 3,
+      "weapon_random_seed": [
+        1,
+        1,
+        2,
+        3
+      ],
+      "weapon_bonus_max": 10,
+      "sourceproof": "Shipped DT_GuardEquipItemBaseData and English Game.locres; native EGuardEquipItemID numeric enum. Ordinary acquisition RVA 0x15175D0..0x15176F0: tier*ValueRand+random[1..ValueRand]; five thresholds, reachable stage13 selects tier4.",
+      "confidence": "high_static_verified"
+    },
+    {
+      "id": 8,
+      "name": "BG Elixir",
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_GOEIKATTAN",
+      "kind": "normal",
+      "max_value": 15,
+      "min_value": 1,
+      "effect": "Musou Charge",
+      "value_rand": 3,
+      "weapon_random_seed": [
+        1,
+        1,
+        2,
+        3
+      ],
+      "weapon_bonus_max": 10,
+      "sourceproof": "Shipped DT_GuardEquipItemBaseData and English Game.locres; native EGuardEquipItemID numeric enum. Ordinary acquisition RVA 0x15175D0..0x15176F0: tier*ValueRand+random[1..ValueRand]; five thresholds, reachable stage13 selects tier4.",
+      "confidence": "high_static_verified"
+    },
+    {
+      "id": 9,
+      "name": "BG Healing Scroll",
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_GOEIZENSYO",
+      "kind": "rare",
+      "max_value": 0,
+      "min_value": 0,
+      "effect": "Bodyguard will heal self only once",
+      "value_rand": 0,
+      "weapon_random_seed": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "weapon_bonus_max": 0,
+      "sourceproof": "Shipped DT_GuardEquipItemBaseData and English Game.locres; native EGuardEquipItemID numeric enum. Challenge reward RVA 0x1677FC0..0x1678022 matches ChallengeID and calls guard item writer with value0. No rolled stat.",
+      "confidence": "high_static_verified"
+    }
+  ],
+  "integrity_note": "Enum values are variable-length Unreal serialized names; update all enclosing property sizes. No fixed disk offsets are used.",
+  "dependency_note": "Require equipped team MemberItem to refer to an owned inventory entry. Preserve PCSaveData.BGMusouEquipItem; its inventory coupling is not yet fully traced, so do not remove items referenced there.",
+  "native_evidence": {
+    "item_getter_rva": "0x14648A0",
+    "row_property_pointers_rva": "0x99B1F50",
+    "enum_params_rva": "0xA55E370",
+    "native_inventory_array_offset": "0xA8",
+    "native_inventory_record_size": 8,
+    "native_inventory_id_offset": 1,
+    "native_inventory_value_offset": 4,
+    "inventory_writer_rva": "0x1517500",
+    "ordinary_item_generator_rva": "0x15175D0..0x15176F0",
+    "ordinary_pickup_rva": "0x1376040..0x137623E",
+    "rare_acquisition_rva": "0x1677FC0..0x1678022",
+    "ownership_ui_check_rva": "0x16D2E94..0x16D2E9B",
+    "native_team_item_offset": "0x38",
+    "native_officer_cached_item_offset": "0x48",
+    "stage_rank_13_proof": "VeryHard=4 selects +6 native default; Remastered scenario difficulty7; ordinary pickup passes battle stage rank to generator."
+  },
+  "asset_hashes": {
+    "DW3CE_RE/Content/DataAsset/DT_GuardEquipItemBaseData.uasset": "64828f548fb64f6af9f934439f22959ef463341404ed146dae6cbd4f55c421f6",
+    "DW3CE_RE/Content/DataAsset/DT_GuardEquipItemBaseData.uexp": "1125a3f8b2dca156b3d9f77d8d7473dcb4596fc849bd64ecc77de8ca44d86537",
+    "DW3CE_RE/Content/DataAsset/DT_DropRandomTable.uasset": "b302dbd2cdd9e4b44555dcda7268404a77ee11116fdf957fa6a252e7cb3728d6",
+    "DW3CE_RE/Content/DataAsset/DT_DropRandomTable.uexp": "022bca47a47d99227b229813d76dbdda18fa6be131fe6f1b6f052aea3248ee12"
+  },
+  "validation_limit": "Static native-code, shipped-table, and save-structure verification only. Edited saves have not been loaded in the game."
+}

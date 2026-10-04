@@ -1,0 +1,2616 @@
+{
+  "source": "Shipped native reflection schemas, exact GuardEquipItemBaseData/WeaponBaseData/DropRandomTable/SkillNumRandomTable rows and native guard weapon generation/insertion/equipped-load dataflow.",
+  "confidence": "Confirmed conservative native-drop profiles. Runtime game-load validation and guard fusion behavior remain untested; no expansion or intrinsic base-power edits.",
+  "exe_sha256": "3691d3fd41eb744c99fee8fc0a342159a0155d4aea90f910fe8985b46c5dc2e2",
+  "inventory_count": 100,
+  "skill_slot_count": 9,
+  "max_skills": 3,
+  "unowned_weapon_enum": "EWeaponID::NUM",
+  "unowned_equip_item_enum": "EEquipItemID::NUM",
+  "unowned_guard_equip_item_enum": "EGuardEquipItemID::NUM",
+  "acquisition_policy": "For each missing weapon definition, allocate first inventory slot with WeaponID NUM; set ID/WeaponID, stock_attr0, DataID=inventory index, nine canonical skills using GuardEquipItemID only. Preserve all existing entries, timestamps and equipped references. Refuse if no blank slot; no array expansion.",
+  "collection_policy": "Populate CollectedWeaponDataArray[weapon ID] only if unowned, using acquired template and DataID=weapon ID. Preserve owned cache, including when inventory skills are maximized.",
+  "equipped_policy": "GuardData.MemberWeapon first five positions correspond to family0..4 and store GuardWeaponDataArray inventory indices. Positions5..9 are reserved and preserved. Validate referenced slot owned, DataID=slot index and matching family.",
+  "native_evidence": {
+    "pool_classifier": "0x150AC62..0x150AC6C: byte(WeaponID+0x53)<=14 selects173..187",
+    "inventory_allocator": "0x150AC72..0x150AD49: first NUM slot; stride0x30; DataID=slot",
+    "collection_cache": "0x150AC33..0x150AC5E: first ownership copy; DataID=weaponID",
+    "family_and_rank": "0x1515575..0x1515621: family*3+173 plus rank capped2",
+    "stock_attr": "0x1515624: zero64bit Attr for guard branch",
+    "normal_skill_pool": "0x15159F0..0x1515A39: GuardEquipItemIDs0..9 filtered Type==0; excludes rare9",
+    "max_skills": "0x1515991..0x15159E1: 3 minus selected skill-count index, capped3",
+    "family_skill_exclusions": "0x1515AF0..0x1515B2B: melee excludes4; bow/crossbow excludes2,7",
+    "bonus_generator": "0x1515B2B..0x1515C50: four tiers, RandomSeed[tier], HP/Musou and Attack/Defense bias, value5*raw or1",
+    "equipped_load": "0x13BFE82..0x13BFE9C: MemberWeapon[BGType] directly indexes GuardWeaponDataArray",
+    "empty_constructor": "0x1356C30..0x1356CED: WeaponID/IDNUM, nine NUM/NUM/0skills, Attr0, DataID-1, GetTime0"
+  },
+  "allowed_skill_ids_by_family": {
+    "0": [
+      0,
+      1,
+      2,
+      3,
+      5,
+      6,
+      7,
+      8
+    ],
+    "1": [
+      0,
+      1,
+      2,
+      3,
+      5,
+      6,
+      7,
+      8
+    ],
+    "2": [
+      0,
+      1,
+      2,
+      3,
+      5,
+      6,
+      7,
+      8
+    ],
+    "3": [
+      0,
+      1,
+      3,
+      4,
+      5,
+      6,
+      8
+    ],
+    "4": [
+      0,
+      1,
+      3,
+      4,
+      5,
+      6,
+      8
+    ]
+  },
+  "max_weapon_bonus_by_guard_item_id": {
+    "0": 30,
+    "1": 30,
+    "2": 20,
+    "3": 20,
+    "4": 10,
+    "5": 10,
+    "6": 10,
+    "7": 10,
+    "8": 10
+  },
+  "guard_skill_items": [
+    {
+      "id": 0,
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_SUZAKUYOKU",
+      "name": "BG Peacock Urn",
+      "effect": "Max HP ",
+      "random_seed": [
+        2,
+        4,
+        4,
+        5
+      ],
+      "row_offset": 34
+    },
+    {
+      "id": 1,
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_SEIRYUTAN",
+      "name": "BG Dragon Amulet",
+      "effect": "Max Musou",
+      "random_seed": [
+        2,
+        4,
+        4,
+        5
+      ],
+      "row_offset": 82
+    },
+    {
+      "id": 2,
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_BYAKKOGA",
+      "name": "BG Tiger Amulet",
+      "effect": "Attack",
+      "random_seed": [
+        2,
+        2,
+        4,
+        4
+      ],
+      "row_offset": 130
+    },
+    {
+      "id": 3,
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_GENBUKOU",
+      "name": "BG Tortoise Amulet",
+      "effect": "Defense",
+      "random_seed": [
+        2,
+        2,
+        4,
+        4
+      ],
+      "row_offset": 178
+    },
+    {
+      "id": 4,
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_KOUTYUYUMI",
+      "name": "BG Huang's Bow",
+      "effect": "Bow Attack",
+      "random_seed": [
+        1,
+        1,
+        2,
+        3
+      ],
+      "row_offset": 226
+    },
+    {
+      "id": 5,
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_TOUKOUYOROI",
+      "name": "BG Shell Armor",
+      "effect": "Bow Defense",
+      "random_seed": [
+        1,
+        1,
+        2,
+        3
+      ],
+      "row_offset": 274
+    },
+    {
+      "id": 6,
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_SHINSOKUHU",
+      "name": "BG Speed Scroll",
+      "effect": "Speed",
+      "random_seed": [
+        1,
+        1,
+        2,
+        3
+      ],
+      "row_offset": 322
+    },
+    {
+      "id": 7,
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_SHINKUSHO",
+      "name": "BG Wind Scroll",
+      "effect": "Reach",
+      "random_seed": [
+        1,
+        1,
+        2,
+        3
+      ],
+      "row_offset": 370
+    },
+    {
+      "id": 8,
+      "enum": "EGuardEquipItemID::EQUIP_GUARD_ITEM_GOEIKATTAN",
+      "name": "BG Elixir",
+      "effect": "Musou Charge",
+      "random_seed": [
+        1,
+        1,
+        2,
+        3
+      ],
+      "row_offset": 418
+    }
+  ],
+  "weapons": [
+    {
+      "id": 173,
+      "enum": "EWeaponID::WeaponID_173",
+      "name": "Iron Sword",
+      "family_index": 0,
+      "family_name": "Sword",
+      "tier": 1,
+      "base_power": 8,
+      "stock_attr": 0,
+      "definition_attribute_bitmask": 0,
+      "definition_row_offset": 23108,
+      "max_skills": 3,
+      "allowed_skill_ids": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8
+      ],
+      "max_weapon_bonus_by_guard_item_id": {
+        "0": 15,
+        "1": 15,
+        "2": 5,
+        "3": 5,
+        "5": 1,
+        "6": 1,
+        "7": 1,
+        "8": 1
+      },
+      "allowed_values_by_guard_item_id": {
+        "0": [
+          1,
+          5,
+          10,
+          15
+        ],
+        "1": [
+          1,
+          5,
+          10,
+          15
+        ],
+        "2": [
+          1,
+          5
+        ],
+        "3": [
+          1,
+          5
+        ],
+        "5": [
+          1
+        ],
+        "6": [
+          1
+        ],
+        "7": [
+          1
+        ],
+        "8": [
+          1
+        ]
+      },
+      "max_bonus_profile": [
+        {
+          "id": 0,
+          "value": 15
+        },
+        {
+          "id": 2,
+          "value": 5
+        },
+        {
+          "id": 3,
+          "value": 5
+        }
+      ],
+      "reachable_skill_tiers": [
+        0,
+        1
+      ],
+      "drop_evidence": [
+        {
+          "stage_rank": 0,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 1,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 2,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 3,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        },
+        {
+          "stage_rank": 4,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "id": 174,
+      "enum": "EWeaponID::WeaponID_174",
+      "name": "Long Sword",
+      "family_index": 0,
+      "family_name": "Sword",
+      "tier": 2,
+      "base_power": 15,
+      "stock_attr": 0,
+      "definition_attribute_bitmask": 1,
+      "definition_row_offset": 23210,
+      "max_skills": 3,
+      "allowed_skill_ids": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8
+      ],
+      "max_weapon_bonus_by_guard_item_id": {
+        "0": 30,
+        "1": 30,
+        "2": 20,
+        "3": 20,
+        "5": 10,
+        "6": 10,
+        "7": 10,
+        "8": 10
+      },
+      "allowed_values_by_guard_item_id": {
+        "0": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "1": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "2": [
+          1,
+          5,
+          10,
+          15,
+          20
+        ],
+        "3": [
+          1,
+          5,
+          10,
+          15,
+          20
+        ],
+        "5": [
+          1,
+          5,
+          10
+        ],
+        "6": [
+          1,
+          5,
+          10
+        ],
+        "7": [
+          1,
+          5,
+          10
+        ],
+        "8": [
+          1,
+          5,
+          10
+        ]
+      },
+      "max_bonus_profile": [
+        {
+          "id": 0,
+          "value": 30
+        },
+        {
+          "id": 2,
+          "value": 20
+        },
+        {
+          "id": 3,
+          "value": 20
+        }
+      ],
+      "reachable_skill_tiers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "drop_evidence": [
+        {
+          "stage_rank": 1,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 2,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 3,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        },
+        {
+          "stage_rank": 4,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        },
+        {
+          "stage_rank": 5,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 6,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 7,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 8,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 9,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 10,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "id": 175,
+      "enum": "EWeaponID::WeaponID_175",
+      "name": "Elder Sword",
+      "family_index": 0,
+      "family_name": "Sword",
+      "tier": 3,
+      "base_power": 20,
+      "stock_attr": 0,
+      "definition_attribute_bitmask": 3,
+      "definition_row_offset": 23351,
+      "max_skills": 3,
+      "allowed_skill_ids": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8
+      ],
+      "max_weapon_bonus_by_guard_item_id": {
+        "0": 30,
+        "1": 30,
+        "2": 20,
+        "3": 20,
+        "5": 10,
+        "6": 10,
+        "7": 10,
+        "8": 10
+      },
+      "allowed_values_by_guard_item_id": {
+        "0": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "1": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "2": [
+          1,
+          5,
+          10,
+          15,
+          20
+        ],
+        "3": [
+          1,
+          5,
+          10,
+          15,
+          20
+        ],
+        "5": [
+          1,
+          5,
+          10
+        ],
+        "6": [
+          1,
+          5,
+          10
+        ],
+        "7": [
+          1,
+          5,
+          10
+        ],
+        "8": [
+          1,
+          5,
+          10
+        ]
+      },
+      "max_bonus_profile": [
+        {
+          "id": 0,
+          "value": 30
+        },
+        {
+          "id": 2,
+          "value": 20
+        },
+        {
+          "id": 3,
+          "value": 20
+        }
+      ],
+      "reachable_skill_tiers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "drop_evidence": [
+        {
+          "stage_rank": 5,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 6,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 7,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 8,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 9,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 10,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 11,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 12,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 13,
+          "skill_tiers": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 176,
+      "enum": "EWeaponID::WeaponID_176",
+      "name": "Spear",
+      "family_index": 1,
+      "family_name": "Spear",
+      "tier": 1,
+      "base_power": 7,
+      "stock_attr": 0,
+      "definition_attribute_bitmask": 0,
+      "definition_row_offset": 23464,
+      "max_skills": 3,
+      "allowed_skill_ids": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8
+      ],
+      "max_weapon_bonus_by_guard_item_id": {
+        "0": 15,
+        "1": 15,
+        "2": 5,
+        "3": 5,
+        "5": 1,
+        "6": 1,
+        "7": 1,
+        "8": 1
+      },
+      "allowed_values_by_guard_item_id": {
+        "0": [
+          1,
+          5,
+          10,
+          15
+        ],
+        "1": [
+          1,
+          5,
+          10,
+          15
+        ],
+        "2": [
+          1,
+          5
+        ],
+        "3": [
+          1,
+          5
+        ],
+        "5": [
+          1
+        ],
+        "6": [
+          1
+        ],
+        "7": [
+          1
+        ],
+        "8": [
+          1
+        ]
+      },
+      "max_bonus_profile": [
+        {
+          "id": 0,
+          "value": 15
+        },
+        {
+          "id": 2,
+          "value": 5
+        },
+        {
+          "id": 3,
+          "value": 5
+        }
+      ],
+      "reachable_skill_tiers": [
+        0,
+        1
+      ],
+      "drop_evidence": [
+        {
+          "stage_rank": 0,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 1,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 2,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 3,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        },
+        {
+          "stage_rank": 4,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "id": 177,
+      "enum": "EWeaponID::WeaponID_177",
+      "name": "Dragon Spear",
+      "family_index": 1,
+      "family_name": "Spear",
+      "tier": 2,
+      "base_power": 15,
+      "stock_attr": 0,
+      "definition_attribute_bitmask": 3,
+      "definition_row_offset": 23597,
+      "max_skills": 3,
+      "allowed_skill_ids": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8
+      ],
+      "max_weapon_bonus_by_guard_item_id": {
+        "0": 30,
+        "1": 30,
+        "2": 20,
+        "3": 20,
+        "5": 10,
+        "6": 10,
+        "7": 10,
+        "8": 10
+      },
+      "allowed_values_by_guard_item_id": {
+        "0": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "1": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "2": [
+          1,
+          5,
+          10,
+          15,
+          20
+        ],
+        "3": [
+          1,
+          5,
+          10,
+          15,
+          20
+        ],
+        "5": [
+          1,
+          5,
+          10
+        ],
+        "6": [
+          1,
+          5,
+          10
+        ],
+        "7": [
+          1,
+          5,
+          10
+        ],
+        "8": [
+          1,
+          5,
+          10
+        ]
+      },
+      "max_bonus_profile": [
+        {
+          "id": 0,
+          "value": 30
+        },
+        {
+          "id": 2,
+          "value": 20
+        },
+        {
+          "id": 3,
+          "value": 20
+        }
+      ],
+      "reachable_skill_tiers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "drop_evidence": [
+        {
+          "stage_rank": 1,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 2,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 3,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        },
+        {
+          "stage_rank": 4,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        },
+        {
+          "stage_rank": 5,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 6,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 7,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 8,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 9,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 10,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "id": 178,
+      "enum": "EWeaponID::WeaponID_178",
+      "name": "Crescent Blade",
+      "family_index": 1,
+      "family_name": "Spear",
+      "tier": 3,
+      "base_power": 20,
+      "stock_attr": 0,
+      "definition_attribute_bitmask": 3,
+      "definition_row_offset": 23737,
+      "max_skills": 3,
+      "allowed_skill_ids": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8
+      ],
+      "max_weapon_bonus_by_guard_item_id": {
+        "0": 30,
+        "1": 30,
+        "2": 20,
+        "3": 20,
+        "5": 10,
+        "6": 10,
+        "7": 10,
+        "8": 10
+      },
+      "allowed_values_by_guard_item_id": {
+        "0": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "1": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "2": [
+          1,
+          5,
+          10,
+          15,
+          20
+        ],
+        "3": [
+          1,
+          5,
+          10,
+          15,
+          20
+        ],
+        "5": [
+          1,
+          5,
+          10
+        ],
+        "6": [
+          1,
+          5,
+          10
+        ],
+        "7": [
+          1,
+          5,
+          10
+        ],
+        "8": [
+          1,
+          5,
+          10
+        ]
+      },
+      "max_bonus_profile": [
+        {
+          "id": 0,
+          "value": 30
+        },
+        {
+          "id": 2,
+          "value": 20
+        },
+        {
+          "id": 3,
+          "value": 20
+        }
+      ],
+      "reachable_skill_tiers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "drop_evidence": [
+        {
+          "stage_rank": 5,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 6,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 7,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 8,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 9,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 10,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 11,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 12,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 13,
+          "skill_tiers": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 179,
+      "enum": "EWeaponID::WeaponID_179",
+      "name": "Long Pike",
+      "family_index": 2,
+      "family_name": "Pike",
+      "tier": 1,
+      "base_power": 7,
+      "stock_attr": 0,
+      "definition_attribute_bitmask": 0,
+      "definition_row_offset": 23877,
+      "max_skills": 3,
+      "allowed_skill_ids": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8
+      ],
+      "max_weapon_bonus_by_guard_item_id": {
+        "0": 15,
+        "1": 15,
+        "2": 5,
+        "3": 5,
+        "5": 1,
+        "6": 1,
+        "7": 1,
+        "8": 1
+      },
+      "allowed_values_by_guard_item_id": {
+        "0": [
+          1,
+          5,
+          10,
+          15
+        ],
+        "1": [
+          1,
+          5,
+          10,
+          15
+        ],
+        "2": [
+          1,
+          5
+        ],
+        "3": [
+          1,
+          5
+        ],
+        "5": [
+          1
+        ],
+        "6": [
+          1
+        ],
+        "7": [
+          1
+        ],
+        "8": [
+          1
+        ]
+      },
+      "max_bonus_profile": [
+        {
+          "id": 0,
+          "value": 15
+        },
+        {
+          "id": 2,
+          "value": 5
+        },
+        {
+          "id": 3,
+          "value": 5
+        }
+      ],
+      "reachable_skill_tiers": [
+        0,
+        1
+      ],
+      "drop_evidence": [
+        {
+          "stage_rank": 0,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 1,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 2,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 3,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        },
+        {
+          "stage_rank": 4,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "id": 180,
+      "enum": "EWeaponID::WeaponID_180",
+      "name": "Heavenly Spear",
+      "family_index": 2,
+      "family_name": "Pike",
+      "tier": 2,
+      "base_power": 15,
+      "stock_attr": 0,
+      "definition_attribute_bitmask": 1,
+      "definition_row_offset": 24010,
+      "max_skills": 3,
+      "allowed_skill_ids": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8
+      ],
+      "max_weapon_bonus_by_guard_item_id": {
+        "0": 30,
+        "1": 30,
+        "2": 20,
+        "3": 20,
+        "5": 10,
+        "6": 10,
+        "7": 10,
+        "8": 10
+      },
+      "allowed_values_by_guard_item_id": {
+        "0": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "1": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "2": [
+          1,
+          5,
+          10,
+          15,
+          20
+        ],
+        "3": [
+          1,
+          5,
+          10,
+          15,
+          20
+        ],
+        "5": [
+          1,
+          5,
+          10
+        ],
+        "6": [
+          1,
+          5,
+          10
+        ],
+        "7": [
+          1,
+          5,
+          10
+        ],
+        "8": [
+          1,
+          5,
+          10
+        ]
+      },
+      "max_bonus_profile": [
+        {
+          "id": 0,
+          "value": 30
+        },
+        {
+          "id": 2,
+          "value": 20
+        },
+        {
+          "id": 3,
+          "value": 20
+        }
+      ],
+      "reachable_skill_tiers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "drop_evidence": [
+        {
+          "stage_rank": 1,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 2,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 3,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        },
+        {
+          "stage_rank": 4,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        },
+        {
+          "stage_rank": 5,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 6,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 7,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 8,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 9,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 10,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "id": 181,
+      "enum": "EWeaponID::WeaponID_181",
+      "name": "Tiger's Chin",
+      "family_index": 2,
+      "family_name": "Pike",
+      "tier": 3,
+      "base_power": 20,
+      "stock_attr": 0,
+      "definition_attribute_bitmask": 3,
+      "definition_row_offset": 24150,
+      "max_skills": 3,
+      "allowed_skill_ids": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8
+      ],
+      "max_weapon_bonus_by_guard_item_id": {
+        "0": 30,
+        "1": 30,
+        "2": 20,
+        "3": 20,
+        "5": 10,
+        "6": 10,
+        "7": 10,
+        "8": 10
+      },
+      "allowed_values_by_guard_item_id": {
+        "0": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "1": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "2": [
+          1,
+          5,
+          10,
+          15,
+          20
+        ],
+        "3": [
+          1,
+          5,
+          10,
+          15,
+          20
+        ],
+        "5": [
+          1,
+          5,
+          10
+        ],
+        "6": [
+          1,
+          5,
+          10
+        ],
+        "7": [
+          1,
+          5,
+          10
+        ],
+        "8": [
+          1,
+          5,
+          10
+        ]
+      },
+      "max_bonus_profile": [
+        {
+          "id": 0,
+          "value": 30
+        },
+        {
+          "id": 2,
+          "value": 20
+        },
+        {
+          "id": 3,
+          "value": 20
+        }
+      ],
+      "reachable_skill_tiers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "drop_evidence": [
+        {
+          "stage_rank": 5,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 6,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 7,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 8,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 9,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 10,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 11,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 12,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 13,
+          "skill_tiers": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 182,
+      "enum": "EWeaponID::WeaponID_182",
+      "name": "Iron Bow",
+      "family_index": 3,
+      "family_name": "Bow",
+      "tier": 1,
+      "base_power": 7,
+      "stock_attr": 0,
+      "definition_attribute_bitmask": 0,
+      "definition_row_offset": 24290,
+      "max_skills": 3,
+      "allowed_skill_ids": [
+        0,
+        1,
+        3,
+        4,
+        5,
+        6,
+        8
+      ],
+      "max_weapon_bonus_by_guard_item_id": {
+        "0": 15,
+        "1": 15,
+        "3": 5,
+        "4": 1,
+        "5": 1,
+        "6": 1,
+        "8": 1
+      },
+      "allowed_values_by_guard_item_id": {
+        "0": [
+          1,
+          5,
+          10,
+          15
+        ],
+        "1": [
+          1,
+          5,
+          10,
+          15
+        ],
+        "3": [
+          1,
+          5
+        ],
+        "4": [
+          1
+        ],
+        "5": [
+          1
+        ],
+        "6": [
+          1
+        ],
+        "8": [
+          1
+        ]
+      },
+      "max_bonus_profile": [
+        {
+          "id": 0,
+          "value": 15
+        },
+        {
+          "id": 3,
+          "value": 5
+        },
+        {
+          "id": 4,
+          "value": 1
+        }
+      ],
+      "reachable_skill_tiers": [
+        0,
+        1
+      ],
+      "drop_evidence": [
+        {
+          "stage_rank": 0,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 1,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 2,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 3,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        },
+        {
+          "stage_rank": 4,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "id": 183,
+      "enum": "EWeaponID::WeaponID_183",
+      "name": "Steel Bow",
+      "family_index": 3,
+      "family_name": "Bow",
+      "tier": 2,
+      "base_power": 15,
+      "stock_attr": 0,
+      "definition_attribute_bitmask": 0,
+      "definition_row_offset": 24346,
+      "max_skills": 3,
+      "allowed_skill_ids": [
+        0,
+        1,
+        3,
+        4,
+        5,
+        6,
+        8
+      ],
+      "max_weapon_bonus_by_guard_item_id": {
+        "0": 30,
+        "1": 30,
+        "3": 20,
+        "4": 10,
+        "5": 10,
+        "6": 10,
+        "8": 10
+      },
+      "allowed_values_by_guard_item_id": {
+        "0": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "1": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "3": [
+          1,
+          5,
+          10,
+          15,
+          20
+        ],
+        "4": [
+          1,
+          5,
+          10
+        ],
+        "5": [
+          1,
+          5,
+          10
+        ],
+        "6": [
+          1,
+          5,
+          10
+        ],
+        "8": [
+          1,
+          5,
+          10
+        ]
+      },
+      "max_bonus_profile": [
+        {
+          "id": 0,
+          "value": 30
+        },
+        {
+          "id": 3,
+          "value": 20
+        },
+        {
+          "id": 4,
+          "value": 10
+        }
+      ],
+      "reachable_skill_tiers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "drop_evidence": [
+        {
+          "stage_rank": 1,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 2,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 3,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        },
+        {
+          "stage_rank": 4,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        },
+        {
+          "stage_rank": 5,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 6,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 7,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 8,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 9,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 10,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "id": 184,
+      "enum": "EWeaponID::WeaponID_184",
+      "name": "Gale Bow",
+      "family_index": 3,
+      "family_name": "Bow",
+      "tier": 3,
+      "base_power": 20,
+      "stock_attr": 0,
+      "definition_attribute_bitmask": 0,
+      "definition_row_offset": 24402,
+      "max_skills": 3,
+      "allowed_skill_ids": [
+        0,
+        1,
+        3,
+        4,
+        5,
+        6,
+        8
+      ],
+      "max_weapon_bonus_by_guard_item_id": {
+        "0": 30,
+        "1": 30,
+        "3": 20,
+        "4": 10,
+        "5": 10,
+        "6": 10,
+        "8": 10
+      },
+      "allowed_values_by_guard_item_id": {
+        "0": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "1": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "3": [
+          1,
+          5,
+          10,
+          15,
+          20
+        ],
+        "4": [
+          1,
+          5,
+          10
+        ],
+        "5": [
+          1,
+          5,
+          10
+        ],
+        "6": [
+          1,
+          5,
+          10
+        ],
+        "8": [
+          1,
+          5,
+          10
+        ]
+      },
+      "max_bonus_profile": [
+        {
+          "id": 0,
+          "value": 30
+        },
+        {
+          "id": 3,
+          "value": 20
+        },
+        {
+          "id": 4,
+          "value": 10
+        }
+      ],
+      "reachable_skill_tiers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "drop_evidence": [
+        {
+          "stage_rank": 5,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 6,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 7,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 8,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 9,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 10,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 11,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 12,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 13,
+          "skill_tiers": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 185,
+      "enum": "EWeaponID::WeaponID_185",
+      "name": "Iron Crossbow",
+      "family_index": 4,
+      "family_name": "Crossbow",
+      "tier": 1,
+      "base_power": 8,
+      "stock_attr": 0,
+      "definition_attribute_bitmask": 0,
+      "definition_row_offset": 24458,
+      "max_skills": 3,
+      "allowed_skill_ids": [
+        0,
+        1,
+        3,
+        4,
+        5,
+        6,
+        8
+      ],
+      "max_weapon_bonus_by_guard_item_id": {
+        "0": 15,
+        "1": 15,
+        "3": 5,
+        "4": 1,
+        "5": 1,
+        "6": 1,
+        "8": 1
+      },
+      "allowed_values_by_guard_item_id": {
+        "0": [
+          1,
+          5,
+          10,
+          15
+        ],
+        "1": [
+          1,
+          5,
+          10,
+          15
+        ],
+        "3": [
+          1,
+          5
+        ],
+        "4": [
+          1
+        ],
+        "5": [
+          1
+        ],
+        "6": [
+          1
+        ],
+        "8": [
+          1
+        ]
+      },
+      "max_bonus_profile": [
+        {
+          "id": 0,
+          "value": 15
+        },
+        {
+          "id": 3,
+          "value": 5
+        },
+        {
+          "id": 4,
+          "value": 1
+        }
+      ],
+      "reachable_skill_tiers": [
+        0,
+        1
+      ],
+      "drop_evidence": [
+        {
+          "stage_rank": 0,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 1,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 2,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 3,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        },
+        {
+          "stage_rank": 4,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "id": 186,
+      "enum": "EWeaponID::WeaponID_186",
+      "name": "Steel Crossbow",
+      "family_index": 4,
+      "family_name": "Crossbow",
+      "tier": 2,
+      "base_power": 15,
+      "stock_attr": 0,
+      "definition_attribute_bitmask": 0,
+      "definition_row_offset": 24514,
+      "max_skills": 3,
+      "allowed_skill_ids": [
+        0,
+        1,
+        3,
+        4,
+        5,
+        6,
+        8
+      ],
+      "max_weapon_bonus_by_guard_item_id": {
+        "0": 30,
+        "1": 30,
+        "3": 20,
+        "4": 10,
+        "5": 10,
+        "6": 10,
+        "8": 10
+      },
+      "allowed_values_by_guard_item_id": {
+        "0": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "1": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "3": [
+          1,
+          5,
+          10,
+          15,
+          20
+        ],
+        "4": [
+          1,
+          5,
+          10
+        ],
+        "5": [
+          1,
+          5,
+          10
+        ],
+        "6": [
+          1,
+          5,
+          10
+        ],
+        "8": [
+          1,
+          5,
+          10
+        ]
+      },
+      "max_bonus_profile": [
+        {
+          "id": 0,
+          "value": 30
+        },
+        {
+          "id": 3,
+          "value": 20
+        },
+        {
+          "id": 4,
+          "value": 10
+        }
+      ],
+      "reachable_skill_tiers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "drop_evidence": [
+        {
+          "stage_rank": 1,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 2,
+          "skill_tiers": [
+            0
+          ]
+        },
+        {
+          "stage_rank": 3,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        },
+        {
+          "stage_rank": 4,
+          "skill_tiers": [
+            0,
+            1
+          ]
+        },
+        {
+          "stage_rank": 5,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 6,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 7,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 8,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 9,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 10,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        }
+      ]
+    },
+    {
+      "id": 187,
+      "enum": "EWeaponID::WeaponID_187",
+      "name": "Wind Crossbow",
+      "family_index": 4,
+      "family_name": "Crossbow",
+      "tier": 3,
+      "base_power": 20,
+      "stock_attr": 0,
+      "definition_attribute_bitmask": 0,
+      "definition_row_offset": 24570,
+      "max_skills": 3,
+      "allowed_skill_ids": [
+        0,
+        1,
+        3,
+        4,
+        5,
+        6,
+        8
+      ],
+      "max_weapon_bonus_by_guard_item_id": {
+        "0": 30,
+        "1": 30,
+        "3": 20,
+        "4": 10,
+        "5": 10,
+        "6": 10,
+        "8": 10
+      },
+      "allowed_values_by_guard_item_id": {
+        "0": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "1": [
+          1,
+          5,
+          10,
+          15,
+          20,
+          25,
+          30
+        ],
+        "3": [
+          1,
+          5,
+          10,
+          15,
+          20
+        ],
+        "4": [
+          1,
+          5,
+          10
+        ],
+        "5": [
+          1,
+          5,
+          10
+        ],
+        "6": [
+          1,
+          5,
+          10
+        ],
+        "8": [
+          1,
+          5,
+          10
+        ]
+      },
+      "max_bonus_profile": [
+        {
+          "id": 0,
+          "value": 30
+        },
+        {
+          "id": 3,
+          "value": 20
+        },
+        {
+          "id": 4,
+          "value": 10
+        }
+      ],
+      "reachable_skill_tiers": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "drop_evidence": [
+        {
+          "stage_rank": 5,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 6,
+          "skill_tiers": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "stage_rank": 7,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 8,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 9,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 10,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 11,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 12,
+          "skill_tiers": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "stage_rank": 13,
+          "skill_tiers": [
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

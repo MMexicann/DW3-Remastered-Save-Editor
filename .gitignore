@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+build/
+dist/
+*.spec
+*.sav
+DW3EditorBackups/
+*.changes.json
+.test-runs/
+.bodyguard-test-runs/
+.weapon-roll-test-runs/
+.review-test-runs/

@@ -1,0 +1,21 @@
+{
+  "maxima": {
+    "0": 20,
+    "1": 20,
+    "2": 75,
+    "3": 75,
+    "4": 25,
+    "5": 50,
+    "6": 50,
+    "7": 50,
+    "8": 50,
+    "9": 50,
+    "10": 25,
+    "11": 25,
+    "12": 25,
+    "25": 40,
+    "26": 25,
+    "27": 15
+  },
+  "evidence": "Native normal-item generator0x15363D0..0x1536588; VeryHard4 plus Remastered scenarioDifficulty7 plus modifier6 yields StageRank13; fifth tier reachable; maximum5*ValueRand from shipped DT_EquipItemBaseData."
+}

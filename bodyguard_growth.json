@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "confidence": "confirmed: shipped table rows and native reads/writes",
+  "merit_cap": 99999,
+  "allocated_slots": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "slots": [
+    {
+      "index": 0,
+      "label": "Life",
+      "maximum": 11,
+      "consumes_points": true
+    },
+    {
+      "index": 1,
+      "label": "Attack",
+      "maximum": 11,
+      "consumes_points": true
+    },
+    {
+      "index": 2,
+      "label": "Defense",
+      "maximum": 11,
+      "consumes_points": true
+    },
+    {
+      "index": 3,
+      "label": "Count",
+      "maximum": 3,
+      "consumes_points": false,
+      "automatic": true,
+      "merit_thresholds": [
+        0,
+        25000,
+        50000,
+        75000
+      ]
+    },
+    {
+      "index": 4,
+      "label": "Bow / Moveset",
+      "maximum": 3,
+      "consumes_points": true,
+      "merit_thresholds": [
+        0,
+        25000,
+        50000,
+        75000
+      ]
+    },
+    {
+      "index": 5,
+      "label": "AI",
+      "maximum": 3,
+      "consumes_points": false,
+      "automatic": true,
+      "merit_thresholds": [
+        0,
+        30000,
+        60000,
+        90000
+      ]
+    }
+  ],
+  "budget_thresholds": [
+    0,
+    1000,
+    2000,
+    4000,
+    6000,
+    8000,
+    10000,
+    13000,
+    16000,
+    19000,
+    23000,
+    27000,
+    31000,
+    35000,
+    39000,
+    44000,
+    49000,
+    54000,
+    59000,
+    64000,
+    69000,
+    75000,
+    81000,
+    87000,
+    93000,
+    99999
+  ],
+  "level_rows": [
+    {
+      "HP_Special": 150,
+      "Attack": 40,
+      "Jump": 120,
+      "Defence": 40,
+      "Move": 110,
+      "ShiftMove": 81
+    },
+    {
+      "HP_Special": 160,
+      "Attack": 50,
+      "Jump": 125,
+      "Defence": 50,
+      "Move": 115,
+      "ShiftMove": 82
+    },
+    {
+      "HP_Special": 170,
+      "Attack": 60,
+      "Jump": 130,
+      "Defence": 60,
+      "Move": 120,
+      "ShiftMove": 83
+    },
+    {
+      "HP_Special": 180,
+      "Attack": 70,
+      "Jump": 135,
+      "Defence": 70,
+      "Move": 125,
+      "ShiftMove": 84
+    },
+    {
+      "HP_Special": 190,
+      "Attack": 80,
+      "Jump": 140,
+      "Defence": 80,
+      "Move": 130,
+      "ShiftMove": 85
+    },
+    {
+      "HP_Special": 200,
+      "Attack": 90,
+      "Jump": 145,
+      "Defence": 90,
+      "Move": 135,
+      "ShiftMove": 86
+    },
+    {
+      "HP_Special": 210,
+      "Attack": 100,
+      "Jump": 150,
+      "Defence": 100,
+      "Move": 140,
+      "ShiftMove": 87
+    },
+    {
+      "HP_Special": 220,
+      "Attack": 110,
+      "Jump": 150,
+      "Defence": 110,
+      "Move": 140,
+      "ShiftMove": 88
+    },
+    {
+      "HP_Special": 230,
+      "Attack": 115,
+      "Jump": 150,
+      "Defence": 115,
+      "Move": 140,
+      "ShiftMove": 89
+    },
+    {
+      "HP_Special": 240,
+      "Attack": 120,
+      "Jump": 150,
+      "Defence": 120,
+      "Move": 140,
+      "ShiftMove": 90
+    },
+    {
+      "HP_Special": 250,
+      "Attack": 125,
+      "Jump": 150,
+      "Defence": 125,
+      "Move": 140,
+      "ShiftMove": 90
+    },
+    {
+      "HP_Special": 260,
+      "Attack": 130,
+      "Jump": 150,
+      "Defence": 130,
+      "Move": 140,
+      "ShiftMove": 90
+    }
+  ],
+  "member_rows": [
+    {
+      "MemberNum": 3,
+      "HP_Add": 0,
+      "Bow": 50,
+      "MotionLv": 0,
+      "AlgoLimit": 8,
+      "AlgoLevel": 2
+    },
+    {
+      "MemberNum": 5,
+      "HP_Add": 10,
+      "Bow": 60,
+      "MotionLv": 0,
+      "AlgoLimit": 9,
+      "AlgoLevel": 6
+    },
+    {
+      "MemberNum": 7,
+      "HP_Add": 20,
+      "Bow": 70,
+      "MotionLv": 1,
+      "AlgoLimit": 11,
+      "AlgoLevel": 10
+    },
+    {
+      "MemberNum": 9,
+      "HP_Add": 30,
+      "Bow": 80,
+      "MotionLv": 2,
+      "AlgoLimit": 12,
+      "AlgoLevel": 14
+    }
+  ],
+  "evidence": {
+    "merit_clamp_rvas": [
+      "0x1518977",
+      "0x1508EA7"
+    ],
+    "spent_sum_rva": "0x150622F",
+    "budget_lookup_rvas": [
+      "0x1506262",
+      "0x145E6B0"
+    ],
+    "automatic_count_ai_rvas": [
+      "0x15061BB",
+      "0x15061F5"
+    ],
+    "bow_merit_gate_rva": "0x1506434",
+    "native_allocated_index_array_rva": "0x9D312D0",
+    "native_allocated_caps_array_rva": "0x9D312C0",
+    "hp_musou_attack_defense_rvas": [
+      "0x1536847",
+      "0x1536887",
+      "0x15368BA",
+      "0x15368E0",
+      "0x15368F7",
+      "0x1536971"
+    ],
+    "count_cache_rvas": [
+      "0x15065A3",
+      "0x15065B0"
+    ],
+    "movement_jump_rvas": [
+      "0x17420C2",
+      "0x17420DE",
+      "0x1742110",
+      "0x174212A"
+    ],
+    "bow_percentage_rvas": [
+      "0x174215A",
+      "0x1742193",
+      "0x17421C0"
+    ],
+    "motion_rvas": [
+      "0x15179AB",
+      "0x15179BC",
+      "0x15179C1"
+    ],
+    "ai_limit_rvas": [
+      "0x13CE98E",
+      "0x13CE992",
+      "0x13CE9A9"
+    ],
+    "bow_percentage_scale_rva": "0x9D307D0",
+    "bow_percentage_scale": 0.01,
+    "movement_scale_rva": "0x9D30B08",
+    "movement_scale": 6.0,
+    "count_cache_update_rvas": [
+      "0x1518A6E",
+      "0x1518A74",
+      "0x1518AA5",
+      "0x1518AAA"
+    ]
+  },
+  "derived_stats_scope": "Growth base values only; equipment, bodyguard type, order, battle modifiers and Unreal movement scaling excluded. Bow is a percentage, not a flat damage stat. AlgoLevel is present in the shipped table but not exposed as a direct AI stat.",
+  "count_cache_rule": "Associated playable officer IDs0..41: update MemCnt if it equals old rank MemberNum; preserve smaller selected counts; editor reduction must clamp selected counts above new maximum."
+}

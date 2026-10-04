@@ -1,0 +1,1089 @@
+"""Small Tkinter editor; decoding and validated writes live in separate modules."""
+from pathlib import Path
+import json
+import sys
+import tkinter as tk
+from tkinter import filedialog, messagebox, ttk
+from models import Change, fields
+from save_parser import read_save, safe_path
+import save_writer
+import bodyguard_editor as guard_editor
+import bodyguard_growth as growth
+import officer_weapon_editor as weapon_editor
+
+ROOT = Path(__file__).resolve().parent
+NAMES = json.loads((ROOT / 'officer_names.json').read_text(encoding='utf-8'))
+METADATA = json.loads((ROOT / 'game_metadata.json').read_text(encoding='utf-8'))
+ITEMS = {row['id']: row for row in METADATA['items']}
+ITEM_ENUMS = {row['enum']: row for row in METADATA['items']}
+WEAPONS = {row['id']: row for row in METADATA['weapons']}
+WEAPON_ENUMS = {row['enum'].split('::')[-1]: row for row in METADATA['weapons'] if row.get('enum')}
+CAPS = save_writer.CAPS
+ITEM_CAPS = getattr(save_writer, 'ITEM_CAPS', {})
+UNIQUE_WEAPONS = getattr(save_writer, 'UNIQUE_WEAPONS', {})
+LABELS = {'SPoint': 'Merit', 'MaxHealth': 'Life / HP', 'MaxMusou': 'Musou', 'Attack': 'Attack', 'Defence': 'Defense'}
+GUARD_ITEMS = guard_editor.GUARD_ITEMS
+GUARD_WEAPONS = guard_editor.GUARD_WEAPONS
+
+
+class Editor:
+    def __init__(self, root):
+        self.root = root
+        self.document = None
+        self.changes = {}
+        self.history = []
+        self.current_officer = self.current_item = self.current_bodyguard = 0
+        self.current_guard_item = 0
+        self.current_guard_weapon = next(iter(GUARD_WEAPONS))
+        self.guard_weapon_slot = None
+        self.loading_guard_form = False
+        self.loading_weapon_form = False
+        self.current_weapon_data_id = None
+        self.weapon_rows = {}
+        self.backup = None
+        self.buttons = []
+        root.title('Dynasty Warriors 3 Remastered Save Editor — v0.3 Preview')
+        root.geometry('1120x780')
+        root.minsize(1040, 730)
+        style = ttk.Style()
+        style.theme_use('vista' if 'vista' in style.theme_names() else 'clam')
+        style.configure('Treeview', rowheight=25)
+        outer = ttk.Frame(root, padding=15)
+        outer.pack(fill='both', expand=True)
+        bar = ttk.Frame(outer)
+        bar.pack(fill='x')
+        ttk.Button(bar, text='Open Save Copy', command=self.open).pack(side='left', padx=(0, 7))
+        for text, command in [('Backup Save', self.make_backup), ('Save As…', self.save_as), ('Save Changes', self.save_changes), ('Restore Backup…', self.restore)]:
+            button = ttk.Button(bar, text=text, command=command)
+            button.pack(side='left', padx=(0, 7))
+            if text != 'Restore Backup…': self.buttons.append(button)
+        self.filename = tk.StringVar(value='Open a copy of GameStatusData.sav to begin.')
+        self.backup_label = tk.StringVar(value='An untouched backup is created automatically when a copy opens.')
+        ttk.Label(outer, textvariable=self.filename, wraplength=990).pack(fill='x', pady=(12, 3))
+        ttk.Label(outer, textvariable=self.backup_label, wraplength=990).pack(fill='x', pady=(0, 10))
+        self.notebook = ttk.Notebook(outer)
+        self.notebook.pack(fill='both', expand=True)
+        self.tabs = {}
+        for name in ('Officers', 'Items', 'Weapons', 'Bodyguards', 'Unlocks'):
+            tab = ttk.Frame(self.notebook, padding=12)
+            self.notebook.add(tab, text=name)
+            self.tabs[name] = tab
+        self.build_officers()
+        self.build_items()
+        self.build_weapons()
+        self.build_bodyguards()
+        self.build_unlocks()
+        bottom = ttk.Frame(outer)
+        bottom.pack(fill='x', pady=(12, 0))
+        self.status = tk.StringVar(value='No save open.')
+        ttk.Label(bottom, textvariable=self.status, wraplength=560).pack(side='left')
+        for text, command in [('Review Changes', self.review), ('Discard Changes', self.discard), ('Undo', self.undo)]:
+            button = ttk.Button(bottom, text=text, command=command)
+            button.pack(side='right', padx=(7, 0))
+            self.buttons.append(button)
+        self.set_loaded(False)
+        root.protocol('WM_DELETE_WINDOW', self.close)
+
+    def set_loaded(self, loaded):
+        for button in self.buttons: button.configure(state='normal' if loaded else 'disabled')
+        self.max_items_button.configure(state='normal' if loaded and ITEM_CAPS else 'disabled')
+        self.guard_bonus_button.configure(state='normal' if loaded and self.guard_weapon_slot is not None else 'disabled')
+        if not loaded: self.clear_weapon_form()
+        else:
+            selected = self.weapons.selection()
+            row = self.weapon_rows.get(selected[0]) if selected else None
+            self.weapon_roll_button.configure(state='normal' if row and row['editable'] else 'disabled')
+            self.weapon_max_button.configure(state='normal' if row and row['editable'] else 'disabled')
+
+    def action(self, frame, text, command):
+        button = ttk.Button(frame, text=text, command=command)
+        button.pack(fill='x', pady=4)
+        self.buttons.append(button)
+        return button
+
+    def make_tree(self, frame, columns, title, widths):
+        tree = ttk.Treeview(frame, columns=tuple(name for name, _ in columns), selectmode='browse')
+        tree.heading('#0', text=title)
+        tree.column('#0', width=widths[0], minwidth=120)
+        for (name, title), width in zip(columns, widths[1:]):
+            tree.heading(name, text=title)
+            tree.column(name, width=width, minwidth=50, anchor='center')
+        scroll = ttk.Scrollbar(frame, orient='vertical', command=tree.yview)
+        tree.configure(yscrollcommand=scroll.set)
+        scroll.pack(side='right', fill='y')
+        tree.pack(fill='both', expand=True)
+        return tree
+
+    def add_search(self, frame, variable, callback):
+        bar = ttk.Frame(frame)
+        bar.pack(fill='x', pady=(0, 9))
+        ttk.Label(bar, text='Find:').pack(side='left', padx=(0, 7))
+        ttk.Entry(bar, textvariable=variable).pack(side='left', fill='x', expand=True)
+        variable.trace_add('write', lambda *_: callback())
+
+    def panels(self, tab):
+        left = ttk.Frame(tab)
+        left.pack(side='left', fill='both', expand=True)
+        right = ttk.Frame(tab, padding=(18, 0, 0, 0))
+        right.pack(side='right', fill='y')
+        return left, right
+
+    def build_officers(self):
+        left, right = self.panels(self.tabs['Officers'])
+        self.officer_filter = tk.StringVar()
+        self.add_search(left, self.officer_filter, self.refresh_officers)
+        self.officers = self.make_tree(left, [('merit', 'Merit'), ('hp', 'HP'), ('musou', 'Musou'), ('attack', 'Attack'), ('defense', 'Defense')], 'Officer', [155, 80, 65, 65, 65, 65])
+        self.officers.bind('<<TreeviewSelect>>', self.select_officer)
+        self.selected = tk.StringVar(value='Select an officer')
+        ttk.Label(right, textvariable=self.selected, font=('Segoe UI', 11, 'bold')).pack(anchor='w', pady=(0, 12))
+        self.inputs = {}
+        for field, label in LABELS.items():
+            cap = CAPS.get(field)
+            ttk.Label(right, text=f'{label} (max {cap:,})' if cap is not None else f'{label} (view only)').pack(anchor='w')
+            variable = tk.StringVar()
+            self.inputs[field] = variable
+            ttk.Entry(right, textvariable=variable, width=24, state='normal' if cap is not None else 'readonly').pack(anchor='w', pady=(3, 8))
+        for text, command in [('Apply Officer Changes', self.apply_officer), ('Max Selected Officer', self.max_selected), ('Max All Officers', self.max_all), ('99,999 Merit for All', self.merit_all)]: self.action(right, text, command)
+        ttk.Label(right, text='Apply your entries before selecting another officer.\n\nChanges stay in the editor until you save. Story completion is separate.', wraplength=200).pack(anchor='w', pady=10)
+
+    def build_items(self):
+        left, right = self.panels(self.tabs['Items'])
+        self.item_filter = tk.StringVar()
+        self.add_search(left, self.item_filter, self.refresh_items)
+        self.items = self.make_tree(left, [('kind', 'Type'), ('value', 'Value'), ('owned', 'Owned')], 'Item', [245, 90, 80, 70])
+        self.items.bind('<<TreeviewSelect>>', self.select_item)
+        self.item_selected = tk.StringVar(value='Select an item')
+        self.item_detail = tk.StringVar()
+        self.item_owned = tk.BooleanVar()
+        self.item_value = tk.StringVar()
+        ttk.Label(right, textvariable=self.item_selected, font=('Segoe UI', 11, 'bold'), wraplength=220).pack(anchor='w', pady=(0, 12))
+        ttk.Label(right, textvariable=self.item_detail, wraplength=220).pack(anchor='w', pady=(0, 12))
+        ttk.Checkbutton(right, text='Owned', variable=self.item_owned).pack(anchor='w', pady=6)
+        ttk.Label(right, text='Normal item value').pack(anchor='w', pady=(10, 3))
+        self.item_entry = ttk.Entry(right, textvariable=self.item_value, width=24, state='disabled')
+        self.item_entry.pack(anchor='w', pady=(0, 10))
+        self.action(right, 'Apply Item Changes', self.apply_item)
+        self.max_items_button = self.action(right, 'Max All Normal Items', self.max_items)
+        self.action(right, 'Unlock All Rare Items', lambda: self.unlock_items('rare'))
+        self.action(right, 'Unlock All Items', lambda: self.unlock_items())
+        ttk.Label(right, text='Only verified roll limits are editable. Unlock actions preserve existing values.', wraplength=220).pack(anchor='w', pady=12)
+
+    def build_weapons(self):
+        tab = self.tabs['Weapons']
+        ttk.Label(tab, text='Edit the normal bonus rolls of an owned weapon copy using verified values. This edits a fusion result without consuming materials. Base attack, elements, hit count and rare bonuses are preserved.', wraplength=950).pack(anchor='w', pady=(0, 9))
+        actions = ttk.Frame(tab); actions.pack(fill='x', pady=(0, 10))
+        for text, command in [('Unlock Selected Unique Weapon', self.unlock_selected_weapon), ('Unlock All Supported Unique Weapons', self.unlock_weapons)]:
+            button = ttk.Button(actions, text=text, command=command); button.pack(side='left', padx=(0, 8)); self.buttons.append(button)
+        button = ttk.Button(actions, text='Max All Owned Bonus Rolls', command=self.max_all_weapon_rolls)
+        button.pack(side='left', padx=(0, 8)); self.buttons.append(button)
+        ttk.Label(tab, text='Unique unlocks use stock properties. Ziluan’s absent unique slots are kept unchanged.', wraplength=900).pack(anchor='w', pady=(0, 8))
+        left, right = self.panels(tab)
+        self.weapon_filter = tk.StringVar()
+        self.add_search(left, self.weapon_filter, self.refresh_weapons)
+        self.weapons = self.make_tree(left, [('kind', 'Inventory'), ('data', 'Copy / Owned'), ('power', 'Base attack')], 'Weapon', [230, 105, 95, 75])
+        self.weapons.bind('<<TreeviewSelect>>', self.select_weapon)
+        self.weapon_selected = tk.StringVar(value='Select a weapon')
+        self.weapon_detail = tk.StringVar(value='Select a weapon to see its bonuses.')
+        ttk.Label(right, textvariable=self.weapon_selected, font=('Segoe UI', 11, 'bold'), wraplength=370).pack(anchor='w', pady=(0, 6))
+        ttk.Label(right, textvariable=self.weapon_detail, wraplength=370).pack(anchor='w', pady=(0, 8))
+        form = ttk.Frame(right); form.pack(fill='x')
+        ttk.Label(form, text='Bonus').grid(row=0, column=1, sticky='w', pady=(0, 4))
+        ttk.Label(form, text='Value').grid(row=0, column=2, sticky='w', pady=(0, 4))
+        self.weapon_bonus_names, self.weapon_bonus_values = [], []
+        self.weapon_bonus_boxes, self.weapon_bonus_value_boxes = [], []
+        self.weapon_bonus_choices = {'None':None}
+        self.weapon_bonus_choices.update({row['name']:index for index,row in ITEMS.items() if row['kind']=='normal'})
+        for index in range(9):
+            name, value = tk.StringVar(value='None'), tk.StringVar()
+            self.weapon_bonus_names.append(name); self.weapon_bonus_values.append(value)
+            ttk.Label(form, text=str(index+1)).grid(row=index+1, column=0, padx=(0, 7))
+            box = ttk.Combobox(form, textvariable=name, width=27, state='disabled', values=tuple(self.weapon_bonus_choices))
+            box.grid(row=index+1, column=1, sticky='w', padx=(0, 8), pady=3)
+            valuebox = ttk.Combobox(form, textvariable=value, width=7, state='disabled')
+            valuebox.grid(row=index+1, column=2, sticky='w', pady=3)
+            self.weapon_bonus_boxes.append(box); self.weapon_bonus_value_boxes.append(valuebox)
+            box.bind('<<ComboboxSelected>>', lambda _event, slot=index: self.change_weapon_bonus(slot))
+        self.weapon_roll_button = self.action(right, 'Apply Weapon Bonuses', self.apply_weapon_rolls)
+        self.weapon_max_button = self.action(right, 'Max Selected Existing Bonus Rolls', self.max_selected_weapon_rolls)
+        ttk.Label(right, text='Max raises existing normal bonuses only. Rare bonuses are read-only. Apply your entries before selecting another copy, then save to write them.', wraplength=370).pack(anchor='w', pady=7)
+
+    def build_bodyguards(self):
+        tab = self.tabs['Bodyguards']
+        ttk.Label(tab, text='Growth is shared by each team. Bodyguard items and weapons use their own inventory; equipment choices apply to the selected team.', wraplength=930).pack(fill='x', pady=(0, 10))
+        left = ttk.Frame(tab, width=225); left.pack(side='left', fill='y'); left.pack_propagate(False)
+        right = ttk.Frame(tab, padding=(15, 0, 0, 0)); right.pack(side='left', fill='both', expand=True)
+        self.bodyguards = self.make_tree(left, [('merit', 'Merit')], 'Team', [125, 85])
+        self.bodyguards.bind('<<TreeviewSelect>>', self.select_bodyguard)
+        self.bodyguard_selected = tk.StringVar(value='Select a bodyguard team')
+        self.bodyguard_merit = tk.StringVar()
+        self.bodyguard_limit = tk.StringVar(value='Merit (max 99,999)')
+        ttk.Label(right, textvariable=self.bodyguard_selected, font=('Segoe UI', 11, 'bold')).pack(anchor='w', pady=(0, 8))
+        self.guard_tabs = ttk.Notebook(right); self.guard_tabs.pack(fill='both', expand=True)
+        pages = {}
+        for name in ('Growth', 'Team Equipment', 'BG Items', 'BG Weapons'):
+            page = ttk.Frame(self.guard_tabs, padding=10); self.guard_tabs.add(page, text=name); pages[name] = page
+        page = pages['Growth']
+        form = ttk.Frame(page); form.pack(fill='x')
+        ttk.Label(form, text='Merit (0–99,999)').grid(row=0, column=0, sticky='w', pady=4)
+        ttk.Entry(form, textvariable=self.bodyguard_merit, width=14).grid(row=0, column=1, sticky='w', padx=12, pady=4)
+        self.guard_growth_inputs = {}
+        for rownum, index in enumerate(growth.ALLOCATED_SLOTS, 1):
+            variable = tk.StringVar(); self.guard_growth_inputs[index] = variable
+            ttk.Label(form, text=f'{growth.LEVEL_NAMES[index]} growth (0–{growth.LEVEL_CAPS[index]})').grid(row=rownum, column=0, sticky='w', pady=4)
+            ttk.Spinbox(form, textvariable=variable, from_=0, to=growth.LEVEL_CAPS[index], width=12).grid(row=rownum, column=1, sticky='w', padx=12, pady=4)
+            variable.trace_add('write', lambda *_: self.preview_growth())
+        self.bodyguard_merit.trace_add('write', lambda *_: self.preview_growth())
+        self.guard_budget = tk.StringVar(); self.guard_automatic = tk.StringVar(); self.guard_stats = tk.StringVar()
+        ttk.Label(page, textvariable=self.guard_budget, font=('Segoe UI', 10, 'bold'), wraplength=640).pack(anchor='w', pady=(10, 4))
+        ttk.Label(page, textvariable=self.guard_automatic, wraplength=640).pack(anchor='w', pady=4)
+        ttk.Label(page, textvariable=self.guard_stats, wraplength=640).pack(anchor='w', pady=4)
+        self.action(page, 'Apply Team Growth', self.apply_bodyguard)
+        presetbar = ttk.Frame(page); presetbar.pack(fill='x', pady=(5, 0))
+        for mode, label in growth.PRESET_NAMES.items():
+            button = ttk.Button(presetbar, text=f'Max: {label}', command=lambda mode=mode: self.max_bodyguard(mode)); button.pack(side='left', padx=(0, 5)); self.buttons.append(button)
+        self.action(page, 'Max All Teams — Balanced Growth', self.max_bodyguards)
+        ttk.Label(page, text='Life, Attack, Defense and Bow / Moveset share at most 25 points. Count and AI advance automatically with Merit. The preview shows growth base stats before equipment and battle modifiers.', wraplength=640).pack(anchor='w', pady=9)
+        self.build_guard_equipment(pages['Team Equipment'])
+        self.build_guard_items(pages['BG Items'])
+        self.build_guard_weapons(pages['BG Weapons'])
+
+    def build_guard_equipment(self, page):
+        ttk.Label(page, text='Choose one owned bodyguard item and a weapon for each family. Only equipment already owned or applied in this editor is available.', wraplength=640).pack(anchor='w', pady=(0, 10))
+        form = ttk.Frame(page); form.pack(fill='x')
+        self.guard_equip_item = tk.StringVar(); self.guard_equip_weapons = {}
+        self.guard_equip_item_choices = {}; self.guard_equip_weapon_choices = {}
+        ttk.Label(form, text='Bodyguard item').grid(row=0, column=0, sticky='w', pady=6)
+        self.guard_equip_item_box = ttk.Combobox(form, textvariable=self.guard_equip_item, state='readonly', width=44)
+        self.guard_equip_item_box.grid(row=0, column=1, sticky='ew', padx=10, pady=6)
+        self.guard_equip_weapon_boxes = {}
+        for index, family in enumerate(guard_editor.FAMILY_NAMES):
+            variable = tk.StringVar(); self.guard_equip_weapons[index] = variable
+            ttk.Label(form, text=family).grid(row=index+1, column=0, sticky='w', pady=6)
+            box = ttk.Combobox(form, textvariable=variable, state='readonly', width=44); box.grid(row=index+1, column=1, sticky='ew', padx=10, pady=6)
+            self.guard_equip_weapon_boxes[index] = box
+        form.columnconfigure(1, weight=1)
+        self.action(page, 'Apply Team Equipment', self.apply_guard_equipment)
+        self.action(page, 'Equip Best Owned Weapons for This Team', self.equip_best_guard_weapons)
+        ttk.Label(page, text='Equip Best selects the highest available weapon tier and bonuses. Item selection is preserved. Bodyguard weapon family selection in battle remains an officer setting.', wraplength=640).pack(anchor='w', pady=12)
+
+    def build_guard_items(self, page):
+        left, right = self.panels(page)
+        self.guard_items = self.make_tree(left, [('value','Value'),('owned','Owned')], 'Bodyguard item', [185, 65, 60])
+        self.guard_items.bind('<<TreeviewSelect>>', self.select_guard_item)
+        self.guard_item_selected = tk.StringVar(value='Select an item'); self.guard_item_detail = tk.StringVar()
+        self.guard_item_owned = tk.BooleanVar(); self.guard_item_value = tk.StringVar()
+        ttk.Label(right, textvariable=self.guard_item_selected, font=('Segoe UI',10,'bold'), wraplength=205).pack(anchor='w', pady=(0,8))
+        ttk.Label(right, textvariable=self.guard_item_detail, wraplength=205).pack(anchor='w', pady=(0,8))
+        ttk.Checkbutton(right, text='Owned', variable=self.guard_item_owned).pack(anchor='w', pady=5)
+        self.guard_item_entry = ttk.Entry(right, textvariable=self.guard_item_value, width=20); self.guard_item_entry.pack(anchor='w', pady=8)
+        self.action(right, 'Apply BG Item Changes', self.apply_guard_item)
+        self.action(right, 'Unlock All BG Items', self.unlock_guard_items)
+        self.action(right, 'Max All BG Items', self.max_guard_items)
+        ttk.Label(right, text='Bodyguard item limits differ from officer items. An equipped item must remain owned.', wraplength=205).pack(anchor='w', pady=10)
+
+    def build_guard_weapons(self, page):
+        ttk.Label(page,text='Max applies Life, Defense and Attack bonuses (Bow Attack for bows and crossbows) to all owned copies of the selected weapon. Equipped choices stay as they are.',wraplength=640).pack(fill='x',pady=(0,7))
+        actions = ttk.Frame(page); actions.pack(fill='x', pady=(0,8))
+        for label, command in [('Unlock Selected', self.unlock_guard_weapon), ('Max Selected Copies', self.max_guard_weapon), ('Unlock All', self.unlock_guard_weapons), ('Max All Bonuses', self.max_guard_weapons)]:
+            button = ttk.Button(actions, text=label, command=command); button.pack(side='left', padx=(0,5)); self.buttons.append(button)
+        self.guard_weapon_detail = tk.StringVar(value='Select a weapon or an owned copy to see its bonuses.')
+        ttk.Label(page, textvariable=self.guard_weapon_detail, wraplength=640).pack(side='bottom', fill='x', pady=(8,0))
+        bonuspanel = ttk.LabelFrame(page,text='Bonuses on the selected owned copy',padding=7); bonuspanel.pack(side='bottom',fill='x',pady=(8,0))
+        self.guard_bonus_items = []; self.guard_bonus_values = []; self.guard_bonus_boxes = []; self.guard_bonus_value_boxes = []
+        self.guard_bonus_choices = {'None':None}
+        for index in range(3):
+            itemvar = tk.StringVar(value='None'); valuevar = tk.StringVar()
+            box = ttk.Combobox(bonuspanel,textvariable=itemvar,state='readonly',width=31)
+            box.grid(row=index,column=0,sticky='ew',pady=2,padx=(0,8))
+            valuebox = ttk.Combobox(bonuspanel,textvariable=valuevar,state='readonly',width=10)
+            valuebox.grid(row=index,column=1,sticky='w',pady=2)
+            itemvar.trace_add('write',lambda *_, index=index: self.guard_bonus_item_changed(index))
+            self.guard_bonus_items.append(itemvar); self.guard_bonus_values.append(valuevar)
+            self.guard_bonus_boxes.append(box); self.guard_bonus_value_boxes.append(valuebox)
+        self.guard_bonus_button = ttk.Button(bonuspanel,text='Apply Copy Bonuses',command=self.apply_guard_bonuses,state='disabled')
+        self.guard_bonus_button.grid(row=0,column=2,rowspan=3,padx=(10,0)); self.buttons.append(self.guard_bonus_button)
+        ttk.Label(bonuspanel,text='Expand a weapon and select an owned copy. Only bonuses and values possible for its tier are offered.',wraplength=600).grid(row=3,column=0,columnspan=3,sticky='w',pady=(4,0))
+        self.guard_weapons = self.make_tree(page, [('tier','Tier'),('owned','Owned copies'),('power','Base attack')], 'Bodyguard weapon', [300,55,85,85])
+        self.guard_weapons.bind('<<TreeviewSelect>>', self.select_guard_weapon)
+
+    def build_unlocks(self):
+        tab = self.tabs['Unlocks']
+        ttk.Label(tab, text='Content availability is separate from permanent stats and story completion.').pack(anchor='w', pady=12)
+        self.action(tab, 'Unlock All Playable Officers', lambda: self.unlock('CanUseCharaArray', 42))
+        self.action(tab, 'Unlock All 108 Playable Stages', lambda: self.unlock('CanUseScenarioArray', 108))
+        ttk.Label(tab, text='Changes stay in the editor until you save. Musou Mode completion and story progress are preserved.', wraplength=850).pack(anchor='w', pady=15)
+        ttk.Separator(tab).pack(fill='x', pady=8)
+        self.action(tab, 'Remove The Grind', self.remove_grind)
+        ttk.Label(tab, text='Max permanent officer stats and Merit, verified item rolls, rare items and supported unique weapons. Bodyguards receive max Merit, balanced legal growth, all BG items and weapons with legal bonuses. Equipped choices and story completion are preserved.', wraplength=850).pack(anchor='w', pady=8)
+        self.action(tab, 'Unlock Everything Supported', self.unlock_everything)
+        ttk.Label(tab, text='Includes Remove The Grind plus playable officer and stage availability. Story completion and unsupported content are preserved.', wraplength=850).pack(anchor='w', pady=8)
+
+    def require_save(self):
+        if self.document is None:
+            messagebox.showinfo('Open a Save', 'Open a save copy first.')
+            return False
+        return True
+
+    def dirty_ok(self):
+        return not self.changes or messagebox.askyesno('Unsaved Changes', 'Discard the pending changes? They have not been written to a file.')
+
+    def open(self):
+        if not self.dirty_ok(): return
+        path = filedialog.askopenfilename(title='Open a Save Copy', filetypes=[('Game save', '*.sav')])
+        if not path: return
+        state_names=('document','backup','changes','history','current_officer','current_item',
+                     'current_bodyguard','current_guard_item','current_guard_weapon','guard_weapon_slot',
+                     'current_weapon_data_id','weapon_rows')
+        previous={name:getattr(self,name) for name in state_names}
+        previous_status=self.status.get()
+        try:
+            document = read_save(Path(path))
+            # Prove the display can interpret weapon rows before replacing
+            # the current document and its pending edits.
+            list(weapon_editor.states(document))
+            backup = save_writer.backup_save(document)
+            self.document, self.backup = document, backup
+            self.changes, self.history = {}, []
+            self.current_officer = self.current_item = self.current_bodyguard = 0
+            self.current_guard_item = 0; self.current_guard_weapon = next(iter(GUARD_WEAPONS)); self.guard_weapon_slot = None
+            self.update_paths()
+            self.set_loaded(True)
+            self.refresh()
+            self.status.set('Save copy opened. An untouched backup is ready.')
+        except Exception as error:
+            for name,value in previous.items():setattr(self,name,value)
+            if self.document is not None:
+                self.update_paths()
+            else:
+                self.filename.set('No save open.')
+                self.backup_label.set('No backup selected.')
+            self.set_loaded(self.document is not None)
+            try:self.refresh()
+            except Exception:self.set_loaded(False)
+            self.status.set(previous_status)
+            messagebox.showerror('Cannot Open Save', str(error))
+
+    def update_paths(self):
+        self.filename.set(f'Opened copy: {self.document.source}')
+        self.backup_label.set(f'Backup of originally opened copy: {self.backup}' if self.backup else 'No backup selected.')
+
+    def original_value(self, change):
+        if change.category == 'unlock': return self.document.properties[change.field]['value']['values'][change.index]
+        if change.category == 'bodyguard': return guard_editor.team_state(self.document, change.index, [])[change.field]
+        if change.category == 'guard_item':
+            row = guard_editor.item_state(self.document, [])[change.index]
+            return row['owned'] if change.field == 'Owned' else row['value']
+        if change.category == 'guard_weapon':
+            if change.field == 'MaxBonuses': return False
+            return any(row['weapon_id'] == change.index for row in guard_editor.weapon_state(self.document, []))
+        if change.category == 'guard_weapon_slot': return guard_editor.weapon_state(self.document, [])[change.index]['skills']
+        if change.category == 'weapon_roll': return weapon_editor.original_skills(self.document,change.index)
+        if change.category == 'unique_weapon':
+            index = UNIQUE_WEAPONS[change.index]['unique_save_index']
+            return index < len(self.document.records('UniqueWeaponDataArray')) and fields(self.document.records('UniqueWeaponDataArray')[index])['WeaponID']['value'] != 'EWeaponID::NUM'
+        array = {'officer': 'PCSaveDataArray', 'item': 'EquipItemDataArray', 'bodyguard': 'GuardDataArray'}[change.category]
+        record = fields(self.document.records(array)[change.index])
+        if change.category == 'item' and change.field == 'Owned': return record['EquipItemID']['value'] != 'EEquipItemID::NUM'
+        return record[change.field]['value']
+
+    def value(self, category, index, field):
+        if category == 'bodyguard': return guard_editor.team_state(self.document, index, list(self.changes.values()))[field]
+        change = self.changes.get((category, index, field))
+        result = change.value if change else self.original_value(Change(category, index, field, 0))
+        if category == 'item' and field == 'Value':
+            if not self.value('item', index, 'Owned'): return 0
+            if ITEMS[index]['kind'] == 'normal' and result == 0: return 1
+        return result
+
+    def field_value(self, index, field): return self.value('officer', index, field)
+
+    def stage_many(self, changes):
+        before = self.changes.copy()
+        changes = list(changes)
+        maximum_ids = {change.index for change in changes if change.category=='guard_weapon' and change.field=='MaxBonuses' and change.value is True}
+        if maximum_ids:
+            for row in guard_editor.weapon_state(self.document,list(self.changes.values())):
+                if row['weapon_id'] in maximum_ids: self.changes.pop(('guard_weapon_slot',row['slot'],'Skills'),None)
+        for change in changes:
+            key = (change.category, change.index, change.field)
+            if change.category in ('item','guard_item') and change.field == 'Owned' and change.value is False:
+                self.changes.pop((change.category, change.index, 'Value'), None)
+            if change.value == self.original_value(change): self.changes.pop(key, None)
+            else: self.changes[key] = change
+        if any(change.category in guard_editor.CATEGORIES for change in changes):
+            try: guard_editor.plan_bodyguard_changes(self.document, list(self.changes.values()), lambda *_: None)
+            except ValueError as error:
+                self.changes = before
+                messagebox.showerror('Cannot Apply Bodyguard Changes',str(error))
+                return
+        if any(change.category in weapon_editor.CATEGORIES for change in self.changes.values()):
+            try: weapon_editor.plan_weapon_roll_changes(self.document,list(self.changes.values()),lambda *_:None)
+            except ValueError as error:
+                self.changes = before
+                messagebox.showerror('Cannot Apply Weapon Bonuses',str(error))
+                return
+        if self.changes != before: self.history.append(before)
+        self.refresh()
+
+    def restore_selection(self, tree, index):
+        children = tree.get_children()
+        key = str(index) if str(index) in children else (children[0] if children else None)
+        if key is not None:
+            tree.selection_set(key)
+            tree.focus(key)
+            tree.see(key)
+        return key
+
+    def refresh_officers(self):
+        if self.document is None: return
+        self.officers.delete(*self.officers.get_children())
+        query = self.officer_filter.get().strip().casefold()
+        for index in range(42):
+            name = NAMES.get(str(index), f'Officer {index}')
+            if not query or query in name.casefold(): self.officers.insert('', 'end', iid=str(index), text=name, values=[self.field_value(index, field) for field in LABELS])
+        if self.restore_selection(self.officers, self.current_officer) is None:
+            self.selected.set('No matching officers')
+            for variable in self.inputs.values(): variable.set('')
+        else: self.select_officer()
+
+    def item_cap(self, index): return ITEM_CAPS.get(index, ITEM_CAPS.get(str(index)))
+
+    def refresh_items(self):
+        if self.document is None: return
+        self.items.delete(*self.items.get_children())
+        query = self.item_filter.get().strip().casefold()
+        for index, row in ITEMS.items():
+            if query and query not in f'{row["name"]} {row["kind"]} {row.get("effect", "")}'.casefold(): continue
+            owned = self.value('item', index, 'Owned')
+            value = self.value('item', index, 'Value')
+            self.items.insert('', 'end', iid=str(index), text=row['name'], values=(row['kind'].title(), value if row['kind'] == 'normal' else '—', 'Yes' if owned else 'No'))
+        if self.restore_selection(self.items, self.current_item) is None:
+            self.item_selected.set('No matching items'); self.item_detail.set(''); self.item_value.set(''); self.item_owned.set(False)
+            self.item_entry.configure(state='disabled')
+        else: self.select_item()
+
+    def refresh_weapons(self):
+        if self.document is None: return
+        selected = self.weapons.selection()
+        self.weapons.delete(*self.weapons.get_children())
+        changes = list(self.changes.values())
+        states = list(weapon_editor.states(self.document, changes))
+        by_data = {row['data_id']:row for row in states}
+        self.weapon_rows = {}
+        query = self.weapon_filter.get().strip().casefold()
+        for row in states:
+            if row['array'] != 'WeaponDataArray': continue
+            metadata = row['metadata']; name = metadata.get('name') or metadata.get('weapon_name') or f'Weapon {row["weapon_id"]}'
+            if query and query not in f'{name} regular {row["data_id"]}'.casefold(): continue
+            key = f'WeaponDataArray:{row["index"]}'
+            self.weapon_rows[key] = row
+            self.weapons.insert('', 'end', iid=key, text=name, values=('Regular',f'Copy {row["index"]+1}',metadata.get('base_power','—')))
+        for weapon_id, weapon in UNIQUE_WEAPONS.items():
+            if weapon['unique_save_index'] >= len(self.document.records('UniqueWeaponDataArray')): continue
+            owned = self.value('unique_weapon', weapon_id, 'Owned')
+            name = f'{weapon["weapon_name"]} — {weapon["officer_name"]}'
+            if query and query not in f'{name} unique {weapon["tier"]}th'.casefold(): continue
+            key = f'unique:{weapon_id}'
+            row = by_data.get(10000+weapon['unique_save_index'])
+            if row: self.weapon_rows[key] = row
+            self.weapons.insert('', 'end', iid=key, text=name, values=(f'{weapon["tier"]}th weapon','Yes' if owned else 'No',weapon['base_power']))
+        if selected and self.weapons.exists(selected[0]):
+            self.weapons.selection_set(selected[0]); self.weapons.focus(selected[0]); self.weapons.see(selected[0])
+            self.select_weapon()
+        else:
+            children = self.weapons.get_children()
+            if children:
+                self.weapons.selection_set(children[0]); self.weapons.focus(children[0]); self.select_weapon()
+            else:
+                self.clear_weapon_form(); self.weapon_selected.set('No matching weapons')
+
+    def describe_skill(self, item, value):
+        if item['kind'] == 'normal': return f'{item.get("effect") or item["name"]} +{value}'
+        return item['name']
+
+    def select_weapon(self, event=None):
+        selected = self.weapons.selection()
+        if not selected or self.document is None: return
+        source, index = selected[0].split(':'); index = int(index)
+        row = self.weapon_rows.get(selected[0])
+        if row is None and source == 'unique':
+            metadata = UNIQUE_WEAPONS[index]
+            self.clear_weapon_form()
+            self.weapon_selected.set(metadata['weapon_name'])
+            bonuses = [self.describe_skill(ITEMS[s['item_id']],s['value']) for s in metadata['skill_slots'] if s['item_id'] in ITEMS]
+            self.weapon_detail.set(f'Base attack {metadata["base_power"]}. Not owned.\nStock bonuses on acquisition: {", ".join(bonuses) or "None"}')
+            return
+        if row is None: self.clear_weapon_form(); return
+        self.current_weapon_data_id = row['data_id']
+        metadata = row['metadata']
+        name = metadata.get('name') or metadata.get('weapon_name') or self.weapons.item(selected[0],'text')
+        self.weapon_selected.set(name)
+        flags = self.weapon_attribute_text(row['attr'])
+        reason = f'{row.get("blue_minimum",0)}–{row["blue_limit"]} normal bonuses allowed.' if row['editable'] else row.get('reason','This copy is view-only.')
+        self.weapon_detail.set(f'Base attack {metadata.get("base_power","unknown")} • Copy ID {row["data_id"]}\n{flags}\n{reason}')
+        self.loading_weapon_form = True
+        try:
+            for slot, skill in enumerate(row['skills']):
+                item = ITEMS.get(skill['id'])
+                label = item['name'] if item else ('None' if skill['id'] is None else f'Unknown bonus {skill["id"]}')
+                self.weapon_bonus_names[slot].set(label)
+                self.weapon_bonus_values[slot].set(str(skill['value']) if skill['id'] is not None else '')
+                rare = skill['id'] is not None and (item is None or item['kind']!='normal')
+                self.weapon_bonus_boxes[slot].configure(values=(label,) if rare else tuple(self.weapon_bonus_choices),state='readonly' if row['editable'] and not rare else 'disabled')
+                self.change_weapon_bonus(slot)
+        finally: self.loading_weapon_form = False
+        self.weapon_roll_button.configure(state='normal' if row['editable'] else 'disabled')
+        self.weapon_max_button.configure(state='normal' if row['editable'] else 'disabled')
+
+    def clear_weapon_form(self):
+        self.current_weapon_data_id = None
+        self.weapon_selected.set('Select a weapon')
+        self.weapon_detail.set('Select an owned copy to edit its normal bonus rolls.')
+        for name,value,box,valuebox in zip(self.weapon_bonus_names,self.weapon_bonus_values,self.weapon_bonus_boxes,self.weapon_bonus_value_boxes):
+            name.set('None'); value.set(''); box.configure(state='disabled'); valuebox.configure(state='disabled',values=())
+        self.weapon_roll_button.configure(state='disabled'); self.weapon_max_button.configure(state='disabled')
+
+    def weapon_attribute_text(self, attr):
+        labels = ['6-hit flag'] if attr & 2 else ['5-hit flag'] if attr & 1 else []
+        labels.extend(name for bit,name in ((4,'Fire'),(8,'Lightning'),(16,'Steel'),(32,'Wind')) if attr & bit)
+        return 'Preserved properties: '+(', '.join(labels) if labels else 'no hit or element flags')
+
+    def officer_bonus_text(self, skills):
+        return ', '.join(self.describe_skill(ITEMS[skill['id']],skill['value']) if skill['id'] in ITEMS else f'Bonus {skill["id"]} +{skill["value"]}' for skill in skills if skill['id'] is not None) or 'No bonuses'
+
+    def change_weapon_bonus(self, slot):
+        if self.current_weapon_data_id is None: return
+        row = weapon_editor.state(self.document,self.current_weapon_data_id,list(self.changes.values()))
+        original = row['skills'][slot]
+        item = ITEMS.get(original['id'])
+        if original['id'] is not None and (item is None or item['kind']!='normal'):
+            self.weapon_bonus_value_boxes[slot].configure(values=(original['value'],),state='disabled')
+            return
+        item_id = self.weapon_bonus_choices.get(self.weapon_bonus_names[slot].get())
+        values = sorted(weapon_editor.allowed_values(row,item_id)) if item_id is not None else []
+        enabled = row['editable'] and bool(values)
+        self.weapon_bonus_value_boxes[slot].configure(values=tuple(values),state='readonly' if enabled else 'disabled')
+        if item_id is None: self.weapon_bonus_values[slot].set('')
+        elif not self.loading_weapon_form and self.weapon_bonus_values[slot].get() not in {str(value) for value in values}:
+            self.weapon_bonus_values[slot].set(str(values[-1]) if values else '')
+
+    def apply_weapon_rolls(self):
+        if not self.require_save() or self.current_weapon_data_id is None: return
+        try:
+            row = weapon_editor.state(self.document,self.current_weapon_data_id,list(self.changes.values()))
+            if not row['editable']: raise ValueError(row.get('reason','This copy cannot be edited safely.'))
+            skills = []
+            for slot, original in enumerate(row['skills']):
+                item = ITEMS.get(original['id'])
+                if original['id'] is not None and (item is None or item['kind']!='normal'):
+                    skills.append(original.copy()); continue
+                label = self.weapon_bonus_names[slot].get()
+                if label not in self.weapon_bonus_choices: raise ValueError(f'Choose a supported bonus in slot {slot+1}.')
+                item_id = self.weapon_bonus_choices[label]
+                value = int(self.weapon_bonus_values[slot].get()) if item_id is not None else 0
+                if item_id is not None and value not in weapon_editor.allowed_values(row,item_id): raise ValueError(f'Slot {slot+1} has a value unavailable to this weapon.')
+                skills.append({'id':item_id,'value':value})
+            normal = [skill['id'] for skill in skills if skill['id'] in ITEMS and ITEMS[skill['id']]['kind']=='normal']
+            if len(normal)>row['blue_limit']: raise ValueError(f'This weapon supports at most {row["blue_limit"]} normal bonuses.')
+            if len(normal)!=len(set(normal)): raise ValueError('Choose each normal bonus at most once.')
+            skills = weapon_editor.validate_skills(row,skills)
+            self.stage_many([Change('weapon_roll',self.current_weapon_data_id,'Skills',skills)])
+        except (ValueError,TypeError) as error: messagebox.showerror('Cannot Apply Weapon Bonuses',str(error))
+
+    def max_selected_weapon_rolls(self):
+        if not self.require_save() or self.current_weapon_data_id is None: return
+        try:
+            skills = weapon_editor.max_existing_skills(self.document,self.current_weapon_data_id,list(self.changes.values()))
+            self.stage_many([Change('weapon_roll',self.current_weapon_data_id,'Skills',skills)])
+        except (ValueError,TypeError) as error: messagebox.showerror('Cannot Max Weapon Bonuses',str(error))
+
+    def max_all_weapon_rolls(self):
+        if not self.require_save(): return
+        try:
+            changes = list(self.changes.values())
+            rows = list(weapon_editor.states(self.document,changes))
+            maximum = [Change('weapon_roll',row['data_id'],'Skills',weapon_editor.max_existing_skills(self.document,row['data_id'],changes)) for row in rows if row['editable']]
+            self.stage_many(maximum)
+            skipped = sum(not row['editable'] for row in rows)
+            self.status.set(f'Maximum normal rolls applied to {len(maximum)} owned copies. {skipped} view-only copies preserved. Save to write the changes.')
+        except (ValueError,TypeError) as error: messagebox.showerror('Cannot Max Weapon Bonuses',str(error))
+
+    def refresh_bodyguards(self):
+        self.bodyguards.delete(*self.bodyguards.get_children())
+        for index, record in enumerate(self.document.records('GuardDataArray')):
+            row = fields(record)
+            names = row.get('UnitNameLang', {}).get('value', {}).get('values', [])
+            name = next((name for name in names if isinstance(name, str) and name.strip()), f'Team {index + 1}')
+            self.bodyguards.insert('', 'end', iid=str(index), text=name, values=(self.value('bodyguard', index, 'SPoint'),))
+        if self.restore_selection(self.bodyguards, self.current_bodyguard) is not None: self.select_bodyguard()
+        self.refresh_guard_items(); self.refresh_guard_weapons()
+
+    def refresh_guard_items(self):
+        self.guard_items.delete(*self.guard_items.get_children())
+        for index, state in guard_editor.item_state(self.document, list(self.changes.values())).items():
+            metadata = GUARD_ITEMS[index]
+            self.guard_items.insert('', 'end', iid=str(index), text=metadata['name'], values=(state['value'] if metadata['kind']=='normal' else '—', 'Yes' if state['owned'] else 'No'))
+        if self.restore_selection(self.guard_items, self.current_guard_item) is not None: self.select_guard_item()
+
+    def refresh_guard_weapons(self):
+        selected = self.guard_weapons.selection()
+        self.guard_weapons.delete(*self.guard_weapons.get_children())
+        rows = guard_editor.weapon_state(self.document, list(self.changes.values()))
+        for weapon_id, metadata in GUARD_WEAPONS.items():
+            owned = [row for row in rows if row['weapon_id']==weapon_id]
+            parent = f'weapon:{weapon_id}'
+            self.guard_weapons.insert('', 'end', iid=parent, text=metadata['name'], values=(metadata['tier'],len(owned),metadata['base_power']))
+            for row in owned:
+                label = f'Owned copy {row["slot"]+1}'
+                self.guard_weapons.insert(parent, 'end', iid=f'slot:{row["slot"]}', text=label, values=(metadata['tier'],'Yes',metadata['base_power']))
+        key = selected[0] if selected and self.guard_weapons.exists(selected[0]) else f'weapon:{self.current_guard_weapon}'
+        if self.guard_weapons.exists(key):
+            self.guard_weapons.selection_set(key); self.guard_weapons.focus(key)
+            parent = self.guard_weapons.parent(key)
+            if parent: self.guard_weapons.item(parent, open=True)
+            self.select_guard_weapon()
+
+    def refresh_guard_equipment(self):
+        changes = list(self.changes.values())
+        state = guard_editor.team_state(self.document, self.current_bodyguard, changes)
+        item_choices = {'None':None}
+        for index, item in guard_editor.item_state(self.document, changes).items():
+            if item['owned']:
+                metadata = GUARD_ITEMS[index]
+                label = metadata['name'] + (f' +{item["value"]}' if metadata['kind']=='normal' else '')
+                item_choices[label] = index
+        self.guard_equip_item_choices = item_choices
+        self.guard_equip_item_box.configure(values=tuple(item_choices))
+        self.guard_equip_item.set(next((label for label,index in item_choices.items() if index==state['MemberItem']), 'None'))
+        rows = guard_editor.weapon_state(self.document, changes)
+        for family_index in range(5):
+            choices = {'None':-1}
+            for row in rows:
+                if row['weapon_id'] is None: continue
+                metadata = GUARD_WEAPONS[row['weapon_id']]
+                if metadata['family_index']==family_index:
+                    choices[f'{metadata["name"]} — copy {row["slot"]+1}'] = row['data_id']
+            self.guard_equip_weapon_choices[family_index] = choices
+            self.guard_equip_weapon_boxes[family_index].configure(values=tuple(choices))
+            current = state['MemberWeapon'][family_index]
+            self.guard_equip_weapons[family_index].set(next((label for label,index in choices.items() if index==current), 'None'))
+
+    def refresh(self):
+        if self.document is None: return
+        self.refresh_officers(); self.refresh_items(); self.refresh_weapons(); self.refresh_bodyguards()
+        self.status.set(f'{len(self.changes)} pending changes. Applied in the editor; use Save As or Save Changes to write them.')
+
+    def select_officer(self, event=None):
+        selected = self.officers.selection()
+        if not selected or self.document is None: return
+        self.current_officer = int(selected[0]); self.selected.set(NAMES.get(selected[0], selected[0]))
+        for field, variable in self.inputs.items(): variable.set(str(self.field_value(self.current_officer, field)))
+
+    def select_item(self, event=None):
+        selected = self.items.selection()
+        if not selected or self.document is None: return
+        self.current_item = int(selected[0]); row = ITEMS[self.current_item]; cap = self.item_cap(self.current_item)
+        self.item_selected.set(row['name'])
+        self.item_detail.set(f'{row.get("effect", "")}\nMaximum verified value: {cap}' if cap is not None else ('Rare item — ownership only.' if row['kind'] == 'rare' else 'Roll limit is still being verified.'))
+        self.item_owned.set(self.value('item', self.current_item, 'Owned')); self.item_value.set(str(self.value('item', self.current_item, 'Value')))
+        self.item_entry.configure(state='normal' if cap is not None and row['kind'] == 'normal' else 'disabled')
+
+    def select_bodyguard(self, event=None):
+        selected = self.bodyguards.selection()
+        if not selected or self.document is None: return
+        self.current_bodyguard = int(selected[0]); self.bodyguard_selected.set(self.bodyguards.item(selected[0], 'text'))
+        state = guard_editor.team_state(self.document, self.current_bodyguard, list(self.changes.values()))
+        self.loading_guard_form = True
+        try:
+            self.bodyguard_limit.set('Merit (0–99,999)')
+            self.bodyguard_merit.set(str(state['SPoint']))
+            for index, variable in self.guard_growth_inputs.items(): variable.set(str(state['BGLevels'][index]))
+        finally: self.loading_guard_form = False
+        self.preview_growth(); self.refresh_guard_equipment()
+
+    def growth_form(self):
+        merit = int(self.bodyguard_merit.get())
+        caps = growth.earned_caps(merit)
+        levels = [0,0,0,caps[3],0,caps[5]]
+        for index, variable in self.guard_growth_inputs.items(): levels[index] = int(variable.get())
+        growth.validate_growth(merit, levels)
+        return merit, levels
+
+    def preview_growth(self):
+        if self.document is None or self.loading_guard_form: return
+        try:
+            merit, levels = self.growth_form(); stats = growth.derive_stats(levels)
+            self.guard_budget.set(f'Growth points: {growth.spent(levels)} / {growth.budget(merit)} used')
+            self.guard_automatic.set(f'Automatic growth: Count {levels[3]} (team capacity {stats["member_count"]})   •   AI {levels[5]}')
+            self.guard_stats.set(f'Growth base: Life {stats["base_hp"]}   Musou {stats["base_musou"]}   Attack {stats["base_attack"]}   Defense {stats["base_defense"]}\nMove {stats["move"]}   Jump {stats["jump"]}   Bow strength {stats["bow_percent"]}%   Moveset {stats["motion_level"]}')
+        except (ValueError, TypeError) as error:
+            self.guard_budget.set(f'Check growth: {error}')
+            self.guard_automatic.set('Count and AI follow the entered Merit.'); self.guard_stats.set('Enter a legal allocation to preview base stats.')
+
+    def select_guard_item(self, event=None):
+        selected = self.guard_items.selection()
+        if not selected or self.document is None: return
+        self.current_guard_item = int(selected[0]); metadata = GUARD_ITEMS[self.current_guard_item]
+        state = guard_editor.item_state(self.document, list(self.changes.values()))[self.current_guard_item]
+        self.guard_item_selected.set(metadata['name'])
+        self.guard_item_detail.set(f'{metadata.get("effect", "").strip()}\nMaximum value: {metadata["max_value"]}' if metadata['kind']=='normal' else 'Rare bodyguard item — ownership only.')
+        self.guard_item_owned.set(state['owned']); self.guard_item_value.set(str(state['value'] or 1))
+        self.guard_item_entry.configure(state='normal' if metadata['kind']=='normal' else 'disabled')
+
+    def guard_bonus_text(self, skills):
+        labels = []
+        for skill in skills:
+            if skill['id'] is None: continue
+            metadata = GUARD_ITEMS.get(skill['id'])
+            if metadata: labels.append(f'{metadata.get("effect",metadata["name"]).strip()} +{skill["value"]}' if metadata['kind']=='normal' else metadata['name'])
+        return ', '.join(labels) or 'No bonuses'
+
+    def select_guard_weapon(self, event=None):
+        selected = self.guard_weapons.selection()
+        if not selected or self.document is None: return
+        kind, index = selected[0].split(':'); index = int(index)
+        rows = guard_editor.weapon_state(self.document, list(self.changes.values()))
+        row = rows[index] if kind=='slot' else next((row for row in rows if row['weapon_id']==index),None)
+        self.current_guard_weapon = row['weapon_id'] if kind=='slot' else index
+        self.guard_weapon_slot = index if kind=='slot' else None
+        metadata = GUARD_WEAPONS[self.current_guard_weapon]
+        detail = self.guard_bonus_text(row['skills']) if row else 'Not owned; unlocking creates a legal stock copy.'
+        self.guard_weapon_detail.set(f'{metadata["name"]} | {guard_editor.FAMILY_NAMES[metadata["family_index"]]} tier {metadata["tier"]} | Base attack {metadata["base_power"]}\n{detail}')
+        self.guard_bonus_choices = {'None':None}
+        self.guard_bonus_choices.update({GUARD_ITEMS[index]['name']:index for index in metadata['allowed_skill_ids']})
+        self.loading_guard_form = True
+        try:
+            for index in range(3):
+                skill = row['skills'][index] if row and index<len(row['skills']) else None
+                self.guard_bonus_boxes[index].configure(values=tuple(self.guard_bonus_choices),state='readonly' if kind=='slot' else 'disabled')
+                self.guard_bonus_items[index].set(next((label for label,item in self.guard_bonus_choices.items() if skill and item==skill['id']),'None'))
+                self.guard_bonus_values[index].set(str(skill['value']) if skill else '')
+        finally: self.loading_guard_form = False
+        for index in range(3): self.guard_bonus_item_changed(index)
+        self.guard_bonus_button.configure(state='normal' if kind=='slot' else 'disabled')
+
+    def guard_bonus_item_changed(self,index):
+        if self.loading_guard_form: return
+        item = self.guard_bonus_choices.get(self.guard_bonus_items[index].get())
+        values = GUARD_WEAPONS[self.current_guard_weapon]['allowed_values_by_guard_item_id'].get(str(item),[]) if item is not None else []
+        self.guard_bonus_value_boxes[index].configure(values=tuple(values),state='readonly' if values and self.guard_weapon_slot is not None else 'disabled')
+        current = self.guard_bonus_values[index].get()
+        if current not in [str(value) for value in values]: self.guard_bonus_values[index].set(str(values[-1]) if values else '')
+
+    def apply_guard_bonuses(self):
+        if not self.require_save() or self.guard_weapon_slot is None: return
+        try:
+            skills = []
+            for itemvar,valuevar in zip(self.guard_bonus_items,self.guard_bonus_values):
+                item = self.guard_bonus_choices[itemvar.get()]
+                if item is not None: skills.append({'id':item,'value':int(valuevar.get())})
+            if not skills: raise ValueError('Choose at least one bonus. Generated bodyguard weapons always have a bonus.')
+            skills = guard_editor.validate_skills(self.current_guard_weapon,skills)
+            self.stage_many([Change('guard_weapon_slot',self.guard_weapon_slot,'Skills',skills)])
+        except (ValueError,KeyError) as error: messagebox.showerror('Invalid Weapon Bonuses',str(error))
+
+    def selected_ok(self, tree): return self.require_save() and bool(tree.selection())
+
+    def apply_officer(self):
+        if not self.selected_ok(self.officers): return
+        try:
+            changes = []
+            for field, variable in self.inputs.items():
+                if field not in CAPS: continue
+                value = int(variable.get()); low = 1 if field in ('MaxHealth', 'MaxMusou') else 0
+                if not low <= value <= CAPS[field]: raise ValueError(f'{LABELS[field]} must be {low}–{CAPS[field]:,}.')
+                changes.append(Change('officer', self.current_officer, field, value))
+            self.stage_many(changes)
+        except ValueError as error: messagebox.showerror('Invalid Value', str(error))
+
+    def max_selected(self):
+        if self.selected_ok(self.officers): self.stage_many([Change('officer', self.current_officer, field, cap) for field, cap in CAPS.items()])
+
+    def max_all(self):
+        if self.require_save(): self.stage_many([Change('officer', index, field, cap) for index in range(42) for field, cap in CAPS.items()])
+
+    def merit_all(self):
+        if self.require_save(): self.stage_many([Change('officer', index, 'SPoint', 99999) for index in range(42)])
+
+    def apply_item(self):
+        if not self.selected_ok(self.items): return
+        try:
+            index = self.current_item; changes = [Change('item', index, 'Owned', self.item_owned.get())]; cap = self.item_cap(index)
+            if self.item_owned.get() and cap is not None and ITEMS[index]['kind'] == 'normal':
+                value = int(self.item_value.get())
+                if value == 0: value = 1
+                if not 1 <= value <= cap: raise ValueError(f'{ITEMS[index]["name"]} must be 1–{cap}.')
+                changes.append(Change('item', index, 'Value', value))
+            self.stage_many(changes)
+        except ValueError as error: messagebox.showerror('Invalid Value', str(error))
+
+    def max_items(self):
+        if not self.require_save() or not ITEM_CAPS: return
+        changes = []
+        for index, row in ITEMS.items():
+            cap = self.item_cap(index)
+            if row['kind'] == 'normal' and cap is not None: changes.extend([Change('item', index, 'Owned', True), Change('item', index, 'Value', cap)])
+        self.stage_many(changes)
+
+    def unlock_items(self, kind=None):
+        if self.require_save(): self.stage_many([Change('item', index, 'Owned', True) for index, row in ITEMS.items() if kind is None or row['kind'] == kind])
+
+    def apply_bodyguard(self):
+        if not self.selected_ok(self.bodyguards): return
+        try:
+            merit, levels = self.growth_form()
+            self.stage_many([Change('bodyguard', self.current_bodyguard, 'SPoint', merit),Change('bodyguard', self.current_bodyguard, 'BGLevels', levels)])
+        except ValueError as error: messagebox.showerror('Invalid Value', str(error))
+
+    def max_bodyguard(self, mode='balanced'):
+        if self.selected_ok(self.bodyguards): self.stage_many([Change('bodyguard', self.current_bodyguard, 'SPoint', 99999),Change('bodyguard', self.current_bodyguard, 'BGLevels', growth.safe_preset(99999,mode))])
+
+    def max_bodyguards(self):
+        if self.require_save(): self.stage_many(self.guard_growth_changes())
+
+    def guard_growth_changes(self):
+        return [Change('bodyguard',index,field,value) for index in range(len(self.document.records('GuardDataArray'))) for field,value in [('SPoint',99999),('BGLevels',growth.safe_preset())]]
+
+    def apply_guard_equipment(self):
+        if not self.selected_ok(self.bodyguards): return
+        try:
+            item = self.guard_equip_item_choices[self.guard_equip_item.get()]
+            state = guard_editor.team_state(self.document, self.current_bodyguard, list(self.changes.values()))
+            weapons = state['MemberWeapon'].copy()
+            for family, variable in self.guard_equip_weapons.items(): weapons[family] = self.guard_equip_weapon_choices[family][variable.get()]
+            self.stage_many([Change('bodyguard',self.current_bodyguard,'MemberItem',item),Change('bodyguard',self.current_bodyguard,'MemberWeapon',weapons)])
+        except (ValueError, KeyError) as error: messagebox.showerror('Cannot Apply Equipment', str(error))
+
+    def equip_best_guard_weapons(self):
+        if not self.selected_ok(self.bodyguards): return
+        try:
+            state = guard_editor.team_state(self.document, self.current_bodyguard, list(self.changes.values()))
+            weapons = state['MemberWeapon'].copy()
+            weapons[:5] = guard_editor.best_weapon_refs(self.document, list(self.changes.values()))
+            self.stage_many([Change('bodyguard',self.current_bodyguard,'MemberWeapon',weapons)])
+        except ValueError as error: messagebox.showerror('Cannot Equip Weapons',str(error))
+
+    def apply_guard_item(self):
+        if not self.selected_ok(self.guard_items): return
+        try:
+            index = self.current_guard_item; metadata = GUARD_ITEMS[index]
+            owned = self.guard_item_owned.get()
+            if not owned:
+                for team in range(len(self.document.records('GuardDataArray'))):
+                    if guard_editor.team_state(self.document,team,list(self.changes.values()))['MemberItem']==index:
+                        raise ValueError('This item is equipped by a bodyguard team. Choose another item or None on Team Equipment first.')
+            changes = [Change('guard_item',index,'Owned',owned)]
+            if owned and metadata['kind']=='normal':
+                value = int(self.guard_item_value.get())
+                if not 1 <= value <= metadata['max_value']: raise ValueError(f'{metadata["name"]} must be 1–{metadata["max_value"]}.')
+                changes.append(Change('guard_item',index,'Value',value))
+            self.stage_many(changes)
+        except ValueError as error: messagebox.showerror('Invalid BG Item',str(error))
+
+    def guard_item_changes(self, maximum=False):
+        changes = []
+        for index, metadata in GUARD_ITEMS.items():
+            changes.append(Change('guard_item',index,'Owned',True))
+            if maximum and metadata['kind']=='normal': changes.append(Change('guard_item',index,'Value',metadata['max_value']))
+        return changes
+
+    def unlock_guard_items(self):
+        if self.require_save(): self.stage_many(self.guard_item_changes())
+
+    def max_guard_items(self):
+        if self.require_save(): self.stage_many(self.guard_item_changes(True))
+
+    def guard_weapon_changes(self, maximum=False):
+        changes = []
+        for index in GUARD_WEAPONS:
+            changes.append(Change('guard_weapon',index,'Owned',True))
+            if maximum: changes.append(Change('guard_weapon',index,'MaxBonuses',True))
+        return changes
+
+    def unlock_guard_weapon(self):
+        if self.selected_ok(self.guard_weapons): self.stage_many([Change('guard_weapon',self.current_guard_weapon,'Owned',True)])
+
+    def max_guard_weapon(self):
+        if self.selected_ok(self.guard_weapons): self.stage_many([Change('guard_weapon',self.current_guard_weapon,'Owned',True),Change('guard_weapon',self.current_guard_weapon,'MaxBonuses',True)])
+
+    def unlock_guard_weapons(self):
+        if self.require_save(): self.stage_many(self.guard_weapon_changes())
+
+    def max_guard_weapons(self):
+        if self.require_save(): self.stage_many(self.guard_weapon_changes(True))
+
+    def unlock(self, field, count):
+        if self.require_save(): self.stage_many([Change('unlock', index, field, True) for index in range(count)])
+
+    def weapon_changes(self):
+        return [Change('unique_weapon', weapon_id, 'Owned', True) for weapon_id, weapon in UNIQUE_WEAPONS.items()
+                if weapon['unique_save_index'] < len(self.document.records('UniqueWeaponDataArray'))]
+
+    def unlock_selected_weapon(self):
+        if not self.selected_ok(self.weapons): return
+        selected = self.weapons.selection()[0]
+        if selected.startswith('unique:'): self.stage_many([Change('unique_weapon', int(selected.split(':')[1]), 'Owned', True)])
+        else: messagebox.showinfo('Select a Unique Weapon', 'Select a 4th or 5th weapon row to unlock it.')
+
+    def unlock_weapons(self):
+        if self.require_save(): self.stage_many(self.weapon_changes())
+
+    def grind_changes(self):
+        changes = [Change('officer', index, field, cap) for index in range(42) for field, cap in CAPS.items()]
+        for index, item in ITEMS.items():
+            cap = self.item_cap(index)
+            if item['kind'] == 'rare': changes.append(Change('item', index, 'Owned', True))
+            elif cap is not None: changes.extend([Change('item', index, 'Owned', True), Change('item', index, 'Value', cap)])
+        changes.extend(self.guard_growth_changes())
+        changes.extend(self.guard_item_changes(True))
+        changes.extend(self.guard_weapon_changes(True))
+        changes.extend(self.weapon_changes())
+        return changes
+
+    def remove_grind(self):
+        if self.require_save(): self.stage_many(self.grind_changes())
+
+    def unlock_everything(self):
+        if self.require_save():
+            changes = self.grind_changes()
+            changes.extend(Change('unlock', index, field, True) for field, count in [('CanUseCharaArray', 42), ('CanUseScenarioArray', 108)] for index in range(count))
+            self.stage_many(changes)
+
+    def undo(self):
+        if self.history: self.changes = self.history.pop(); self.refresh()
+
+    def discard(self):
+        if self.changes and self.dirty_ok(): self.changes, self.history = {}, []; self.refresh()
+
+    def review(self):
+        if not self.require_save(): return
+        window = tk.Toplevel(self.root); window.title('Review Pending Changes'); window.geometry('760x460')
+        ttk.Label(window, text='These changes are applied in the editor. Save to write them into a file and create a change report.', padding=12).pack(fill='x')
+        text = tk.Text(window, wrap='word', padx=12, pady=8); text.pack(fill='both', expand=True)
+        for change in self.changes.values():
+            label, fieldname, before, after = self.review_change(change)
+            text.insert('end', f'{label}: {fieldname} {before} → {after}\n')
+        if not self.changes: text.insert('end', 'No pending changes.')
+        text.configure(state='disabled')
+
+    def review_change(self, change):
+        before, after = self.original_value(change), change.value
+        labels = {'BGLevels':'Growth (Life / Attack / Defense / Count / Bow / AI)','MemberItem':'Equipped item','MemberWeapon':'Equipped weapon families','MaxBonuses':'Legal maximum bonuses','Skills':'Copy bonuses','Owned':'Owned','Value':'Value'}
+        fieldname = LABELS.get(change.field,labels.get(change.field,change.field))
+        if change.category=='officer': label = NAMES.get(str(change.index),f'Officer {change.index}')
+        elif change.category=='item': label = ITEMS[change.index]['name']
+        elif change.category=='unique_weapon': label = UNIQUE_WEAPONS[change.index]['weapon_name']
+        elif change.category=='weapon_roll':
+            row = weapon_editor.state(self.document,change.index,list(self.changes.values()))
+            label = f'{row["metadata"].get("name") or row["metadata"].get("weapon_name") or "Weapon"} copy ID {change.index}'
+            before,after = self.officer_bonus_text(before),self.officer_bonus_text(after)
+        elif change.category=='guard_item': label = GUARD_ITEMS[change.index]['name']
+        elif change.category=='guard_weapon': label = GUARD_WEAPONS[change.index]['name']
+        elif change.category=='guard_weapon_slot':
+            row = guard_editor.weapon_state(self.document,list(self.changes.values()))[change.index]
+            label = f'{GUARD_WEAPONS[row["weapon_id"]]["name"]} copy {change.index+1}'
+            before, after = self.guard_bonus_text(before),self.guard_bonus_text(after)
+        elif change.category=='bodyguard':
+            label = f'Team {change.index+1}'
+            if change.field=='MemberItem':
+                before = GUARD_ITEMS[before]['name'] if before is not None else 'None'; after = GUARD_ITEMS[after]['name'] if after is not None else 'None'
+            elif change.field=='MemberWeapon':
+                oldpool,newpool = guard_editor.weapon_state(self.document,[]),guard_editor.weapon_state(self.document,list(self.changes.values()))
+                def names(refs,pool):
+                    result=[]
+                    for ref in refs[:5]:
+                        row=next((row for row in pool if row['data_id']==ref and row['weapon_id'] is not None),None)
+                        result.append(GUARD_WEAPONS[row['weapon_id']]['name'] if row else 'None')
+                    return ', '.join(result)
+                before, after = names(before,oldpool),names(after,newpool)
+        else:
+            label = f'Playable {"officer" if change.field=="CanUseCharaArray" else "stage"} {change.index+1}'; fieldname='Available'
+        if change.field=='MaxBonuses': before,after='Current bonuses','Verified maximum profile'
+        if isinstance(before,bool): before='Yes' if before else 'No'
+        if isinstance(after,bool): after='Yes' if after else 'No'
+        return label,fieldname,before,after
+
+    def make_backup(self):
+        if not self.require_save(): return
+        try:
+            self.backup = save_writer.backup_save(self.document); self.update_paths()
+            self.status.set('Opened-copy backup created. Pending changes are kept in the editor.')
+        except Exception as error: messagebox.showerror('Backup Failed', str(error))
+
+    def save_to(self, path, overwrite=False):
+        self.set_loaded(False)
+        self.status.set('Saving and validating the edited copy…')
+        self.root.configure(cursor='wait')
+        self.root.update_idletasks()
+        try:
+            try:
+                saved, audit = save_writer.write_save(self.document, Path(path), list(self.changes.values()), overwrite)
+            except Exception as error:
+                self.status.set('Save failed. Pending changes remain available to review.')
+                messagebox.showerror('Cannot Save', str(error))
+                return
+            self.changes, self.history = {}, []
+            try:
+                self.document = read_save(saved)
+                self.update_paths(); self.refresh()
+            except Exception as error:
+                self.document = None
+                self.filename.set(f'Saved copy: {saved}')
+                self.status.set('Saved, but could not reopen the output. Use Open Save Copy to reopen it manually.')
+                messagebox.showwarning('Save Written', f'The edited copy and change report were saved. The editor could not reopen the output.\n\n{saved}\n\n{error}')
+                return
+            self.status.set(f'Saved {len(audit["plaintext_changes"])} changed fields. A byte-change report was created beside the save.')
+        finally:
+            self.root.configure(cursor='')
+            self.set_loaded(self.document is not None)
+
+    def save_as(self):
+        if not self.require_save(): return
+        path = filedialog.asksaveasfilename(title='Save Edited Copy', defaultextension='.sav', initialdir=self.document.source.parent, initialfile='GameStatusData.edited.sav', filetypes=[('Game save', '*.sav')], confirmoverwrite=False)
+        if not path: return
+        try: destination = safe_path(Path(path))
+        except Exception as error:
+            messagebox.showerror('Cannot Save', str(error)); return
+        exists = destination.exists()
+        if exists and not messagebox.askyesno('Replace Existing Copy', f'Replace this existing save copy?\n\n{destination}\n\nAn untouched backup of that file will be created first.'): return
+        self.save_to(destination, exists)
+
+    def save_changes(self):
+        if self.require_save() and messagebox.askyesno('Replace Opened Copy', f'Write {len(self.changes)} pending changes into this opened copy?\n\n{self.document.source}\n\nAn additional untouched backup will be created first.'): self.save_to(self.document.source, True)
+
+    def restore(self):
+        path = filedialog.askopenfilename(title='Choose Editor Backup', initialdir=self.backup.parent if self.backup else ROOT, filetypes=[('Save backup', '*.sav')])
+        if not path: return
+        destination = filedialog.asksaveasfilename(title='Restore to a New Copy', defaultextension='.sav', initialfile='GameStatusData.restored.sav')
+        if not destination: return
+        try:
+            save_writer.restore_backup(Path(path), Path(destination)); self.status.set('Backup restored to a new copy. Use Open Save Copy to inspect it.')
+        except Exception as error: messagebox.showerror('Cannot Restore', str(error))
+
+    def close(self):
+        if self.dirty_ok(): self.root.destroy()
+
+
+def main():
+    root = tk.Tk()
+    if '--smoke-test' in sys.argv or '--self-test' in sys.argv: root.withdraw()
+    editor = Editor(root)
+    if '--self-test' in sys.argv:
+        index = sys.argv.index('--self-test')
+        arguments = sys.argv[index + 1:]
+        if len(arguments) != 2:
+            root.destroy(); raise SystemExit(2)
+        try:
+            from app_self_test import run
+            result = run(editor, Path(arguments[0]), Path(arguments[1]))
+        except Exception:
+            raise SystemExit(1)
+        finally:
+            root.destroy()
+        raise SystemExit(1 if result is False else 0)
+    elif '--smoke-test' in sys.argv:
+        root.update_idletasks(); root.destroy(); print('GUI widgets initialized successfully.')
+    else: root.mainloop()
+
+
+if __name__ == '__main__': main()

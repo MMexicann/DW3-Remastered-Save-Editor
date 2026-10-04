@@ -1,0 +1,5882 @@
+{
+  "source": "Shipped native reflection schemas, exact DataTable rows and native unique weapon creation/insertion code.",
+  "confidence": "Confirmed static mapping; no game load acceptance test yet.",
+  "native_builder_rva": "0x1516040..0x1516265",
+  "native_insertion_rva": "0x150AC10..0x150AFE9",
+  "native_initializer_rva": "0x1502E20",
+  "template_mapping": "89..129 -> weapon_id-89; 132..172 -> weapon_id-91; 191 -> 82; 192 -> 83.",
+  "unique_save_mapping": "All unique weapon IDs use weapon_id-89, independently of their template index.",
+  "data_id_mapping": "Unique base DataID 10000 + unique_save_index in supplied save; native base field +0x378.",
+  "slot_skill_type": "Initializer leaves each skill type at sentinel 10; unique builder changes only item ID and value.",
+  "supplied_save_limits": "Only 84 unique rows currently exist. Standard weapons fit slots 0..40 and 43..83. Ziluan weapons require 103/104 rows; safely adding these requires validated array serialization resizing. Slots 41/42 and 84..101 remain blank placeholders.",
+  "fusion_limits": [
+    {
+      "rank_index": 0,
+      "AttributeProbability": 0,
+      "RedSkillProbability": 0,
+      "MaxBlueSkillNum": 6
+    },
+    {
+      "rank_index": 1,
+      "AttributeProbability": 0,
+      "RedSkillProbability": 0,
+      "MaxBlueSkillNum": 6
+    },
+    {
+      "rank_index": 2,
+      "AttributeProbability": 20,
+      "RedSkillProbability": 10,
+      "MaxBlueSkillNum": 6
+    },
+    {
+      "rank_index": 3,
+      "AttributeProbability": 0,
+      "RedSkillProbability": 0,
+      "MaxBlueSkillNum": 7
+    },
+    {
+      "rank_index": 4,
+      "AttributeProbability": 0,
+      "RedSkillProbability": 0,
+      "MaxBlueSkillNum": 8
+    }
+  ],
+  "weapons": [
+    {
+      "officer_id": 0,
+      "officer_name": "Zhao Yun",
+      "tier": 4,
+      "weapon_id": 89,
+      "weapon_name": "Fierce Dragon",
+      "base_power": 43,
+      "attribute_bitmask": 135,
+      "template_index": 0,
+      "template_row_name": "UniqueWeaponID_000",
+      "template_row_offset": 35,
+      "unique_save_index": 0,
+      "data_id": 10000,
+      "fits_supplied_84_record_array": true,
+      "record_id": 89,
+      "record_weapon_id": 89,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 80,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 74,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 52,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_089"
+    },
+    {
+      "officer_id": 0,
+      "officer_name": "Zhao Yun",
+      "tier": 5,
+      "weapon_id": 132,
+      "weapon_name": "War Dragon",
+      "base_power": 43,
+      "attribute_bitmask": 75,
+      "template_index": 41,
+      "template_row_name": "UniqueWeaponID_041",
+      "template_row_offset": 3274,
+      "unique_save_index": 43,
+      "data_id": 10043,
+      "fits_supplied_84_record_array": true,
+      "record_id": 132,
+      "record_weapon_id": 132,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 78,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 75,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 20,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_132"
+    },
+    {
+      "officer_id": 1,
+      "officer_name": "Guan Yu",
+      "tier": 4,
+      "weapon_id": 90,
+      "weapon_name": "Blue Moon Dragon",
+      "base_power": 49,
+      "attribute_bitmask": 139,
+      "template_index": 1,
+      "template_row_name": "UniqueWeaponID_001",
+      "template_row_offset": 114,
+      "unique_save_index": 1,
+      "data_id": 10001,
+      "fits_supplied_84_record_array": true,
+      "record_id": 90,
+      "record_weapon_id": 90,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 87,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 59,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_090"
+    },
+    {
+      "officer_id": 1,
+      "officer_name": "Guan Yu",
+      "tier": 5,
+      "weapon_id": 133,
+      "weapon_name": "Divine Dragon",
+      "base_power": 49,
+      "attribute_bitmask": 67,
+      "template_index": 42,
+      "template_row_name": "UniqueWeaponID_042",
+      "template_row_offset": 3353,
+      "unique_save_index": 44,
+      "data_id": 10044,
+      "fits_supplied_84_record_array": true,
+      "record_id": 133,
+      "record_weapon_id": 133,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 21,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 82,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 60,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 13,
+          "skill_type": 10,
+          "value": 0,
+          "name": "Red Hare Saddle"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_133"
+    },
+    {
+      "officer_id": 2,
+      "officer_name": "Zhang Fei",
+      "tier": 4,
+      "weapon_id": 91,
+      "weapon_name": "Viper Blade",
+      "base_power": 47,
+      "attribute_bitmask": 131,
+      "template_index": 2,
+      "template_row_name": "UniqueWeaponID_002",
+      "template_row_offset": 193,
+      "unique_save_index": 2,
+      "data_id": 10002,
+      "fits_supplied_84_record_array": true,
+      "record_id": 91,
+      "record_weapon_id": 91,
+      "skill_slots": [
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 29,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 58,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 56,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 9,
+          "skill_type": 10,
+          "value": 57,
+          "name": "Cavalry Armor"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_091"
+    },
+    {
+      "officer_id": 2,
+      "officer_name": "Zhang Fei",
+      "tier": 5,
+      "weapon_id": 134,
+      "weapon_name": "Serpent Blade",
+      "base_power": 47,
+      "attribute_bitmask": 71,
+      "template_index": 43,
+      "template_row_name": "UniqueWeaponID_043",
+      "template_row_offset": 3432,
+      "unique_save_index": 45,
+      "data_id": 10045,
+      "fits_supplied_84_record_array": true,
+      "record_id": 134,
+      "record_weapon_id": 134,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 83,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 81,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 58,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_134"
+    },
+    {
+      "officer_id": 3,
+      "officer_name": "Xiahou Dun",
+      "tier": 4,
+      "weapon_id": 92,
+      "weapon_name": "Kirin Fang",
+      "base_power": 48,
+      "attribute_bitmask": 135,
+      "template_index": 3,
+      "template_row_name": "UniqueWeaponID_003",
+      "template_row_offset": 272,
+      "unique_save_index": 3,
+      "data_id": 10003,
+      "fits_supplied_84_record_array": true,
+      "record_id": 92,
+      "record_weapon_id": 92,
+      "skill_slots": [
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 26,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 60,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 9,
+          "skill_type": 10,
+          "value": 56,
+          "name": "Cavalry Armor"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_092"
+    },
+    {
+      "officer_id": 3,
+      "officer_name": "Xiahou Dun",
+      "tier": 5,
+      "weapon_id": 135,
+      "weapon_name": "Tempest Sword",
+      "base_power": 48,
+      "attribute_bitmask": 99,
+      "template_index": 44,
+      "template_row_name": "UniqueWeaponID_044",
+      "template_row_offset": 3511,
+      "unique_save_index": 46,
+      "data_id": 10046,
+      "fits_supplied_84_record_array": true,
+      "record_id": 135,
+      "record_weapon_id": 135,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 82,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 55,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_135"
+    },
+    {
+      "officer_id": 4,
+      "officer_name": "Dian Wei",
+      "tier": 4,
+      "weapon_id": 93,
+      "weapon_name": "Mad Bull",
+      "base_power": 49,
+      "attribute_bitmask": 139,
+      "template_index": 4,
+      "template_row_name": "UniqueWeaponID_004",
+      "template_row_offset": 351,
+      "unique_save_index": 4,
+      "data_id": 10004,
+      "fits_supplied_84_record_array": true,
+      "record_id": 93,
+      "record_weapon_id": 93,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 84,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 27,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_093"
+    },
+    {
+      "officer_id": 4,
+      "officer_name": "Dian Wei",
+      "tier": 5,
+      "weapon_id": 136,
+      "weapon_name": "Beast Axe",
+      "base_power": 49,
+      "attribute_bitmask": 67,
+      "template_index": 45,
+      "template_row_name": "UniqueWeaponID_045",
+      "template_row_offset": 3590,
+      "unique_save_index": 47,
+      "data_id": 10047,
+      "fits_supplied_84_record_array": true,
+      "record_id": 136,
+      "record_weapon_id": 136,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 90,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 52,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 50,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 14,
+          "skill_type": 10,
+          "value": 0,
+          "name": "Hex Mark Saddle"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_136"
+    },
+    {
+      "officer_id": 5,
+      "officer_name": "Xu Zhu",
+      "tier": 4,
+      "weapon_id": 94,
+      "weapon_name": "Stone Crusher",
+      "base_power": 50,
+      "attribute_bitmask": 131,
+      "template_index": 5,
+      "template_row_name": "UniqueWeaponID_005",
+      "template_row_offset": 430,
+      "unique_save_index": 5,
+      "data_id": 10005,
+      "fits_supplied_84_record_array": true,
+      "record_id": 94,
+      "record_weapon_id": 94,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 88,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 86,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 58,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 10,
+          "skill_type": 10,
+          "value": 27,
+          "name": "Seven Star Orb"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_094"
+    },
+    {
+      "officer_id": 5,
+      "officer_name": "Xu Zhu",
+      "tier": 5,
+      "weapon_id": 137,
+      "weapon_name": "Earthly Mace",
+      "base_power": 50,
+      "attribute_bitmask": 71,
+      "template_index": 46,
+      "template_row_name": "UniqueWeaponID_046",
+      "template_row_offset": 3669,
+      "unique_save_index": 48,
+      "data_id": 10048,
+      "fits_supplied_84_record_array": true,
+      "record_id": 137,
+      "record_weapon_id": 137,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 82,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 55,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 50,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 26,
+          "skill_type": 10,
+          "value": 14,
+          "name": "Mountain Pouch"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_137"
+    },
+    {
+      "officer_id": 6,
+      "officer_name": "Zhou Yu",
+      "tier": 4,
+      "weapon_id": 95,
+      "weapon_name": "Ancients Sword",
+      "base_power": 46,
+      "attribute_bitmask": 135,
+      "template_index": 6,
+      "template_row_name": "UniqueWeaponID_006",
+      "template_row_offset": 509,
+      "unique_save_index": 6,
+      "data_id": 10006,
+      "fits_supplied_84_record_array": true,
+      "record_id": 95,
+      "record_weapon_id": 95,
+      "skill_slots": [
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 23,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 50,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 27,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_095"
+    },
+    {
+      "officer_id": 6,
+      "officer_name": "Zhou Yu",
+      "tier": 5,
+      "weapon_id": 138,
+      "weapon_name": "Elder Moon",
+      "base_power": 46,
+      "attribute_bitmask": 99,
+      "template_index": 47,
+      "template_row_name": "UniqueWeaponID_047",
+      "template_row_offset": 3748,
+      "unique_save_index": 49,
+      "data_id": 10049,
+      "fits_supplied_84_record_array": true,
+      "record_id": 138,
+      "record_weapon_id": 138,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 23,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 82,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_138"
+    },
+    {
+      "officer_id": 7,
+      "officer_name": "Lu Xun",
+      "tier": 4,
+      "weapon_id": 96,
+      "weapon_name": "Falcon",
+      "base_power": 42,
+      "attribute_bitmask": 147,
+      "template_index": 7,
+      "template_row_name": "UniqueWeaponID_007",
+      "template_row_offset": 588,
+      "unique_save_index": 7,
+      "data_id": 10007,
+      "fits_supplied_84_record_array": true,
+      "record_id": 96,
+      "record_weapon_id": 96,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 75,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 43,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 29,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_096"
+    },
+    {
+      "officer_id": 7,
+      "officer_name": "Lu Xun",
+      "tier": 5,
+      "weapon_id": 139,
+      "weapon_name": "Flash Blade",
+      "base_power": 42,
+      "attribute_bitmask": 99,
+      "template_index": 48,
+      "template_row_name": "UniqueWeaponID_048",
+      "template_row_offset": 3827,
+      "unique_save_index": 50,
+      "data_id": 10050,
+      "fits_supplied_84_record_array": true,
+      "record_id": 139,
+      "record_weapon_id": 139,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 80,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 55,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_139"
+    },
+    {
+      "officer_id": 8,
+      "officer_name": "Taishi Ci",
+      "tier": 4,
+      "weapon_id": 97,
+      "weapon_name": "Tiger Slayer",
+      "base_power": 45,
+      "attribute_bitmask": 139,
+      "template_index": 8,
+      "template_row_name": "UniqueWeaponID_008",
+      "template_row_offset": 667,
+      "unique_save_index": 8,
+      "data_id": 10008,
+      "fits_supplied_84_record_array": true,
+      "record_id": 97,
+      "record_weapon_id": 97,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 81,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 26,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 6,
+          "skill_type": 10,
+          "value": 55,
+          "name": "Huang's Bow"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 51,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_097"
+    },
+    {
+      "officer_id": 8,
+      "officer_name": "Taishi Ci",
+      "tier": 5,
+      "weapon_id": 140,
+      "weapon_name": "Tiger Wolf",
+      "base_power": 45,
+      "attribute_bitmask": 67,
+      "template_index": 49,
+      "template_row_name": "UniqueWeaponID_049",
+      "template_row_offset": 3906,
+      "unique_save_index": 51,
+      "data_id": 10051,
+      "fits_supplied_84_record_array": true,
+      "record_id": 140,
+      "record_weapon_id": 140,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 46,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 55,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 26,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 28,
+          "skill_type": 10,
+          "value": 0,
+          "name": "Divine Helm"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_140"
+    },
+    {
+      "officer_id": 9,
+      "officer_name": "Diaochan",
+      "tier": 4,
+      "weapon_id": 98,
+      "weapon_name": "Gold Globe",
+      "base_power": 40,
+      "attribute_bitmask": 131,
+      "template_index": 9,
+      "template_row_name": "UniqueWeaponID_009",
+      "template_row_offset": 746,
+      "unique_save_index": 9,
+      "data_id": 10009,
+      "fits_supplied_84_record_array": true,
+      "record_id": 98,
+      "record_weapon_id": 98,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 65,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 48,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 10,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Seven Star Orb"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_098"
+    },
+    {
+      "officer_id": 9,
+      "officer_name": "Diaochan",
+      "tier": 5,
+      "weapon_id": 141,
+      "weapon_name": "Imperial Mace",
+      "base_power": 40,
+      "attribute_bitmask": 71,
+      "template_index": 50,
+      "template_row_name": "UniqueWeaponID_050",
+      "template_row_offset": 3985,
+      "unique_save_index": 52,
+      "data_id": 10052,
+      "fits_supplied_84_record_array": true,
+      "record_id": 141,
+      "record_weapon_id": 141,
+      "skill_slots": [
+        {
+          "item_id": 1,
+          "skill_type": 10,
+          "value": 21,
+          "name": "Wing Boots"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 72,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 10,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_141"
+    },
+    {
+      "officer_id": 10,
+      "officer_name": "Zhuge Liang",
+      "tier": 4,
+      "weapon_id": 99,
+      "weapon_name": "Peacock Feather",
+      "base_power": 40,
+      "attribute_bitmask": 135,
+      "template_index": 10,
+      "template_row_name": "UniqueWeaponID_010",
+      "template_row_offset": 825,
+      "unique_save_index": 10,
+      "data_id": 10010,
+      "fits_supplied_84_record_array": true,
+      "record_id": 99,
+      "record_weapon_id": 99,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 1,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Wing Boots"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 55,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 55,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 9,
+          "skill_type": 10,
+          "value": 55,
+          "name": "Cavalry Armor"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_099"
+    },
+    {
+      "officer_id": 10,
+      "officer_name": "Zhuge Liang",
+      "tier": 5,
+      "weapon_id": 142,
+      "weapon_name": "Griffin Feather",
+      "base_power": 40,
+      "attribute_bitmask": 99,
+      "template_index": 51,
+      "template_row_name": "UniqueWeaponID_051",
+      "template_row_offset": 4064,
+      "unique_save_index": 53,
+      "data_id": 10053,
+      "fits_supplied_84_record_array": true,
+      "record_id": 142,
+      "record_weapon_id": 142,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 80,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 10,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Seven Star Orb"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_142"
+    },
+    {
+      "officer_id": 11,
+      "officer_name": "Cao Cao",
+      "tier": 4,
+      "weapon_id": 100,
+      "weapon_name": "Wrath of Heaven",
+      "base_power": 45,
+      "attribute_bitmask": 147,
+      "template_index": 11,
+      "template_row_name": "UniqueWeaponID_011",
+      "template_row_offset": 904,
+      "unique_save_index": 11,
+      "data_id": 10011,
+      "fits_supplied_84_record_array": true,
+      "record_id": 100,
+      "record_weapon_id": 100,
+      "skill_slots": [
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 6,
+          "skill_type": 10,
+          "value": 52,
+          "name": "Huang's Bow"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 48,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_100"
+    },
+    {
+      "officer_id": 11,
+      "officer_name": "Cao Cao",
+      "tier": 5,
+      "weapon_id": 143,
+      "weapon_name": "Blue Steel",
+      "base_power": 45,
+      "attribute_bitmask": 67,
+      "template_index": 52,
+      "template_row_name": "UniqueWeaponID_052",
+      "template_row_offset": 4143,
+      "unique_save_index": 54,
+      "data_id": 10054,
+      "fits_supplied_84_record_array": true,
+      "record_id": 143,
+      "record_weapon_id": 143,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 86,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 51,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 58,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 39,
+          "skill_type": 10,
+          "value": 0,
+          "name": "Musou Armor"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_143"
+    },
+    {
+      "officer_id": 12,
+      "officer_name": "Lu Bu",
+      "tier": 4,
+      "weapon_id": 101,
+      "weapon_name": "Sky Scorcher",
+      "base_power": 50,
+      "attribute_bitmask": 139,
+      "template_index": 12,
+      "template_row_name": "UniqueWeaponID_012",
+      "template_row_offset": 983,
+      "unique_save_index": 12,
+      "data_id": 10012,
+      "fits_supplied_84_record_array": true,
+      "record_id": 101,
+      "record_weapon_id": 101,
+      "skill_slots": [
+        {
+          "item_id": 1,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Wing Boots"
+        },
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 90,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 90,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 60,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_101"
+    },
+    {
+      "officer_id": 12,
+      "officer_name": "Lu Bu",
+      "tier": 5,
+      "weapon_id": 144,
+      "weapon_name": "Demon Slayer",
+      "base_power": 50,
+      "attribute_bitmask": 71,
+      "template_index": 53,
+      "template_row_name": "UniqueWeaponID_053",
+      "template_row_offset": 4222,
+      "unique_save_index": 55,
+      "data_id": 10055,
+      "fits_supplied_84_record_array": true,
+      "record_id": 144,
+      "record_weapon_id": 144,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 90,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 90,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 13,
+          "skill_type": 10,
+          "value": 0,
+          "name": "Red Hare Saddle"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_144"
+    },
+    {
+      "officer_id": 13,
+      "officer_name": "Sun Shangxiang",
+      "tier": 4,
+      "weapon_id": 102,
+      "weapon_name": "Sol Chakram",
+      "base_power": 40,
+      "attribute_bitmask": 131,
+      "template_index": 13,
+      "template_row_name": "UniqueWeaponID_013",
+      "template_row_offset": 1062,
+      "unique_save_index": 13,
+      "data_id": 10013,
+      "fits_supplied_84_record_array": true,
+      "record_id": 102,
+      "record_weapon_id": 102,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 23,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 1,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Wing Boots"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 66,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 10,
+          "skill_type": 10,
+          "value": 23,
+          "name": "Seven Star Orb"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_102"
+    },
+    {
+      "officer_id": 13,
+      "officer_name": "Sun Shangxiang",
+      "tier": 5,
+      "weapon_id": 145,
+      "weapon_name": "Dragon Chakram",
+      "base_power": 40,
+      "attribute_bitmask": 71,
+      "template_index": 54,
+      "template_row_name": "UniqueWeaponID_054",
+      "template_row_offset": 4301,
+      "unique_save_index": 56,
+      "data_id": 10056,
+      "fits_supplied_84_record_array": true,
+      "record_id": 145,
+      "record_weapon_id": 145,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 75,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 20,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 10,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Seven Star Orb"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 25,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Mountain Quiver"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_145"
+    },
+    {
+      "officer_id": 14,
+      "officer_name": "Liu Bei",
+      "tier": 4,
+      "weapon_id": 103,
+      "weapon_name": "Gold Moon Dragon",
+      "base_power": 40,
+      "attribute_bitmask": 131,
+      "template_index": 14,
+      "template_row_name": "UniqueWeaponID_014",
+      "template_row_offset": 1141,
+      "unique_save_index": 14,
+      "data_id": 10014,
+      "fits_supplied_84_record_array": true,
+      "record_id": 103,
+      "record_weapon_id": 103,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 20,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 70,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 44,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 9,
+          "skill_type": 10,
+          "value": 52,
+          "name": "Cavalry Armor"
+        },
+        {
+          "item_id": 10,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Seven Star Orb"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_103"
+    },
+    {
+      "officer_id": 14,
+      "officer_name": "Liu Bei",
+      "tier": 5,
+      "weapon_id": 146,
+      "weapon_name": "Dragon Star",
+      "base_power": 40,
+      "attribute_bitmask": 75,
+      "template_index": 55,
+      "template_row_name": "UniqueWeaponID_055",
+      "template_row_offset": 4380,
+      "unique_save_index": 57,
+      "data_id": 10057,
+      "fits_supplied_84_record_array": true,
+      "record_id": 146,
+      "record_weapon_id": 146,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 65,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 40,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 44,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 25,
+          "skill_type": 10,
+          "value": 27,
+          "name": "Mountain Quiver"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_146"
+    },
+    {
+      "officer_id": 15,
+      "officer_name": "Sun Jian",
+      "tier": 4,
+      "weapon_id": 104,
+      "weapon_name": "Savage Wolf",
+      "base_power": 43,
+      "attribute_bitmask": 135,
+      "template_index": 15,
+      "template_row_name": "UniqueWeaponID_015",
+      "template_row_offset": 1220,
+      "unique_save_index": 15,
+      "data_id": 10015,
+      "fits_supplied_84_record_array": true,
+      "record_id": 104,
+      "record_weapon_id": 104,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 76,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 68,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 49,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_104"
+    },
+    {
+      "officer_id": 15,
+      "officer_name": "Sun Jian",
+      "tier": 5,
+      "weapon_id": 147,
+      "weapon_name": "Wolf Blade",
+      "base_power": 43,
+      "attribute_bitmask": 67,
+      "template_index": 56,
+      "template_row_name": "UniqueWeaponID_056",
+      "template_row_offset": 4459,
+      "unique_save_index": 58,
+      "data_id": 10058,
+      "fits_supplied_84_record_array": true,
+      "record_id": 147,
+      "record_weapon_id": 147,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 82,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 42,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 6,
+          "skill_type": 10,
+          "value": 55,
+          "name": "Huang's Bow"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 26,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 22,
+          "skill_type": 10,
+          "value": 0,
+          "name": "Buckler"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_147"
+    },
+    {
+      "officer_id": 16,
+      "officer_name": "Sun Quan",
+      "tier": 4,
+      "weapon_id": 105,
+      "weapon_name": "Master Wolf",
+      "base_power": 42,
+      "attribute_bitmask": 131,
+      "template_index": 16,
+      "template_row_name": "UniqueWeaponID_016",
+      "template_row_offset": 1299,
+      "unique_save_index": 16,
+      "data_id": 10016,
+      "fits_supplied_84_record_array": true,
+      "record_id": 105,
+      "record_weapon_id": 105,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 68,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 6,
+          "skill_type": 10,
+          "value": 49,
+          "name": "Huang's Bow"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 50,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 26,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_105"
+    },
+    {
+      "officer_id": 16,
+      "officer_name": "Sun Quan",
+      "tier": 5,
+      "weapon_id": 148,
+      "weapon_name": "Heavenly Wolf",
+      "base_power": 42,
+      "attribute_bitmask": 83,
+      "template_index": 57,
+      "template_row_name": "UniqueWeaponID_057",
+      "template_row_offset": 4538,
+      "unique_save_index": 59,
+      "data_id": 10059,
+      "fits_supplied_84_record_array": true,
+      "record_id": 148,
+      "record_weapon_id": 148,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 68,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 70,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 6,
+          "skill_type": 10,
+          "value": 52,
+          "name": "Huang's Bow"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 55,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_148"
+    },
+    {
+      "officer_id": 17,
+      "officer_name": "Dong Zhuo",
+      "tier": 4,
+      "weapon_id": 106,
+      "weapon_name": "Grand Star",
+      "base_power": 41,
+      "attribute_bitmask": 139,
+      "template_index": 17,
+      "template_row_name": "UniqueWeaponID_017",
+      "template_row_offset": 1378,
+      "unique_save_index": 17,
+      "data_id": 10017,
+      "fits_supplied_84_record_array": true,
+      "record_id": 106,
+      "record_weapon_id": 106,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 70,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 45,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_106"
+    },
+    {
+      "officer_id": 17,
+      "officer_name": "Dong Zhuo",
+      "tier": 5,
+      "weapon_id": 149,
+      "weapon_name": "Black Steel",
+      "base_power": 41,
+      "attribute_bitmask": 83,
+      "template_index": 58,
+      "template_row_name": "UniqueWeaponID_058",
+      "template_row_offset": 4617,
+      "unique_save_index": 60,
+      "data_id": 10060,
+      "fits_supplied_84_record_array": true,
+      "record_id": 149,
+      "record_weapon_id": 149,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 74,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 45,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 9,
+          "skill_type": 10,
+          "value": 53,
+          "name": "Cavalry Armor"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 29,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 25,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Mountain Quiver"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_149"
+    },
+    {
+      "officer_id": 18,
+      "officer_name": "Yuan Shao",
+      "tier": 4,
+      "weapon_id": 107,
+      "weapon_name": "Grand Master",
+      "base_power": 44,
+      "attribute_bitmask": 131,
+      "template_index": 18,
+      "template_row_name": "UniqueWeaponID_018",
+      "template_row_offset": 1457,
+      "unique_save_index": 18,
+      "data_id": 10018,
+      "fits_supplied_84_record_array": true,
+      "record_id": 107,
+      "record_weapon_id": 107,
+      "skill_slots": [
+        {
+          "item_id": 1,
+          "skill_type": 10,
+          "value": 20,
+          "name": "Wing Boots"
+        },
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 78,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 54,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 6,
+          "skill_type": 10,
+          "value": 51,
+          "name": "Huang's Bow"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 46,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_107"
+    },
+    {
+      "officer_id": 18,
+      "officer_name": "Yuan Shao",
+      "tier": 5,
+      "weapon_id": 150,
+      "weapon_name": "Imperial Saber",
+      "base_power": 44,
+      "attribute_bitmask": 71,
+      "template_index": 59,
+      "template_row_name": "UniqueWeaponID_059",
+      "template_row_offset": 4696,
+      "unique_save_index": 61,
+      "data_id": 10061,
+      "fits_supplied_84_record_array": true,
+      "record_id": 150,
+      "record_weapon_id": 150,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 21,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 27,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 54,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 49,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_150"
+    },
+    {
+      "officer_id": 19,
+      "officer_name": "Ma Chao",
+      "tier": 4,
+      "weapon_id": 108,
+      "weapon_name": "Steel Dragon",
+      "base_power": 42,
+      "attribute_bitmask": 135,
+      "template_index": 19,
+      "template_row_name": "UniqueWeaponID_019",
+      "template_row_offset": 1536,
+      "unique_save_index": 19,
+      "data_id": 10019,
+      "fits_supplied_84_record_array": true,
+      "record_id": 108,
+      "record_weapon_id": 108,
+      "skill_slots": [
+        {
+          "item_id": 1,
+          "skill_type": 10,
+          "value": 21,
+          "name": "Wing Boots"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 60,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 9,
+          "skill_type": 10,
+          "value": 60,
+          "name": "Cavalry Armor"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 21,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_108"
+    },
+    {
+      "officer_id": 19,
+      "officer_name": "Ma Chao",
+      "tier": 5,
+      "weapon_id": 151,
+      "weapon_name": "Lightning Spear",
+      "base_power": 42,
+      "attribute_bitmask": 75,
+      "template_index": 60,
+      "template_row_name": "UniqueWeaponID_060",
+      "template_row_offset": 4775,
+      "unique_save_index": 62,
+      "data_id": 10062,
+      "fits_supplied_84_record_array": true,
+      "record_id": 151,
+      "record_weapon_id": 151,
+      "skill_slots": [
+        {
+          "item_id": 1,
+          "skill_type": 10,
+          "value": 21,
+          "name": "Wing Boots"
+        },
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 87,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 10,
+          "skill_type": 10,
+          "value": 15,
+          "name": "Seven Star Orb"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 21,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 27,
+          "skill_type": 10,
+          "value": 8,
+          "name": "Bronze Flask"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_151"
+    },
+    {
+      "officer_id": 20,
+      "officer_name": "Huang Zhong",
+      "tier": 4,
+      "weapon_id": 109,
+      "weapon_name": "Oracle Sword",
+      "base_power": 44,
+      "attribute_bitmask": 131,
+      "template_index": 20,
+      "template_row_name": "UniqueWeaponID_020",
+      "template_row_offset": 1615,
+      "unique_save_index": 20,
+      "data_id": 10020,
+      "fits_supplied_84_record_array": true,
+      "record_id": 109,
+      "record_weapon_id": 109,
+      "skill_slots": [
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 23,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 45,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 6,
+          "skill_type": 10,
+          "value": 60,
+          "name": "Huang's Bow"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 58,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 26,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_109"
+    },
+    {
+      "officer_id": 20,
+      "officer_name": "Huang Zhong",
+      "tier": 5,
+      "weapon_id": 152,
+      "weapon_name": "Mystic Blade",
+      "base_power": 44,
+      "attribute_bitmask": 99,
+      "template_index": 61,
+      "template_row_name": "UniqueWeaponID_061",
+      "template_row_offset": 4854,
+      "unique_save_index": 63,
+      "data_id": 10063,
+      "fits_supplied_84_record_array": true,
+      "record_id": 152,
+      "record_weapon_id": 152,
+      "skill_slots": [
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 52,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 6,
+          "skill_type": 10,
+          "value": 60,
+          "name": "Huang's Bow"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 25,
+          "skill_type": 10,
+          "value": 47,
+          "name": "Mountain Quiver"
+        },
+        {
+          "item_id": 26,
+          "skill_type": 10,
+          "value": 10,
+          "name": "Mountain Pouch"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_152"
+    },
+    {
+      "officer_id": 21,
+      "officer_name": "Xiahou Yuan",
+      "tier": 4,
+      "weapon_id": 110,
+      "weapon_name": "Demon Fang",
+      "base_power": 45,
+      "attribute_bitmask": 135,
+      "template_index": 21,
+      "template_row_name": "UniqueWeaponID_021",
+      "template_row_offset": 1694,
+      "unique_save_index": 21,
+      "data_id": 10021,
+      "fits_supplied_84_record_array": true,
+      "record_id": 110,
+      "record_weapon_id": 110,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 84,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 78,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 6,
+          "skill_type": 10,
+          "value": 58,
+          "name": "Huang's Bow"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 59,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_110"
+    },
+    {
+      "officer_id": 21,
+      "officer_name": "Xiahou Yuan",
+      "tier": 5,
+      "weapon_id": 153,
+      "weapon_name": "Mystic Fang",
+      "base_power": 45,
+      "attribute_bitmask": 83,
+      "template_index": 62,
+      "template_row_name": "UniqueWeaponID_062",
+      "template_row_offset": 4933,
+      "unique_save_index": 64,
+      "data_id": 10064,
+      "fits_supplied_84_record_array": true,
+      "record_id": 153,
+      "record_weapon_id": 153,
+      "skill_slots": [
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 6,
+          "skill_type": 10,
+          "value": 58,
+          "name": "Huang's Bow"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 58,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 21,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_153"
+    },
+    {
+      "officer_id": 22,
+      "officer_name": "Zhang Liao",
+      "tier": 4,
+      "weapon_id": 111,
+      "weapon_name": "Dragon Breath",
+      "base_power": 48,
+      "attribute_bitmask": 131,
+      "template_index": 22,
+      "template_row_name": "UniqueWeaponID_022",
+      "template_row_offset": 1773,
+      "unique_save_index": 22,
+      "data_id": 10022,
+      "fits_supplied_84_record_array": true,
+      "record_id": 111,
+      "record_weapon_id": 111,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 76,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 58,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 9,
+          "skill_type": 10,
+          "value": 58,
+          "name": "Cavalry Armor"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 21,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_111"
+    },
+    {
+      "officer_id": 22,
+      "officer_name": "Zhang Liao",
+      "tier": 5,
+      "weapon_id": 154,
+      "weapon_name": "Dragon God",
+      "base_power": 48,
+      "attribute_bitmask": 71,
+      "template_index": 63,
+      "template_row_name": "UniqueWeaponID_063",
+      "template_row_offset": 5012,
+      "unique_save_index": 65,
+      "data_id": 10065,
+      "fits_supplied_84_record_array": true,
+      "record_id": 154,
+      "record_weapon_id": 154,
+      "skill_slots": [
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 27,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 53,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 23,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_154"
+    },
+    {
+      "officer_id": 23,
+      "officer_name": "Sima Yi",
+      "tier": 4,
+      "weapon_id": 112,
+      "weapon_name": "Dark Feather",
+      "base_power": 40,
+      "attribute_bitmask": 139,
+      "template_index": 23,
+      "template_row_name": "UniqueWeaponID_023",
+      "template_row_offset": 1852,
+      "unique_save_index": 23,
+      "data_id": 10023,
+      "fits_supplied_84_record_array": true,
+      "record_id": 112,
+      "record_weapon_id": 112,
+      "skill_slots": [
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 6,
+          "skill_type": 10,
+          "value": 50,
+          "name": "Huang's Bow"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 55,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 29,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 26,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_112"
+    },
+    {
+      "officer_id": 23,
+      "officer_name": "Sima Yi",
+      "tier": 5,
+      "weapon_id": 155,
+      "weapon_name": "Raven Feather",
+      "base_power": 40,
+      "attribute_bitmask": 67,
+      "template_index": 64,
+      "template_row_name": "UniqueWeaponID_064",
+      "template_row_offset": 5091,
+      "unique_save_index": 66,
+      "data_id": 10066,
+      "fits_supplied_84_record_array": true,
+      "record_id": 155,
+      "record_weapon_id": 155,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 71,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 55,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 20,
+          "skill_type": 10,
+          "value": 0,
+          "name": "Defender"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_155"
+    },
+    {
+      "officer_id": 24,
+      "officer_name": "Lu Meng",
+      "tier": 4,
+      "weapon_id": 113,
+      "weapon_name": "White Tiger",
+      "base_power": 45,
+      "attribute_bitmask": 139,
+      "template_index": 24,
+      "template_row_name": "UniqueWeaponID_024",
+      "template_row_offset": 1931,
+      "unique_save_index": 24,
+      "data_id": 10024,
+      "fits_supplied_84_record_array": true,
+      "record_id": 113,
+      "record_weapon_id": 113,
+      "skill_slots": [
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 53,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 54,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 9,
+          "skill_type": 10,
+          "value": 54,
+          "name": "Cavalry Armor"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_113"
+    },
+    {
+      "officer_id": 24,
+      "officer_name": "Lu Meng",
+      "tier": 5,
+      "weapon_id": 156,
+      "weapon_name": "Fighting Tiger",
+      "base_power": 45,
+      "attribute_bitmask": 67,
+      "template_index": 65,
+      "template_row_name": "UniqueWeaponID_065",
+      "template_row_offset": 5170,
+      "unique_save_index": 67,
+      "data_id": 10067,
+      "fits_supplied_84_record_array": true,
+      "record_id": 156,
+      "record_weapon_id": 156,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 82,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 50,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 39,
+          "skill_type": 10,
+          "value": 0,
+          "name": "Musou Armor"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_156"
+    },
+    {
+      "officer_id": 25,
+      "officer_name": "Gan Ning",
+      "tier": 4,
+      "weapon_id": 114,
+      "weapon_name": "Sea Master",
+      "base_power": 46,
+      "attribute_bitmask": 139,
+      "template_index": 25,
+      "template_row_name": "UniqueWeaponID_025",
+      "template_row_offset": 2010,
+      "unique_save_index": 25,
+      "data_id": 10025,
+      "fits_supplied_84_record_array": true,
+      "record_id": 114,
+      "record_weapon_id": 114,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 1,
+          "skill_type": 10,
+          "value": 21,
+          "name": "Wing Boots"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 10,
+          "skill_type": 10,
+          "value": 26,
+          "name": "Seven Star Orb"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_114"
+    },
+    {
+      "officer_id": 25,
+      "officer_name": "Gan Ning",
+      "tier": 5,
+      "weapon_id": 157,
+      "weapon_name": "Seven Seas Blade",
+      "base_power": 46,
+      "attribute_bitmask": 99,
+      "template_index": 66,
+      "template_row_name": "UniqueWeaponID_066",
+      "template_row_offset": 5249,
+      "unique_save_index": 68,
+      "data_id": 10068,
+      "fits_supplied_84_record_array": true,
+      "record_id": 157,
+      "record_weapon_id": 157,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 45,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 26,
+          "skill_type": 10,
+          "value": 12,
+          "name": "Mountain Pouch"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_157"
+    },
+    {
+      "officer_id": 26,
+      "officer_name": "Jiang Wei",
+      "tier": 4,
+      "weapon_id": 115,
+      "weapon_name": "Blink",
+      "base_power": 41,
+      "attribute_bitmask": 139,
+      "template_index": 26,
+      "template_row_name": "UniqueWeaponID_026",
+      "template_row_offset": 2089,
+      "unique_save_index": 26,
+      "data_id": 10026,
+      "fits_supplied_84_record_array": true,
+      "record_id": 115,
+      "record_weapon_id": 115,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 74,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 23,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 10,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Seven Star Orb"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_115"
+    },
+    {
+      "officer_id": 26,
+      "officer_name": "Jiang Wei",
+      "tier": 5,
+      "weapon_id": 158,
+      "weapon_name": "Starlight Pike",
+      "base_power": 41,
+      "attribute_bitmask": 67,
+      "template_index": 67,
+      "template_row_name": "UniqueWeaponID_067",
+      "template_row_offset": 5328,
+      "unique_save_index": 69,
+      "data_id": 10069,
+      "fits_supplied_84_record_array": true,
+      "record_id": 158,
+      "record_weapon_id": 158,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 79,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 21,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 58,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 20,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 20,
+          "skill_type": 10,
+          "value": 0,
+          "name": "Defender"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_158"
+    },
+    {
+      "officer_id": 27,
+      "officer_name": "Zhang Jiao",
+      "tier": 4,
+      "weapon_id": 116,
+      "weapon_name": "Volcano Staff",
+      "base_power": 37,
+      "attribute_bitmask": 135,
+      "template_index": 27,
+      "template_row_name": "UniqueWeaponID_027",
+      "template_row_offset": 2168,
+      "unique_save_index": 27,
+      "data_id": 10027,
+      "fits_supplied_84_record_array": true,
+      "record_id": 116,
+      "record_weapon_id": 116,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 72,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 43,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 27,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_116"
+    },
+    {
+      "officer_id": 27,
+      "officer_name": "Zhang Jiao",
+      "tier": 5,
+      "weapon_id": 159,
+      "weapon_name": "Thunder Staff",
+      "base_power": 37,
+      "attribute_bitmask": 75,
+      "template_index": 68,
+      "template_row_name": "UniqueWeaponID_068",
+      "template_row_offset": 5407,
+      "unique_save_index": 70,
+      "data_id": 10070,
+      "fits_supplied_84_record_array": true,
+      "record_id": 159,
+      "record_weapon_id": 159,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 68,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 43,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 9,
+          "skill_type": 10,
+          "value": 55,
+          "name": "Cavalry Armor"
+        },
+        {
+          "item_id": 10,
+          "skill_type": 10,
+          "value": 18,
+          "name": "Seven Star Orb"
+        },
+        {
+          "item_id": 26,
+          "skill_type": 10,
+          "value": 15,
+          "name": "Mountain Pouch"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_159"
+    },
+    {
+      "officer_id": 28,
+      "officer_name": "Xu Huang",
+      "tier": 4,
+      "weapon_id": 117,
+      "weapon_name": "Marauder",
+      "base_power": 46,
+      "attribute_bitmask": 131,
+      "template_index": 28,
+      "template_row_name": "UniqueWeaponID_028",
+      "template_row_offset": 2247,
+      "unique_save_index": 28,
+      "data_id": 10028,
+      "fits_supplied_84_record_array": true,
+      "record_id": 117,
+      "record_weapon_id": 117,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 21,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 82,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 10,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Seven Star Orb"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_117"
+    },
+    {
+      "officer_id": 28,
+      "officer_name": "Xu Huang",
+      "tier": 5,
+      "weapon_id": 160,
+      "weapon_name": "Tiger Fang",
+      "base_power": 46,
+      "attribute_bitmask": 71,
+      "template_index": 69,
+      "template_row_name": "UniqueWeaponID_069",
+      "template_row_offset": 5486,
+      "unique_save_index": 71,
+      "data_id": 10071,
+      "fits_supplied_84_record_array": true,
+      "record_id": 160,
+      "record_weapon_id": 160,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 23,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 81,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 41,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_160"
+    },
+    {
+      "officer_id": 29,
+      "officer_name": "Zhang He",
+      "tier": 4,
+      "weapon_id": 118,
+      "weapon_name": "Peacock Talon",
+      "base_power": 43,
+      "attribute_bitmask": 147,
+      "template_index": 29,
+      "template_row_name": "UniqueWeaponID_029",
+      "template_row_offset": 2326,
+      "unique_save_index": 29,
+      "data_id": 10029,
+      "fits_supplied_84_record_array": true,
+      "record_id": 118,
+      "record_weapon_id": 118,
+      "skill_slots": [
+        {
+          "item_id": 1,
+          "skill_type": 10,
+          "value": 23,
+          "name": "Wing Boots"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 27,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 29,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_118"
+    },
+    {
+      "officer_id": 29,
+      "officer_name": "Zhang He",
+      "tier": 5,
+      "weapon_id": 161,
+      "weapon_name": "Phoenix Talon",
+      "base_power": 43,
+      "attribute_bitmask": 67,
+      "template_index": 70,
+      "template_row_name": "UniqueWeaponID_070",
+      "template_row_offset": 5565,
+      "unique_save_index": 72,
+      "data_id": 10072,
+      "fits_supplied_84_record_array": true,
+      "record_id": 161,
+      "record_weapon_id": 161,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 73,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 58,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 19,
+          "skill_type": 10,
+          "value": 0,
+          "name": "Survival Guide"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_161"
+    },
+    {
+      "officer_id": 30,
+      "officer_name": "Zhenji",
+      "tier": 4,
+      "weapon_id": 119,
+      "weapon_name": "Dark Moon Flute",
+      "base_power": 37,
+      "attribute_bitmask": 131,
+      "template_index": 30,
+      "template_row_name": "UniqueWeaponID_030",
+      "template_row_offset": 2405,
+      "unique_save_index": 30,
+      "data_id": 10030,
+      "fits_supplied_84_record_array": true,
+      "record_id": 119,
+      "record_weapon_id": 119,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 23,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 52,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 6,
+          "skill_type": 10,
+          "value": 50,
+          "name": "Huang's Bow"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 50,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_119"
+    },
+    {
+      "officer_id": 30,
+      "officer_name": "Zhenji",
+      "tier": 5,
+      "weapon_id": 162,
+      "weapon_name": "Half Moon Flute",
+      "base_power": 37,
+      "attribute_bitmask": 71,
+      "template_index": 71,
+      "template_row_name": "UniqueWeaponID_071",
+      "template_row_offset": 5644,
+      "unique_save_index": 73,
+      "data_id": 10073,
+      "fits_supplied_84_record_array": true,
+      "record_id": 162,
+      "record_weapon_id": 162,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 21,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 68,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_162"
+    },
+    {
+      "officer_id": 31,
+      "officer_name": "Huang Gai",
+      "tier": 4,
+      "weapon_id": 120,
+      "weapon_name": "Black Shadow",
+      "base_power": 44,
+      "attribute_bitmask": 131,
+      "template_index": 31,
+      "template_row_name": "UniqueWeaponID_031",
+      "template_row_offset": 2484,
+      "unique_save_index": 31,
+      "data_id": 10031,
+      "fits_supplied_84_record_array": true,
+      "record_id": 120,
+      "record_weapon_id": 120,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 82,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 57,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 52,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 23,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 27,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_120"
+    },
+    {
+      "officer_id": 31,
+      "officer_name": "Huang Gai",
+      "tier": 5,
+      "weapon_id": 163,
+      "weapon_name": "Spiked Mace",
+      "base_power": 44,
+      "attribute_bitmask": 75,
+      "template_index": 72,
+      "template_row_name": "UniqueWeaponID_072",
+      "template_row_offset": 5723,
+      "unique_save_index": 74,
+      "data_id": 10074,
+      "fits_supplied_84_record_array": true,
+      "record_id": 163,
+      "record_weapon_id": 163,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 85,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 26,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 50,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_163"
+    },
+    {
+      "officer_id": 32,
+      "officer_name": "Sun Ce",
+      "tier": 4,
+      "weapon_id": 121,
+      "weapon_name": "Overlord",
+      "base_power": 42,
+      "attribute_bitmask": 135,
+      "template_index": 32,
+      "template_row_name": "UniqueWeaponID_032",
+      "template_row_offset": 2563,
+      "unique_save_index": 32,
+      "data_id": 10032,
+      "fits_supplied_84_record_array": true,
+      "record_id": 121,
+      "record_weapon_id": 121,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 21,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 1,
+          "skill_type": 10,
+          "value": 20,
+          "name": "Wing Boots"
+        },
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 80,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 72,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_121"
+    },
+    {
+      "officer_id": 32,
+      "officer_name": "Sun Ce",
+      "tier": 5,
+      "weapon_id": 164,
+      "weapon_name": "God of War",
+      "base_power": 42,
+      "attribute_bitmask": 75,
+      "template_index": 73,
+      "template_row_name": "UniqueWeaponID_073",
+      "template_row_offset": 5802,
+      "unique_save_index": 75,
+      "data_id": 10075,
+      "fits_supplied_84_record_array": true,
+      "record_id": 164,
+      "record_weapon_id": 164,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 50,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 23,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_164"
+    },
+    {
+      "officer_id": 33,
+      "officer_name": "Wei Yan",
+      "tier": 4,
+      "weapon_id": 122,
+      "weapon_name": "Double Comet",
+      "base_power": 46,
+      "attribute_bitmask": 147,
+      "template_index": 33,
+      "template_row_name": "UniqueWeaponID_033",
+      "template_row_offset": 2642,
+      "unique_save_index": 33,
+      "data_id": 10033,
+      "fits_supplied_84_record_array": true,
+      "record_id": 122,
+      "record_weapon_id": 122,
+      "skill_slots": [
+        {
+          "item_id": 1,
+          "skill_type": 10,
+          "value": 23,
+          "name": "Wing Boots"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 56,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_122"
+    },
+    {
+      "officer_id": 33,
+      "officer_name": "Wei Yan",
+      "tier": 5,
+      "weapon_id": 165,
+      "weapon_name": "Twin Stars",
+      "base_power": 46,
+      "attribute_bitmask": 67,
+      "template_index": 74,
+      "template_row_name": "UniqueWeaponID_074",
+      "template_row_offset": 5881,
+      "unique_save_index": 76,
+      "data_id": 10076,
+      "fits_supplied_84_record_array": true,
+      "record_id": 165,
+      "record_weapon_id": 165,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 82,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 82,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 20,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 18,
+          "skill_type": 10,
+          "value": 0,
+          "name": "The Way of Musou"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_165"
+    },
+    {
+      "officer_id": 34,
+      "officer_name": "Pang Tong",
+      "tier": 4,
+      "weapon_id": 123,
+      "weapon_name": "Tornado Staff",
+      "base_power": 38,
+      "attribute_bitmask": 131,
+      "template_index": 34,
+      "template_row_name": "UniqueWeaponID_034",
+      "template_row_offset": 2721,
+      "unique_save_index": 34,
+      "data_id": 10034,
+      "fits_supplied_84_record_array": true,
+      "record_id": 123,
+      "record_weapon_id": 123,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 66,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 6,
+          "skill_type": 10,
+          "value": 46,
+          "name": "Huang's Bow"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 29,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_123"
+    },
+    {
+      "officer_id": 34,
+      "officer_name": "Pang Tong",
+      "tier": 5,
+      "weapon_id": 166,
+      "weapon_name": "Lightning Staff",
+      "base_power": 38,
+      "attribute_bitmask": 75,
+      "template_index": 75,
+      "template_row_name": "UniqueWeaponID_075",
+      "template_row_offset": 5960,
+      "unique_save_index": 77,
+      "data_id": 10077,
+      "fits_supplied_84_record_array": true,
+      "record_id": 166,
+      "record_weapon_id": 166,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 80,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 56,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 50,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 27,
+          "skill_type": 10,
+          "value": 5,
+          "name": "Bronze Flask"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_166"
+    },
+    {
+      "officer_id": 35,
+      "officer_name": "Meng Huo",
+      "tier": 4,
+      "weapon_id": 124,
+      "weapon_name": "King of Beasts",
+      "base_power": 48,
+      "attribute_bitmask": 135,
+      "template_index": 35,
+      "template_row_name": "UniqueWeaponID_035",
+      "template_row_offset": 2800,
+      "unique_save_index": 35,
+      "data_id": 10035,
+      "fits_supplied_84_record_array": true,
+      "record_id": 124,
+      "record_weapon_id": 124,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 88,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 27,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 54,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 9,
+          "skill_type": 10,
+          "value": 54,
+          "name": "Cavalry Armor"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_124"
+    },
+    {
+      "officer_id": 35,
+      "officer_name": "Meng Huo",
+      "tier": 5,
+      "weapon_id": 167,
+      "weapon_name": "Shadow Beast",
+      "base_power": 48,
+      "attribute_bitmask": 75,
+      "template_index": 76,
+      "template_row_name": "UniqueWeaponID_076",
+      "template_row_offset": 6039,
+      "unique_save_index": 78,
+      "data_id": 10078,
+      "fits_supplied_84_record_array": true,
+      "record_id": 167,
+      "record_weapon_id": 167,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 8,
+          "skill_type": 10,
+          "value": 54,
+          "name": "Horned Helm"
+        },
+        {
+          "item_id": 10,
+          "skill_type": 10,
+          "value": 13,
+          "name": "Seven Star Orb"
+        },
+        {
+          "item_id": 27,
+          "skill_type": 10,
+          "value": 8,
+          "name": "Bronze Flask"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_167"
+    },
+    {
+      "officer_id": 36,
+      "officer_name": "Zhurong",
+      "tier": 4,
+      "weapon_id": 125,
+      "weapon_name": "Magma Wheel",
+      "base_power": 42,
+      "attribute_bitmask": 135,
+      "template_index": 36,
+      "template_row_name": "UniqueWeaponID_036",
+      "template_row_offset": 2879,
+      "unique_save_index": 36,
+      "data_id": 10036,
+      "fits_supplied_84_record_array": true,
+      "record_id": 125,
+      "record_weapon_id": 125,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 72,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 52,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 52,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 26,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_125"
+    },
+    {
+      "officer_id": 36,
+      "officer_name": "Zhurong",
+      "tier": 5,
+      "weapon_id": 168,
+      "weapon_name": "Tri Blade",
+      "base_power": 42,
+      "attribute_bitmask": 99,
+      "template_index": 77,
+      "template_row_name": "UniqueWeaponID_077",
+      "template_row_offset": 6118,
+      "unique_save_index": 79,
+      "data_id": 10079,
+      "fits_supplied_84_record_array": true,
+      "record_id": 168,
+      "record_weapon_id": 168,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 78,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 25,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 26,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 25,
+          "skill_type": 10,
+          "value": 47,
+          "name": "Mountain Quiver"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_168"
+    },
+    {
+      "officer_id": 37,
+      "officer_name": "Daqiao",
+      "tier": 4,
+      "weapon_id": 126,
+      "weapon_name": "True Beauty",
+      "base_power": 37,
+      "attribute_bitmask": 131,
+      "template_index": 37,
+      "template_row_name": "UniqueWeaponID_037",
+      "template_row_offset": 2958,
+      "unique_save_index": 37,
+      "data_id": 10037,
+      "fits_supplied_84_record_array": true,
+      "record_id": 126,
+      "record_weapon_id": 126,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 64,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 65,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 48,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 10,
+          "skill_type": 10,
+          "value": 29,
+          "name": "Seven Star Orb"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_126"
+    },
+    {
+      "officer_id": 37,
+      "officer_name": "Daqiao",
+      "tier": 5,
+      "weapon_id": 169,
+      "weapon_name": "Yellow Beauty",
+      "base_power": 37,
+      "attribute_bitmask": 71,
+      "template_index": 78,
+      "template_row_name": "UniqueWeaponID_078",
+      "template_row_offset": 6197,
+      "unique_save_index": 80,
+      "data_id": 10080,
+      "fits_supplied_84_record_array": true,
+      "record_id": 169,
+      "record_weapon_id": 169,
+      "skill_slots": [
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 65,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 26,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 26,
+          "skill_type": 10,
+          "value": 10,
+          "name": "Mountain Pouch"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_169"
+    },
+    {
+      "officer_id": 38,
+      "officer_name": "Xiaoqiao",
+      "tier": 4,
+      "weapon_id": 127,
+      "weapon_name": "True Grace",
+      "base_power": 38,
+      "attribute_bitmask": 147,
+      "template_index": 38,
+      "template_row_name": "UniqueWeaponID_038",
+      "template_row_offset": 3037,
+      "unique_save_index": 38,
+      "data_id": 10038,
+      "fits_supplied_84_record_array": true,
+      "record_id": 127,
+      "record_weapon_id": 127,
+      "skill_slots": [
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 47,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 10,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Seven Star Orb"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_127"
+    },
+    {
+      "officer_id": 38,
+      "officer_name": "Xiaoqiao",
+      "tier": 5,
+      "weapon_id": 170,
+      "weapon_name": "Blue Grace",
+      "base_power": 38,
+      "attribute_bitmask": 67,
+      "template_index": 79,
+      "template_row_name": "UniqueWeaponID_079",
+      "template_row_offset": 6276,
+      "unique_save_index": 81,
+      "data_id": 10081,
+      "fits_supplied_84_record_array": true,
+      "record_id": 170,
+      "record_weapon_id": 170,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 85,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 7,
+          "skill_type": 10,
+          "value": 54,
+          "name": "Shell Armor"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 19,
+          "skill_type": 10,
+          "value": 0,
+          "name": "Survival Guide"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_170"
+    },
+    {
+      "officer_id": 39,
+      "officer_name": "Fuxi",
+      "tier": 4,
+      "weapon_id": 128,
+      "weapon_name": "Fuxi's Sword",
+      "base_power": 46,
+      "attribute_bitmask": 135,
+      "template_index": 39,
+      "template_row_name": "UniqueWeaponID_039",
+      "template_row_offset": 3116,
+      "unique_save_index": 39,
+      "data_id": 10039,
+      "fits_supplied_84_record_array": true,
+      "record_id": 128,
+      "record_weapon_id": 128,
+      "skill_slots": [
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 26,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 51,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 23,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 24,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_128"
+    },
+    {
+      "officer_id": 39,
+      "officer_name": "Fuxi",
+      "tier": 5,
+      "weapon_id": 171,
+      "weapon_name": "Dragon Slayer",
+      "base_power": 46,
+      "attribute_bitmask": 67,
+      "template_index": 80,
+      "template_row_name": "UniqueWeaponID_080",
+      "template_row_offset": 6355,
+      "unique_save_index": 82,
+      "data_id": 10082,
+      "fits_supplied_84_record_array": true,
+      "record_id": 171,
+      "record_weapon_id": 171,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 86,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 80,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 27,
+          "skill_type": 10,
+          "value": 8,
+          "name": "Bronze Flask"
+        },
+        {
+          "item_id": 16,
+          "skill_type": 10,
+          "value": 0,
+          "name": "The Art of War"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_171"
+    },
+    {
+      "officer_id": 40,
+      "officer_name": "Nuwa",
+      "tier": 4,
+      "weapon_id": 129,
+      "weapon_name": "Nuwa's Rapier",
+      "base_power": 39,
+      "attribute_bitmask": 147,
+      "template_index": 40,
+      "template_row_name": "UniqueWeaponID_040",
+      "template_row_offset": 3195,
+      "unique_save_index": 40,
+      "data_id": 10040,
+      "fits_supplied_84_record_array": true,
+      "record_id": 129,
+      "record_weapon_id": 129,
+      "skill_slots": [
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 62,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 3,
+          "skill_type": 10,
+          "value": 62,
+          "name": "Peacock Urn"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 21,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 46,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_129"
+    },
+    {
+      "officer_id": 40,
+      "officer_name": "Nuwa",
+      "tier": 5,
+      "weapon_id": 172,
+      "weapon_name": "Dragon Rapier",
+      "base_power": 39,
+      "attribute_bitmask": 67,
+      "template_index": 81,
+      "template_row_name": "UniqueWeaponID_081",
+      "template_row_offset": 6434,
+      "unique_save_index": 83,
+      "data_id": 10083,
+      "fits_supplied_84_record_array": true,
+      "record_id": 172,
+      "record_weapon_id": 172,
+      "skill_slots": [
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 23,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 41,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 11,
+          "skill_type": 10,
+          "value": 30,
+          "name": "Wind Scroll"
+        },
+        {
+          "item_id": 12,
+          "skill_type": 10,
+          "value": 20,
+          "name": "Elixir"
+        },
+        {
+          "item_id": 20,
+          "skill_type": 10,
+          "value": 0,
+          "name": "Defender"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_172"
+    },
+    {
+      "officer_id": 41,
+      "officer_name": "Ziluan",
+      "tier": 4,
+      "weapon_id": 191,
+      "weapon_name": "Celestial Sword",
+      "base_power": 45,
+      "attribute_bitmask": 131,
+      "template_index": 82,
+      "template_row_name": "UniqueWeaponID_082",
+      "template_row_offset": 6513,
+      "unique_save_index": 102,
+      "data_id": 10102,
+      "fits_supplied_84_record_array": false,
+      "record_id": 191,
+      "record_weapon_id": 191,
+      "skill_slots": [
+        {
+          "item_id": 26,
+          "skill_type": 10,
+          "value": 10,
+          "name": "Mountain Pouch"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 9,
+          "skill_type": 10,
+          "value": 50,
+          "name": "Cavalry Armor"
+        },
+        {
+          "item_id": 27,
+          "skill_type": 10,
+          "value": 8,
+          "name": "Bronze Flask"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_191"
+    },
+    {
+      "officer_id": 41,
+      "officer_name": "Ziluan",
+      "tier": 5,
+      "weapon_id": 192,
+      "weapon_name": "Lurking Luan",
+      "base_power": 45,
+      "attribute_bitmask": 67,
+      "template_index": 83,
+      "template_row_name": "UniqueWeaponID_083",
+      "template_row_offset": 6592,
+      "unique_save_index": 103,
+      "data_id": 10103,
+      "fits_supplied_84_record_array": false,
+      "record_id": 192,
+      "record_weapon_id": 192,
+      "skill_slots": [
+        {
+          "item_id": 26,
+          "skill_type": 10,
+          "value": 15,
+          "name": "Mountain Pouch"
+        },
+        {
+          "item_id": 4,
+          "skill_type": 10,
+          "value": 28,
+          "name": "Tiger Amulet"
+        },
+        {
+          "item_id": 5,
+          "skill_type": 10,
+          "value": 60,
+          "name": "Tortoise Amulet"
+        },
+        {
+          "item_id": 0,
+          "skill_type": 10,
+          "value": 22,
+          "name": "Speed Scroll"
+        },
+        {
+          "item_id": 2,
+          "skill_type": 10,
+          "value": 80,
+          "name": "Dragon Amulet"
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        },
+        {
+          "item_id": 100,
+          "skill_type": 10,
+          "value": 0
+        }
+      ],
+      "weapon_enum": "EWeaponID::WeaponID_192"
+    }
+  ]
+}
