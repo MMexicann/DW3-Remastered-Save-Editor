@@ -394,7 +394,7 @@ class BodyguardIntegrationTests(unittest.TestCase):
             with self.subTest(field=prop['name'], value=value), self.assertRaises(SaveError):
                 parse_bytes(edited_fixture_bytes(self.document, [(prop, value)]))
 
-    def test_malformed_guard_bonus_values_count_identity_and_family_rejected(self):
+    def test_saved_guard_bonus_structure_is_separate_from_authored_drop_rules(self):
         records = self.document.records('GuardWeaponDataArray')
 
         def skills_replacements(slot, skills):
@@ -406,14 +406,26 @@ class BodyguardIntegrationTests(unittest.TestCase):
                                      (row['Value'], struct.pack('<i', skill['value'] if skill else 0))])
             return replacements
 
-        probes = [(0, [{'id': 0, 'value': 30}]),  # tier-one overflow
-                  (1, [{'id': 0, 'value': 29}]),  # non-generated discrete roll
-                  (1, [{'id': 0, 'value': 30}, {'id': 0, 'value': 25}]),
-                  (1, [{'id': 4, 'value': 10}]),  # bow-only bonus on melee
-                  (12, [{'id': 2, 'value': 5}]),  # melee-only bonus on crossbow
+        unsupported = [(0, [{'id': 0, 'value': 30}]),
+                       (1, [{'id': 0, 'value': 29}]),
+                       (1, [{'id': 4, 'value': 10}]),
+                       (12, [{'id': 2, 'value': 5}]),
+                       (1, [])]
+        for slot, skills in unsupported:
+            with self.subTest(slot=slot, skills=skills):
+                raw = edited_fixture_bytes(self.document, skills_replacements(slot, skills))
+                doc = parse_bytes(raw)
+                state = bg.weapon_state(doc)[slot]
+                self.assertFalse(state['editable'])
+                self.assertEqual(state['skills'], skills)
+                self.assertEqual(serialize(doc)[0], raw)
+                with self.assertRaises(SaveError):
+                    serialize(doc, [Change('guard_weapon_slot', slot, 'Skills', bg.max_skills(state['weapon_id']))])
+        probes = [(1, [{'id': 0, 'value': 30}, {'id': 0, 'value': 25}]),
+                  (1, [{'id': 0, 'value': 0}]),
+                  (1, [{'id': 0, 'value': -1}]),
                   (1, [{'id': 9, 'value': 0}]),  # rare inventory item is not a weapon bonus
-                  (1, [{'id': index, 'value': 1} for index in (0, 1, 2, 3)]),
-                  (1, [])]  # tier-two drop requires at least one generated bonus
+                  (1, [{'id': index, 'value': 1} for index in (0, 1, 2, 3)])]
         for slot, skills in probes:
             with self.subTest(slot=slot, skills=skills), self.assertRaises(SaveError):
                 parse_bytes(edited_fixture_bytes(self.document, skills_replacements(slot, skills)))
