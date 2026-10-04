@@ -30,7 +30,7 @@ class WeaponRuleTests(unittest.TestCase):
         self.assertEqual(w.validate_skills(info,skills),skills)
         for invalid in (skills[:6]+[{'id':6,'value':1}]+skills[7:],
                         skills[:6]+[{'id':0,'value':1}]+skills[7:],
-                        skills[:6]+[{'id':14,'value':0}]+skills[7:]):
+                        skills[:6]+[{'id':40,'value':0}]+skills[7:]):
             with self.assertRaises(SaveError):w.validate_skills(info,invalid)
         info['blue_minimum']=1
         with self.assertRaises(SaveError):w.validate_skills(info,[{'id':None,'value':0} for _ in range(9)])

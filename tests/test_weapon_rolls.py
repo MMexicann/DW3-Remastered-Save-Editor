@@ -237,12 +237,19 @@ class OfficerWeaponIntegrationTests(unittest.TestCase):
         self.assertEqual({row['data_id'] for row in states if row['array'] == 'WeaponDataArray'}, set(range(42)))
         self.assertEqual({row['data_id'] for row in states if row['array'] == 'UniqueWeaponDataArray'}, {10004})
 
-    def test_rare_exact_slot_identity_and_value_are_protected(self):
+    def test_rare_replacement_canonicalizes_and_invalid_rare_changes_refused(self):
         original = clone_skills(weapon.state(self.document, 36))
         probes = []
         removed = [dict(row) for row in original]; removed[6] = {'id': None, 'value': 0}; probes.append(removed)
-        moved = [dict(row) for row in original]; moved[6], moved[8] = moved[8], moved[6]; probes.append(moved)
-        changed = [dict(row) for row in original]; changed[6]['id'] = 13; probes.append(changed)
+        moved = [dict(row) for row in original]; moved[6], moved[8] = moved[8], moved[6]
+        document,_=self.edit(36,moved)
+        self.assertEqual(weapon.state(document,36)['skills'],moved)
+        changed = [dict(row) for row in original]; changed[6]['id'] = 13
+        document,_=self.edit(36,changed)
+        result=weapon.state(document,36)['skills']
+        self.assertEqual(result[:6],original[:6])
+        self.assertEqual(result[6:8],[{'id':None,'value':0}]*2)
+        self.assertEqual(result[8],{'id':13,'value':0})
         valued = [dict(row) for row in original]; valued[6]['value'] = 1; probes.append(valued)
         extra = [dict(row) for row in original]; extra[8] = {'id': 13, 'value': 0}; probes.append(extra)
         for skills in probes:
