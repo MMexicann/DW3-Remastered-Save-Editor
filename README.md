@@ -4,12 +4,6 @@ A small Windows editor for **Dynasty Warriors 3: Complete Edition Remastered**
 Steam saves. Edit a separate copy, remove repetitive farming, and keep story
 completion separate from stat changes.
 
-The save encryption and tagged format have been decoded. Editing, exact
-round trips, backups, restore, malformed-input handling and the packaged
-Windows app have been tested against a supplied copy. **An edited save has
-not yet been loaded in the game.** This preview needs that final acceptance
-check before being described as a game-tested public release.
-
 ## Start here
 
 1. Make a copy of `GameStatusData.sav` in a separate folder, such as Documents.
