@@ -238,7 +238,9 @@ now supports verified normal bonus editing. Fusion copies material ID/value
 directly; rank limits are6/6/6/7/8normal bonuses. Exact donor value sets,
 per-weapon stock exceptions, preserved rare slots and inventory/cache
 dependencies are documented in [WEAPON_ROLLS.md](WEAPON_ROLLS.md).
-Material consumption, elements and rare bonus changes remain unsupported.
+Rare bonuses and single elements are now editable under the verified rules
+in [WEAPON_ATTRIBUTES_FIX.md](WEAPON_ATTRIBUTES_FIX.md). Material consumption
+and fusion achievements remain unsupported.
 
 ## Bodyguards
 
@@ -343,7 +345,7 @@ metadata are refused. Editing is performed on separately selected copies.
 
 Confidence is high for the codec, supported layout, mapped fields, native
 caps and template mappings. Runtime load acceptance remains untested.
-Unknown/unsupported areas include material-consuming fusion, element/rare changes, bodyguard appearance/type changes,
+Unknown/unsupported areas include material-consuming fusion, new combined elements, nontransferable rare weapon donors, bodyguard appearance/type changes,
 officer title/rank edits, missing unique-slot expansion, detailed meanings of
 preserved opaque fields and other builds/platforms. Unknown regions are not
 assigned invented offsets or values.
@@ -400,3 +402,23 @@ absent indexes are refused. Existing positive distinct normal bodyguard weapon
 bonuses outside the verified drop profiles are read-only and preserved.
 Authored bonuses retain strict original generation limits. See
 [COMPATIBILITY_FIX.md](COMPATIBILITY_FIX.md) for evidence and limitations.
+
+## v0.3.3 officer weapon rare bonuses and elements
+
+Rare skills use the existing nine-slot Skill array. Verified transferable
+IDs are 13–24 and 28–39, with Int32 Value zero and at most one rare bonus.
+Explicit rare edits normalize it to final slot 8; numeric-only edits retain
+earlier saved positions. Attr is Int64: element bits are Fire 4, Lightning 8,
+Steel 16 and Wind 32, with mask 0x3c. Element additions/replacements preserve
+every other bit, including hit and unique flags. Newly authored combined
+elements and removal of existing rare bonuses/elements are disabled.
+
+Variable-length enum relocations can cancel in total size. The writer uses
+complete plaintext differences to verify the expected encrypted block set
+for an equal-size result, rather than assuming field offsets remain stable.
+The audit adds fields_relocated; total-size resized remains separate.
+
+Confidence is high for the supported native transfer outcomes and storage.
+See [WEAPON_ATTRIBUTES_FIX.md](WEAPON_ATTRIBUTES_FIX.md) for evidence RVAs,
+limits, authoring policy and preserved dependencies. In-game acceptance of
+v0.3.3 awaits feedback.

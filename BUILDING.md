@@ -9,7 +9,7 @@ python -m pip install -r build-requirements.txt
 python build_windows.py
 ```
 
-The result is `dist/DW3RemasteredSaveEditor-v0.3.2.exe`. It bundles the GUI,
+The result is `dist/DW3RemasteredSaveEditor-v0.3.3.exe`. It bundles the GUI,
 standard-library AES wrapper, Tk runtime, parser/writer and ten JSON
 metadata files. It does not bundle research saves or installed game files.
 
@@ -17,9 +17,9 @@ Check startup and the complete file workflow after building. Wait for each
 windowed test process to finish before checking its exit code/report:
 
 ```powershell
-$smoke = Start-Process -FilePath .\dist\DW3RemasteredSaveEditor-v0.3.2.exe -ArgumentList '--smoke-test' -WindowStyle Hidden -Wait -PassThru
+$smoke = Start-Process -FilePath .\dist\DW3RemasteredSaveEditor-v0.3.3.exe -ArgumentList '--smoke-test' -WindowStyle Hidden -Wait -PassThru
 $smoke.ExitCode
-$selfTest = Start-Process -FilePath .\dist\DW3RemasteredSaveEditor-v0.3.2.exe -ArgumentList '--self-test "D:\SaveCopies\GameStatusData.sav" "D:\SaveCopies\BundledTest"' -WindowStyle Hidden -Wait -PassThru
+$selfTest = Start-Process -FilePath .\dist\DW3RemasteredSaveEditor-v0.3.3.exe -ArgumentList '--self-test "D:\SaveCopies\GameStatusData.sav" "D:\SaveCopies\BundledTest"' -WindowStyle Hidden -Wait -PassThru
 $selfTest.ExitCode
 ```
 

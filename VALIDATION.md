@@ -136,7 +136,7 @@ and restore passed; invalid edits leave existing destinations/audits unchanged.
 
 Native evidence and structural tests support the implemented edits. These
 checks do not establish in-game acceptance or achievement/Cloud behavior.
-Material-consuming fusion, element/rare changes, bodyguard model/type changes,
+Material-consuming fusion, new combined elements, nontransferable rare weapon donors, bodyguard model/type changes,
 direct title/rank edits,
 story completion editing, missing unique-slot expansion and different save
 versions remain unsupported. Stat previews show growth bases before
@@ -166,3 +166,34 @@ be48aa534d8b85478acb0f69c0ee0e0e1d044f88a3adf550819b6f02ed6307ab
 The owner reports in-game success with v0.3.1. The v0.3.2 compatibility update
 has not yet received in-game acceptance feedback. Test saves are excluded from
 all public packages. Thanks to GoooD1 for the reproducible report.
+
+## v0.3.3 weapon attribute validation
+
+- Full suite: all 165 tests passed, with zero failures, errors or skips.
+  Both supplied copies were available, including the optional reported save.
+- New attribute module: all 26 public-rule, private integration and hidden
+  GUI tests passed. Tests cover actual rare identity changes, disabled rare
+  numeric inputs, elements, undo/review, pending unique acquisition,
+  reserved read-only copies and empty-search control safety.
+- Packaged Windows app: startup and all 221 workflow checks passed, including
+  rare replacement, element application, serialization/readback and undo.
+- Attr-only edits change the selected Int64 scalar and its expected AES
+  blocks. Hit/unique/unknown high bits, acquisition time, equipment, other
+  copies, collection snapshots, bodyguards and story arrays stay unchanged.
+- Rare replacement can move enum fields while keeping total length equal.
+  Tests verify the relocated plaintext, corrected encrypted-block accounting,
+  nested size fields, exact repeated serialization and unrelated properties.
+- Unsupported rare donors, extra/duplicate rare skills, nonzero new rare
+  values, manufactured element combinations and element removal are refused.
+- Both original fixtures remained untouched. Private saves and game binaries
+  are excluded from public packages.
+
+The v0.3.3 executable SHA-256 is:
+
+```text
+a525ba2c9b13e5200b0ab675e96bcd9ba8e50894fb4d1110a255a91462ae927f
+```
+
+This update awaits in-game acceptance feedback. Thanks to austinkun for the
+report. See [WEAPON_ATTRIBUTES_FIX.md](WEAPON_ATTRIBUTES_FIX.md) for evidence
+and supported outcomes.

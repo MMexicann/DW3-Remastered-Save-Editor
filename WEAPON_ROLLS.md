@@ -1,4 +1,4 @@
-# Officer weapon bonus rolls — v0.3
+# Officer weapon bonus rolls — v0.3.3
 
 The Weapons tab now edits normal bonus types and values on owned regular,
 fourth and fifth weapon copies. It writes a supported fusion result directly,
@@ -9,8 +9,9 @@ keep its automatic backup.
 ## Controls
 
 Select an owned copy. Choose normal bonus types and their verified values in
-the nine saved slots, then Apply Weapon Bonuses. Existing rare bonuses are
-read-only in their current positions. Max Selected Existing Bonus Rolls
+the nine saved slots, then Apply Weapon Bonuses. Rare bonus types and elements
+also have verified controls; see [WEAPON_ATTRIBUTES_FIX.md](WEAPON_ATTRIBUTES_FIX.md).
+Max Selected Existing Bonus Rolls
 raises the current normal bonuses without adding or replacing their types.
 Max All Owned Bonus Rolls applies this to all supported owned copies,
 including unique weapons you have just unlocked in the editor. View-only
@@ -18,9 +19,9 @@ copies are counted and preserved. Save As writes a new file with a byte report.
 
 Base Attack is the weapon definition's fixed Power; it is separate from the
 Attack bonus supplied by Tiger Amulet. There is no per-copy saved Power field.
-Elements, hit flags, WeaponID/ID, DataID, GetTime and equipped references are
-preserved. The editor does not change rare weapon skills or simulate material
-selection, deletion, unique resets or fusion achievements.
+Hit flags, WeaponID/ID, DataID, GetTime and equipped references are preserved.
+Elements and rare skills change only through explicit controls. The editor
+does not simulate material selection, deletion, unique resets or achievements.
 
 ## Verified normal bonus limits
 
@@ -59,9 +60,11 @@ example; it is not a donor maximum and cannot be granted to ordinary weapons.
 | 5th | 8 |
 
 Nine serialized slots include normal and rare bonuses together. Duplicate
-identities are refused. Rare bonuses can appear before the final slot: the
+identities are refused. At most one rare bonus is supported. Rare bonuses can
+appear before the final slot: the
 supplied fused regular copy36 has six normal bonuses followed by Hex Mark
-Saddle at slot6 (zero-based). The editor preserves that exact rare position.
+Saddle at slot6 (zero-based). Numeric-only edits preserve that rare position.
+Rare additions/replacements use the native final slot, retaining normal order.
 
 For conservative reachability, uniques retain at least their stock normal
 bonus count; non-starter regular weapons retain at least one. Existing types
@@ -99,6 +102,6 @@ inventory skills once, while creating a missing first-acquisition cache with
 stock values. Existing collection caches remain unchanged, matching fusion.
 
 Confidence is high for supported numeric transfer outcomes, rank counts,
-stock exceptions and preserved dependencies. Exact minimum-count floors and
-fixed rare positions are conservative editor restrictions. In-game acceptance,
+stock exceptions and preserved dependencies. Minimum-count floors are
+conservative editor restrictions. In-game acceptance,
 material-consuming workflows and different versions remain untested.

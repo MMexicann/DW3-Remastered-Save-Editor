@@ -43,8 +43,8 @@ class Editor:
         self.weapon_rows = {}
         self.backup = None
         self.buttons = []
-        root.title('Dynasty Warriors 3 Remastered Save Editor — v0.3.2 Preview')
-        root.geometry('1120x780')
+        root.title('Dynasty Warriors 3 Remastered Save Editor — v0.3.3 Preview')
+        root.geometry('1120x810')
         root.minsize(1040, 730)
         style = ttk.Style()
         style.theme_use('vista' if 'vista' in style.theme_names() else 'clam')
@@ -95,6 +95,8 @@ class Editor:
             row = self.weapon_rows.get(selected[0]) if selected else None
             self.weapon_roll_button.configure(state='normal' if row and row['editable'] else 'disabled')
             self.weapon_max_button.configure(state='normal' if row and row['editable'] else 'disabled')
+            if row:self.select_weapon()
+            else:self.clear_weapon_form()
 
     def action(self, frame, text, command):
         button = ttk.Button(frame, text=text, command=command)
@@ -171,7 +173,7 @@ class Editor:
 
     def build_weapons(self):
         tab = self.tabs['Weapons']
-        ttk.Label(tab, text='Edit the normal bonus rolls of an owned weapon copy using verified values. This edits a fusion result without consuming materials. Base attack, elements, hit count and rare bonuses are preserved.', wraplength=950).pack(anchor='w', pady=(0, 9))
+        ttk.Label(tab, text='Edit owned weapon bonuses and elements using verified transfer rules. Base attack, hit count and equipped references are preserved. Save to write your applied changes.', wraplength=950).pack(anchor='w', pady=(0, 9))
         actions = ttk.Frame(tab); actions.pack(fill='x', pady=(0, 10))
         for text, command in [('Unlock Selected Unique Weapon', self.unlock_selected_weapon), ('Unlock All Supported Unique Weapons', self.unlock_weapons)]:
             button = ttk.Button(actions, text=text, command=command); button.pack(side='left', padx=(0, 8)); self.buttons.append(button)
@@ -187,6 +189,14 @@ class Editor:
         self.weapon_detail = tk.StringVar(value='Select a weapon to see its bonuses.')
         ttk.Label(right, textvariable=self.weapon_selected, font=('Segoe UI', 11, 'bold'), wraplength=370).pack(anchor='w', pady=(0, 6))
         ttk.Label(right, textvariable=self.weapon_detail, wraplength=370).pack(anchor='w', pady=(0, 8))
+        element_form=ttk.Frame(right);element_form.pack(fill='x',pady=(0,8))
+        ttk.Label(element_form,text='Element:').pack(side='left',padx=(0,6))
+        self.weapon_element=tk.StringVar(value='None')
+        self.weapon_element_choices={}
+        self.weapon_element_box=ttk.Combobox(element_form,textvariable=self.weapon_element,width=13,state='disabled')
+        self.weapon_element_box.pack(side='left',padx=(0,8))
+        self.weapon_element_button=ttk.Button(element_form,text='Apply Element',command=self.apply_weapon_element)
+        self.weapon_element_button.pack(side='left');self.buttons.append(self.weapon_element_button)
         form = ttk.Frame(right); form.pack(fill='x')
         ttk.Label(form, text='Bonus').grid(row=0, column=1, sticky='w', pady=(0, 4))
         ttk.Label(form, text='Value').grid(row=0, column=2, sticky='w', pady=(0, 4))
@@ -194,6 +204,7 @@ class Editor:
         self.weapon_bonus_boxes, self.weapon_bonus_value_boxes = [], []
         self.weapon_bonus_choices = {'None':None}
         self.weapon_bonus_choices.update({row['name']:index for index,row in ITEMS.items() if row['kind']=='normal'})
+        self.weapon_bonus_choices.update({ITEMS[index]['name']:index for index in weapon_editor.RARE_ITEMS})
         for index in range(9):
             name, value = tk.StringVar(value='None'), tk.StringVar()
             self.weapon_bonus_names.append(name); self.weapon_bonus_values.append(value)
@@ -206,7 +217,7 @@ class Editor:
             box.bind('<<ComboboxSelected>>', lambda _event, slot=index: self.change_weapon_bonus(slot))
         self.weapon_roll_button = self.action(right, 'Apply Weapon Bonuses', self.apply_weapon_rolls)
         self.weapon_max_button = self.action(right, 'Max Selected Existing Bonus Rolls', self.max_selected_weapon_rolls)
-        ttk.Label(right, text='Max raises existing normal bonuses only. Rare bonuses are read-only. Apply your entries before selecting another copy, then save to write them.', wraplength=370).pack(anchor='w', pady=7)
+        ttk.Label(right, text='Max raises existing normal rolls. One rare bonus is allowed, with no numeric value. Replace existing rare bonuses or elements; removing them is unsupported.', wraplength=370).pack(anchor='w', pady=7)
 
     def build_bodyguards(self):
         tab = self.tabs['Bodyguards']
@@ -379,6 +390,9 @@ class Editor:
             return any(row['weapon_id'] == change.index for row in guard_editor.weapon_state(self.document, []))
         if change.category == 'guard_weapon_slot': return guard_editor.weapon_state(self.document, [])[change.index]['skills']
         if change.category == 'weapon_roll': return weapon_editor.original_skills(self.document,change.index)
+        if change.category == 'weapon_element':
+            array,index=weapon_editor._location(self.document,change.index)
+            return fields(self.document.records(array)[index])['Attr']['value'] & weapon_editor.ELEMENT_MASK
         if change.category == 'unique_weapon':
             index = UNIQUE_WEAPONS[change.index]['unique_save_index']
             return index < len(self.document.records('UniqueWeaponDataArray')) and fields(self.document.records('UniqueWeaponDataArray')[index])['WeaponID']['value'] != 'EWeaponID::NUM'
@@ -520,17 +534,23 @@ class Editor:
         name = metadata.get('name') or metadata.get('weapon_name') or self.weapons.item(selected[0],'text')
         self.weapon_selected.set(name)
         flags = self.weapon_attribute_text(row['attr'])
-        reason = f'{row.get("blue_minimum",0)}–{row["blue_limit"]} normal bonuses allowed.' if row['editable'] else row.get('reason','This copy is view-only.')
+        reason = f'{row.get("blue_minimum",0)}–{row["blue_limit"]} normal bonuses; at most one rare.' if row['editable'] else row.get('reason','This copy is view-only.')
         self.weapon_detail.set(f'Base attack {metadata.get("base_power","unknown")} • Copy ID {row["data_id"]}\n{flags}\n{reason}')
+        self.weapon_element_choices=weapon_editor.allowed_elements(row)
+        if row['elements'] not in self.weapon_element_choices.values():
+            self.weapon_element_choices['Existing (preserved)']=row['elements']
+        self.weapon_element.set(next(label for label,mask in self.weapon_element_choices.items() if mask==row['elements']))
+        self.weapon_element_box.configure(values=tuple(self.weapon_element_choices),state='readonly' if row['element_editable'] else 'disabled')
+        self.weapon_element_button.configure(state='normal' if row['element_editable'] else 'disabled')
         self.loading_weapon_form = True
         try:
             for slot, skill in enumerate(row['skills']):
                 item = ITEMS.get(skill['id'])
                 label = item['name'] if item else ('None' if skill['id'] is None else f'Unknown bonus {skill["id"]}')
                 self.weapon_bonus_names[slot].set(label)
-                self.weapon_bonus_values[slot].set(str(skill['value']) if skill['id'] is not None else '')
-                rare = skill['id'] is not None and (item is None or item['kind']!='normal')
-                self.weapon_bonus_boxes[slot].configure(values=(label,) if rare else tuple(self.weapon_bonus_choices),state='readonly' if row['editable'] and not rare else 'disabled')
+                self.weapon_bonus_values[slot].set(str(skill['value']) if skill['id'] in weapon_editor.NORMAL_ITEMS else '—' if skill['id'] is not None else '')
+                protected = skill['id'] is not None and skill['id'] not in weapon_editor.NORMAL_ITEMS and skill['id'] not in weapon_editor.RARE_ITEMS
+                self.weapon_bonus_boxes[slot].configure(values=(label,) if protected else tuple(self.weapon_bonus_choices),state='readonly' if row['editable'] and not protected else 'disabled')
                 self.change_weapon_bonus(slot)
         finally: self.loading_weapon_form = False
         self.weapon_roll_button.configure(state='normal' if row['editable'] else 'disabled')
@@ -539,7 +559,10 @@ class Editor:
     def clear_weapon_form(self):
         self.current_weapon_data_id = None
         self.weapon_selected.set('Select a weapon')
-        self.weapon_detail.set('Select an owned copy to edit its normal bonus rolls.')
+        self.weapon_detail.set('Select an owned copy to edit its bonuses and element.')
+        self.weapon_element.set('None');self.weapon_element_choices={}
+        self.weapon_element_box.configure(state='disabled',values=())
+        self.weapon_element_button.configure(state='disabled')
         for name,value,box,valuebox in zip(self.weapon_bonus_names,self.weapon_bonus_values,self.weapon_bonus_boxes,self.weapon_bonus_value_boxes):
             name.set('None'); value.set(''); box.configure(state='disabled'); valuebox.configure(state='disabled',values=())
         self.weapon_roll_button.configure(state='disabled'); self.weapon_max_button.configure(state='disabled')
@@ -547,7 +570,7 @@ class Editor:
     def weapon_attribute_text(self, attr):
         labels = ['6-hit flag'] if attr & 2 else ['5-hit flag'] if attr & 1 else []
         labels.extend(name for bit,name in ((4,'Fire'),(8,'Lightning'),(16,'Steel'),(32,'Wind')) if attr & bit)
-        return 'Preserved properties: '+(', '.join(labels) if labels else 'no hit or element flags')
+        return 'Weapon properties: '+(', '.join(labels) if labels else 'no hit or element flags')
 
     def officer_bonus_text(self, skills):
         return ', '.join(self.describe_skill(ITEMS[skill['id']],skill['value']) if skill['id'] in ITEMS else f'Bonus {skill["id"]} +{skill["value"]}' for skill in skills if skill['id'] is not None) or 'No bonuses'
@@ -557,10 +580,14 @@ class Editor:
         row = weapon_editor.state(self.document,self.current_weapon_data_id,list(self.changes.values()))
         original = row['skills'][slot]
         item = ITEMS.get(original['id'])
-        if original['id'] is not None and (item is None or item['kind']!='normal'):
-            self.weapon_bonus_value_boxes[slot].configure(values=(original['value'],),state='disabled')
+        if original['id'] is not None and original['id'] not in weapon_editor.NORMAL_ITEMS and original['id'] not in weapon_editor.RARE_ITEMS:
+            self.weapon_bonus_value_boxes[slot].configure(values=(),state='disabled')
             return
         item_id = self.weapon_bonus_choices.get(self.weapon_bonus_names[slot].get())
+        if item_id in weapon_editor.RARE_ITEMS:
+            self.weapon_bonus_values[slot].set('—')
+            self.weapon_bonus_value_boxes[slot].configure(values=(),state='disabled')
+            return
         values = sorted(weapon_editor.allowed_values(row,item_id)) if item_id is not None else []
         enabled = row['editable'] and bool(values)
         self.weapon_bonus_value_boxes[slot].configure(values=tuple(values),state='readonly' if enabled else 'disabled')
@@ -576,13 +603,13 @@ class Editor:
             skills = []
             for slot, original in enumerate(row['skills']):
                 item = ITEMS.get(original['id'])
-                if original['id'] is not None and (item is None or item['kind']!='normal'):
+                if original['id'] is not None and original['id'] not in weapon_editor.NORMAL_ITEMS and original['id'] not in weapon_editor.RARE_ITEMS:
                     skills.append(original.copy()); continue
                 label = self.weapon_bonus_names[slot].get()
                 if label not in self.weapon_bonus_choices: raise ValueError(f'Choose a supported bonus in slot {slot+1}.')
                 item_id = self.weapon_bonus_choices[label]
-                value = int(self.weapon_bonus_values[slot].get()) if item_id is not None else 0
-                if item_id is not None and value not in weapon_editor.allowed_values(row,item_id): raise ValueError(f'Slot {slot+1} has a value unavailable to this weapon.')
+                value = (original['value'] if item_id==original['id'] else 0) if item_id in weapon_editor.RARE_ITEMS else int(self.weapon_bonus_values[slot].get()) if item_id is not None else 0
+                if item_id in weapon_editor.NORMAL_ITEMS and value not in weapon_editor.allowed_values(row,item_id): raise ValueError(f'Slot {slot+1} has a value unavailable to this weapon.')
                 skills.append({'id':item_id,'value':value})
             normal = [skill['id'] for skill in skills if skill['id'] in ITEMS and ITEMS[skill['id']]['kind']=='normal']
             if len(normal)>row['blue_limit']: raise ValueError(f'This weapon supports at most {row["blue_limit"]} normal bonuses.')
@@ -590,6 +617,16 @@ class Editor:
             skills = weapon_editor.validate_skills(row,skills)
             self.stage_many([Change('weapon_roll',self.current_weapon_data_id,'Skills',skills)])
         except (ValueError,TypeError) as error: messagebox.showerror('Cannot Apply Weapon Bonuses',str(error))
+
+    def apply_weapon_element(self):
+        if not self.require_save() or self.current_weapon_data_id is None:return
+        try:
+            row=weapon_editor.state(self.document,self.current_weapon_data_id,list(self.changes.values()))
+            label=self.weapon_element.get()
+            if label not in self.weapon_element_choices:raise ValueError('Choose a supported weapon element.')
+            mask=weapon_editor.validate_elements(row,self.weapon_element_choices[label])
+            self.stage_many([Change('weapon_element',self.current_weapon_data_id,'Elements',mask)])
+        except (ValueError,TypeError) as error:messagebox.showerror('Cannot Apply Weapon Element',str(error))
 
     def max_selected_weapon_rolls(self):
         if not self.require_save() or self.current_weapon_data_id is None: return
@@ -981,10 +1018,13 @@ class Editor:
         if change.category=='officer': label = NAMES.get(str(change.index),f'Officer {change.index}')
         elif change.category=='item': label = ITEMS[change.index]['name']
         elif change.category=='unique_weapon': label = UNIQUE_WEAPONS[change.index]['weapon_name']
-        elif change.category=='weapon_roll':
+        elif change.category in weapon_editor.CATEGORIES:
             row = weapon_editor.state(self.document,change.index,list(self.changes.values()))
             label = f'{row["metadata"].get("name") or row["metadata"].get("weapon_name") or "Weapon"} copy ID {change.index}'
-            before,after = self.officer_bonus_text(before),self.officer_bonus_text(after)
+            if change.category=='weapon_roll':before,after=self.officer_bonus_text(before),self.officer_bonus_text(after)
+            else:
+                def element_text(mask):return ', '.join(label for label,bit in weapon_editor.ELEMENTS.items() if bit and mask & bit) or 'None'
+                before,after=element_text(before),element_text(after);fieldname='Element'
         elif change.category=='guard_item': label = GUARD_ITEMS[change.index]['name']
         elif change.category=='guard_weapon': label = GUARD_WEAPONS[change.index]['name']
         elif change.category=='guard_weapon_slot':

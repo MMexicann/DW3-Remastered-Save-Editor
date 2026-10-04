@@ -128,7 +128,8 @@ def plan_changes(document: SaveDocument, changes: list[Change]) -> list[Patch]:
                 value=weapon['weapon_enum'].encode()+b'\0'
                 add_property(record[name],struct.pack('<i',len(value))+value,f'{weapon["weapon_name"]}: acquire in {array}')
             if record['Attr']['type']!='Int64Property':raise SaveError('Unsupported weapon attribute representation.')
-            add_property(record['Attr'],struct.pack('<q',weapon['attribute_bitmask']),f'{weapon["weapon_name"]}: shipped attribute bitmask')
+            if not (array=='UniqueWeaponDataArray' and any(c.category=='weapon_element' and c.index==10000+index for c in changes)):
+                add_property(record['Attr'],struct.pack('<q',weapon['attribute_bitmask']),f'{weapon["weapon_name"]}: shipped attribute bitmask')
             add_property(record['DataID'],struct.pack('<i',data_id),f'{weapon["weapon_name"]}: indexed DataID')
             skills=record['Skill']['value']['records']
             if len(skills)!=9 or len(weapon['skill_slots'])!=9:raise SaveError('Unsupported unique weapon skill slots.')
@@ -171,8 +172,10 @@ def serialize(document: SaveDocument, changes: list[Change]=()) -> tuple[bytes,d
     changed_blocks=[i//16 for i in range(0,max(len(raw),len(document.encrypted)),16) if raw[i:i+16]!=document.encrypted[i:i+16]]
     resized=payload_size!=original_payload_size
     if not resized:
-        expected_blocks=sorted({i//16 for p in patches for i in range(p.offset,p.offset+len(p.after))
-                                if document.plaintext[i]!=plain[i]})
+        # Enum replacements can relocate fields but cancel in total length.
+        # Compare the complete plaintext, rather than assuming old offsets
+        # still describe every changed byte in that equal-size result.
+        expected_blocks=sorted({i//16 for i,(before,after) in enumerate(zip(document.plaintext,plain)) if before!=after})
         if changed_blocks!=expected_blocks: raise SaveError('Unexpected encrypted blocks changed.')
     elif patches:
         first_block=min(p.offset for p in patches)//16
@@ -183,7 +186,7 @@ def serialize(document: SaveDocument, changes: list[Change]=()) -> tuple[bytes,d
                {'offset':p.offset,'old_length':len(p.before),'length':len(p.after),'before_hex':p.before.hex(),
                 'after_hex':p.after.hex(),'reason':p.reason} for p in patches],
            'changed_aes_blocks':changed_blocks,'source_payload_size':original_payload_size,'output_payload_size':payload_size,
-           'resized':resized,'unchanged_bytes_preserved':True,
+           'resized':resized,'fields_relocated':any(len(p.before)!=len(p.after) for p in patches),'unchanged_bytes_preserved':True,
            'game_load_validation':'not performed'}
     return raw,audit
 

@@ -9,7 +9,7 @@ import json
 import sys
 import traceback
 from models import Change, fields
-from save_parser import read_save, safe_path
+from save_parser import read_save, parse_bytes, safe_path
 import save_writer
 import bodyguard_editor as bg
 import bodyguard_growth as growth
@@ -112,7 +112,19 @@ def run(editor, fixture: Path, output_directory: Path):
         check('Empty weapon search disables bonus editing safely',not editor.weapons.get_children() and editor.current_weapon_data_id is None)
         editor.max_selected_weapon_rolls();editor.weapon_filter.set('')
         editor.weapons.selection_set('WeaponDataArray:36');editor.select_weapon()
-        check('Fused weapon has six editable normal bonuses and rare slot6 disabled',editor.current_weapon_data_id==36 and str(editor.weapon_bonus_boxes[6].cget('state'))=='disabled')
+        check('Fused weapon has editable rare identity with no numeric roll',editor.current_weapon_data_id==36 and str(editor.weapon_bonus_boxes[6].cget('state'))=='readonly' and str(editor.weapon_bonus_value_boxes[6].cget('state'))=='disabled')
+        editor.weapon_bonus_names[6].set('The Way of Musou');editor.change_weapon_bonus(6);editor.apply_weapon_rolls()
+        rare_change=weapon.state(editor.document,36,list(editor.changes.values()))
+        check('Rare Apply uses final slot with zero value',rare_change['skills'][8]=={'id':18,'value':0} and rare_change['skills'][:6]==weapon.state(original,36)['skills'][:6])
+        editor.weapon_element.set('Wind');editor.apply_weapon_element()
+        elemental=weapon.state(editor.document,36,list(editor.changes.values()))
+        check('Element Apply preserves existing hit and other flags',elemental['elements']==32 and elemental['attr'] & ~weapon.ELEMENT_MASK==weapon.state(original,36)['attr'] & ~weapon.ELEMENT_MASK)
+        edited_attributes,attribute_audit=save_writer.serialize(editor.document,list(editor.changes.values()))
+        reread_attributes=parse_bytes(edited_attributes)
+        check('Rare and element GUI changes serialize and read back',weapon.state(reread_attributes,36)['skills']==elemental['skills'] and weapon.state(reread_attributes,36)['attr']==elemental['attr'])
+        check('Attribute workflow records verified byte audit',bool(attribute_audit['plaintext_changes']))
+        editor.undo();editor.undo()
+        check('Rare and element undo restores original pending state',not editor.changes)
         editor.weapon_bonus_values[0].set('1');editor.apply_weapon_rolls()
         check('Actual bonus Apply callback writes selected legal roll into pending state',weapon.state(editor.document,36,list(editor.changes.values()))['skills'][0]['value']==1)
         editor.undo();check('Weapon bonus undo restores original',not editor.changes)
@@ -219,7 +231,6 @@ def run(editor, fixture: Path, output_directory: Path):
         check('Actual Restore callback restores original to new copy',restored_path.read_bytes()==original.encrypted)
         editor.unlock_everything()
         combined,_=save_writer.serialize(editor.document,list(editor.changes.values()))
-        from save_parser import parse_bytes
         all_unlocked=parse_bytes(combined)
         check('Unlock Everything enables only supported officer/stage flags',all_unlocked.properties['CanUseCharaArray']['value']['values'][:42]==[1]*42 and all_unlocked.properties['CanUseScenarioArray']['value']['values'][:108]==[1]*108 and all_unlocked.properties['CanUseScenarioArray']['value']['values'][108:]==original.properties['CanUseScenarioArray']['value']['values'][108:])
         check('Unlock Everything preserves story completion',all_unlocked.properties['ClearScenarioArray']['value']==original.properties['ClearScenarioArray']['value'] and all_unlocked.properties['EngiClearCharaArray']['value']==original.properties['EngiClearCharaArray']['value'])

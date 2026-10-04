@@ -1,4 +1,4 @@
-# Dynasty Warriors 3 Remastered Save Editor — v0.3.2 preview
+# Dynasty Warriors 3 Remastered Save Editor — v0.3.3 preview
 
 A small Windows editor for **Dynasty Warriors 3: Complete Edition Remastered**
 Steam saves. Edit a separate copy, remove repetitive farming, and keep story
@@ -7,13 +7,13 @@ completion separate from stat changes.
 The save encryption and tagged format have been decoded. Editing, exact
 round trips, backups, restore, malformed-input handling and the packaged
 Windows app have been tested against a supplied copy. The owner reported
-successfully loading a v0.3.1 edited save in-game. The v0.3.2 compatibility
-fix still awaits independent in-game confirmation.
+successfully loading a v0.3.1 edited save in-game. The newer compatibility
+and weapon attribute updates still await independent in-game confirmation.
 
 ## Start here
 
 1. Make a copy of `GameStatusData.sav` in a separate folder, such as Documents.
-2. Double-click `DW3RemasteredSaveEditor-v0.3.2.exe`. Python is not required.
+2. Double-click `DW3RemasteredSaveEditor-v0.3.3.exe`. Python is not required.
 3. Choose **Open Save Copy**. An untouched backup and its hash manifest are
    created in `DW3EditorBackups` beside that copy.
 4. Use individual controls or **Remove The Grind** on the Unlocks tab.
@@ -40,7 +40,7 @@ the game's save folder is a separate manual step outside this tool.
 |---|---|
 | Officers | 42 officers; Merit, permanent Life, Musou, Attack and Defense; individual/all maxima |
 | Items | 16 normal items with verified Remaster roll limits; 27 rare items; individual ownership/value controls |
-| Weapons | Edit normal bonuses on regular and unique copies; verified fusion values, custom types, Max Selected/All Owned; acquire 82 stock 4th/5th weapons |
+| Weapons | Edit normal bonuses, one verified rare bonus and single elements on regular/unique copies; Max Selected/All Owned normal rolls; acquire 82 stock 4th/5th weapons |
 | Bodyguards | Saved teams: Merit, legal growth/respec and base-stat preview; 9 normal items plus Healing Scroll; 15 weapons with tier-specific bonuses; team equipment |
 | Unlocks | Availability of 42 playable officers and 108 playable stages; story completion remains unchanged |
 
@@ -62,11 +62,16 @@ promotional stage slots.
 
 ## Current limits
 
-- Weapons now support normal bonus editing and maximum existing rolls,
+- Weapons support normal bonus editing and maximum existing rolls,
   using values obtainable from compatible normal fusion materials. The
   editor writes the resulting bonuses directly; it does not consume materials
-  or mark fusion achievements. Base power, elements, hits and rare weapon
-  bonuses are preserved. Stock unique acquisition remains separate.
+  or mark fusion achievements. Rare bonus types and elements have separate
+  verified controls. Base power, hits and equipment stay unchanged.
+  Stock unique acquisition remains separate.
+- Only 24 transferable rare weapon bonuses are supported, at most one per
+  copy and with no numeric roll. New elements are Fire, Lightning, Steel or
+  Wind. Existing rare bonuses/elements can be replaced but not removed;
+  new combined elements and newer rare item donors are unsupported.
 - Normal bonus counts are limited to 6 on ranks 1-3, 7 on fourth weapons,
   and 8 on fifth weapons. Unique weapons retain at least their stock normal
   bonus count; non-starter regular weapons retain at least one. Some high
@@ -98,6 +103,10 @@ item caps and weapon limits.
 See [WEAPON_ROLLS.md](WEAPON_ROLLS.md) for bonus caps, fusion evidence and
 the distinction between base power and an Attack bonus.
 
+See [WEAPON_ATTRIBUTES_FIX.md](WEAPON_ATTRIBUTES_FIX.md) for v0.3.3 rare bonus
+and element controls, evidence and restrictions. Thanks to austinkun for
+reporting these missing controls.
+
 See [COMPATIBILITY_FIX.md](COMPATIBILITY_FIX.md) for the v0.3.2 opening fix.
 Thanks to GoooD1 for reporting it. Existing bodyguard weapon copies outside
 the verified drop profiles are view-only and preserved by maximum actions.
@@ -121,7 +130,7 @@ Parsing and writing are separate from the GUI:
 - `unreal.py` / `save_parser.py`: bounded tagged parsing, layout and path checks.
 - `models.py`: documents, changes and patches.
 - `save_writer.py`: supported edits, size regeneration, backup and atomic writes.
-- `officer_weapon_editor.py`: per-copy normal bonus rules and edit planning.
+- `officer_weapon_editor.py`: per-copy normal/rare bonus and element rules.
 - `bodyguard_growth.py`: verified shared budget, gates, presets and base stats.
 - `bodyguard_editor.py`: final-state equipment validation and byte-edit planning.
 - `gui.py`: interface, pending changes and confirmation dialogs.

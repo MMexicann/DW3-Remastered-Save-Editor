@@ -1,7 +1,7 @@
 """Officer weapon bonus editing using parsed records and verified fusion rules.
 
-Only ordinary numeric bonuses are editable. Identity, power definition,
-attribute/hit flags, rare slots, time, equipment and collection caches stay
+Normal and verified rare bonuses and single elements are editable. Identity,
+power definition, hit flags, time, equipment and collection caches stay
 unchanged. No material-consuming fusion workflow is performed here.
 """
 from pathlib import Path
@@ -20,7 +20,10 @@ UNIQUE_SLOTS={r['unique_save_index']:r for r in UNIQUES.values()}
 _rule_file=ROOT/'weapon_bonus_rules.json'
 RULES=json.loads(_rule_file.read_text(encoding='utf-8')) if _rule_file.exists() else {}
 NORMAL_ITEMS={int(r['id']):r for r in RULES.get('normal_items',[])}
-CATEGORIES={'weapon_roll'}
+RARE_ITEMS={int(r['id']):r for r in RULES.get('rare_items',[])}
+ELEMENTS=RULES.get('elements',{})
+ELEMENT_MASK=RULES.get('element_mask',0)
+CATEGORIES={'weapon_roll','weapon_element'}
 
 
 def _requests(changes):
@@ -29,9 +32,12 @@ def _requests(changes):
         if not isinstance(change,Change):raise SaveError('Weapon edits must be supported Change records.')
         if not isinstance(change.category,str) or not isinstance(change.field,str):raise SaveError('Weapon edit category and field must be text.')
         if change.category not in CATEGORIES:continue
-        if type(change.index) is not int or change.field!='Skills' or change.index in result:
-            raise SaveError('Weapon rolls need an integer inventory reference, Skills field and no duplicates.')
-        result[change.index]=change.value
+        expected='Skills' if change.category=='weapon_roll' else 'Elements'
+        if type(change.index) is not int or change.field!=expected:
+            raise SaveError('Weapon edits need an integer inventory reference and supported field.')
+        requested=result.setdefault(change.index,{})
+        if change.field in requested:raise SaveError('Duplicate weapon changes.')
+        requested[change.field]=change.value
     return result
 
 
@@ -59,12 +65,28 @@ def original_skills(document,data_id):
 
 
 def allowed_values(info,item_id):
-    if type(item_id) is not int or item_id not in NORMAL_ITEMS:raise SaveError('Only verified normal weapon bonuses can be edited.')
+    if type(item_id) is not int:raise SaveError('Weapon bonus IDs must be integers.')
+    if item_id in RARE_ITEMS:return [0]
+    if item_id not in NORMAL_ITEMS:raise SaveError('Only verified transferable weapon bonuses can be edited.')
     values=set(NORMAL_ITEMS[item_id]['allowed_values'])
     if info['array']=='UniqueWeaponDataArray' and info['weapon_id'] in UNIQUES:
         for slot in UNIQUES[info['weapon_id']]['skill_slots']:
             if slot['item_id']==item_id:values.add(slot['value'])
     return sorted(v for v in values if v>0)
+
+
+def allowed_elements(info):
+    return {label:mask for label,mask in ELEMENTS.items() if mask or not info['elements']}
+
+
+def validate_elements(info,mask):
+    if not info.get('element_editable'):raise SaveError(info.get('element_reason') or 'Choose a supported owned weapon.')
+    if type(mask) is not int or mask<0 or mask & ~ELEMENT_MASK:
+        raise SaveError('Choose a verified weapon element without changing hit or unique flags.')
+    if mask==info['elements']:return mask  # Preserve an existing combined mask; never manufacture one.
+    if mask not in allowed_elements(info).values():
+        raise SaveError('Choose one verified element. Existing elements can be replaced, not removed.')
+    return mask
 
 
 def _base_state(document,data_id,changes):
@@ -80,7 +102,10 @@ def _base_state(document,data_id,changes):
     metadata=WEAPONS.get(weapon_id,{})
     minimum=sum(s['item_id'] in NORMAL_ITEMS for s in template['skill_slots']) if template else (0 if metadata.get('initial_possession') else 1)
     info={'data_id':data_id,'array':array,'index':index,'weapon_id':weapon_id,'owned':owned,
-          'skills':skills,'metadata':metadata,'attr':attr,'blue_limit':None,'blue_minimum':minimum,'editable':False,'reason':''}
+          'skills':skills,'metadata':metadata,'attr':attr,'elements':attr & ELEMENT_MASK,
+          'blue_limit':None,'blue_minimum':minimum,'red_limit':1,
+          'red_minimum':sum(s['id'] in ITEMS and ITEMS[s['id']]['kind']=='rare' for s in skills),
+          'editable':False,'reason':'','element_editable':False,'element_reason':''}
     if not owned:info['reason']='Unlock this unique weapon before editing its rolls.'
     elif not NORMAL_ITEMS:info['reason']='Weapon bonus limits have not been verified.'
     elif array=='WeaponDataArray' and weapon_id not in set(range(89))|{188,189,190}:
@@ -98,43 +123,61 @@ def _base_state(document,data_id,changes):
         if not rank_row:info['reason']='Weapon rank limits are unsupported.'
         else:
             info['rank']=rank_row['rank'];info['blue_limit']=rank_row['max_blue'];info['editable']=True
+            info['element_editable']=bool(ELEMENTS and ELEMENT_MASK)
             try:validate_skills(info,skills)
             except SaveError as error:info['editable']=False;info['reason']=str(error)
+    if not info['element_editable']:info['element_reason']=info['reason'] or 'Element transfer rules are unavailable.'
     return info
 
 
 def validate_skills(info,skills):
     if not info['owned'] or info['blue_limit'] is None:raise SaveError(info.get('reason') or 'Choose a supported owned weapon.')
     if not isinstance(skills,(list,tuple)) or len(skills)!=9:raise SaveError('Officer weapons have exactly nine saved bonus slots.')
-    result=[];seen=set();blue=0
+    result=[];seen=set();blue=0;red=0
     for index,skill in enumerate(skills):
         if not isinstance(skill,dict) or set(skill)!={'id','value'}:raise SaveError('Each weapon slot needs an item ID and value.')
         item,value=skill['id'],skill['value'];original=info['skills'][index]
         if item is not None and type(item) is not int:raise SaveError('Weapon bonus IDs must be integers or None.')
         if type(value) is not int:raise SaveError('Weapon bonus values must be integers.')
-        if original['id'] is not None and original['id'] not in NORMAL_ITEMS:
-            if skill!=original:raise SaveError('Existing rare weapon skills must be preserved in their saved slots.')
+        if original['id'] is not None and original['id'] not in NORMAL_ITEMS and original['id'] not in RARE_ITEMS:
+            if skill!=original:raise SaveError('Existing unsupported weapon skills must be preserved in their saved slots.')
         elif item is None:
             if value!=0:raise SaveError('Empty weapon bonus slots require zero value.')
+        elif item in RARE_ITEMS:
+            if value!=0 and skill!=original:raise SaveError('Rare weapon bonuses have no numeric roll; use value zero.')
         elif item not in NORMAL_ITEMS:
-            raise SaveError('Only verified normal bonus identities can be added or changed.')
+            raise SaveError('Only verified transferable bonus identities can be added or changed.')
         if item is not None:
             if item in seen:raise SaveError('A weapon cannot have duplicate bonus identities.')
             seen.add(item)
             if item in NORMAL_ITEMS:
                 blue+=1
                 if value not in allowed_values(info,item):raise SaveError(f'{ITEMS[item]["name"]} has an unsupported weapon roll.')
+            else:red+=1
         result.append({'id':item,'value':value})
     if blue>info['blue_limit']:raise SaveError(f'This weapon supports at most {info["blue_limit"]} normal bonuses.')
     if blue<info['blue_minimum']:raise SaveError(f'Keep at least {info["blue_minimum"]} normal bonuses for this weapon. Replace their types instead of removing them.')
+    if red>info.get('red_limit',1):raise SaveError('A weapon supports at most one rare bonus.')
+    if red<info.get('red_minimum',0):raise SaveError('Replace the existing rare bonus instead of removing it.')
+    old_red=[(i,s) for i,s in enumerate(info['skills']) if s['id'] is not None and s['id'] not in NORMAL_ITEMS]
+    new_red=[(i,s) for i,s in enumerate(result) if s['id'] is not None and s['id'] not in NORMAL_ITEMS]
+    if new_red and new_red!=old_red:
+        # Native fusion puts normal bonuses first and its single rare bonus in
+        # the final slot. Numeric-only edits preserve earlier saved rare slots.
+        normal=[s for s in result if s['id'] in NORMAL_ITEMS]
+        result=normal+[{'id':None,'value':0} for _ in range(8-len(normal))]+[new_red[0][1]]
     return result
 
 
 def state(document,data_id,changes=()):
     changes=list(changes);info=_base_state(document,data_id,changes);requests=_requests(changes)
     if data_id in requests:
-        if not info['editable']:raise SaveError(info['reason'])
-        info['skills']=validate_skills(info,requests[data_id])
+        if 'Skills' in requests[data_id]:
+            if not info['editable']:raise SaveError(info['reason'])
+            info['skills']=validate_skills(info,requests[data_id]['Skills'])
+        if 'Elements' in requests[data_id]:
+            info['elements']=validate_elements(info,requests[data_id]['Elements'])
+            info['attr']=(info['attr'] & ~ELEMENT_MASK)|info['elements']
     return info
 
 
@@ -153,9 +196,12 @@ def max_existing_skills(document,data_id,changes=()):
 
 
 def plan_weapon_roll_changes(document,changes,add_property):
-    for data_id in _requests(changes):
+    for data_id,requested in _requests(changes).items():
         info=state(document,data_id,changes)
         record=fields(document.records(info['array'])[info['index']])
+        if 'Elements' in requested:
+            add_property(record['Attr'],struct.pack('<q',info['attr']),f'{info["metadata"].get("name") or "Weapon"} copy {data_id}: element; preserve other flags')
+        if 'Skills' not in requested:continue
         for index,skill in enumerate(info['skills']):
             slot=fields(record['Skill']['value']['records'][index])
             enum='EEquipItemID::NUM' if skill['id'] is None else 'EEquipItemID::'+ITEMS[skill['id']]['enum']

@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "source": "Exact shipped DT_EquipItemBaseData, DT_DropRandomTable and DT_WeaponRankData rows; native ordinary drop generator and direct-copy fusion paths.",
   "confidence": "Verified static native/table rules; direct fusion outcomes only. In-game load acceptance and donor consumption UI are untested.",
   "exe_sha256": "3691d3fd41eb744c99fee8fc0a342159a0155d4aea90f910fe8985b46c5dc2e2",
@@ -5017,14 +5017,248 @@
     "fusion_direct_copy": "0x169894A..0x1698A61: copies selectedmaterialitemIDandvalue intofinalWeaponSaveData; no addition or per-value amplification.",
     "fusion_rank_limit": "0x1697F1D..0x1697F3E: nativeweaponrank15358D0, rankminus1lookup14BDE50, MaxBlueSkillNumrow+0xA. Committrimsbluecountbefore1516300.",
     "rank_getter": "0x15358D0..0x1535942: IDs0..47 evenrank1/oddrank2,48..88rank3,89..131rank4,132..172rank5;188..192ranks1..5. UnsupporteddefinitionIDswithinrangesstillmustbeexcludedbyshippedmetadata.",
-    "fusion_commit": "0x16980EF: setter1516300 writesfinaldestinationonly; collectedcacheisacquisition-only. Nativefullfusionconsumessourcevia1516270andsetsachievementrecord, which directoutcomeediting must not silently emulate."
+    "fusion_commit": "0x16980EF: setter1516300 writesfinaldestinationonly; collectedcacheisacquisition-only. Nativefullfusionconsumessourcevia1516270andsetsachievementrecord, which directoutcomeediting must not silently emulate.",
+    "rare_donor_pool": "0x1535DE0..0x1535E28: selects Type1 items with positive WeaponAddProbability. Shipped eligible IDs13..24,28..39; newer rare IDs40..42 excluded.",
+    "rare_value": "0x151586F..0x151588C: replaces one generated bonus ID with the selected rare ID, writes Value0; ValueRand is not used for a rare weapon bonus.",
+    "rare_destination": "0x1697AC0..0x1697B13 and0x16976E6..0x169772E: normal bonuses before the single Type1 bonus in final slot8. Existing earlier positions stay unchanged on numeric-only edits.",
+    "element_enum": "EWeaponAttrFlag reflection: Fire4,Thunder8,Zan16,Wind32; hits1/2, unique64/128 are separate.",
+    "element_generation": "0x15158BC..0x1515955: chooses one of bytearray[4,8,16,32]; shipped stock definitions also have zero or one element.",
+    "element_transfer": "0x16988C8..0x16988E7: replaces mask0x3c from donor; does not accumulate elements. Editor preserves all remaining Int64bits.",
+    "element_source_filter": "0x169ACA0 and0x1699CA9..0x1699CF0: source weapons without elements cannot transfer an element. Clearing an existing element is conservatively disabled."
   },
-  "writer_policy": "Use donor allowed_values for every editable normal bonus on compatible officer weapons, independent of destination tier; union only that weapon definition's exact unique stock values as exceptions. Preserve original unsupported values if unchanged. Do not invent normalcapsforrareproperties. Preserve rare slots/Attr/ID/DataID/GetTime/equipment refs and acquisition cache. Enforce rank_max_blue and9totalslots. No donor consumption or achievement/story edits.",
+  "writer_policy": "Use exact normal donor sets and local unique stock exceptions; allow only verified24rare identities at Value0, maximum1rare, and retain an existing rare bonus. Rare changes use finalslot8 as native fusion does; numeric-only edits preserve existing positions. Element additions/replacements use single bits4/8/16/32, preserving every non-element Attr bit; existing combined masks can only be retained unchanged. Preserve identity/DataID/GetTime/equipment/acquisition cache/story/achievements. No source weapon consumption.",
   "compatibility_basis": "Native normal donor pool contains all16Type0itemIDs, and native fusion transfers their ID/value without a family restriction in the transfer path. Shipped TIPS133/135 restrict source weapon compatibility to current officer and prohibit unique materials; a compatible normal rank3 donor can supply the listed global values.",
   "unknowns": [
-    "No in-game acceptance test.",
-    "Source-selection/deletion workflow is not implemented by these direct-outcome rules.",
-    "Rare skill acquisition/element transfer beyond preserving existing properties requires separate evidence.",
+    "v0.3.3 in-game acceptance awaits feedback.",
+    "Material selection/deletion and achievement recording are not implemented.",
+    "New combined elements, newer rare IDs40..42 as weapon donors, and removing an existing rare bonus/element are not proven and cannot be authored.",
     "Other builds/platforms and unsupported weapon definitions remain outside this metadata."
-  ]
+  ],
+  "rare_items": [
+    {
+      "id": 13,
+      "name": "Red Hare Saddle",
+      "enum": "EEquipItemID::EQUIP_ITEM_SEKITOABUMI",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 14,
+      "name": "Hex Mark Saddle",
+      "enum": "EEquipItemID::EQUIP_ITEM_TEKIROABUMI",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 15,
+      "name": "Imperial Saddle",
+      "enum": "EEquipItemID::EQUIP_ITEM_KOUTEIABUMI",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 16,
+      "name": "The Art of War",
+      "enum": "EEquipItemID::EQUIP_ITEM_SONSHIHEIHO",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 17,
+      "name": "Bodyguard Manual",
+      "enum": "EEquipItemID::EQUIP_ITEM_GOEIKOKOROE",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 18,
+      "name": "The Way of Musou",
+      "enum": "EEquipItemID::EQUIP_ITEM_SHINRAMBUSHO",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 19,
+      "name": "Survival Guide",
+      "enum": "EEquipItemID::EQUIP_ITEM_HAPPADENSHO",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 20,
+      "name": "Defender",
+      "enum": "EEquipItemID::EQUIP_ITEM_GANTEKKO",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 21,
+      "name": "Fire Arrows",
+      "enum": "EEquipItemID::EQUIP_ITEM_ZYOENHIYA",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 22,
+      "name": "Buckler",
+      "enum": "EEquipItemID::EQUIP_ITEM_KAKKIWAN",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 23,
+      "name": "Power Scroll",
+      "enum": "EEquipItemID::EQUIP_ITEM_GOUZYUHOUSHO",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 24,
+      "name": "Gold Harness",
+      "enum": "EEquipItemID::EQUIP_ITEM_FURITAZUNA",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 28,
+      "name": "Divine Helm",
+      "enum": "EEquipItemID::EQUIP_ITEM_SENZINKABUTO",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 29,
+      "name": "Scroll of Accuracy",
+      "enum": "EEquipItemID::EQUIP_ITEM_KYOUGEKIZYUTUSHO",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 30,
+      "name": "Imperial Harness",
+      "enum": "EEquipItemID::EQUIP_ITEM_KOUTEITAZUNA",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 31,
+      "name": "Seven Stars Blade",
+      "enum": "EEquipItemID::EQUIP_ITEM_SHICHISEIHOUTOU",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 32,
+      "name": "Lightning Bow",
+      "enum": "EEquipItemID::EQUIP_ITEM_KYOURAISENKYUU",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 33,
+      "name": "Seal of Darkness",
+      "enum": "EEquipItemID::EQUIP_ITEM_YAMIGYOKUZI",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 34,
+      "name": "Beast Harness",
+      "enum": "EEquipItemID::EQUIP_ITEM_ZYUSHINKUTSUWA",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 35,
+      "name": "Marching Drum",
+      "enum": "EEquipItemID::EQUIP_ITEM_KOBUDAIKO",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 36,
+      "name": "Divine Gauntlet",
+      "enum": "EEquipItemID::EQUIP_ITEM_SENZINMESSAIWAN",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 37,
+      "name": "Master's Cloak",
+      "enum": "EEquipItemID::EQUIP_ITEM_TATSUZINSYOUZOKU",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 38,
+      "name": "Legendary Scroll",
+      "enum": "EEquipItemID::EQUIP_ITEM_MOUSHOURAMBUSHO",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    },
+    {
+      "id": 39,
+      "name": "Musou Armor",
+      "enum": "EEquipItemID::EQUIP_ITEM_MUSOUYOROI",
+      "allowed_values": [
+        0
+      ],
+      "drop_weight": 5
+    }
+  ],
+  "rare_limit": 1,
+  "elements": {
+    "None": 0,
+    "Fire": 4,
+    "Lightning": 8,
+    "Steel": 16,
+    "Wind": 32
+  },
+  "element_mask": 60
 }
