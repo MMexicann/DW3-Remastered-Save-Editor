@@ -7,14 +7,14 @@ from models import SaveDocument, SaveError, fields
 import save_codec
 import unreal
 import bodyguard_growth
-from bodyguard_editor import GUARD_WEAPONS, GUARD_ITEMS, item_state, weapon_state, team_state, validate_skills
+from bodyguard_editor import GUARD_WEAPONS, GUARD_ITEMS, item_state, weapon_state, team_state, validate_saved_skills
 
 MAX_SIZE=16*1024*1024
 ENUMS={name:set(values) for name,values in json.loads((Path(__file__).resolve().parent/'native_enums.json').read_text()).items()}
 ORDINARY_ITEMS={row['id']:row for row in json.loads((Path(__file__).resolve().parent/'game_metadata.json').read_text(encoding='utf-8'))['items']}
 ORDINARY_CAPS={int(key):value for key,value in json.loads((Path(__file__).resolve().parent/'item_limits.json').read_text())['maxima'].items()}
 EXPECTED_COUNTS={'PCSaveDataArray':50,'EquipItemDataArray':100,'WeaponDataArray':500,'UniqueWeaponDataArray':84,
-                 'CollectedWeaponDataArray':255,'GuardDataArray':4,'GuardWeaponDataArray':100,
+                 'CollectedWeaponDataArray':255,'GuardWeaponDataArray':100,
                  'GuardEquipItemDataArray':10,'CanUseCharaArray':50,'CanUseScenarioArray':156}
 
 def _reserved_windows_path(path):
@@ -67,6 +67,11 @@ def parse_bytes(raw: bytes, source: Path | None=None) -> SaveDocument:
             p=doc.properties.get(name)
             if p is None or not isinstance(p['value'],dict) or p['value'].get('count')!=count:
                 raise SaveError(f'Unsupported {name} layout.')
+        guard=doc.properties.get('GuardDataArray')
+        if (guard is None or guard['type']!='ArrayProperty(StructProperty(GuardSaveData(/Script/Refine)))' or
+            not isinstance(guard['value'],dict) or not isinstance(guard['value'].get('records'),list) or
+            type(guard['value'].get('count')) is not int or len(guard['value']['records'])!=guard['value']['count']):
+            raise SaveError('Unsupported GuardDataArray layout. Expected complete saved bodyguard team records.')
         for record in doc.records('PCSaveDataArray'):
             f=fields(record)
             for name in ('MaxHealth','MaxMusou','Attack','Defence','SPoint','Progress','BGTeamID','MemCnt'):
@@ -152,8 +157,8 @@ def parse_bytes(raw: bytes, source: Path | None=None) -> SaveDocument:
                     raise SaveError('Empty bodyguard weapon bonus slots must have zero value.')
             if state['weapon_id'] is None:
                 if state['skills']:raise SaveError('Empty bodyguard weapon inventory slots cannot have bonuses.')
-            else:validate_skills(state['weapon_id'],state['skills'])
-        for index in range(4):
+            else:validate_saved_skills(state['skills'])
+        for index in range(len(doc.records('GuardDataArray'))):
             team=team_state(doc,index)
             if team['MemberItem'] is not None and not items[team['MemberItem']]['owned']:
                 raise SaveError('Equipped bodyguard item is not owned.')

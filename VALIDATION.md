@@ -143,3 +143,26 @@ versions remain unsupported. Stat previews show growth bases before
 equipment and battle modifiers. See [SAVE_FORMAT.md](SAVE_FORMAT.md) and
 [BODYGUARDS.md](BODYGUARDS.md) and [WEAPON_ROLLS.md](WEAPON_ROLLS.md)
 for evidence and boundaries.
+
+## v0.3.2 compatibility validation
+
+- Full suite: 139 test cases, zero failures/errors; ten optional reported-save
+  cases skip when their fixture environment variable is absent.
+- Focused compatibility module: all 27 cases passed with both workspace
+  fixture copies, including those ten reported-save cases.
+- Reported-save GUI workflow: all 16 checks passed, including automatic backup,
+  disabled view-only controls, Remove The Grind, Save As and reparse.
+- Windows packaged app: startup and all 216 existing workflow checks passed.
+- Both supplied originals and the received working fixture remained untouched.
+- The reported save retained two teams and its unverified Iron Crossbow record
+  byte-for-byte. Unchanged serialization retained exact encrypted bytes.
+
+The v0.3.2 executable SHA-256 is:
+
+```text
+be48aa534d8b85478acb0f69c0ee0e0e1d044f88a3adf550819b6f02ed6307ab
+```
+
+The owner reports in-game success with v0.3.1. The v0.3.2 compatibility update
+has not yet received in-game acceptance feedback. Test saves are excluded from
+all public packages. Thanks to GoooD1 for the reproducible report.

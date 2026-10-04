@@ -14,7 +14,7 @@ The editor refuses live game-save and Steam Cloud paths.
    Bow/Moveset points. Count and AI follow the entered Merit. The preview
    shows the legal point budget and growth base stats.
 3. A selected-team preset sets 99,999 Merit and a legal allocation. Max All
-   Teams applies Balanced growth to all four teams.
+   Teams applies Balanced growth to all saved teams.
 4. BG Items can unlock individual items, edit verified normal rolls, unlock
    all items or maximize them. The Healing Scroll has ownership only.
 5. BG Weapons displays the 15 definitions and owned copies. Unlock adds a
@@ -206,3 +206,10 @@ objects, not serialized records. Bodyguard fusion, unknown extra equipment
 slots, model/type changes, other game builds and in-game acceptance remain
 unverified. Supported controls enforce the discovered bounds; unsupported
 fields are preserved or refused.
+
+## v0.3.2 compatibility
+
+The editor uses the teams actually stored in the save. Two- and four-team
+samples are verified; team count, order and names are preserved. Existing
+weapon bonuses outside the conservative native-drop profiles are view-only
+and preserved by bulk maximum actions. See [COMPATIBILITY_FIX.md](COMPATIBILITY_FIX.md).

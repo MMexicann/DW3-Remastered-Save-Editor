@@ -131,7 +131,7 @@ def run(editor, fixture: Path, output_directory: Path):
         editor.max_all_weapon_rolls()
         check('Max All Owned stages only verified owned copies',all(c.category=='weapon_roll' for c in editor.changes.values()) and all(weapon.state(original,c.index)['owned'] for c in editor.changes.values()))
         editor.discard()
-        check('Four teams, ten BG items and fifteen BG weapon definitions load',len(editor.bodyguards.get_children())==4 and len(editor.guard_items.get_children())==10 and len(editor.guard_weapons.get_children())==15)
+        check('Saved teams, ten BG items and fifteen BG weapon definitions load',len(editor.bodyguards.get_children())==len(original.records('GuardDataArray')) and len(editor.guard_items.get_children())==10 and len(editor.guard_weapons.get_children())==15)
         editor.bodyguards.selection_set('1');editor.select_bodyguard()
         check('Growth budget describes the actual selected team',editor.guard_budget.get().startswith(f'Growth points: {growth.spent(bg.team_state(original,1)["BGLevels"])} / {growth.budget(bg.team_state(original,1)["SPoint"])}'))
         editor.bodyguard_merit.set('99999')
@@ -154,7 +154,7 @@ def run(editor, fixture: Path, output_directory: Path):
         editor.undo()
         editor.max_guard_weapons()
         pool=bg.weapon_state(editor.document,list(editor.changes.values()))
-        check('All fifteen BG weapon types acquire legal maximum bonuses',{s['weapon_id'] for s in pool if s['weapon_id'] is not None}==set(bg.GUARD_WEAPONS) and all(s['skills']==bg.max_skills(s['weapon_id']) for s in pool if s['weapon_id'] is not None))
+        check('All fifteen BG weapon types acquire legal maximum bonuses; view-only copies preserved',{s['weapon_id'] for s in pool if s['weapon_id'] is not None}==set(bg.GUARD_WEAPONS) and all(s['skills']==bg.max_skills(s['weapon_id']) if s['editable'] else s['skills']==bg.weapon_state(original)[s['slot']]['skills'] for s in pool if s['weapon_id'] is not None))
         row=next(s for s in pool if s['weapon_id']==175)
         editor.guard_weapons.selection_set(f'slot:{row["slot"]}');editor.select_guard_weapon()
         for index,skill in enumerate(bg.max_skills(175)):
@@ -168,7 +168,7 @@ def run(editor, fixture: Path, output_directory: Path):
         editor.remove_grind()
         check('Remove The Grind leaves story and availability alone',not any(c.category=='unlock' for c in editor.changes.values()))
         editor.max_all_weapon_rolls()
-        check('Remove The Grind preserves team equipment choices',all(bg.team_state(editor.document,i,list(editor.changes.values()))['MemberWeapon']==bg.team_state(original,i)['MemberWeapon'] and bg.team_state(editor.document,i,list(editor.changes.values()))['MemberItem']==bg.team_state(original,i)['MemberItem'] for i in range(4)))
+        check('Remove The Grind preserves team equipment choices',all(bg.team_state(editor.document,i,list(editor.changes.values()))['MemberWeapon']==bg.team_state(original,i)['MemberWeapon'] and bg.team_state(editor.document,i,list(editor.changes.values()))['MemberItem']==bg.team_state(original,i)['MemberItem'] for i in range(len(original.records('GuardDataArray')))))
         editor.equip_best_guard_weapons()
         check('Explicit Equip Best uses inventory references of five correct families',bg.team_state(editor.document,1,list(editor.changes.values()))['MemberWeapon'][:5]==bg.best_weapon_refs(editor.document,list(editor.changes.values())))
         editor.guard_equip_item.set(next(label for label,item in editor.guard_equip_item_choices.items() if item==9));editor.apply_guard_equipment()
@@ -186,16 +186,16 @@ def run(editor, fixture: Path, output_directory: Path):
         for i,item in save_writer.ITEMS.items():
             values=fields(edited.records('EquipItemDataArray')[i])
             check(f'Item {i} legitimate ownership/value',values['EquipItemID']['value']=='EEquipItemID::'+item['enum'] and values['Value']['value']==save_writer.ITEM_CAPS.get(i,0))
-        check('All four bodyguard teams have legal maximum Merit and balanced growth',all(
+        check('All saved bodyguard teams have legal maximum Merit and balanced growth',all(
             fields(edited.records('GuardDataArray')[i])['SPoint']['value']==99999 and
             fields(edited.records('GuardDataArray')[i])['BGLevels']['value']['values']==growth.safe_preset()
-            for i in range(4)))
+            for i in range(len(edited.records('GuardDataArray')))))
         for i,state in bg.item_state(edited).items():
             check(f'BG item {i} verified maximum/rare ownership',state['owned'] and state['value']==bg.GUARD_ITEMS[i]['max_value'])
         pool=bg.weapon_state(edited)
         for weapon_id in bg.GUARD_WEAPONS:
             copies=[s for s in pool if s['weapon_id']==weapon_id]
-            check(f'BG weapon {weapon_id} owned with legal tier-specific bonuses',bool(copies) and all(s['skills']==bg.max_skills(weapon_id) for s in copies))
+            check(f'BG weapon {weapon_id} owned with legal tier-specific bonuses or preserved view-only copies',bool(copies) and all(s['skills']==bg.max_skills(weapon_id) if s['editable'] else s['skills']==bg.weapon_state(original)[s['slot']]['skills'] for s in copies))
         check('Equipped BG item and inventory choices survive save/readback',bg.team_state(edited,1)['MemberItem']==9 and bg.team_state(edited,1)['MemberWeapon'][:5]==bg.best_weapon_refs(edited))
         check('Bodyguard-Musou cached item selections preserved',all(fields(a)['BGMusouEquipItem']['value']==fields(b)['BGMusouEquipItem']['value'] for a,b in zip(original.records('PCSaveDataArray'),edited.records('PCSaveDataArray'))))
         supported=[w for w in save_writer.UNIQUE_WEAPONS.values() if w['fits_supplied_84_record_array']]

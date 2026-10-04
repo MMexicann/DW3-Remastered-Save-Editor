@@ -1,17 +1,23 @@
-# Dynasty Warriors 3 Remastered Save Editor — v0.3.1 preview
+# Dynasty Warriors 3 Remastered Save Editor — v0.3.2 preview
 
 A small Windows editor for **Dynasty Warriors 3: Complete Edition Remastered**
 Steam saves. Edit a separate copy, remove repetitive farming, and keep story
 completion separate from stat changes.
 
+The save encryption and tagged format have been decoded. Editing, exact
+round trips, backups, restore, malformed-input handling and the packaged
+Windows app have been tested against a supplied copy. The owner reported
+successfully loading a v0.3.1 edited save in-game. The v0.3.2 compatibility
+fix still awaits independent in-game confirmation.
+
 ## Start here
 
 1. Make a copy of `GameStatusData.sav` in a separate folder, such as Documents.
-2. Double-click `DW3RemasteredSaveEditor-v0.3.1.exe`. Python is not required.
+2. Double-click `DW3RemasteredSaveEditor-v0.3.2.exe`. Python is not required.
 3. Choose **Open Save Copy**. An untouched backup and its hash manifest are
    created in `DW3EditorBackups` beside that copy.
 4. Use individual controls or **Remove The Grind** on the Unlocks tab.
-5. Choose **Review Changes**, then **Save Asâ€¦** to create an edited `.sav`.
+5. Choose **Review Changes**, then **Save As…** to create an edited `.sav`.
 
 **Apply** puts the selected entries into the editor's pending changes. **Undo**
 reverses the last batch and **Discard Changes** clears pending edits. Nothing
@@ -19,7 +25,7 @@ is written until you save. A `.changes.json` report beside each saved copy
 explains the changed plaintext bytes, enclosing sizes and encrypted blocks.
 
 **Save Changes** asks before replacing the opened copy and creates another
-backup first. **Restore Backupâ€¦** restores a backup to a new filename; it
+backup first. **Restore Backup…** restores a backup to a new filename; it
 never overwrites an existing destination. Keep a backup `.sav` and its
 matching `.json` together.
 
@@ -35,7 +41,7 @@ the game's save folder is a separate manual step outside this tool.
 | Officers | 42 officers; Merit, permanent Life, Musou, Attack and Defense; individual/all maxima |
 | Items | 16 normal items with verified Remaster roll limits; 27 rare items; individual ownership/value controls |
 | Weapons | Edit normal bonuses on regular and unique copies; verified fusion values, custom types, Max Selected/All Owned; acquire 82 stock 4th/5th weapons |
-| Bodyguards | Four teams: Merit, legal growth/respec and base-stat preview; 9 normal items plus Healing Scroll; 15 weapons with tier-specific bonuses; team equipment |
+| Bodyguards | Saved teams: Merit, legal growth/respec and base-stat preview; 9 normal items plus Healing Scroll; 15 weapons with tier-specific bonuses; team equipment |
 | Unlocks | Availability of 42 playable officers and 108 playable stages; story completion remains unchanged |
 
 Permanent officer limits are **Life 250, Musou 250, Attack 150, Defense 150**,
@@ -91,6 +97,10 @@ item caps and weapon limits.
 
 See [WEAPON_ROLLS.md](WEAPON_ROLLS.md) for bonus caps, fusion evidence and
 the distinction between base power and an Attack bonus.
+
+See [COMPATIBILITY_FIX.md](COMPATIBILITY_FIX.md) for the v0.3.2 opening fix.
+Thanks to GoooD1 for reporting it. Existing bodyguard weapon copies outside
+the verified drop profiles are view-only and preserved by maximum actions.
 
 See [BUG_REVIEW.md](BUG_REVIEW.md) for the v0.3.1 review and fixes.
 

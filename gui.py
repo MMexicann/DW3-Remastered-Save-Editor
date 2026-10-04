@@ -36,13 +36,14 @@ class Editor:
         self.current_guard_item = 0
         self.current_guard_weapon = next(iter(GUARD_WEAPONS))
         self.guard_weapon_slot = None
+        self.guard_bonus_editable = False
         self.loading_guard_form = False
         self.loading_weapon_form = False
         self.current_weapon_data_id = None
         self.weapon_rows = {}
         self.backup = None
         self.buttons = []
-        root.title('Dynasty Warriors 3 Remastered Save Editor — v0.3 Preview')
+        root.title('Dynasty Warriors 3 Remastered Save Editor — v0.3.2 Preview')
         root.geometry('1120x780')
         root.minsize(1040, 730)
         style = ttk.Style()
@@ -87,7 +88,7 @@ class Editor:
     def set_loaded(self, loaded):
         for button in self.buttons: button.configure(state='normal' if loaded else 'disabled')
         self.max_items_button.configure(state='normal' if loaded and ITEM_CAPS else 'disabled')
-        self.guard_bonus_button.configure(state='normal' if loaded and self.guard_weapon_slot is not None else 'disabled')
+        self.guard_bonus_button.configure(state='normal' if loaded and self.guard_weapon_slot is not None and self.guard_bonus_editable else 'disabled')
         if not loaded: self.clear_weapon_form()
         else:
             selected = self.weapons.selection()
@@ -748,22 +749,29 @@ class Editor:
         self.guard_weapon_slot = index if kind=='slot' else None
         metadata = GUARD_WEAPONS[self.current_guard_weapon]
         detail = self.guard_bonus_text(row['skills']) if row else 'Not owned; unlocking creates a legal stock copy.'
+        self.guard_bonus_editable = kind=='slot' and row is not None and row['editable']
+        if row is not None and not row['editable']: detail += '\n' + row['reason']
         self.guard_weapon_detail.set(f'{metadata["name"]} | {guard_editor.FAMILY_NAMES[metadata["family_index"]]} tier {metadata["tier"]} | Base attack {metadata["base_power"]}\n{detail}')
         self.guard_bonus_choices = {'None':None}
         self.guard_bonus_choices.update({GUARD_ITEMS[index]['name']:index for index in metadata['allowed_skill_ids']})
+        if row is not None and not row['editable']:
+            self.guard_bonus_choices.update({GUARD_ITEMS[s['id']]['name']:s['id'] for s in row['skills']})
         self.loading_guard_form = True
         try:
             for index in range(3):
                 skill = row['skills'][index] if row and index<len(row['skills']) else None
-                self.guard_bonus_boxes[index].configure(values=tuple(self.guard_bonus_choices),state='readonly' if kind=='slot' else 'disabled')
+                self.guard_bonus_boxes[index].configure(values=tuple(self.guard_bonus_choices),state='readonly' if self.guard_bonus_editable else 'disabled')
                 self.guard_bonus_items[index].set(next((label for label,item in self.guard_bonus_choices.items() if skill and item==skill['id']),'None'))
                 self.guard_bonus_values[index].set(str(skill['value']) if skill else '')
         finally: self.loading_guard_form = False
         for index in range(3): self.guard_bonus_item_changed(index)
-        self.guard_bonus_button.configure(state='normal' if kind=='slot' else 'disabled')
+        self.guard_bonus_button.configure(state='normal' if self.guard_bonus_editable else 'disabled')
 
     def guard_bonus_item_changed(self,index):
         if self.loading_guard_form: return
+        if not getattr(self,'guard_bonus_editable',False):
+            self.guard_bonus_value_boxes[index].configure(values=(),state='disabled')
+            return
         item = self.guard_bonus_choices.get(self.guard_bonus_items[index].get())
         values = GUARD_WEAPONS[self.current_guard_weapon]['allowed_values_by_guard_item_id'].get(str(item),[]) if item is not None else []
         self.guard_bonus_value_boxes[index].configure(values=tuple(values),state='readonly' if values and self.guard_weapon_slot is not None else 'disabled')

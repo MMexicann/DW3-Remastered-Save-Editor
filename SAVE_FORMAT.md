@@ -242,7 +242,8 @@ Material consumption, elements and rare bonus changes remain unsupported.
 
 ## Bodyguards
 
-GuardDataArray has four teams. SPoint is Int32 Merit (first team's sample
+The original sample has four GuardDataArray teams; a second supplied save has two.
+The record count is variable, and the editor preserves the actual saved teams. SPoint is Int32 Merit (first team's sample
 offset 3317075); BGLevels is an Int32 array of six entries. Native team stride
 `0x58`/SPoint offset `0x50` establish identity, not disk offsets. Battle writes
 `0x1518977..0x1518986` and normalization `0x1508EA7`/`0x1508EB1` cap Merit
@@ -389,3 +390,13 @@ concurrent rename. Keep other save editors closed while replacing a copy.
 Backup manifest reads are bounded, schema-checked and path-checked; failed
 manifest creation removes only the new incomplete backup. Resolved aliases of
 Steam Cloud metadata, Windows device names and alternate streams are refused.
+
+## v0.3.2 compatibility corrections
+
+GuardDataArray cardinality is not fixed at four. Require the exact supported
+GuardSaveData struct-array type, complete records and count consistency.
+Every team still receives field, growth and equipment validation; edits to
+absent indexes are refused. Existing positive distinct normal bodyguard weapon
+bonuses outside the verified drop profiles are read-only and preserved.
+Authored bonuses retain strict original generation limits. See
+[COMPATIBILITY_FIX.md](COMPATIBILITY_FIX.md) for evidence and limitations.
