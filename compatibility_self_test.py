@@ -8,6 +8,7 @@ from unittest.mock import patch
 from models import Change, fields
 from save_parser import read_save, parse_bytes, safe_path
 import save_writer
+import progression_editor as progression
 
 
 def run(editor, fixture, output_directory):
@@ -39,6 +40,32 @@ def run(editor, fixture, output_directory):
             check('Unchanged serialization is byte-identical',unchanged==source and not audit['plaintext_changes'])
             target=output/'unchanged.sav';editor.save_to(target)
             check('Save As callback writes identical bytes',target.read_bytes()==source and not errors)
+            saved_elixirs=original.properties['BeansNum']['value']
+            check('Elixir form reads the saved balance',int(editor.elixir_input.get())==saved_elixirs and str(editor.elixir_entry.cget('state'))=='normal')
+            for value in (0,999):
+                editor.elixir_input.set(str(value));editor.apply_elixirs()
+                raw,elixir_audit=save_writer.serialize(editor.document,list(editor.changes.values()))
+                result=parse_bytes(raw)
+                check('Elixir '+str(value)+' form output reads back',result.properties['BeansNum']['value']==value and not errors)
+                offset=original.properties['BeansNum']['data_offset']
+                check('Elixir '+str(value)+' changes only its scalar',result.plaintext[:offset]==original.plaintext[:offset] and result.plaintext[offset+4:]==original.plaintext[offset+4:])
+                editor.discard()
+            editor.max_elixirs()
+            check('Max Elixirs form uses999',int(editor.elixir_input.get())==999)
+            editor.undo()
+            check('Undo restores saved Elixir balance',not editor.changes and int(editor.elixir_input.get())==saved_elixirs)
+            prior=editor.changes.copy();error_count=len(errors)
+            editor.elixir_input.set('1000');editor.apply_elixirs()
+            check('Invalid Elixir input is rejected without changes',editor.changes==prior and len(errors)==error_count+1)
+            errors.pop();editor.refresh_elixirs()
+            editor.complete_all_musou();editor.elixir_input.set('17');editor.apply_elixirs()
+            check('Combined Musou clear and Elixir input validates',not errors and progression.elixir_state(editor.document,list(editor.changes.values()))['value']==17)
+            elixir_target=output/'elixirs17-with-clears.sav';editor.save_to(elixir_target)
+            check('Save As reopens final17 balance',not errors and editor.document.properties['BeansNum']['value']==17 and int(editor.elixir_input.get())==17 and not editor.changes)
+            check('Saved Elixir output is byte-stable',save_writer.serialize(read_save(elixir_target))[0]==elixir_target.read_bytes())
+            # Reopen the untouched test copy before the existing feature checks.
+            editor.open()
+            check('Reopening original copy resets Elixir form',not errors and int(editor.elixir_input.get())==saved_elixirs)
             editor.stage_many([Change('officer',0,'Attack',150)])
             raw,audit=save_writer.serialize(editor.document,list(editor.changes.values()))
             reread=parse_bytes(raw)

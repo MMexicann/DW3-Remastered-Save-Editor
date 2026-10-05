@@ -45,19 +45,44 @@ class Editor:
         self.weapon_rows = {}
         self.backup = None
         self.buttons = []
-        root.title('Dynasty Warriors 3 Remastered Save Editor — v0.7 Preview')
-        root.geometry('1120x810')
-        root.minsize(1040, 730)
+        self.scroll_areas = []
+        root.title('Dynasty Warriors 3 Remastered Save Editor — v0.8')
+        root.geometry('1140x870')
+        root.minsize(1040, 790)
         style = ttk.Style()
-        style.theme_use('vista' if 'vista' in style.theme_names() else 'clam')
-        style.configure('Treeview', rowheight=25)
+        style.theme_use('clam')
+        root.option_add('*Font', ('Segoe UI', 10))
+        style.configure('.', font=('Segoe UI', 10), background='#f3f5f7', foreground='#243142')
+        style.configure('TButton', padding=(9, 5), background='#ffffff')
+        style.map('TButton', background=[('active', '#e7ecf1'), ('disabled', '#edf0f3')])
+        style.configure('Primary.TButton', background='#92353b', foreground='#ffffff')
+        style.map('Primary.TButton', background=[('disabled', '#d8dde3'), ('active', '#76282e')],
+                  foreground=[('disabled', '#7b8590')])
+        style.configure('TNotebook.Tab', padding=(12, 6))
+        style.map('TNotebook.Tab', background=[('selected', '#ffffff')])
+        style.configure('Treeview', rowheight=27, background='#ffffff', fieldbackground='#ffffff',
+                        bordercolor='#d8dfe6')
+        style.configure('Treeview.Heading', font=('Segoe UI', 10, 'bold'), background='#e7ecf1',
+                        padding=(6, 6))
+        style.map('Treeview', background=[('selected', '#92353b')], foreground=[('selected', '#ffffff')])
+        banner = tk.Frame(root, background='#202a37', padx=20, pady=12)
+        banner.pack(fill='x')
+        tk.Label(banner, text='DYNASTY WARRIORS 3', font=('Segoe UI', 16, 'bold'),
+                 background='#202a37', foreground='#e6c379').pack(side='left')
+        credits = tk.Frame(banner, background='#202a37')
+        credits.pack(side='right')
+        tk.Label(credits, text='SAVE EDITOR  ·  v0.8', font=('Segoe UI', 10, 'bold'),
+                 background='#202a37', foreground='#ffffff').pack(anchor='e')
+        self.author_label = tk.Label(credits, text='Made by Mexican', font=('Segoe UI', 10),
+                                     background='#202a37', foreground='#d2d9e2')
+        self.author_label.pack(anchor='e')
         outer = ttk.Frame(root, padding=15)
         outer.pack(fill='both', expand=True)
         bar = ttk.Frame(outer)
         bar.pack(fill='x')
-        ttk.Button(bar, text='Open Save Copy', command=self.open).pack(side='left', padx=(0, 7))
+        ttk.Button(bar, text='Open Save Copy', command=self.open, style='Primary.TButton').pack(side='left', padx=(0, 7))
         for text, command in [('Backup Save', self.make_backup), ('Save As…', self.save_as), ('Save Changes', self.save_changes), ('Restore Backup…', self.restore)]:
-            button = ttk.Button(bar, text=text, command=command)
+            button = ttk.Button(bar, text=text, command=command, style='Primary.TButton' if text == 'Save As…' else 'TButton')
             button.pack(side='left', padx=(0, 7))
             if text != 'Restore Backup…': self.buttons.append(button)
         self.filename = tk.StringVar(value='Open a copy of GameStatusData.sav to begin.')
@@ -78,6 +103,7 @@ class Editor:
         self.build_weapons()
         self.build_bodyguards()
         self.build_unlocks()
+        self.bind_form_scrolling()
         bottom = ttk.Frame(outer)
         bottom.pack(fill='x', pady=(12, 0))
         self.status = tk.StringVar(value='No save open.')
@@ -93,7 +119,11 @@ class Editor:
         for button in self.buttons: button.configure(state='normal' if loaded else 'disabled')
         self.max_items_button.configure(state='normal' if loaded and ITEM_CAPS else 'disabled')
         self.guard_bonus_button.configure(state='normal' if loaded and self.guard_weapon_slot is not None and self.guard_bonus_editable else 'disabled')
-        if not loaded: self.clear_weapon_form()
+        if not loaded:
+            self.clear_weapon_form()
+            self.elixir_input.set('')
+            self.elixir_note.set('Open a save copy to view your Elixirs.')
+            self.elixir_entry.configure(state='disabled')
         else:
             selected = self.weapons.selection()
             row = self.weapon_rows.get(selected[0]) if selected else None
@@ -101,6 +131,7 @@ class Editor:
             self.weapon_max_button.configure(state='normal' if row and row['editable'] else 'disabled')
             if row:self.select_weapon()
             else:self.clear_weapon_form()
+            self.refresh_elixirs()
 
     def action(self, frame, text, command):
         button = ttk.Button(frame, text=text, command=command)
@@ -109,7 +140,7 @@ class Editor:
         return button
 
     def make_tree(self, frame, columns, title, widths):
-        tree = ttk.Treeview(frame, columns=tuple(name for name, _ in columns), selectmode='browse')
+        tree = ttk.Treeview(frame, columns=tuple(name for name, _ in columns), selectmode='browse', height=6)
         tree.heading('#0', text=title)
         tree.column('#0', width=widths[0], minwidth=120)
         for (name, title), width in zip(columns, widths[1:]):
@@ -131,9 +162,52 @@ class Editor:
     def panels(self, tab):
         left = ttk.Frame(tab)
         left.pack(side='left', fill='both', expand=True)
-        right = ttk.Frame(tab, padding=(18, 0, 0, 0))
-        right.pack(side='right', fill='y')
+        shell = ttk.Frame(tab, padding=(18, 0, 0, 0))
+        shell.pack(side='right', fill='y')
+        right = self.scroll_content(shell)
         return left, right
+
+    def scroll_content(self, parent, width=220):
+        """Keep long forms reachable when the window is short or text scales."""
+        shell = ttk.Frame(parent)
+        shell.pack(fill='both', expand=True)
+        canvas = tk.Canvas(shell, width=width, height=200, highlightthickness=0,
+                           background='#f3f5f7')
+        scroll = ttk.Scrollbar(shell, orient='vertical', command=canvas.yview)
+        scroll.pack(side='right', fill='y')
+        canvas.pack(side='left', fill='both', expand=True)
+        canvas.configure(yscrollcommand=scroll.set)
+        content = ttk.Frame(canvas)
+        window = canvas.create_window((0, 0), window=content, anchor='nw')
+        def resized(_event=None):
+            canvas.configure(scrollregion=canvas.bbox('all'), width=max(width, content.winfo_reqwidth()))
+        content.bind('<Configure>', resized)
+        canvas.bind('<Configure>', lambda event: canvas.itemconfigure(window, width=max(event.width, content.winfo_reqwidth())))
+        self.scroll_areas.append((canvas, content))
+        return content
+
+    def bind_form_scrolling(self):
+        for canvas, content in self.scroll_areas:
+            def wheel(event, area=canvas):
+                if area.yview() == (0.0, 1.0): return
+                units = -int(event.delta / 120) or (-1 if event.delta > 0 else 1)
+                area.yview_scroll(units, 'units')
+                return 'break'
+            def focus(event, area=canvas, body=content):
+                height = max(body.winfo_height(), 1)
+                top = area.canvasy(0)
+                y = event.widget.winfo_rooty() - body.winfo_rooty()
+                bottom = y + event.widget.winfo_height()
+                if y < top: area.yview_moveto(y / height)
+                elif bottom > top + area.winfo_height():
+                    area.yview_moveto((bottom - area.winfo_height()) / height)
+            stack = [content, canvas]
+            while stack:
+                widget = stack.pop()
+                stack.extend(widget.winfo_children())
+                if isinstance(widget, (ttk.Combobox, ttk.Spinbox, ttk.Treeview)): continue
+                widget.bind('<MouseWheel>', wheel, add='+')
+                widget.bind('<FocusIn>', focus, add='+')
 
     def build_officers(self):
         left, right = self.panels(self.tabs['Officers'])
@@ -241,7 +315,7 @@ class Editor:
         pages = {}
         for name in ('Growth', 'Team Equipment', 'BG Items', 'BG Weapons'):
             page = ttk.Frame(self.guard_tabs, padding=10); self.guard_tabs.add(page, text=name); pages[name] = page
-        page = pages['Growth']
+        page = self.scroll_content(pages['Growth'], width=640)
         form = ttk.Frame(page); form.pack(fill='x')
         ttk.Label(form, text='Merit (0–99,999)').grid(row=0, column=0, sticky='w', pady=4)
         ttk.Entry(form, textvariable=self.bodyguard_merit, width=14).grid(row=0, column=1, sticky='w', padx=12, pady=4)
@@ -265,9 +339,9 @@ class Editor:
             button = ttk.Button(presetbar, text=f'Max: {label}', command=lambda mode=mode: self.max_bodyguard(mode)); button.pack(side='left', padx=(0, 5)); self.buttons.append(button)
         self.action(page, 'Max All Teams — Balanced Growth', self.max_bodyguards)
         ttk.Label(page, text='Life, Attack, Defense and Bow / Moveset share at most 25 points. Count and AI advance automatically with Merit. The preview shows growth base stats before equipment and battle modifiers.', wraplength=640).pack(anchor='w', pady=9)
-        self.build_guard_equipment(pages['Team Equipment'])
+        self.build_guard_equipment(self.scroll_content(pages['Team Equipment'], width=640))
         self.build_guard_items(pages['BG Items'])
-        self.build_guard_weapons(pages['BG Weapons'])
+        self.build_guard_weapons(self.scroll_content(pages['BG Weapons'], width=640))
 
     def build_guard_equipment(self, page):
         ttk.Label(page, text='Choose one owned bodyguard item and a weapon for each family. Only equipment already owned or applied in this editor is available.', wraplength=640).pack(anchor='w', pady=(0, 10))
@@ -331,8 +405,10 @@ class Editor:
     def build_unlocks(self):
         tab = self.tabs['Unlocks']
         tab.columnconfigure(0,weight=1,uniform='unlock');tab.columnconfigure(1,weight=1,uniform='unlock')
+        tab.rowconfigure(0,weight=1)
         left=ttk.Frame(tab,padding=(0,0,18,0));left.grid(row=0,column=0,sticky='nsew')
         right=ttk.Frame(tab,padding=(18,0,0,0));right.grid(row=0,column=1,sticky='nsew')
+        left=self.scroll_content(left,width=440);right=self.scroll_content(right,width=440)
         ttk.Label(left,text='Content availability',font=('Segoe UI',11,'bold')).pack(anchor='w',pady=(0,10))
         self.action(left, 'Unlock All Playable Officers', lambda: self.unlock('CanUseCharaArray', 42))
         self.action(left, 'Unlock All 108 Playable Stages', lambda: self.unlock('CanUseScenarioArray', 108))
@@ -355,6 +431,18 @@ class Editor:
         ttk.Label(right, text='Max permanent officer stats and Merit, normal item rolls, rare items, all unique weapons and supported bodyguard growth/equipment inventories. Equipped choices and story completion are preserved.', wraplength=440).pack(anchor='w', pady=8)
         self.action(right, 'Unlock Everything Supported', self.unlock_everything)
         ttk.Label(right, text='Adds playable officer and stage availability to Remove The Grind. Use the separate controls to change story completion or costumes.', wraplength=440).pack(anchor='w', pady=8)
+        ttk.Separator(right).pack(fill='x', pady=12)
+        ttk.Label(right, text='Huanglong Elixirs', font=('Segoe UI', 11, 'bold')).pack(anchor='w')
+        ttk.Label(right, text=f'Choose your final balance: 0–{progression.ELIXIR_MAX}.', wraplength=440).pack(anchor='w', pady=(5, 7))
+        self.elixir_input = tk.StringVar()
+        self.elixir_entry = ttk.Entry(right, textvariable=self.elixir_input, width=16)
+        self.elixir_entry.pack(anchor='w', fill='x')
+        self.elixir_entry.bind('<Return>', lambda *_: self.apply_elixirs())
+        self.elixir_apply_button = self.action(right, 'Apply Elixir Count', self.apply_elixirs)
+        self.elixir_max_button = self.action(right, 'Max Huanglong Elixirs', self.max_elixirs)
+        self.elixir_note = tk.StringVar(value='Open a save copy to view your Elixirs.')
+        ttk.Label(right, textvariable=self.elixir_note, wraplength=440).pack(anchor='w', pady=(5, 0))
+        ttk.Label(right, text='An applied count includes any pending Musou clear rewards.', wraplength=440).pack(anchor='w', pady=5)
         ttk.Label(right,text='Changes remain pending until you save. Review Changes shows each action. Opening a copy creates a backup automatically.',wraplength=440).pack(anchor='w',pady=12)
 
     def require_save(self):
@@ -425,6 +513,8 @@ class Editor:
     def original_value(self, change):
         if change.category in weapon_collection.CATEGORIES:return weapon_collection.original_value(self.document,change)
         if change.category in progression.CATEGORIES:
+            if change.field == 'HuanglongElixirs':
+                return progression.elixir_state(self.document)['saved_value']
             state=progression.progression_state(self.document)
             rows=state['officers'] if change.field=='MusouCleared' else state['side_stories']
             key='officer_id' if change.field=='MusouCleared' else 'id'
@@ -478,7 +568,11 @@ class Editor:
                 key = (change.category, change.index, change.field)
                 if change.category in ('item','guard_item') and change.field == 'Owned' and change.value is False:
                     self.changes.pop((change.category, change.index, 'Value'), None)
-                if change.value == self.original_value(change): self.changes.pop(key, None)
+                if change.category == 'progression' and change.field == 'HuanglongElixirs':
+                    baseline = progression.elixir_state(self.document, [c for k, c in self.changes.items() if k != key])
+                    if baseline['editable'] and change.value == baseline['value']: self.changes.pop(key, None)
+                    else: self.changes[key] = change
+                elif change.value == self.original_value(change): self.changes.pop(key, None)
                 else: self.changes[key] = change
             # Validate the complete pending batch before changing any UI state.
             save_writer.plan_changes(self.document, list(self.changes.values()))
@@ -771,6 +865,7 @@ class Editor:
         if self.document is None: return
         self.refresh_officers(); self.refresh_items(); self.refresh_weapons(); self.refresh_bodyguards()
         self.refresh_story_status()
+        self.refresh_elixirs()
         self.status.set(f'{len(self.changes)} pending changes. Applied in the editor; use Save As or Save Changes to write them.')
 
     def refresh_story_status(self):
@@ -784,6 +879,36 @@ class Editor:
             cleared=row['cleared'] or bool(pending)
             self.story_status.set(f'{"Cleared" if cleared else "Not cleared"}{" (pending)" if pending else ""}; saved progress {row["progress"]}/{row["route_length"]}.')
         except (ValueError,KeyError,TypeError):self.story_status.set('This save’s story structures are view-only.')
+
+    def refresh_elixirs(self):
+        if self.document is None:
+            return
+        state = progression.elixir_state(self.document, list(self.changes.values()))
+        editable = state['editable']
+        self.elixir_entry.configure(state='normal' if editable else 'disabled')
+        for button in (self.elixir_apply_button, self.elixir_max_button):
+            button.configure(state='normal' if editable else 'disabled')
+        self.elixir_input.set(str(state['value']) if state['value'] is not None else '')
+        if not editable:
+            self.elixir_note.set(state['reason'])
+        elif state['value'] != state['saved_value'] or ('progression', 0, 'HuanglongElixirs') in self.changes:
+            self.elixir_note.set(f"Saved: {state['saved_value']} · Final pending balance: {state['value']}")
+        else:
+            self.elixir_note.set(f"Saved balance: {state['saved_value']}")
+
+    def apply_elixirs(self):
+        if not self.require_save():
+            return
+        try:
+            change = progression.elixir_count_change(int(self.elixir_input.get().strip()))
+        except (ValueError, TypeError):
+            messagebox.showerror('Cannot Apply Elixirs', f'Enter a whole number from 0 to {progression.ELIXIR_MAX}.')
+            return
+        self.stage_many([change])
+
+    def max_elixirs(self):
+        if self.require_save():
+            self.stage_many([progression.elixir_count_change(progression.ELIXIR_MAX)])
 
     def select_officer(self, event=None):
         selected = self.officers.selection()
@@ -1145,8 +1270,11 @@ class Editor:
             label='Weapon gallery' if change.field=='CollectAll' else 'Lu Bu / Sun Shangxiang'
             fieldname='Complete collection' if change.field=='CollectAll' else 'Tactics costumes'
         elif change.category in progression.CATEGORIES:
-            label=progression.ROUTES[change.index]['officer'] if change.field=='MusouCleared' else progression.SIDE_STORIES[change.index]['name']
-            fieldname='Musou cleared / route progress / first-clear Elixirs' if change.field=='MusouCleared' else 'Side story and Free Mode available'
+            if change.field == 'HuanglongElixirs':
+                label, fieldname = 'Huanglong Elixirs', 'Final balance'
+            else:
+                label=progression.ROUTES[change.index]['officer'] if change.field=='MusouCleared' else progression.SIDE_STORIES[change.index]['name']
+                fieldname='Musou cleared / route progress / first-clear Elixirs' if change.field=='MusouCleared' else 'Side story and Free Mode available'
         elif change.category in weapon_editor.CATEGORIES:
             row = weapon_editor.state(self.document,change.index,list(self.changes.values()))
             label = f'{row["metadata"].get("name") or row["metadata"].get("weapon_name") or "Weapon"} copy ID {change.index}'

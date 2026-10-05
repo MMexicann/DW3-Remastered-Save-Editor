@@ -1,4 +1,4 @@
-# Save compatibility changes in v0.7
+# Save compatibility changes in v0.8
 
 Two independently supplied saves exposed a shared design error in the older
 editor: observed counts and conservative rules for creating new values were

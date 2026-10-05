@@ -19,6 +19,79 @@ ELIXIR_MAX = METADATA['limits']['HuanglongElixirs']
 FIRST_CLEAR_ELIXIRS = METADATA['limits']['first_clear_elixirs']
 
 
+def _elixir_property(document):
+    """Return a verified scalar or a read-only explanation for other layouts."""
+    prop = document.properties.get('BeansNum')
+    if prop is None:
+        return None, None, 'This save has no Huanglong Elixir counter (BeansNum).'
+    if (not isinstance(prop, dict) or prop.get('type') != 'IntProperty' or
+            prop.get('data_size') != 4 or prop.get('flags') != 0 or
+            prop.get('array_index') != 0 or type(prop.get('value')) is not int):
+        return None, None, 'The Huanglong Elixir counter uses an unsupported scalar layout.'
+    saved = prop['value']
+    offset = prop.get('data_offset')
+    if (type(offset) is not int or not 0 <= offset <= len(document.plaintext) - 4 or
+            struct.unpack_from('<i', document.plaintext, offset)[0] != saved):
+        return None, saved, 'The Huanglong Elixir counter does not match its saved bytes.'
+    if not 0 <= saved <= ELIXIR_MAX:
+        return None, saved, f'The saved Huanglong Elixir count is outside the verified 0–{ELIXIR_MAX} range.'
+    return prop, saved, ''
+
+
+def elixir_count_change(value):
+    """Set the final balance; do not silently coerce strings, floats or bools."""
+    if type(value) is not int or not 0 <= value <= ELIXIR_MAX:
+        raise SaveError(f'Huanglong Elixirs must be an integer between 0 and {ELIXIR_MAX}.')
+    return Change('progression', 0, 'HuanglongElixirs', value)
+
+
+def _requested_elixir_count(changes):
+    value = None
+    found = False
+    for change in changes:
+        if change.category != 'progression' or change.field != 'HuanglongElixirs':
+            continue
+        if type(change.index) is not int or change.index != 0:
+            raise SaveError('Huanglong Elixirs use the single global counter at index 0.')
+        if found:
+            raise SaveError('Duplicate Huanglong Elixir count changes.')
+        value = elixir_count_change(change.value).value
+        found = True
+    return value
+
+
+def elixir_state(document, changes=()):
+    """Read the saved/pending balance without making unsupported saves fail open.
+
+    An explicit count is the final balance, including when the same batch marks
+    new Musou clears. Otherwise each new clear awards three, capped at 999.
+    """
+    prop, saved, reason = _elixir_property(document)
+    if prop is None:
+        return {'value': saved, 'saved_value': saved, 'editable': False, 'reason': reason}
+    requests = list(changes)
+    explicit = _requested_elixir_count(requests)
+    value = saved
+    if explicit is not None:
+        value = explicit
+    else:
+        seen = set()
+        for change in requests:
+            if change.category != 'progression' or change.field != 'MusouCleared':
+                continue
+            route = ROUTES.get(change.index) if type(change.index) is int else None
+            if (route is None or not route['route_length'] or change.value is not True or
+                    change.index >= len(document.records('PCSaveDataArray'))):
+                raise SaveError('This officer has no supported Musou Mode story.')
+            if change.index in seen:
+                raise SaveError('Duplicate story actions.')
+            seen.add(change.index)
+            _, cleared = _bool_array(document, 'EngiClearCharaArray', change.index + 1)
+            if not cleared[change.index]:
+                value = min(ELIXIR_MAX, value + FIRST_CLEAR_ELIXIRS)
+    return {'value': value, 'saved_value': saved, 'editable': True, 'reason': ''}
+
+
 def _bool_array(document, name, minimum, *, optional=False):
     prop = document.properties.get(name)
     if prop is None and optional:
@@ -129,6 +202,7 @@ def plan_progression_changes(document, changes, add_property, add_insertion):
     requests = [change for change in changes if change.category in CATEGORIES]
     if not requests:
         return
+    explicit_elixirs = _requested_elixir_count(requests)
     seen = set()
     arrays = {}
     direct_unlocks = {}
@@ -140,6 +214,9 @@ def plan_progression_changes(document, changes, add_property, add_insertion):
         return arrays[name][1]
     clear_requests = []
     for change in requests:
+        if change.field == 'HuanglongElixirs':
+            # Validated above; the single counter is written after all clears.
+            continue
         if (not isinstance(change, Change) or type(change.index) is not int or
                 change.value is not True or change.field not in ('MusouCleared', 'SideStoryUnlocked')):
             raise SaveError('Only explicit supported story unlock/clear actions are allowed.')
@@ -185,14 +262,17 @@ def plan_progression_changes(document, changes, add_property, add_insertion):
         add_property(progress, struct.pack('<i', value),
                      f'{route["officer"]}: Musou progress -> {value}')
         newly_cleared += not was_cleared
-    if newly_cleared:
-        beans = document.properties.get('BeansNum')
-        if (beans is None or beans['type'] != 'IntProperty' or beans['data_size'] != 4 or
-                type(beans['value']) is not int or not 0 <= beans['value'] <= ELIXIR_MAX):
-            raise SaveError('Cannot safely apply the first-clear Huanglong Elixir award.')
-        value = min(ELIXIR_MAX, beans['value'] + FIRST_CLEAR_ELIXIRS * newly_cleared)
+    if explicit_elixirs is not None or newly_cleared:
+        beans, saved_elixirs, reason = _elixir_property(document)
+        if beans is None:
+            raise SaveError(reason)
+        value = (explicit_elixirs if explicit_elixirs is not None else
+                 min(ELIXIR_MAX, saved_elixirs + FIRST_CLEAR_ELIXIRS * newly_cleared))
+        reason = (f'Huanglong Elixirs: explicit final balance -> {value}'
+                  if explicit_elixirs is not None else
+                  f'{newly_cleared} new Musou clears: Huanglong Elixirs -> {value}')
         add_property(beans, struct.pack('<i', value),
-                     f'{newly_cleared} new Musou clears: Huanglong Elixirs -> {value}')
+                     reason)
     missing = []
     for name, (prop, entries) in arrays.items():
         if prop is None:

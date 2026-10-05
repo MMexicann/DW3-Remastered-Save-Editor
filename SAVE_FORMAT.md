@@ -1,6 +1,6 @@
 # Dynasty Warriors 3: Complete Edition Remastered save format
 
-## v0.7 compatibility and progression update
+## v0.8 compatibility and progression update
 
 Counts and offsets below describe the original research save. They are not
 universal layout constraints: complete tagged arrays use their saved counts.
@@ -24,16 +24,19 @@ to ReMusou IDs 0/1/2 and Free Mode scenarios 101-106; it does not mark stages
 completed. Missing optional availability arrays are created using verified
 native BoolProperty serialization.
 
+`BeansNum` stores the global Huanglong Elixir balance as a signed little-endian
+Int32. The Unlocks tab supports an explicit final balance from 0 through 999;
+when combined with Musou clears, that balance takes precedence over automatic
+first-clear awards. See the Huanglong Elixirs section below.
+
 Existing six-level bodyguard growth is checked for its physical representation
 separately from rules for spending new points. Unknown growth representations
 are preserved and shown as view-only.
 
 
-This document describes the Steam Windows build inspected for editor v0.3.1.
-The codec, tagged structures and enabled edits are supported by an actual
-uploaded save, shipped metadata and static executable dataflow. **An edited
-save has not yet been loaded in the game.** Structural round trips do not
-establish runtime acceptance.
+This document describes the Steam Windows save structures used by editor v0.8.
+The codec, tagged structures and enabled edits are supported by supplied save
+copies, shipped metadata and static executable dataflow.
 
 Offsets below are **decrypted sample offsets**, including its four-byte
 envelope. They are examples, not portable fixed offsets. The editor locates
@@ -96,9 +99,11 @@ Unchanged decrypt/parse/write/encrypt reproduces the original ciphertext exactly
 
 The supported header is save version **3**, UE4 package version **522**, UE5
 package version **1017**, engine **5.6.1**, changelist **0**, branch `UE5`,
-custom-version format **3**, 89 GUID/version entries, and class
+custom-version format **3**, 89 GUID/version entries in the sample, and class
 `/Script/Refine.GameStatusSaveGame`. A serialization-control byte after the
-class is zero. Unsupported versions/class/control are refused.
+class is zero. Compatible engine patch numbers are descriptive; the parser
+requires the supported serialization versions, engine major version, save
+class and property layouts. Unsupported serialization/class/control is refused.
 
 The sample uses complete property-type trees, consistent with Unreal's
 [FPropertyTag/TypeName API](https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Runtime/CoreUObject/FPropertyTag).
@@ -118,14 +123,14 @@ own tagged records/terminators. Unsupported opaque fields remain untouched.
 
 There are **24 top-level properties**, including **18 arrays**:
 
-| Property | Type/count in sample | Payload offset | Bytes | v0.3.1 treatment |
+| Property | Type/count in sample | Payload offset | Bytes | Current editing status |
 |---|---|---:|---:|---|
 | PCSaveDataArray | PCSaveData ×50 | 1977 | 89768 | Stats/Merit for 0–41 |
 | EngiSaveDataArray | EngiSaveData ×3 | 91861 | 9350 | Preserved |
 | WeaponDataArray | WeaponSaveData ×500 | 101327 | 1690048 | Normal bonus editing; other fields preserved |
-| UniqueWeaponDataArray | WeaponSaveData ×84 | 1791497 | 283834 | Supported stock uniques |
+| UniqueWeaponDataArray | WeaponSaveData ×84 | 1791497 | 283834 | All 84 stock uniques; native expansion for Ziluan |
 | GuardWeaponDataArray | WeaponSaveData ×100 | 2075452 | 339089 | 15 definitions, legal bonuses/equipment |
-| CollectedWeaponDataArray | WeaponSaveData ×255 | 2414666 | 862134 | Matching collection cache |
+| CollectedWeaponDataArray | WeaponSaveData ×255 | 2414666 | 862134 | Acquisition snapshots and playable collection gallery |
 | EquipItemDataArray | EquipItemSaveData ×100 | 3276922 | 32458 | Items 0–42 |
 | EquipItemSetDataArray | EquipItemSetSaveData ×8 | 3309508 | 2020 | Preserved loadouts |
 | GuardEquipItemDataArray | EquipItemSaveData ×10 | 3311655 | 3354 | Nine normal items and one rare |
@@ -135,18 +140,20 @@ There are **24 top-level properties**, including **18 arrays**:
 | NewCanUseScenarioArray | Bool ×156 | 3323725 | 160 | Preserved |
 | CanUseCharaArray | Bool ×50 | 3323954 | 54 | Availability 0–41 only |
 | NewCanUseCharaArray | Bool ×50 | 3324080 | 54 | Preserved |
-| EngiClearCharaArray | Bool ×50 | 3324206 | 54 | Story completion preserved |
+| EngiClearCharaArray | Bool ×50 | 3324206 | 54 | Separate explicit Musou clear actions |
 | TutorialPlayedFlagArray | Bool ×20 | 3324336 | 24 | Preserved |
 | ChallengeModeRankingArray | ChallengeModeRankingData ×6 | 3324496 | 3790 | Preserved |
 | OptionData | OptionSaveData struct | 3328375 | 4176 | Preserved |
 | RecordSaveData | RecordSaveData struct | 3332644 | 1025 | Preserved |
 | isOpenOPEdit | Bool | 3333712 | 0 | Preserved |
 | TipsWindowSaveData | TipsWindowSaveData struct | 3333813 | 68 | Preserved |
-| BeansNum | Int32 | 3333919 | 4 | Preserved |
+| BeansNum | Int32 | 3333919 | 4 | Huanglong Elixirs: final balance 0–999 |
 | DLCPermissionSaveData | DLCPermissionSaveData struct | 3334030 | 192 | Preserved |
 
 Structural parsing does not establish every field's gameplay meaning or safe
-mutation. Edited layouts have strict count checks; arrays are not expanded.
+mutation. Complete arrays retain their actual saved lengths. Expansion is
+implemented only for the native indexed unique acquisition path and optional
+side-story availability arrays.
 
 ## Officers
 
@@ -176,7 +183,7 @@ and equipped weapon/bodyguard selections remain unchanged by stat presets.
 | Attack | Int32 | 132 | 2102 | 150 |
 | Defence | Int32 | 135 | 2143 | 150 |
 | SPoint (Merit) | Int32 | 99999 | 2559 | 99999 |
-| Progress | Int32 | 7 | 2761 | Not edited |
+| Progress | Int32 | 7 | 2761 | Explicit Musou clear: route length 7 or 10 |
 
 Getter `0x1514C40` resolves permanent officer records. Gameplay writes
 `0x15DFC95..0x15DFD26` clamp HP/Musou to 0–250 and Attack/Defense to 0–150;
@@ -258,13 +265,17 @@ the stock template. Existing owned/fused records and timestamps are preserved.
 [unique_weapons.json](unique_weapons.json) lists each officer, ID, name,
 exact bitmask, skill values and mappings.
 
-The 84-record UniqueWeaponDataArray supports **82 unique weapons** at slots
-0–40 and 43–83. Slots 41/42 remain blank placeholders. Ziluan's slots 102/103
-are absent: they would require at least 103/104 records respectively. v0.1
-refuses those acquisitions and does not expand this array. Its unlock action
-therefore does not provide all 84 definitions. Ordinary/fused weapon data
-now supports verified normal bonus editing. Fusion copies material ID/value
-directly; rank limits are6/6/6/7/8normal bonuses. Exact donor value sets,
+The original 84-record UniqueWeaponDataArray contains slots for 82 unique
+weapons at 0–40 and 43–83. Slots 41/42 remain blank placeholders. Ziluan's
+slots 102/103 require at least 103/104 records respectively. The writer
+reproduces native insertion by padding missing slots with constructor-style
+NUM identities, zero skills/attributes/time and indexed DataIDs, then acquiring
+only the requested weapon. Existing rows, fused properties and timestamps
+remain unchanged. All 84 unique definitions are supported.
+
+Ordinary/fused weapon data supports verified normal bonus editing. Fusion
+copies material ID/value directly; rank limits are 6/6/6/7/8 normal bonuses.
+Exact donor value sets,
 per-weapon stock exceptions, preserved rare slots and inventory/cache
 dependencies are documented in [WEAPON_ROLLS.md](WEAPON_ROLLS.md).
 Rare bonuses and single elements are now editable under the verified rules
@@ -341,9 +352,34 @@ They are excluded from stage editing/unlock actions.
 
 Availability edits are separate from EngiClearCharaArray, ClearScenarioArray
 and EngiSaveDataArray. Stat/item/weapon/Merit presets preserve story/Musou
-completion. The supported-content preset adds availability edits; it does
-not complete every story, achievement or DLC permission. Progress/title/rank
-fields remain unchanged. Future builds may require new dependency evidence.
+completion. Explicit Musou clear actions update the completion flag and route
+Progress for the 39 supported officers, with three Huanglong Elixirs per first
+clear unless an explicit final Elixir balance is supplied. They preserve active
+runs, battle records and timestamps. Title/rank fields and DLC permissions remain
+unchanged. Side-story actions enable the three rulers' side campaigns and their
+six Free Mode variants without marking those stages completed.
+
+## Huanglong Elixirs
+
+`BeansNum` is a top-level `IntProperty` with a four-byte signed little-endian
+payload; its sample offset is 3333919. The editor exposes it as
+`Change('progression', 0, 'HuanglongElixirs', value)`, independently of officer
+stats and item values.
+
+Edits require an ordinary scalar tag (`flags == 0`, `array_index == 0`), a
+payload matching its parsed integer, and a saved balance within 0–999. New
+values must have exact integer type and be within that same range; booleans,
+floats, strings, negative numbers and values over 999 are rejected. Missing or
+unfamiliar counter layouts remain view-only. No counter offset is hard-coded.
+
+Without an explicit balance, newly cleared Musou routes award three Elixirs
+each, capped at 999. Repeating an already-cleared route awards nothing. An
+explicit balance is the final total even when the same batch clears stories:
+setting 10 and clearing a route writes 10, rather than 13. The writer produces
+one counter patch, regardless of request order. A counter-only edit changes
+just these four payload bytes and their corresponding encrypted blocks; story
+flags and unrelated fields remain unchanged. Applying the saved balance with
+no other edits produces byte-identical output.
 
 ## Safe writes and validation boundaries
 
@@ -373,9 +409,9 @@ The game live-save tree, Steam userdata/remote locations and Steam Cloud
 metadata are refused. Editing is performed on separately selected copies.
 
 Confidence is high for the codec, supported layout, mapped fields, native
-caps and template mappings. Runtime load acceptance remains untested.
+caps and template mappings.
 Unknown/unsupported areas include material-consuming fusion, new combined elements, nontransferable rare weapon donors, bodyguard appearance/type changes,
-officer title/rank edits, missing unique-slot expansion, detailed meanings of
+officer title/rank edits, detailed meanings of
 preserved opaque fields and other builds/platforms. Unknown regions are not
 assigned invented offsets or values.
 
@@ -386,31 +422,35 @@ assigned invented offsets or values.
 | AES key/mode, envelope, padding | High: shipped configuration, decoded GVAS, exact ciphertext round trip and NIST vector | Implemented |
 | Version/header/property sizes | High for the inspected layout: full bounded parse and size regeneration | Other layouts refused |
 | Officer identity/Merit/permanent stats | High: native enum, parsed fields and actual getter/write clamp paths | Implemented for 42 officers |
-| Officer Progress/title/rank fields | Storage identified; progression dependencies and safe rank transitions incomplete | Preserved |
+| Officer Progress/title/rank fields | Native Musou route lengths mapped; safe title/rank transitions incomplete | Progress updated by explicit clear actions; title/rank preserved |
 | Normal-item IDs/ownership/values/caps | High: shipped enums/tables, pickup and normal drop-generation dataflow | Implemented for 16 normal items |
 | Rare-item ownership | High: shipped IDs and indexed equipment records | Implemented for 27 rare items |
-| Weapon ownership/4th/5th stock properties/cache | High for 82 supported entries: native acquisition mapping and shipped templates | Implemented; owned entries preserved |
-| Missing Ziluan unique slots | High that slots 102/103 are absent from this 84-record sample; expansion semantics unknown | Refused |
+| Weapon ownership/4th/5th stock properties/cache | High for 84 entries: native acquisition mapping and shipped templates | Implemented; owned entries preserved |
+| Ziluan unique slots and expansion | High: native insertion pads through slots 102/103; confirmed 104-row reported save | Implemented native padding and indexed acquisition |
+| Playable weapon collection/Tactics costumes | High: native 176-definition collection predicate and two-officer costume setter | Gallery completion and separate Lu Bu/Sun Shangxiang costume flags implemented |
 | Officer weapon normal fusion outcomes | High: native direct-copy path, exact donor value sets, rank limits and stock exceptions | Per-copy bonus editing/max; material workflow remains unsupported |
 | Bodyguard Merit/growth/count/AI | High: native 99,999 clamp, shipped level/gate/budget tables and associated officer count dataflow | Legal final allocations and presets implemented |
 | Bodyguard normal/rare items | High: shipped IDs/roll tables and actual generation/acquisition/equipment paths | Nine normal caps, one rare ownership and team equipment implemented |
 | Bodyguard weapon ownership/bonuses/equipment | High for native drops: 15 definitions, family/tier limits, allocator/cache and slot references | Acquisition, legal max profiles and first-five equipment implemented |
 | Bodyguard model/type/extra references/fusion | Safe transition rules incomplete or unverified | Preserved or refused |
 | Officer/stage availability | High: boolean arrays, native IDs and shipped 108 playable scenario rows | Implemented separately |
-| Musou completion/progression | Arrays identified; completion dependencies deliberately outside editor scope | Preserved |
+| Musou completion/progression | High: 39 native routes, completion flags/progress and first-clear award dataflow | Separate explicit clears; active runs and battle records preserved |
+| Side-story availability | High: native three-story IDs, optional BoolProperty arrays and six Free Mode mappings | Separate unlock actions; completion preserved |
+| Huanglong Elixir balance | High: BeansNum Int32 scalar, native 0–999 clamp and first-clear award | Explicit typed final balance; one combined counter patch |
 | Custom checksum/compression/signature | None found in inspected save paths; exact round trip verified | No invented integrity algorithm |
-| Unknown/opaque fields, other builds, runtime acceptance | Unverified | Preserved or refused |
+| Unknown/opaque fields and other platforms | Outside the identified save contract | Preserved or refused |
 
 ## v0.3.1 review corrections
 
 Nested property payloads must fit both the enclosing record and the physical
-buffer. Truncated primitive reads become validation errors. Recognized ordinary
-item slots enforce indexed ownership, zero values for unowned/rare items and
-verified normal rolls; unknown reserved slots remain preserved.
+buffer. Truncated primitive reads become validation errors. New ordinary item
+edits enforce indexed ownership, zero values on removal/rare acquisition and
+verified normal rolls. Unchanged historical values and reserved slots remain
+preserved, with compatibility notes where their profiles are unfamiliar.
 
 Reserved native officer weapon bonus IDs can be viewed and round-tripped,
-but their weapon copies are read-only. Repeating an unlock action for an owned
-unique weapon cannot bypass its inventory-reference checks.
+but their weapon copies are read-only. Repeating an unlock action preserves an
+existing owned unique copy, including its references, bonuses and timestamp.
 
 Overwrite commits recheck the destination against the exact backed-up bytes
 after serialization and temporary-file verification. New destinations use
@@ -426,7 +466,8 @@ Steam Cloud metadata, Windows device names and alternate streams are refused.
 
 GuardDataArray cardinality is not fixed at four. Require the exact supported
 GuardSaveData struct-array type, complete records and count consistency.
-Every team still receives field, growth and equipment validation; edits to
+Every team receives structural validation; unfamiliar saved growth/equipment
+profiles are preserved while newly authored changes remain strict. Edits to
 absent indexes are refused. Existing positive distinct normal bodyguard weapon
 bonuses outside the verified drop profiles are read-only and preserved.
 Authored bonuses retain strict original generation limits. See
@@ -449,5 +490,4 @@ The audit adds fields_relocated; total-size resized remains separate.
 
 Confidence is high for the supported native transfer outcomes and storage.
 See [WEAPON_ATTRIBUTES_FIX.md](WEAPON_ATTRIBUTES_FIX.md) for evidence RVAs,
-limits, authoring policy and preserved dependencies. In-game acceptance of
-v0.3.3 awaits feedback.
+limits, authoring policy and preserved dependencies.
