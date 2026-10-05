@@ -131,12 +131,12 @@ class BodyguardIntegrationTests(unittest.TestCase):
     def test_item_unlock_defaults_minimum_and_value_implies_owned(self):
         document, _ = self.edited([Change('guard_item', 0, 'Owned', True), Change('guard_item', 7, 'Value', 13)])
         state = bg.item_state(document)
-        self.assertEqual(state[0], {'owned': True, 'value': 1})
-        self.assertEqual(state[7], {'owned': True, 'value': 13})
+        self.assertEqual(state[0], {'owned': True, 'value': 1, 'editable': True, 'reason': ''})
+        self.assertEqual(state[7], {'owned': True, 'value': 13, 'editable': True, 'reason': ''})
 
     def test_unowned_unequipped_item_removal_resets_id_and_value(self):
         document, _ = self.edited([Change('guard_item', 1, 'Owned', False)])
-        self.assertEqual(bg.item_state(document)[1], {'owned': False, 'value': 0})
+        self.assertEqual(bg.item_state(document)[1], {'owned': False, 'value': 0, 'editable': True, 'reason': ''})
         self.assert_other_regions_preserved(document, {'GuardEquipItemDataArray'})
 
     def test_equipped_item_removal_requires_final_unequip(self):
@@ -152,7 +152,7 @@ class BodyguardIntegrationTests(unittest.TestCase):
             serialize(self.document, [Change('bodyguard', 0, 'MemberItem', 9)])
         document, _ = self.edited([Change('bodyguard', 0, 'MemberItem', 9), Change('guard_item', 9, 'Owned', True)])
         self.assertEqual(bg.team_state(document, 0)['MemberItem'], 9)
-        self.assertEqual(bg.item_state(document)[9], {'owned': True, 'value': 0})
+        self.assertEqual(bg.item_state(document)[9], {'owned': True, 'value': 0, 'editable': True, 'reason': ''})
 
     def test_cached_officer_guard_musou_reference_protects_removal(self):
         prop = fields(self.document.records('PCSaveDataArray')[0])['BGMusouEquipItem']
@@ -345,7 +345,7 @@ class BodyguardIntegrationTests(unittest.TestCase):
         restored = restore_backup(backup, self.folder / 'restored-copy.sav')
         self.assertEqual(restored.read_bytes(), self.document.encrypted)
 
-    def test_noncanonical_item_owned_values_rejected(self):
+    def test_noncanonical_saved_item_values_warn_and_are_preserved(self):
         empty = fields(self.document.records('GuardEquipItemDataArray')[0])
         normal = fields(self.document.records('GuardEquipItemDataArray')[2])
         rare = fields(self.document.records('GuardEquipItemDataArray')[9])
@@ -353,8 +353,16 @@ class BodyguardIntegrationTests(unittest.TestCase):
                   [(normal['Value'], struct.pack('<i', 0))],
                   [(rare['GuardEquipItemID'], enum_bytes(bg.GUARD_ITEMS[9]['enum'])), (rare['Value'], struct.pack('<i', 1))]]
         for changes in probes:
-            with self.subTest(changes=changes), self.assertRaises(SaveError):
-                parse_bytes(edited_fixture_bytes(self.document, changes))
+            with self.subTest(changes=changes):
+                document = parse_bytes(edited_fixture_bytes(self.document, changes))
+                self.assertTrue(document.compatibility_warnings)
+                self.assertEqual(serialize(document)[0], document.encrypted)
+                edited, _ = self.edited([Change('officer', 0, 'SPoint', 99998)], document)
+                self.assertEqual(tag_bytes(edited, edited.properties['GuardEquipItemDataArray']),
+                                 tag_bytes(document, document.properties['GuardEquipItemDataArray']))
+        for change in (Change('guard_item', 2, 'Value', 0), Change('guard_item', 9, 'Value', 1)):
+            with self.subTest(change=change), self.assertRaises(SaveError):
+                serialize(self.document, [change])
 
     def test_wrong_guard_array_counts_and_property_types_rejected(self):
         for name in ('GuardEquipItemDataArray', 'GuardWeaponDataArray'):
@@ -373,17 +381,23 @@ class BodyguardIntegrationTests(unittest.TestCase):
             with self.subTest(array=array, field=field), self.assertRaises(SaveError):
                 parse_bytes(encrypt(bytes(original)))
 
-    def test_malformed_guard_item_identity_and_roll_rejected(self):
+    def test_unsupported_guard_item_identity_and_roll_preserved_without_authoring(self):
         row = fields(self.document.records('GuardEquipItemDataArray')[2])
         probes = [(row['GuardEquipItemID'], enum_bytes(bg.GUARD_ITEMS[3]['enum'])),
                   (row['EquipItemID'], enum_bytes('EEquipItemID::EQUIP_ITEM_SEIRYUTAN')),
                   (row['GuardEquipItemID'], enum_bytes('EGuardEquipItemID::BAD')),
                   (row['Value'], struct.pack('<i', 26))]
         for prop, value in probes:
-            with self.subTest(field=prop['name'], value=value), self.assertRaises(SaveError):
-                parse_bytes(edited_fixture_bytes(self.document, [(prop, value)]))
+            with self.subTest(field=prop['name'], value=value):
+                document = parse_bytes(edited_fixture_bytes(self.document, [(prop, value)]))
+                self.assertTrue(document.compatibility_warnings)
+                self.assertEqual(serialize(document)[0], document.encrypted)
+                change = (Change('guard_item', 2, 'Value', 26) if prop['name'] == 'Value' else
+                          Change('guard_item', 2, 'Owned', True))
+                with self.assertRaises(SaveError):
+                    serialize(document, [change])
 
-    def test_malformed_guard_weapon_identity_dataid_and_ref_rejected(self):
+    def test_unsupported_guard_weapon_identity_and_refs_are_preserved_and_not_authored(self):
         row = fields(self.document.records('GuardWeaponDataArray')[1])
         team = fields(self.document.records('GuardDataArray')[0])
         probes = [(row['ID'], enum_bytes(bg.GUARD_WEAPONS[175]['enum'])),
@@ -391,8 +405,19 @@ class BodyguardIntegrationTests(unittest.TestCase):
                   (row['DataID'], struct.pack('<i', 99)),
                   (team['MemberWeapon'], struct.pack('<i', 10) + struct.pack('<10i', 99, 3, 6, 9, 12, -1, -1, -1, -1, -1))]
         for prop, value in probes:
-            with self.subTest(field=prop['name'], value=value), self.assertRaises(SaveError):
-                parse_bytes(edited_fixture_bytes(self.document, [(prop, value)]))
+            with self.subTest(field=prop['name'], value=value):
+                document = parse_bytes(edited_fixture_bytes(self.document, [(prop, value)]))
+                self.assertTrue(document.compatibility_warnings)
+                self.assertEqual(serialize(document)[0], document.encrypted)
+                if prop['name'] == 'MemberWeapon':
+                    # The pre-existing bad family reference is preserved, but
+                    # trying to assign it in another team is still rejected.
+                    change = Change('bodyguard', 1, 'MemberWeapon', [99, 3, 6, 9, 12, -1, -1, -1, -1, -1])
+                else:
+                    self.assertFalse(bg.weapon_state(document)[1]['editable'])
+                    change = Change('guard_weapon_slot', 1, 'Skills', bg.max_skills(174))
+                with self.assertRaises(SaveError):
+                    serialize(document, [change])
 
     def test_saved_guard_bonus_structure_is_separate_from_authored_drop_rules(self):
         records = self.document.records('GuardWeaponDataArray')
@@ -427,18 +452,34 @@ class BodyguardIntegrationTests(unittest.TestCase):
                   (1, [{'id': 9, 'value': 0}]),  # rare inventory item is not a weapon bonus
                   (1, [{'id': index, 'value': 1} for index in (0, 1, 2, 3)])]
         for slot, skills in probes:
-            with self.subTest(slot=slot, skills=skills), self.assertRaises(SaveError):
-                parse_bytes(edited_fixture_bytes(self.document, skills_replacements(slot, skills)))
+            with self.subTest(slot=slot, skills=skills):
+                document = parse_bytes(edited_fixture_bytes(self.document, skills_replacements(slot, skills)))
+                self.assertTrue(document.compatibility_warnings)
+                self.assertFalse(bg.weapon_state(document)[slot]['editable'])
+                self.assertEqual(serialize(document)[0], document.encrypted)
+                with self.assertRaises(SaveError):
+                    serialize(document, [Change('guard_weapon_slot', slot, 'Skills', skills)])
 
-    def test_malformed_growth_shape_budget_and_equipped_item_rejected(self):
+    def test_unsupported_saved_growth_and_item_refs_preserved_but_authored_values_validate(self):
         row = fields(self.document.records('GuardDataArray')[1])
         probes = [(row['SPoint'], struct.pack('<i', 100000)),
                   (row['BGLevels'], struct.pack('<i', 5) + struct.pack('<5i', 6, 6, 7, 3, 3)),
                   (row['BGLevels'], struct.pack('<i', 6) + struct.pack('<6i', 11, 11, 11, 3, 3, 3)),
                   (row['MemberItem'], enum_bytes(bg.GUARD_ITEMS[9]['enum']))]
         for prop, value in probes:
-            with self.subTest(field=prop['name'], value=value), self.assertRaises(SaveError):
-                parse_bytes(edited_fixture_bytes(self.document, [(prop, value)]))
+            with self.subTest(field=prop['name'], value=value):
+                document = parse_bytes(edited_fixture_bytes(self.document, [(prop, value)]))
+                self.assertTrue(document.compatibility_warnings)
+                self.assertEqual(serialize(document)[0], document.encrypted)
+                edited, _ = self.edited([Change('officer', 0, 'SPoint', 99998)], document)
+                self.assertEqual(tag_bytes(edited, edited.properties['GuardDataArray']),
+                                 tag_bytes(document, document.properties['GuardDataArray']))
+        for change in (Change('bodyguard', 1, 'SPoint', 100000),
+                       Change('bodyguard', 1, 'BGLevels', [0] * 5),
+                       Change('bodyguard', 1, 'BGLevels', [11, 11, 11, 3, 3, 3]),
+                       Change('bodyguard', 1, 'MemberItem', 9)):
+            with self.subTest(change=change), self.assertRaises(SaveError):
+                serialize(self.document, [change])
 
     def test_one_roll_edit_changes_only_known_scalar_and_encryption_block(self):
         original = fields(self.document.records('GuardEquipItemDataArray')[3])['Value']

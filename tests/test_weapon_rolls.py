@@ -352,11 +352,14 @@ class OfficerWeaponIntegrationTests(unittest.TestCase):
         raw_skill = bytearray(self.document.plaintext[skill['data_offset']:skill['data_offset'] + skill['data_size']])
         struct.pack_into('<i', raw_skill, 0, 8)
         probes = [[(skill, bytes(raw_skill))],
-                  [(first['EquipItemID'], enum_bytes('EEquipItemID::BAD'))],
+                  [(first['EquipItemID'], enum_bytes('OtherItemID::BAD'))],
                   [(first['Value'], struct.pack('<q', 10))]]
         for changes in probes:
             with self.subTest(changes=changes), self.assertRaises(SaveError):
                 parse_bytes(edited_fixture_bytes(self.document, changes))
+        unknown=parse_bytes(edited_fixture_bytes(self.document,[(first['EquipItemID'],enum_bytes('EEquipItemID::BAD'))]))
+        self.assertFalse(weapon.state(unknown,36)['editable'])
+        self.assertEqual(serialize(unknown)[0],unknown.encrypted)
 
 
 if __name__ == '__main__':

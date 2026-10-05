@@ -84,7 +84,7 @@ class CopyTestCase(unittest.TestCase):
 
 @unittest.skipUnless(FIXTURE.exists(), 'The explicitly supplied private fixture is required.')
 class ReviewIntegrationTests(CopyTestCase):
-    def test_ordinary_item_identity_and_legitimate_rolls_are_validated(self):
+    def test_unfamiliar_saved_items_are_preserved_and_new_edits_validated(self):
         normal = fields(self.document.records('EquipItemDataArray')[0])
         rare_id = next(i for i, row in writer.ITEMS.items() if row['kind'] == 'rare')
         rare = fields(self.document.records('EquipItemDataArray')[rare_id])
@@ -97,8 +97,17 @@ class ReviewIntegrationTests(CopyTestCase):
             [(rare['EquipItemID'], enum_bytes('EEquipItemID::' + writer.ITEMS[rare_id]['enum'])), (rare['Value'], struct.pack('<i', 1))],
         ]
         for index, replacements in enumerate(cases):
-            with self.subTest(case=index), self.assertRaises(SaveError):
-                parse_bytes(edited_fixture_bytes(self.document, replacements))
+            with self.subTest(case=index):
+                raw=edited_fixture_bytes(self.document,replacements)
+                document=parse_bytes(raw)
+                self.assertTrue(document.compatibility_warnings)
+                self.assertEqual(writer.serialize(document)[0],raw)
+                if index in (0,4):
+                    with self.assertRaises(SaveError):writer.serialize(document,[Change('item',0,'Value',1)])
+                elif index==5:
+                    self.assertEqual(writer.serialize(document,[Change('item',rare_id,'Owned',True)])[0],raw)
+                elif index in (1,2):
+                    with self.assertRaises(SaveError):writer.serialize(document,[Change('item',0,'Value',-1 if index==1 else writer.ITEM_CAPS[0]+1)])
 
     def test_unknown_native_bonus_is_view_only_and_roundtrips(self):
         row = fields(self.document.records('WeaponDataArray')[36])

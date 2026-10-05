@@ -202,7 +202,7 @@ class OriginalVariantIntegrationTests(TwoTeamChecks, unittest.TestCase):
         with self.assertRaises(SaveError):
             serialize(document, [Change('guard_weapon_slot', 1, 'Skills', guard.max_skills(175))])
 
-    def test_duplicate_excess_nonpositive_and_rare_guard_bonuses_still_fail(self):
+    def test_unrecognized_saved_bonuses_are_view_only_but_new_authored_bonuses_fail(self):
         record = fields(self.document.records('GuardWeaponDataArray')[1])
         def malformed(skills):
             replacements = []
@@ -214,8 +214,12 @@ class OriginalVariantIntegrationTests(TwoTeamChecks, unittest.TestCase):
             return edited_fixture_bytes(self.document, replacements)
         for skills in ([(0, 30), (0, 25)], [(0, 1), (1, 1), (2, 1), (3, 1)],
                        [(0, 0)], [(0, -1)], [(9, 1)]):
-            with self.subTest(skills=skills), self.assertRaises(SaveError):
-                parse_bytes(malformed(skills))
+            with self.subTest(skills=skills):
+                document = parse_bytes(malformed(skills))
+                self.assertFalse(guard.weapon_state(document)[1]['editable'])
+                self.assertEqual(serialize(document)[0], document.encrypted)
+                with self.assertRaises(SaveError):
+                    serialize(document, [Change('guard_weapon_slot', 1, 'Skills', guard.max_skills(175))])
 
     def test_gui_switches_from_four_to_two_saved_teams(self):
         import tkinter as tk

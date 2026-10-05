@@ -157,11 +157,12 @@ class SaveTests(unittest.TestCase):
                 self.assertEqual(values['Value']['value'],expected['value'])
         again,audit=serialize(doc,[Change('unique_weapon',89,'Owned',True)])
         self.assertEqual(raw,again);self.assertEqual(audit['plaintext_changes'],[])
-    def test_all82_supported_uniques_and_missing_slots_refusal(self):
-        supported=[w for w in UNIQUE_WEAPONS.values() if w['fits_supplied_84_record_array']]
-        self.assertEqual(len(supported),82)
+    def test_all84_supported_uniques_and_native_array_expansion(self):
+        supported=list(UNIQUE_WEAPONS.values())
+        self.assertEqual(len(supported),84)
         raw,_=serialize(self.document,[Change('unique_weapon',w['weapon_id'],'Owned',True) for w in supported])
         doc=parse_bytes(raw)
+        self.assertEqual(len(doc.records('UniqueWeaponDataArray')),104)
         for w in supported:self.assertEqual(fields(doc.records('UniqueWeaponDataArray')[w['unique_save_index']])['WeaponID']['value'],w['weapon_enum'])
         for index in (41,42):
             def raw_record(document,index):
@@ -169,7 +170,8 @@ class SaveTests(unittest.TestCase):
                 start=records[index][0]['tag_offset'];end=records[index+1][0]['tag_offset']
                 return document.plaintext[start:end]
             self.assertEqual(raw_record(doc,index),raw_record(self.document,index))
-        with self.assertRaises(SaveError):serialize(self.document,[Change('unique_weapon',191,'Owned',True)])
+        raw,_=serialize(self.document,[Change('unique_weapon',191,'Owned',True)])
+        self.assertEqual(len(parse_bytes(raw).records('UniqueWeaponDataArray')),103)
     def test_stale_source_and_mutated_document_refused(self):
         source=self.folder/'copy.sav';source.write_bytes(self.document.encrypted);doc=read_save(source)
         source.write_bytes(b'new content')
