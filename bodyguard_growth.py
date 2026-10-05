@@ -74,6 +74,31 @@ def validate_growth(merit: int, levels) -> tuple[int, ...]:
     return values
 
 
+def validate_saved_growth(merit: int, levels) -> tuple[int, ...]:
+    """Check a saved profile without treating earning gates as load invariants.
+
+    The native automatic growth updater gates allocations by current Merit.
+    A real supplied save has Bow/Moveset above that automatic gate. Its cause
+    is not assumed: reading or preserving it must not reallocate saved levels.
+    Newly authored allocations still use conservative ``validate_growth``.
+    """
+    _merit(merit)
+    return _levels(levels)
+
+
+def advance_automatic_levels(merit: int, levels) -> list[int]:
+    """Advance earned Count/AI while preserving historical allocations.
+
+    Used for Merit-only increases. Existing higher automatic levels are also
+    kept: this helper never demotes previously saved growth.
+    """
+    values = list(validate_saved_growth(merit, levels))
+    caps = earned_caps(merit)
+    for index in (3, 5):
+        values[index] = max(values[index], caps[index])
+    return values
+
+
 def derive_stats(levels) -> dict[str, int]:
     """Return proven growth base values, without equipment/context modifiers.
 

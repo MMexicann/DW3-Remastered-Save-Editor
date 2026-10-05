@@ -1,5 +1,34 @@
 # Dynasty Warriors 3: Complete Edition Remastered save format
 
+## v0.7 compatibility and progression update
+
+Counts and offsets below describe the original research save. They are not
+universal layout constraints: complete tagged arrays use their saved counts.
+The parser preserves additional records and unknown gameplay values; new edits
+still require verified rules. See [SAVE_COMPATIBILITY.md](SAVE_COMPATIBILITY.md).
+
+Ziluan's unique weapon IDs 191/192 occupy unique slots 102/103, so natural
+acquisition expands the array to 103/104 records. All 84 stock unique weapons
+are supported. Padding records use native NUM identities and DataIDs 10000+slot.
+`weapon_collection.py` fills the 176 playable first-acquisition gallery entries
+without replacing existing snapshots or adding ordinary inventory copies.
+Tactics costumes use `CanUseCostume[3]` for officers 12/13; retro DLC uses a
+separate flag and is preserved.
+
+`progression_routes.json` records the native 39 Musou routes. Rulers 11/14/15
+have ten stages; other supported routes have seven. Officers 39/40/41 have no
+Musou route. Explicit clears update `EngiClearCharaArray`, officer `Progress`
+and first-clear Huanglong Elixirs (three each, total capped at 999). Active run
+records and timestamps stay unchanged. Side-story availability maps Wei/Wu/Shu
+to ReMusou IDs 0/1/2 and Free Mode scenarios 101-106; it does not mark stages
+completed. Missing optional availability arrays are created using verified
+native BoolProperty serialization.
+
+Existing six-level bodyguard growth is checked for its physical representation
+separately from rules for spending new points. Unknown growth representations
+are preserved and shown as view-only.
+
+
 This document describes the Steam Windows build inspected for editor v0.3.1.
 The codec, tagged structures and enabled edits are supported by an actual
 uploaded save, shipped metadata and static executable dataflow. **An edited

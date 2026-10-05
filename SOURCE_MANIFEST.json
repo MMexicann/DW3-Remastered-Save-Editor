@@ -1,5 +1,5 @@
 {
-  "version": "0.3.3-preview",
+  "version": "0.7-preview",
   "files": [
     {
       "path": ".gitignore",
@@ -23,8 +23,8 @@
     },
     {
       "path": "BUILDING.md",
-      "bytes": 1652,
-      "sha256": "9c3b46a9d1e019e132d04ad1e4156b76a0145534edd10dbf0cab4f6e2df3f1ba"
+      "bytes": 1649,
+      "sha256": "6b507a1d802c017de7ead762dec2bd2291374bf2a202e9e352bd6f679d39036c"
     },
     {
       "path": "COMPATIBILITY_FIX.md",
@@ -38,13 +38,18 @@
     },
     {
       "path": "README.md",
-      "bytes": 8872,
-      "sha256": "b0026e9e2e303bc72fdcb7ace2b6655ad4fa16bbec9ee10bde68c94b504512c9"
+      "bytes": 10383,
+      "sha256": "d42ab796476d2e7fbbd93a74afc22cad3b934bc5e83a417acd34473b3fcfb925"
+    },
+    {
+      "path": "SAVE_COMPATIBILITY.md",
+      "bytes": 3748,
+      "sha256": "53881e9ef45fa80266050e50e2116b3a54a596e9ebdbd8a99be79506fc8305a9"
     },
     {
       "path": "SAVE_FORMAT.md",
-      "bytes": 26410,
-      "sha256": "f45992a33c67304294c72d43e38f1d1c027547d4cb6bff4642f8f21c3e71e8f4"
+      "bytes": 28076,
+      "sha256": "98a33b1dbd3586ea1008bc1676c56fd004470fcc4a55546f693760283d072135"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -53,8 +58,8 @@
     },
     {
       "path": "VALIDATION.md",
-      "bytes": 10594,
-      "sha256": "2c434b0a2cae59586e879bb3927a36600d680f40635f33abf4adbe5405019d47"
+      "bytes": 4709,
+      "sha256": "8f3bb8e4b185988d4df0343107bc8e2d9ef9067e344aad4319571ba70970e00b"
     },
     {
       "path": "WEAPON_ATTRIBUTES_FIX.md",
@@ -68,13 +73,13 @@
     },
     {
       "path": "app_self_test.py",
-      "bytes": 21297,
-      "sha256": "cc34309af825ae9c7bcd67508b5a497378b1bfefa7bd2587e80581a2cbbb08a8"
+      "bytes": 21516,
+      "sha256": "e468e1917f985f50bc7ee3758501df13fc49c27ad67ae63ada80a3e8d54dadd7"
     },
     {
       "path": "bodyguard_editor.py",
-      "bytes": 15757,
-      "sha256": "9577720b9cd3079ccc2b472d44d0d8dc947af2ad35ae6834e213f722be358ae3"
+      "bytes": 18755,
+      "sha256": "8c93770ea0138ae53ba89a26bfea9646224d7e2a38b12185f9b65c69c761955a"
     },
     {
       "path": "bodyguard_growth.json",
@@ -83,8 +88,8 @@
     },
     {
       "path": "bodyguard_growth.py",
-      "bytes": 5561,
-      "sha256": "439ce30972c977783410f9bd5fc22564089ca7b600342ec642004489f4b169f6"
+      "bytes": 6540,
+      "sha256": "06cfa7f7843df70e96d9c9d3ad64d4f5d1365e8aea473f592d1b02d84b2c4171"
     },
     {
       "path": "bodyguard_items.json",
@@ -103,8 +108,13 @@
     },
     {
       "path": "build_windows.py",
-      "bytes": 864,
-      "sha256": "82508911febdccbf2049680cfeddc49e9e30a5d524981f86b718657a1f19c942"
+      "bytes": 888,
+      "sha256": "46fc1c7853e4d83baf55fc87b8a31ee3b7ea591da44d4969123f1a63ee3a6848"
+    },
+    {
+      "path": "compatibility_self_test.py",
+      "bytes": 5155,
+      "sha256": "9cb2d3a72b115cc830f2353160ca3507dcd7eaeb8198e5a9beea968bd4544289"
     },
     {
       "path": "game_metadata.json",
@@ -113,8 +123,8 @@
     },
     {
       "path": "gui.py",
-      "bytes": 77136,
-      "sha256": "456f9af7b2f36b64b76ab32563ba3b7cdd06e36ac1b122f26f20e7d6862e23d6"
+      "bytes": 87591,
+      "sha256": "54dbb7176775bbae3da62364f6fcf0c4776392cc2da7d80e0f34133a00313b8a"
     },
     {
       "path": "item_limits.json",
@@ -143,8 +153,8 @@
     },
     {
       "path": "models.py",
-      "bytes": 954,
-      "sha256": "1b99a4e04f6609b37df4fe9cafe604a92641b042396b8707f309cd9015f2b468"
+      "bytes": 1029,
+      "sha256": "40691b439f3d364a5a39b1b084649f15fdd18f188090b028df496675b258fa93"
     },
     {
       "path": "native_enums.json",
@@ -158,8 +168,18 @@
     },
     {
       "path": "officer_weapon_editor.py",
-      "bytes": 12901,
-      "sha256": "76d2bc0b7c442ef5bb199841c95ed8eeb1c9459ac8173b697317e57d46c6e514"
+      "bytes": 14225,
+      "sha256": "15214825f2837d02314a49a85efd3e4ebd0615a54d57841b10d0404ac904f42c"
+    },
+    {
+      "path": "progression_editor.py",
+      "bytes": 11202,
+      "sha256": "58de7eb7b22295048b19146da2abaae9e52356815ff38f93906b7caa8617416a"
+    },
+    {
+      "path": "progression_routes.json",
+      "bytes": 10166,
+      "sha256": "12272fb79793e1393cccf766b683ddcb0d3497b8903b15a1160c09815b2f04d7"
     },
     {
       "path": "save_codec.py",
@@ -168,13 +188,13 @@
     },
     {
       "path": "save_parser.py",
-      "bytes": 13185,
-      "sha256": "288fde30e5052a892727440388e3e48c8db81859f61e182e6a1cc706e16bac0c"
+      "bytes": 16153,
+      "sha256": "7ae053998863f5c94357505d867227322fa26415b5dfbcb839c832924733904c"
     },
     {
       "path": "save_writer.py",
-      "bytes": 17581,
-      "sha256": "0ea413c32830b4ce51b174b63056d1849ab76548b82e910eded72e208e57cd7e"
+      "bytes": 16945,
+      "sha256": "58b1fbe16c810a84a9da7215fbdc3e45a45ab0bdbe63c13705cb058d9d05ffaa"
     },
     {
       "path": "tests/test_bodyguard_rules.py",
@@ -183,23 +203,38 @@
     },
     {
       "path": "tests/test_bodyguards.py",
-      "bytes": 27667,
-      "sha256": "152546fc3c40f8b0dbea8adbe0b2d16ce699572e80c58dfec273141d784498c4"
+      "bytes": 31265,
+      "sha256": "a430e0388e32ebf259d9c9e8067e132cce1bf26b1abcbf0fbfc26c8e9b96371d"
+    },
+    {
+      "path": "tests/test_compatibility_v034.py",
+      "bytes": 11318,
+      "sha256": "7eaca60345ac2b5cd99c54238317807a10c9e56c1bb33d4c4d801b7944a1ad19"
     },
     {
       "path": "tests/test_editor.py",
-      "bytes": 15927,
-      "sha256": "2fde2cef0c3dbe40f0e8ebc788a3c837898368cbc2dd983b74d7e6c5b5219449"
+      "bytes": 16012,
+      "sha256": "89c826a1262fd7ce284d7bb6e91c4555c0c8e9d617bade86cbe13ec7647c31d9"
+    },
+    {
+      "path": "tests/test_gui_v034.py",
+      "bytes": 3561,
+      "sha256": "b2c98d03b44614c07a4cee69fb976372b01b96698a13cc5b8eb6c06c74c4959f"
+    },
+    {
+      "path": "tests/test_progression_v034.py",
+      "bytes": 10961,
+      "sha256": "5c1d44435f1c342d44dbb84f42619e0152109e9602728c22c03649f3f3494481"
     },
     {
       "path": "tests/test_review_regressions.py",
-      "bytes": 13182,
-      "sha256": "f76441c5a9e28b06a77f570100400b36e4c825e05304041a97dba94ffcdcc047"
+      "bytes": 13793,
+      "sha256": "d62242450bde876ee25370a2407bc65c9c75e82341860dfa1bffc8529d7782b0"
     },
     {
       "path": "tests/test_save_variants.py",
-      "bytes": 15531,
-      "sha256": "53fd8cd9880d6f1323c7a8bd22df5db2d64c1646a6d3b4e695f76089810a942f"
+      "bytes": 15833,
+      "sha256": "626cfd71628f9bf506bd144e4b568143a0bd0ba440ee428ea0038940ff6ccce5"
     },
     {
       "path": "tests/test_weapon_attributes.py",
@@ -207,9 +242,14 @@
       "sha256": "584778bc0df3a395ab19c9897ceb4b44bcb02ba9ccc97f1f163512f70d1cea86"
     },
     {
+      "path": "tests/test_weapon_collection_v034.py",
+      "bytes": 11056,
+      "sha256": "718626ba4051f2e3ff2cd7976b3a53f999353eed3834731c9229c768bc707a08"
+    },
+    {
       "path": "tests/test_weapon_rolls.py",
-      "bytes": 20018,
-      "sha256": "1932ad5f39f99cb1341d9e6bc7744ec5f7473486b78304910856d7ca54902315"
+      "bytes": 20264,
+      "sha256": "da764c040342f2b9b41b89d66474e42cd874e0824b4e5dfcff09d0c5c5ea47fa"
     },
     {
       "path": "tests/test_weapon_rules.py",
@@ -218,8 +258,8 @@
     },
     {
       "path": "unique_weapons.json",
-      "bytes": 138660,
-      "sha256": "14dc96990e8cdf0c66af6e8d26cef6120a63878a7652ca5913165e83a550c85d"
+      "bytes": 138885,
+      "sha256": "4c30df17face2d4076c876741ae5d95efe4db478941fd5ccbfebb4e9ea2c523f"
     },
     {
       "path": "unreal.py",
@@ -235,6 +275,12 @@
       "path": "weapon_bonus_rules.json",
       "bytes": 88436,
       "sha256": "a702568ff625c5cabc634fee24e32e61e2e569eddf9b5069eb668ee8beef5c0f"
+    },
+    {
+      "path": "weapon_collection.py",
+      "bytes": 13640,
+      "sha256": "3654756ff20e7ff27ff1ead0462ea9b8467dfa05a3fbc597c21b4c50f0d1fc23"
     }
-  ]
+  ],
+  "excluded": "Private saves, copied game files, research work, build output, caches and local paths."
 }

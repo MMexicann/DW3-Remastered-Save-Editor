@@ -8,7 +8,8 @@
   "unique_save_mapping": "All unique weapon IDs use weapon_id-89, independently of their template index.",
   "data_id_mapping": "Unique base DataID 10000 + unique_save_index in supplied save; native base field +0x378.",
   "slot_skill_type": "Initializer leaves each skill type at sentinel 10; unique builder changes only item ID and value.",
-  "supplied_save_limits": "Only 84 unique rows currently exist. Standard weapons fit slots 0..40 and 43..83. Ziluan weapons require 103/104 rows; safely adding these requires validated array serialization resizing. Slots 41/42 and 84..101 remain blank placeholders.",
+  "supplied_save_limits": "Original fixture has 84 rows; the reported Ziluan save has 104. Native insertion pads indexed constructor blanks through weapon_id-89. The writer supports validated resizing to 103/104 rows for Ziluan, preserving all original records. Slots 41/42 and 84..101 remain native blank placeholders.",
+  "native_array_expansion": "Confirmed at 0x150AC10..0x150AFE9: pad through target index, assign every new DataID=10000+index, acquire only the requested unique weapon.",
   "fusion_limits": [
     {
       "rank_index": 0,

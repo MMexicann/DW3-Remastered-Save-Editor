@@ -28,8 +28,8 @@ def _requests(document,changes):
                  'guard_item':{'Owned','Value'},'guard_weapon':{'Owned','MaxBonuses'},
                  'guard_weapon_slot':{'Skills'}}[change.category]
         valid=(0<=change.index<len(document.records('GuardDataArray')) if change.category=='bodyguard' else
-               change.index in GUARD_ITEMS if change.category=='guard_item' else
-               change.index in GUARD_WEAPONS if change.category=='guard_weapon' else 0<=change.index<100)
+               change.index in GUARD_ITEMS and change.index<len(document.records('GuardEquipItemDataArray')) if change.category=='guard_item' else
+               change.index in GUARD_WEAPONS if change.category=='guard_weapon' else 0<=change.index<len(document.records('GuardWeaponDataArray')))
         if not valid or change.field not in allowed:raise SaveError('Unsupported bodyguard edit index or field.')
         result[change.category].setdefault(change.index,{})[change.field]=change.value
     return result
@@ -83,18 +83,26 @@ def validate_saved_skills(skills):
 def item_state(document,changes=()):
     requests=_requests(document,changes)['guard_item'];result={}
     for i,row in enumerate(document.records('GuardEquipItemDataArray')):
+        if i not in GUARD_ITEMS:continue  # Reserved/future rows are preserved.
         item=GUARD_ITEMS[i];record=fields(row);wanted=requests.get(i,{})
         enum=record['GuardEquipItemID']['value']
-        if enum not in ('EGuardEquipItemID::NUM',item['enum']):raise SaveError('Bodyguard item does not match its inventory slot.')
-        owned=wanted.get('Owned',enum==item['enum']);value=wanted.get('Value',record['Value']['value'])
+        editable=(enum in ('EGuardEquipItemID::NUM',item['enum']) and
+                  record['EquipItemID']['value']=='EEquipItemID::NUM')
+        if wanted and not editable:raise SaveError('This bodyguard item slot has an unknown identity and is view-only.')
+        original_owned=enum==item['enum'];original_value=record['Value']['value']
+        owned=wanted.get('Owned',original_owned);value=wanted.get('Value',original_value)
         if type(owned) is not bool:raise SaveError('Item ownership requires a boolean.')
         if 'Value' in wanted:
             if item['kind']!='normal' or type(value) is not int or not 1<=value<=item['max_value']:
                 raise SaveError(f'{item["name"]} requires a verified normal-item value from 1 to {item["max_value"]}.')
             if 'Owned' not in wanted:owned=True
-        if not owned or item['kind']=='rare':value=0
-        elif value==0:value=1
-        result[i]={'owned':owned,'value':value}
+        if wanted and owned!=original_owned:
+            if not owned or item['kind']=='rare':value=0
+            elif 'Value' not in wanted:value=1
+        elif wanted and not owned and 'Value' in wanted:
+            raise SaveError('An unowned bodyguard item cannot receive a value.')
+        result[i]={'owned':owned,'value':value,'editable':editable,
+                   'reason':'' if editable else 'Unknown item placement; this record is preserved.'}
     return result
 
 
@@ -103,30 +111,39 @@ def weapon_state(document,changes=()):
     for index,row in enumerate(document.records('GuardWeaponDataArray')):
         record=fields(row);enum=record['WeaponID']['value']
         weapon_id=None if enum=='EWeaponID::NUM' else WEAPON_IDS.get(enum)
-        if weapon_id is None and enum!='EWeaponID::NUM':raise SaveError('Unknown bodyguard weapon inventory identity.')
-        skills=[]
+        skills=[];unknown=False
         for slot in record['Skill']['value']['records']:
             skill=fields(slot);item=skill['GuardEquipItemID']['value']
             if item!='EGuardEquipItemID::NUM':
-                if item not in ITEM_IDS:raise SaveError('Unknown bodyguard weapon bonus.')
-                skills.append({'id':ITEM_IDS[item],'value':skill['Value']['value']})
-        editable=False;reason='Unlock a supported bodyguard weapon first.'
-        if weapon_id is not None:
-            validate_saved_skills(skills)
+                if item not in ITEM_IDS:unknown=True
+                else:skills.append({'id':ITEM_IDS[item],'value':skill['Value']['value']})
+            elif skill['Value']['value']!=0:unknown=True
+            if skill['EquipItemID']['value']!='EEquipItemID::NUM':unknown=True
+        empty=(enum=='EWeaponID::NUM' and record['ID']['value']=='EWeaponID::NUM'
+               and not skills and not unknown and record['Attr']['value']==0
+               and len(record['Skill']['value']['records'])==9)
+        identity_valid=(weapon_id is not None and record['ID']['value']==enum
+               and record['DataID']['value']==index and record['Attr']['value']==0
+               and len(record['Skill']['value']['records'])==9)
+        known=identity_valid and not unknown
+        editable=False;reason='Unlock a supported bodyguard weapon first.' if empty else 'Unknown saved weapon profile; this copy is view-only and preserved.'
+        if known:
             try:
+                validate_saved_skills(skills)
                 validate_skills(weapon_id,skills)
                 editable=True;reason=''
             except SaveError:
                 reason='This copy has bonuses outside the verified drop profiles. Its bonuses are view-only and preserved.'
-        result.append({'slot':index,'weapon_id':weapon_id,'data_id':record['DataID']['value'],'skills':skills,'editable':editable,'reason':reason})
+        result.append({'slot':index,'weapon_id':weapon_id,'data_id':record['DataID']['value'],
+                       'skills':skills,'editable':editable,'reason':reason,'empty':empty,'identity_valid':identity_valid})
     for weapon_id,wanted in requests['guard_weapon'].items():
         for value in wanted.values():
             if value is not True:raise SaveError('Bodyguard weapon actions require True; removal is unsupported.')
         owned=[row for row in result if row['weapon_id']==weapon_id]
         if wanted.get('Owned') and not owned:
-            blank=next((row for row in result if row['weapon_id'] is None),None)
+            blank=next((row for row in result if row['empty']),None)
             if blank is None:raise SaveError('Bodyguard weapon inventory is full. No existing weapon will be replaced.')
-            blank.update(weapon_id=weapon_id,data_id=blank['slot'],skills=max_skills(weapon_id),editable=True,reason='');owned=[blank]
+            blank.update(weapon_id=weapon_id,data_id=blank['slot'],skills=max_skills(weapon_id),editable=True,reason='',empty=False,identity_valid=True);owned=[blank]
         if wanted.get('MaxBonuses'):
             if not owned:raise SaveError('Unlock the bodyguard weapon before maximizing it.')
             for row in owned:
@@ -143,26 +160,35 @@ def team_state(document,index,changes=()):
     original=fields(document.records('GuardDataArray')[index])
     merit=wanted.get('SPoint',original['SPoint']['value'])
     levels=wanted.get('BGLevels',original['BGLevels']['value']['values'])
+    growth_editable=True;growth_reason=''
     try:
-        # Match the game's independently earned Count and AI progression.
-        if 'SPoint' in wanted or 'BGLevels' in wanted:levels=growth.automatic_levels(merit,levels)
-        else:levels=list(growth.validate_growth(merit,levels))
-    except ValueError as error:raise SaveError(str(error)) from error
+        if 'BGLevels' in wanted:
+            levels=growth.automatic_levels(merit,levels)
+        elif 'SPoint' in wanted:
+            if merit<original['SPoint']['value']:
+                raise ValueError('Bodyguard Merit can only be increased in this version.')
+            levels=growth.advance_automatic_levels(merit,levels)
+        else:
+            levels=list(growth.validate_saved_growth(merit,levels))
+    except ValueError as error:
+        if 'SPoint' in wanted or 'BGLevels' in wanted:raise SaveError(str(error)) from error
+        growth_editable=False;growth_reason=str(error)
     enum=original['MemberItem']['value']
     item=wanted.get('MemberItem',None if enum=='EGuardEquipItemID::NUM' else ITEM_IDS.get(enum))
     if item is not None and (type(item) is not int or item not in GUARD_ITEMS):raise SaveError('Unsupported equipped bodyguard item.')
     weapons=wanted.get('MemberWeapon',original['MemberWeapon']['value']['values'])
-    if not isinstance(weapons,(list,tuple)) or len(weapons)!=10 or any(type(i) is not int for i in weapons):
+    if 'MemberWeapon' in wanted and (not isinstance(weapons,(list,tuple)) or len(weapons)!=10 or any(type(i) is not int for i in weapons)):
         raise SaveError('Bodyguard weapon choices must contain the ten saved integer references.')
-    if list(weapons)[5:]!=original['MemberWeapon']['value']['values'][5:]:
+    if 'MemberWeapon' in wanted and list(weapons)[5:]!=original['MemberWeapon']['value']['values'][5:]:
         raise SaveError('Unmapped extra bodyguard weapon references must be preserved.')
-    return {'SPoint':merit,'BGLevels':list(levels),'MemberItem':item,'MemberWeapon':list(weapons)}
+    return {'SPoint':merit,'BGLevels':list(levels),'MemberItem':item,'MemberWeapon':list(weapons),
+            'growth_editable':growth_editable,'growth_reason':growth_reason}
 
 
 def best_weapon_refs(document,changes=()):
     pool=weapon_state(document,changes);result=[]
     for family in range(5):
-        options=[row for row in pool if row['weapon_id'] is not None and GUARD_WEAPONS[row['weapon_id']]['family_index']==family]
+        options=[row for row in pool if row['identity_valid'] and GUARD_WEAPONS[row['weapon_id']]['family_index']==family]
         if not options:raise SaveError(f'No owned {FAMILY_NAMES[family]} bodyguard weapon.')
         best=max(options,key=lambda row:(GUARD_WEAPONS[row['weapon_id']]['tier'],sum(s['value'] for s in row['skills']),-row['slot']))
         result.append(best['slot'])
@@ -174,14 +200,21 @@ def plan_bodyguard_changes(document,changes,add_property):
     if not any(requests.values()):return
     items=item_state(document,changes);pool=weapon_state(document,changes)
     teams=[team_state(document,i,changes) for i in range(len(document.records('GuardDataArray')))]
-    # Check final references after acquisitions and equipment choices together.
-    for team in teams:
-        if team['MemberItem'] is not None and not items[team['MemberItem']]['owned']:
-            raise SaveError('An equipped bodyguard item must be owned. Unequip it before removing it.')
-        for family,index in enumerate(team['MemberWeapon'][:5]):
-            if index==-1:continue
-            if not 0<=index<len(pool) or pool[index]['weapon_id'] is None or GUARD_WEAPONS[pool[index]['weapon_id']]['family_index']!=family:
-                raise SaveError('Equipped bodyguard weapon references must point to an owned weapon of the correct family.')
+    # Validate only references that the user changes or removes. Unchanged
+    # historical/future relationships must not block an unrelated team edit.
+    for index,team in enumerate(teams):
+        wanted=requests['bodyguard'].get(index,{})
+        item=team['MemberItem']
+        if ('MemberItem' in wanted or item in requests['guard_item'] and not items.get(item,{}).get('owned')):
+            if item is not None and (item not in items or not items[item]['owned']):
+                raise SaveError('An equipped bodyguard item must be owned. Unequip it before removing it.')
+        if 'MemberWeapon' in wanted:
+            original_refs=fields(document.records('GuardDataArray')[index])['MemberWeapon']['value']['values']
+            for family,slot in enumerate(team['MemberWeapon'][:5]):
+                if slot==original_refs[family]:continue
+                if slot==-1:continue
+                if not 0<=slot<len(pool) or not pool[slot]['identity_valid'] or GUARD_WEAPONS[pool[slot]['weapon_id']]['family_index']!=family:
+                    raise SaveError('Equipped bodyguard weapon references must point to an owned weapon of the correct family.')
     for i,wanted in requests['guard_item'].items():
         if items[i]['owned']:continue
         for row in document.records('PCSaveDataArray'):
@@ -195,20 +228,23 @@ def plan_bodyguard_changes(document,changes,add_property):
         original=fields(document.records('GuardEquipItemDataArray')[i]);state=items[i]
         enum(original['GuardEquipItemID'],GUARD_ITEMS[i]['enum'] if state['owned'] else 'EGuardEquipItemID::NUM',f'{GUARD_ITEMS[i]["name"]}: ownership')
         integer(original['Value'],state['value'],f'{GUARD_ITEMS[i]["name"]}: verified item roll')
-    for i in requests['bodyguard']:
+    for i,wanted in requests['bodyguard'].items():
         original=fields(document.records('GuardDataArray')[i]);state=teams[i]
-        integer(original['SPoint'],state['SPoint'],f'Bodyguard team {i+1}: Merit')
-        array(original['BGLevels'],state['BGLevels'],f'Bodyguard team {i+1}: legal growth and earned Count/AI')
-        item=state['MemberItem']
-        enum(original['MemberItem'],'EGuardEquipItemID::NUM' if item is None else GUARD_ITEMS[item]['enum'],f'Bodyguard team {i+1}: equipped item')
-        array(original['MemberWeapon'],state['MemberWeapon'],f'Bodyguard team {i+1}: equipped weapon references')
-        old_count=growth.derive_stats(original['BGLevels']['value']['values'])['member_count']
-        new_count=growth.derive_stats(state['BGLevels'])['member_count']
-        if old_count!=new_count:
-            for officer,row in enumerate(document.records('PCSaveDataArray')[:42]):
-                record=fields(row);count=record['MemCnt']['value']
-                if record['BGTeamID']['value']==i and (count==old_count or count>new_count):
-                    integer(record['MemCnt'],new_count,f'Officer {officer}: synchronize chosen bodyguard count after team growth')
+        if 'SPoint' in wanted:integer(original['SPoint'],state['SPoint'],f'Bodyguard team {i+1}: Merit')
+        if 'BGLevels' in wanted or 'SPoint' in wanted:
+            array(original['BGLevels'],state['BGLevels'],f'Bodyguard team {i+1}: growth and earned Count/AI')
+        if 'MemberItem' in wanted:
+            item=state['MemberItem']
+            enum(original['MemberItem'],'EGuardEquipItemID::NUM' if item is None else GUARD_ITEMS[item]['enum'],f'Bodyguard team {i+1}: equipped item')
+        if 'MemberWeapon' in wanted:array(original['MemberWeapon'],state['MemberWeapon'],f'Bodyguard team {i+1}: equipped weapon references')
+        if 'BGLevels' in wanted or 'SPoint' in wanted:
+            old_count=growth.derive_stats(original['BGLevels']['value']['values'])['member_count']
+            new_count=growth.derive_stats(state['BGLevels'])['member_count']
+            if old_count!=new_count:
+                for officer,row in enumerate(document.records('PCSaveDataArray')[:42]):
+                    record=fields(row);count=record['MemCnt']['value']
+                    if record['BGTeamID']['value']==i and (count==old_count or count>new_count):
+                        integer(record['MemCnt'],new_count,f'Officer {officer}: synchronize chosen bodyguard count after team growth')
     def write_weapon(record,state,reason,new=False,data_id=None):
         if new:
             for name in ('ID','WeaponID'):enum(record[name],GUARD_WEAPONS[state['weapon_id']]['enum'],reason+' identity')
@@ -227,6 +263,8 @@ def plan_bodyguard_changes(document,changes,add_property):
             write_weapon(original,state,f'Bodyguard {GUARD_WEAPONS[state["weapon_id"]]["name"]} copy {state["slot"]+1}',new)
     for weapon_id,wanted in requests['guard_weapon'].items():
         if not wanted.get('Owned'):continue
+        if weapon_id>=len(document.records('CollectedWeaponDataArray')):
+            raise SaveError('The weapon collection array has no slot for this bodyguard weapon.')
         record=fields(document.records('CollectedWeaponDataArray')[weapon_id])
         if record['WeaponID']['value']=='EWeaponID::NUM':
             first=next((state for state in pool if state['weapon_id']==weapon_id and state['editable']),None)

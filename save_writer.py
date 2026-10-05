@@ -11,6 +11,8 @@ from save_parser import parse_bytes, safe_path, read_save, MAX_SIZE
 import save_codec
 import bodyguard_editor
 import officer_weapon_editor
+import progression_editor
+import weapon_collection
 
 CAPS={'SPoint':99999}  # Only limits proved from game code are enabled.
 OFFICER_FIELDS=('SPoint','MaxHealth','MaxMusou','Attack','Defence')
@@ -33,7 +35,7 @@ def load_verified_limits():
 load_verified_limits()
 
 def plan_changes(document: SaveDocument, changes: list[Change]) -> list[Patch]:
-    patches=[]; seen=set(); item_changes={}; unique_changes={}; size_deltas={}
+    patches=[]; seen=set(); item_changes={}; size_deltas={}
     all_properties=[]
     def walk(properties):
         for prop in properties:
@@ -45,6 +47,22 @@ def plan_changes(document: SaveDocument, changes: list[Change]) -> list[Patch]:
     walk(document.parsed['properties'])
     def add_property(prop,after,reason):
         offset=prop['data_offset'];before=document.plaintext[offset:offset+prop['data_size']]
+        # Whole bool-array actions and individual unlock controls may share
+        # the same array. Merge compatible earlier byte edits, never overlap.
+        if prop['type']=='ArrayProperty(BoolProperty)':
+            covered=[p for p in patches if offset<=p.offset and p.offset+len(p.before)<=offset+len(before)]
+            if covered:
+                merged=bytearray(after)
+                for patch in covered:
+                    relative=patch.offset-offset
+                    if len(patch.before)!=len(patch.after) or relative+len(patch.after)>len(merged):
+                        raise SaveError('Conflicting array size changes.')
+                    segment=bytes(merged[relative:relative+len(patch.after)])
+                    if segment not in (patch.before,patch.after):
+                        raise SaveError('Conflicting unlock choices in this pending batch.')
+                    merged[relative:relative+len(patch.after)]=patch.after
+                    patches.remove(patch)
+                after=bytes(merged)
         if before==after:return
         patches.append(Patch(offset,before,after,reason))
         delta=len(after)-len(before)
@@ -52,22 +70,19 @@ def plan_changes(document: SaveDocument, changes: list[Change]) -> list[Patch]:
             for parent in all_properties:
                 if parent['data_offset']<=offset and offset+len(before)<=parent['data_offset']+parent['data_size']:
                     size_deltas[parent['size_offset']]=size_deltas.get(parent['size_offset'],0)+delta
+    def add_insertion(offset,after,reason):
+        if type(offset) is not int or not 4<=offset<len(document.plaintext):
+            raise SaveError('Unsupported property insertion position.')
+        patches.append(Patch(offset,b'',after,reason))
     for change in changes:
         if not isinstance(change,Change) or not isinstance(change.category,str) or not isinstance(change.field,str) or type(change.index) is not int:
             raise SaveError('Edits need a supported category, field and integer index.')
         ident=(change.category,change.index,change.field)
         if ident in seen: raise SaveError('Duplicate changes.')
         seen.add(ident)
-        if change.category in bodyguard_editor.CATEGORIES or change.category in officer_weapon_editor.CATEGORIES:
+        if change.category in bodyguard_editor.CATEGORIES or change.category in officer_weapon_editor.CATEGORIES or change.category in progression_editor.CATEGORIES:
             continue
-        if change.category=='unique_weapon':
-            if (type(change.index) is not int or change.index not in UNIQUE_WEAPONS or
-                change.field!='Owned' or change.value is not True):
-                raise SaveError('Only supported unique weapon acquisition can be edited.')
-            weapon=UNIQUE_WEAPONS[change.index]
-            if weapon['unique_save_index']>=len(document.records('UniqueWeaponDataArray')):
-                raise SaveError('This officer\'s unique weapon slot is absent from this save. Array expansion is not enabled.')
-            unique_changes[change.index]=weapon
+        if change.category=='unique_weapon' or change.category in weapon_collection.CATEGORIES:
             continue
         if change.category=='item':
             if type(change.index) is not int or change.index not in ITEMS or change.field not in ('Owned','Value'):
@@ -76,8 +91,8 @@ def plan_changes(document: SaveDocument, changes: list[Change]) -> list[Patch]:
             continue
         if change.category=='officer':
             records='PCSaveDataArray'
-            if change.category=='officer' and (type(change.index) is not int or not 0<=change.index<42):
-                raise SaveError('Only the42 playable officer records can be edited.')
+            if not 0<=change.index<min(42,len(document.records(records))):
+                raise SaveError('Choose a playable officer record present in this save.')
             if change.field not in CAPS:
                 raise SaveError('This permanent stat limit has not been verified; editing is disabled.')
             low=1 if change.field in ('MaxHealth','MaxMusou') else 0
@@ -93,57 +108,40 @@ def plan_changes(document: SaveDocument, changes: list[Change]) -> list[Patch]:
             if type(change.value) is not bool: raise SaveError('Unlocks require a boolean.')
             prop=document.properties[change.field]
             if prop['type']!='ArrayProperty(BoolProperty)': raise SaveError('Unsupported unlock type.')
+            if change.index>=len(prop['value']['values']):
+                raise SaveError('This unlock index is absent from the save.')
             offset=prop['data_offset']+4+change.index; after=bytes([change.value])
             reason=f'{change.field}[{change.index}] -> {change.value}'
         else: raise SaveError('This edit category is not yet supported.')
         before=document.plaintext[offset:offset+len(after)]
         if before!=after: patches.append(Patch(offset,before,after,reason))
     for index,requested in item_changes.items():
+        if index>=len(document.records('EquipItemDataArray')):
+            raise SaveError('This item slot is absent from the save.')
         item=ITEMS[index];record=fields(document.records('EquipItemDataArray')[index])
         expected='EEquipItemID::'+item['enum']
         old_enum=record['EquipItemID']['value']
-        if old_enum not in ('EEquipItemID::NUM',expected):raise SaveError('Equipment ownership does not match its indexed slot.')
+        if old_enum not in ('EEquipItemID::NUM',expected) or record['GuardEquipItemID']['value']!='EGuardEquipItemID::NUM':
+            raise SaveError('This item has an unrecognized placement and is view-only.')
         owned=requested.get('Owned',old_enum==expected)
         if type(owned) is not bool:raise SaveError('Item ownership requires a boolean.')
         value=requested.get('Value',record['Value']['value'])
+        original_owned=old_enum==expected
         if 'Value' in requested:
             if item['kind']!='normal' or index not in ITEM_CAPS:raise SaveError('The maximum for this item has not been verified.')
             if type(value) is not int or not 1<=value<=ITEM_CAPS[index]:raise SaveError(f'{item["name"]} must be1–{ITEM_CAPS[index]}.')
             if 'Owned' not in requested:owned=True
-        if not owned:value=0
-        elif item['kind']=='rare':value=0
-        elif value==0:value=1  # Actual generator minimum: random1..ValueRand in tier0.
+        if owned!=original_owned:
+            if not owned or item['kind']=='rare':value=0
+            elif 'Value' not in requested:value=1  # Native minimum for newly acquired normal items.
         new_enum=expected if owned else 'EEquipItemID::NUM'
         encoded=new_enum.encode('utf-8')+b'\0'
         add_property(record['EquipItemID'],struct.pack('<i',len(encoded))+encoded,f'{item["name"]}: owned -> {owned}')
         add_property(record['Value'],struct.pack('<i',value),f'{item["name"]}: value -> {value}')
-    for weapon_id,weapon in unique_changes.items():
-        for array,index,data_id in [('UniqueWeaponDataArray',weapon['unique_save_index'],weapon['data_id']),
-                                    ('CollectedWeaponDataArray',weapon_id,weapon_id)]:
-            record=fields(document.records(array)[index])
-            if record['WeaponID']['value']!='EWeaponID::NUM':
-                if record['WeaponID']['value']!=weapon['weapon_enum']:raise SaveError('Unique weapon slot has an unexpected owner.')
-                continue  # Preserve owned/fused attributes and acquisition timestamps.
-            for name in ('ID','WeaponID'):
-                value=weapon['weapon_enum'].encode()+b'\0'
-                add_property(record[name],struct.pack('<i',len(value))+value,f'{weapon["weapon_name"]}: acquire in {array}')
-            if record['Attr']['type']!='Int64Property':raise SaveError('Unsupported weapon attribute representation.')
-            if not (array=='UniqueWeaponDataArray' and any(c.category=='weapon_element' and c.index==10000+index for c in changes)):
-                add_property(record['Attr'],struct.pack('<q',weapon['attribute_bitmask']),f'{weapon["weapon_name"]}: shipped attribute bitmask')
-            add_property(record['DataID'],struct.pack('<i',data_id),f'{weapon["weapon_name"]}: indexed DataID')
-            skills=record['Skill']['value']['records']
-            if len(skills)!=9 or len(weapon['skill_slots'])!=9:raise SaveError('Unsupported unique weapon skill slots.')
-            for slot,template in zip(skills,weapon['skill_slots']):
-                f=fields(slot);item_id=template['item_id']
-                enum='EEquipItemID::NUM' if item_id==100 else 'EEquipItemID::'+ITEMS[item_id]['enum']
-                for name,value in [('EquipItemID',enum),('GuardEquipItemID','EGuardEquipItemID::NUM')]:
-                    if name=='EquipItemID' and array=='UniqueWeaponDataArray' and any(c.category=='weapon_roll' and c.index==10000+index for c in changes):continue
-                    encoded=value.encode()+b'\0'
-                    add_property(f[name],struct.pack('<i',len(encoded))+encoded,f'{weapon["weapon_name"]}: stock skill ID')
-                if not (array=='UniqueWeaponDataArray' and any(c.category=='weapon_roll' and c.index==10000+index for c in changes)):
-                    add_property(f['Value'],struct.pack('<i',template['value']),f'{weapon["weapon_name"]}: stock skill value')
     bodyguard_editor.plan_bodyguard_changes(document,changes,add_property)
     officer_weapon_editor.plan_weapon_roll_changes(document,changes,add_property)
+    weapon_collection.plan_weapon_collection_changes(document,changes,add_property)
+    progression_editor.plan_progression_changes(document,changes,add_property,add_insertion)
     for offset,delta in size_deltas.items():
         before=document.plaintext[offset:offset+4]
         value=struct.unpack('<i',before)[0]+delta
@@ -188,6 +186,7 @@ def serialize(document: SaveDocument, changes: list[Change]=()) -> tuple[bytes,d
            'changed_aes_blocks':changed_blocks,'source_payload_size':original_payload_size,'output_payload_size':payload_size,
            'resized':resized,'fields_relocated':any(len(p.before)!=len(p.after) for p in patches),'unchanged_bytes_preserved':True,
            'game_load_validation':'not performed'}
+    audit['preserved_compatibility_notes']=list(document.compatibility_warnings)
     return raw,audit
 
 def _atomic_write(data: bytes,path: Path,overwrite=False,expected_bytes=None):

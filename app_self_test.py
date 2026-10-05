@@ -210,8 +210,8 @@ def run(editor, fixture: Path, output_directory: Path):
             check(f'BG weapon {weapon_id} owned with legal tier-specific bonuses or preserved view-only copies',bool(copies) and all(s['skills']==bg.max_skills(weapon_id) if s['editable'] else s['skills']==bg.weapon_state(original)[s['slot']]['skills'] for s in copies))
         check('Equipped BG item and inventory choices survive save/readback',bg.team_state(edited,1)['MemberItem']==9 and bg.team_state(edited,1)['MemberWeapon'][:5]==bg.best_weapon_refs(edited))
         check('Bodyguard-Musou cached item selections preserved',all(fields(a)['BGMusouEquipItem']['value']==fields(b)['BGMusouEquipItem']['value'] for a,b in zip(original.records('PCSaveDataArray'),edited.records('PCSaveDataArray'))))
-        supported=[w for w in save_writer.UNIQUE_WEAPONS.values() if w['fits_supplied_84_record_array']]
-        check('All 82 supported unique weapons readable',len(supported)==82 and all(
+        supported=list(save_writer.UNIQUE_WEAPONS.values())
+        check('All 84 unique weapons including Ziluan readable',len(supported)==84 and all(
             fields(edited.records('UniqueWeaponDataArray')[w['unique_save_index']])['WeaponID']['value']==w['weapon_enum'] for w in supported))
         allowed={'PCSaveDataArray','EquipItemDataArray','WeaponDataArray','UniqueWeaponDataArray','CollectedWeaponDataArray','GuardDataArray','GuardEquipItemDataArray','GuardWeaponDataArray'}
         for before in weapon.states(original):

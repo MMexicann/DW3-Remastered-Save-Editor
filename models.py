@@ -1,5 +1,5 @@
 """Editable document state and field evidence, independent of the GUI."""
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 class SaveError(ValueError):
@@ -11,6 +11,7 @@ class SaveDocument:
     encrypted: bytes
     plaintext: bytes
     parsed: dict
+    compatibility_warnings: list[str] = field(default_factory=list)
 
     @property
     def properties(self):

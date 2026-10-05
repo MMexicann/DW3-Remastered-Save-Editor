@@ -1,0 +1,618 @@
+{
+  "source": "Shipped DT_MusouModeData and DT_ReMusouModeData decoded against native reflected property order; native completion path RVA0x167AC25/0x167AD7D; EReMusouModeID table RVA0x9A441A0. Runtime addresses are evidence, not save offsets.",
+  "officers": [
+    {
+      "officer_id": 0,
+      "officer": "Zhao Yun",
+      "route_length": 7,
+      "scenario_ids": [
+        14,
+        16,
+        19,
+        28,
+        30,
+        32,
+        41
+      ]
+    },
+    {
+      "officer_id": 1,
+      "officer": "Guan Yu",
+      "route_length": 7,
+      "scenario_ids": [
+        0,
+        2,
+        12,
+        14,
+        25,
+        30,
+        41
+      ]
+    },
+    {
+      "officer_id": 2,
+      "officer": "Zhang Fei",
+      "route_length": 7,
+      "scenario_ids": [
+        2,
+        14,
+        16,
+        19,
+        30,
+        44,
+        32
+      ]
+    },
+    {
+      "officer_id": 3,
+      "officer": "Xiahou Dun",
+      "route_length": 7,
+      "scenario_ids": [
+        0,
+        2,
+        10,
+        13,
+        23,
+        36,
+        42
+      ]
+    },
+    {
+      "officer_id": 4,
+      "officer": "Dian Wei",
+      "route_length": 7,
+      "scenario_ids": [
+        2,
+        6,
+        15,
+        17,
+        23,
+        37,
+        39
+      ]
+    },
+    {
+      "officer_id": 5,
+      "officer": "Xu Zhu",
+      "route_length": 7,
+      "scenario_ids": [
+        43,
+        10,
+        15,
+        17,
+        22,
+        39,
+        42
+      ]
+    },
+    {
+      "officer_id": 6,
+      "officer": "Zhou Yu",
+      "route_length": 7,
+      "scenario_ids": [
+        43,
+        2,
+        8,
+        18,
+        24,
+        31,
+        33
+      ]
+    },
+    {
+      "officer_id": 7,
+      "officer": "Lu Xun",
+      "route_length": 7,
+      "scenario_ids": [
+        18,
+        24,
+        27,
+        31,
+        33,
+        38,
+        40
+      ]
+    },
+    {
+      "officer_id": 8,
+      "officer": "Taishi Ci",
+      "route_length": 7,
+      "scenario_ids": [
+        2,
+        4,
+        18,
+        24,
+        44,
+        31,
+        33
+      ]
+    },
+    {
+      "officer_id": 9,
+      "officer": "Diaochan",
+      "route_length": 7,
+      "scenario_ids": [
+        58,
+        64,
+        78,
+        82,
+        83,
+        72,
+        67
+      ]
+    },
+    {
+      "officer_id": 10,
+      "officer": "Zhuge Liang",
+      "route_length": 7,
+      "scenario_ids": [
+        43,
+        14,
+        16,
+        30,
+        32,
+        35,
+        41
+      ]
+    },
+    {
+      "officer_id": 11,
+      "officer": "Cao Cao",
+      "route_length": 10,
+      "scenario_ids": [
+        0,
+        2,
+        6,
+        10,
+        17,
+        22,
+        23,
+        29,
+        39,
+        42
+      ]
+    },
+    {
+      "officer_id": 12,
+      "officer": "Lu Bu",
+      "route_length": 7,
+      "scenario_ids": [
+        58,
+        64,
+        62,
+        68,
+        90,
+        66,
+        72
+      ]
+    },
+    {
+      "officer_id": 13,
+      "officer": "Sun Shangxiang",
+      "route_length": 7,
+      "scenario_ids": [
+        43,
+        18,
+        24,
+        31,
+        33,
+        44,
+        40
+      ]
+    },
+    {
+      "officer_id": 14,
+      "officer": "Liu Bei",
+      "route_length": 10,
+      "scenario_ids": [
+        0,
+        2,
+        14,
+        16,
+        19,
+        28,
+        30,
+        32,
+        35,
+        41
+      ]
+    },
+    {
+      "officer_id": 15,
+      "officer": "Sun Jian",
+      "route_length": 10,
+      "scenario_ids": [
+        0,
+        2,
+        4,
+        8,
+        18,
+        24,
+        31,
+        33,
+        38,
+        40
+      ]
+    },
+    {
+      "officer_id": 16,
+      "officer": "Sun Quan",
+      "route_length": 7,
+      "scenario_ids": [
+        18,
+        44,
+        24,
+        31,
+        38,
+        33,
+        40
+      ]
+    },
+    {
+      "officer_id": 17,
+      "officer": "Dong Zhuo",
+      "route_length": 7,
+      "scenario_ids": [
+        58,
+        64,
+        96,
+        78,
+        77,
+        93,
+        73
+      ]
+    },
+    {
+      "officer_id": 18,
+      "officer": "Yuan Shao",
+      "route_length": 7,
+      "scenario_ids": [
+        59,
+        65,
+        69,
+        81,
+        79,
+        88,
+        94
+      ]
+    },
+    {
+      "officer_id": 19,
+      "officer": "Ma Chao",
+      "route_length": 7,
+      "scenario_ids": [
+        14,
+        16,
+        43,
+        21,
+        30,
+        32,
+        41
+      ]
+    },
+    {
+      "officer_id": 20,
+      "officer": "Huang Zhong",
+      "route_length": 7,
+      "scenario_ids": [
+        0,
+        2,
+        14,
+        19,
+        28,
+        30,
+        41
+      ]
+    },
+    {
+      "officer_id": 21,
+      "officer": "Xiahou Yuan",
+      "route_length": 7,
+      "scenario_ids": [
+        0,
+        44,
+        2,
+        10,
+        23,
+        29,
+        42
+      ]
+    },
+    {
+      "officer_id": 22,
+      "officer": "Zhang Liao",
+      "route_length": 7,
+      "scenario_ids": [
+        2,
+        15,
+        17,
+        43,
+        22,
+        23,
+        39
+      ]
+    },
+    {
+      "officer_id": 23,
+      "officer": "Sima Yi",
+      "route_length": 7,
+      "scenario_ids": [
+        10,
+        15,
+        17,
+        26,
+        36,
+        39,
+        42
+      ]
+    },
+    {
+      "officer_id": 24,
+      "officer": "Lu Meng",
+      "route_length": 7,
+      "scenario_ids": [
+        45,
+        0,
+        2,
+        18,
+        27,
+        31,
+        40
+      ]
+    },
+    {
+      "officer_id": 25,
+      "officer": "Gan Ning",
+      "route_length": 7,
+      "scenario_ids": [
+        45,
+        18,
+        24,
+        27,
+        31,
+        33,
+        40
+      ]
+    },
+    {
+      "officer_id": 26,
+      "officer": "Jiang Wei",
+      "route_length": 7,
+      "scenario_ids": [
+        14,
+        16,
+        30,
+        44,
+        32,
+        35,
+        41
+      ]
+    },
+    {
+      "officer_id": 27,
+      "officer": "Zhang Jiao",
+      "route_length": 7,
+      "scenario_ids": [
+        56,
+        95,
+        70,
+        61,
+        74,
+        84,
+        86
+      ]
+    },
+    {
+      "officer_id": 28,
+      "officer": "Xu Huang",
+      "route_length": 7,
+      "scenario_ids": [
+        0,
+        2,
+        6,
+        10,
+        22,
+        23,
+        42
+      ]
+    },
+    {
+      "officer_id": 29,
+      "officer": "Zhang He",
+      "route_length": 7,
+      "scenario_ids": [
+        10,
+        15,
+        17,
+        29,
+        36,
+        39,
+        42
+      ]
+    },
+    {
+      "officer_id": 30,
+      "officer": "Zhenji",
+      "route_length": 7,
+      "scenario_ids": [
+        44,
+        2,
+        15,
+        17,
+        23,
+        37,
+        39
+      ]
+    },
+    {
+      "officer_id": 31,
+      "officer": "Huang Gai",
+      "route_length": 7,
+      "scenario_ids": [
+        0,
+        2,
+        4,
+        18,
+        31,
+        38,
+        40
+      ]
+    },
+    {
+      "officer_id": 32,
+      "officer": "Sun Ce",
+      "route_length": 7,
+      "scenario_ids": [
+        2,
+        8,
+        18,
+        24,
+        27,
+        31,
+        33
+      ]
+    },
+    {
+      "officer_id": 33,
+      "officer": "Wei Yan",
+      "route_length": 7,
+      "scenario_ids": [
+        0,
+        44,
+        2,
+        14,
+        30,
+        35,
+        41
+      ]
+    },
+    {
+      "officer_id": 34,
+      "officer": "Pang Tong",
+      "route_length": 7,
+      "scenario_ids": [
+        2,
+        14,
+        16,
+        19,
+        30,
+        43,
+        32
+      ]
+    },
+    {
+      "officer_id": 35,
+      "officer": "Meng Huo",
+      "route_length": 7,
+      "scenario_ids": [
+        87,
+        76,
+        71,
+        85,
+        63,
+        91,
+        57
+      ]
+    },
+    {
+      "officer_id": 36,
+      "officer": "Zhurong",
+      "route_length": 7,
+      "scenario_ids": [
+        87,
+        97,
+        75,
+        60,
+        89,
+        80,
+        92
+      ]
+    },
+    {
+      "officer_id": 37,
+      "officer": "Daqiao",
+      "route_length": 7,
+      "scenario_ids": [
+        0,
+        2,
+        4,
+        8,
+        18,
+        31,
+        40
+      ]
+    },
+    {
+      "officer_id": 38,
+      "officer": "Xiaoqiao",
+      "route_length": 7,
+      "scenario_ids": [
+        45,
+        2,
+        18,
+        43,
+        24,
+        31,
+        33
+      ]
+    },
+    {
+      "officer_id": 39,
+      "officer": "Fuxi",
+      "route_length": 0,
+      "scenario_ids": []
+    },
+    {
+      "officer_id": 40,
+      "officer": "Nuwa",
+      "route_length": 0,
+      "scenario_ids": []
+    },
+    {
+      "officer_id": 41,
+      "officer": "Ziluan",
+      "route_length": 0,
+      "scenario_ids": []
+    }
+  ],
+  "side_stories": [
+    {
+      "id": 0,
+      "enum": "ReMusouModeID_Gi",
+      "name": "Wei Legend",
+      "ruler_id": 11,
+      "free_mode_scenario_ids": [
+        101,
+        102
+      ]
+    },
+    {
+      "id": 1,
+      "enum": "ReMusouModeID_Go",
+      "name": "Wu Legend",
+      "ruler_id": 16,
+      "free_mode_scenario_ids": [
+        103,
+        104
+      ]
+    },
+    {
+      "id": 2,
+      "enum": "ReMusouModeID_Shoku",
+      "name": "Shu Legend",
+      "ruler_id": 14,
+      "free_mode_scenario_ids": [
+        105,
+        106
+      ]
+    }
+  ],
+  "limits": {
+    "HuanglongElixirs": 999,
+    "first_clear_elixirs": 3
+  },
+  "notes": [
+    "Officers39,40,41 have no Musou route; completion controls must omit them.",
+    "Completion does not reconstruct saved run records, stage scores, clear times, or achievement events."
+  ]
+}

@@ -43,23 +43,26 @@ def _requests(changes):
 
 def _location(document,data_id):
     if type(data_id) is not int:raise SaveError('Weapon inventory references must be integers.')
-    if 0<=data_id<500:return 'WeaponDataArray',data_id
+    if 0<=data_id<min(10000,len(document.records('WeaponDataArray'))):return 'WeaponDataArray',data_id
     if 10000<=data_id<10000+len(document.records('UniqueWeaponDataArray')):
+        return 'UniqueWeaponDataArray',data_id-10000
+    if data_id>=10000 and data_id-10000 in UNIQUE_SLOTS:
         return 'UniqueWeaponDataArray',data_id-10000
     raise SaveError('Choose an existing officer weapon inventory slot.')
 
 
 def original_skills(document,data_id):
     array,index=_location(document,data_id)
+    if index>=len(document.records(array)):
+        return [{'id':None,'value':0} for _ in range(9)]
     result=[]
     for row in fields(document.records(array)[index])['Skill']['value']['records']:
         slot=fields(row);enum=slot['EquipItemID']['value']
         item=None if enum=='EEquipItemID::NUM' else ITEM_IDS.get(enum)
         if item is None and enum!='EEquipItemID::NUM':
             # Native reserved IDs are readable, but have no verified edit rules.
-            if not enum.startswith('EEquipItemID::EquipItemID_') or not enum.rsplit('_',1)[-1].isdigit():
-                raise SaveError('Unknown ordinary weapon bonus identity.')
-            item=int(enum.rsplit('_',1)[-1])
+            if enum.startswith('EEquipItemID::EquipItemID_') and enum.rsplit('_',1)[-1].isdigit():
+                item=int(enum.rsplit('_',1)[-1])
         result.append({'id':item,'value':slot['Value']['value']})
     return result
 
@@ -90,9 +93,11 @@ def validate_elements(info,mask):
 
 
 def _base_state(document,data_id,changes):
-    array,index=_location(document,data_id);record=fields(document.records(array)[index])
-    weapon_id=WEAPON_IDS.get(record['WeaponID']['value']);owned=record['WeaponID']['value']!='EWeaponID::NUM'
-    skills=original_skills(document,data_id);attr=record['Attr']['value']
+    array,index=_location(document,data_id)
+    record=fields(document.records(array)[index]) if index<len(document.records(array)) else None
+    weapon_id=WEAPON_IDS.get(record['WeaponID']['value']) if record else None
+    owned=record is not None and record['WeaponID']['value']!='EWeaponID::NUM'
+    skills=original_skills(document,data_id);attr=record['Attr']['value'] if record else 0
     template=UNIQUE_SLOTS.get(index) if array=='UniqueWeaponDataArray' else None
     pending=template is not None and any(c.category=='unique_weapon' and c.index==template['weapon_id'] and c.field=='Owned' and c.value is True for c in changes)
     newly_acquired=not owned and pending
@@ -112,11 +117,15 @@ def _base_state(document,data_id,changes):
         info['reason']='This ordinary inventory identity is not a supported playable weapon.'
     elif array=='UniqueWeaponDataArray' and (template is None or weapon_id!=template['weapon_id']):
         info['reason']='This unique weapon identity does not match its inventory slot.'
+    elif array=='WeaponDataArray' and len(document.records(array))>10000:
+        info['reason']='This inventory exceeds the native unique-reference boundary; preserve it without editing.'
     elif not newly_acquired and (record['ID']['value']!=record['WeaponID']['value'] or record['DataID']['value']!=data_id):
         info['reason']='Weapon identity or inventory reference is inconsistent.'
     elif any(s['id'] is not None and s['id'] not in ITEMS for s in skills):
         info['reason']='This copy contains a reserved bonus identity with no verified edit rules.'
-    elif any(fields(s)['GuardEquipItemID']['value']!='EGuardEquipItemID::NUM' for s in record['Skill']['value']['records']):
+    elif record and any(fields(s)['EquipItemID']['value']!='EEquipItemID::NUM' and fields(s)['EquipItemID']['value'] not in ITEM_IDS for s in record['Skill']['value']['records']):
+        info['reason']='This copy contains an unknown bonus identity; preserve it without editing.'
+    elif record and any(fields(s)['GuardEquipItemID']['value']!='EGuardEquipItemID::NUM' for s in record['Skill']['value']['records']):
         info['reason']='Bodyguard bonuses cannot be changed in an officer weapon.'
     else:
         rank_row=RULES.get('weapon_rules',{}).get(str(weapon_id))
@@ -125,7 +134,8 @@ def _base_state(document,data_id,changes):
             info['rank']=rank_row['rank'];info['blue_limit']=rank_row['max_blue'];info['editable']=True
             info['element_editable']=bool(ELEMENTS and ELEMENT_MASK)
             try:validate_skills(info,skills)
-            except SaveError as error:info['editable']=False;info['reason']=str(error)
+            except SaveError as error:
+                info['editable']=False;info['element_editable']=False;info['reason']=str(error)
     if not info['element_editable']:info['element_reason']=info['reason'] or 'Element transfer rules are unavailable.'
     return info
 
@@ -185,7 +195,14 @@ def states(document,changes=()):
     changes=list(changes)
     for array,base in [('WeaponDataArray',0),('UniqueWeaponDataArray',10000)]:
         for index in range(len(document.records(array))):
+            if array=='WeaponDataArray' and index>=10000:
+                continue  # Ambiguous native references cannot become edit targets.
             info=state(document,base+index,changes)
+            if info['owned']:yield info
+    existing=len(document.records('UniqueWeaponDataArray'))
+    for index,template in sorted(UNIQUE_SLOTS.items()):
+        if index>=existing:
+            info=state(document,10000+index,changes)
             if info['owned']:yield info
 
 
@@ -198,6 +215,7 @@ def max_existing_skills(document,data_id,changes=()):
 def plan_weapon_roll_changes(document,changes,add_property):
     for data_id,requested in _requests(changes).items():
         info=state(document,data_id,changes)
+        if info['array']=='UniqueWeaponDataArray':continue  # Collection planner combines acquisition and unique edits.
         record=fields(document.records(info['array'])[info['index']])
         if 'Elements' in requested:
             add_property(record['Attr'],struct.pack('<q',info['attr']),f'{info["metadata"].get("name") or "Weapon"} copy {data_id}: element; preserve other flags')
