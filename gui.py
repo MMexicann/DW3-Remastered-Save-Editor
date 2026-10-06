@@ -12,6 +12,9 @@ import bodyguard_growth as growth
 import officer_weapon_editor as weapon_editor
 import weapon_collection
 import progression_editor as progression
+import bodyguard_customization as customization
+import collection_editor as collections
+import musou_slots
 
 ROOT = Path(__file__).resolve().parent
 NAMES = json.loads((ROOT / 'officer_names.json').read_text(encoding='utf-8'))
@@ -46,7 +49,7 @@ class Editor:
         self.backup = None
         self.buttons = []
         self.scroll_areas = []
-        root.title('Dynasty Warriors 3 Remastered Save Editor — v0.8')
+        root.title('Dynasty Warriors 3 Remastered Save Editor — v0.85')
         root.geometry('1140x870')
         root.minsize(1040, 790)
         style = ttk.Style()
@@ -71,7 +74,7 @@ class Editor:
                  background='#202a37', foreground='#e6c379').pack(side='left')
         credits = tk.Frame(banner, background='#202a37')
         credits.pack(side='right')
-        tk.Label(credits, text='SAVE EDITOR  ·  v0.8', font=('Segoe UI', 10, 'bold'),
+        tk.Label(credits, text='SAVE EDITOR  ·  v0.85', font=('Segoe UI', 10, 'bold'),
                  background='#202a37', foreground='#ffffff').pack(anchor='e')
         self.author_label = tk.Label(credits, text='Made by Mexican', font=('Segoe UI', 10),
                                      background='#202a37', foreground='#d2d9e2')
@@ -94,7 +97,7 @@ class Editor:
         self.notebook = ttk.Notebook(outer)
         self.notebook.pack(fill='both', expand=True)
         self.tabs = {}
-        for name in ('Officers', 'Items', 'Weapons', 'Bodyguards', 'Unlocks'):
+        for name in ('Officers', 'Items', 'Weapons', 'Bodyguards', 'Unlocks', 'Musou Saves'):
             tab = ttk.Frame(self.notebook, padding=12)
             self.notebook.add(tab, text=name)
             self.tabs[name] = tab
@@ -103,6 +106,7 @@ class Editor:
         self.build_weapons()
         self.build_bodyguards()
         self.build_unlocks()
+        self.build_musou_saves()
         self.bind_form_scrolling()
         bottom = ttk.Frame(outer)
         bottom.pack(fill='x', pady=(12, 0))
@@ -132,6 +136,8 @@ class Editor:
             if row:self.select_weapon()
             else:self.clear_weapon_form()
             self.refresh_elixirs()
+            self.refresh_collections()
+            self.refresh_musou_saves()
 
     def action(self, frame, text, command):
         button = ttk.Button(frame, text=text, command=command)
@@ -247,7 +253,7 @@ class Editor:
         self.max_items_button = self.action(right, 'Max All Normal Items', self.max_items)
         self.action(right, 'Unlock All Rare Items', lambda: self.unlock_items('rare'))
         self.action(right, 'Unlock All Items', lambda: self.unlock_items())
-        ttk.Label(right, text='Only verified roll limits are editable. Unlock actions preserve existing values.', wraplength=220).pack(anchor='w', pady=12)
+        ttk.Label(right, text='New values use verified normal drop limits. Max actions preserve existing higher values.', wraplength=220).pack(anchor='w', pady=12)
 
     def build_weapons(self):
         tab = self.tabs['Weapons']
@@ -313,7 +319,7 @@ class Editor:
         ttk.Label(right, textvariable=self.bodyguard_selected, font=('Segoe UI', 11, 'bold')).pack(anchor='w', pady=(0, 8))
         self.guard_tabs = ttk.Notebook(right); self.guard_tabs.pack(fill='both', expand=True)
         pages = {}
-        for name in ('Growth', 'Team Equipment', 'BG Items', 'BG Weapons'):
+        for name in ('Growth', 'Team Equipment', 'BG Items', 'BG Weapons', 'Appearance Unlocks'):
             page = ttk.Frame(self.guard_tabs, padding=10); self.guard_tabs.add(page, text=name); pages[name] = page
         page = self.scroll_content(pages['Growth'], width=640)
         form = ttk.Frame(page); form.pack(fill='x')
@@ -342,6 +348,47 @@ class Editor:
         self.build_guard_equipment(self.scroll_content(pages['Team Equipment'], width=640))
         self.build_guard_items(pages['BG Items'])
         self.build_guard_weapons(self.scroll_content(pages['BG Weapons'], width=640))
+        self.build_guard_customization(pages['Appearance Unlocks'])
+
+    def build_guard_customization(self, page):
+        ttk.Label(page,text='Bodyguard appearance and color availability',font=('Segoe UI',11,'bold')).pack(anchor='w',pady=(0,8))
+        self.guard_customization_tree=self.make_tree(page,[('kind','Type'),('owned','Available')],'Option',[250,120,100])
+        bar=ttk.Frame(page);bar.pack(fill='x',pady=10)
+        for text,command in (('Unlock Selected',self.unlock_selected_guard_customization),('Unlock All Bodyguard Options',self.unlock_guard_customization)):
+            button=ttk.Button(bar,text=text,command=command);button.pack(side='left',padx=(0,8));self.buttons.append(button)
+        self.guard_customization_note=tk.StringVar(value='Open a save copy to view appearance unlocks.')
+        ttk.Label(page,textvariable=self.guard_customization_note,wraplength=640).pack(anchor='w')
+
+    def refresh_guard_customization(self):
+        if self.document is None:return
+        selected=self.guard_customization_tree.selection()
+        self.guard_customization_tree.delete(*self.guard_customization_tree.get_children())
+        state=customization.customization_state(self.document,list(self.changes.values()))
+        for family,kind in (('appearances','Appearance'),('outfits','Color')):
+            for row in state[family]:
+                available='Default' if row['available_by_default'] else 'Yes' if row['unlocked'] else 'No' if row['unlocked'] is False else 'View only'
+                self.guard_customization_tree.insert('', 'end',iid=f'{family}:{row["id"]}',text=row['name'],values=(kind,available))
+        if selected and self.guard_customization_tree.exists(selected[0]):self.guard_customization_tree.selection_set(selected[0])
+        self.guard_customization_note.set(state['reason'] or 'Unlocks both Nanman models and yellow, white, black and pink colors. Equipped appearances, team growth and story completion are preserved.')
+
+    def guard_customization_changes(self):
+        state=customization.customization_state(self.document)
+        supported={(field,row['id']) for field,family in (('AppearanceUnlocked','appearances'),('OutfitUnlocked','outfits')) for row in state[family] if row['editable']}
+        return [change for change in customization.customization_unlock_changes() if (change.field,change.index) in supported]
+
+    def unlock_guard_customization(self):
+        if self.require_save():self.stage_many(self.guard_customization_changes())
+
+    def unlock_selected_guard_customization(self):
+        if not self.selected_ok(self.guard_customization_tree):return
+        family,identity=self.guard_customization_tree.selection()[0].split(':');identity=int(identity)
+        state=customization.customization_state(self.document,list(self.changes.values()))
+        row=next(row for row in state[family] if row['id']==identity)
+        if row['available_by_default']:
+            messagebox.showinfo('Already Available','This choice is available by default.');return
+        if not row['editable']:
+            messagebox.showerror('Cannot Unlock Option',row['reason']);return
+        self.stage_many(customization.customization_unlock_changes('appearance' if family=='appearances' else 'outfit',identity))
 
     def build_guard_equipment(self, page):
         ttk.Label(page, text='Choose one owned bodyguard item and a weapon for each family. Only equipment already owned or applied in this editor is available.', wraplength=640).pack(anchor='w', pady=(0, 10))
@@ -415,6 +462,12 @@ class Editor:
         self.action(left,'Unlock All Side Stories',self.unlock_side_stories)
         ttk.Label(left,text='Side stories unlock the three rulers’ side campaigns and their Free Mode variants. They are not marked completed.',wraplength=440).pack(anchor='w',pady=8)
         ttk.Separator(left).pack(fill='x',pady=10)
+        ttk.Label(left,text='Movie and music collection',font=('Segoe UI',10,'bold')).pack(anchor='w')
+        self.gallery_note=tk.StringVar(value='Open a save copy to view the collections.')
+        ttk.Label(left,textvariable=self.gallery_note,wraplength=440).pack(anchor='w',pady=6)
+        self.music_unlock_button=self.action(left,'Unlock All Music',self.unlock_music)
+        self.movie_unlock_button=self.action(left,'Unlock All Movies',self.unlock_movies)
+        ttk.Separator(left).pack(fill='x',pady=10)
         ttk.Label(left,text='Musou completion — separate action',font=('Segoe UI',10,'bold')).pack(anchor='w')
         self.story_officer_choices={NAMES.get(str(i),f'Officer {i}'):i for i,row in progression.ROUTES.items() if row['route_length']}
         self.story_officer=tk.StringVar(value=next(iter(self.story_officer_choices)))
@@ -430,7 +483,7 @@ class Editor:
         self.action(right, 'Remove The Grind', self.remove_grind)
         ttk.Label(right, text='Max permanent officer stats and Merit, normal item rolls, rare items, all unique weapons and supported bodyguard growth/equipment inventories. Equipped choices and story completion are preserved.', wraplength=440).pack(anchor='w', pady=8)
         self.action(right, 'Unlock Everything Supported', self.unlock_everything)
-        ttk.Label(right, text='Adds playable officer and stage availability to Remove The Grind. Use the separate controls to change story completion or costumes.', wraplength=440).pack(anchor='w', pady=8)
+        ttk.Label(right, text='Adds playable officers, stages, bodyguard appearance options and movie/music collections to Remove The Grind. Story completion and saved runs have separate controls.', wraplength=440).pack(anchor='w', pady=8)
         ttk.Separator(right).pack(fill='x', pady=12)
         ttk.Label(right, text='Huanglong Elixirs', font=('Segoe UI', 11, 'bold')).pack(anchor='w')
         ttk.Label(right, text=f'Choose your final balance: 0–{progression.ELIXIR_MAX}.', wraplength=440).pack(anchor='w', pady=(5, 7))
@@ -444,6 +497,74 @@ class Editor:
         ttk.Label(right, textvariable=self.elixir_note, wraplength=440).pack(anchor='w', pady=(5, 0))
         ttk.Label(right, text='An applied count includes any pending Musou clear rewards.', wraplength=440).pack(anchor='w', pady=5)
         ttk.Label(right,text='Changes remain pending until you save. Review Changes shows each action. Opening a copy creates a backup automatically.',wraplength=440).pack(anchor='w',pady=12)
+
+    def build_musou_saves(self):
+        page=self.tabs['Musou Saves']
+        ttk.Label(page,text='Between-stage Musou campaign saves',font=('Segoe UI',11,'bold')).pack(anchor='w',pady=(0,6))
+        ttk.Label(page,text='Remove a saved run to free a campaign slot. This does not reset officer stats, unlocks or Musou completion. Changes apply to your opened copy only when you save.',wraplength=960).pack(anchor='w',pady=(0,12))
+        self.musou_saves_tree=self.make_tree(page,[('officer','Officer'),('stage','Saved progress'),('date','Saved at')],'Slot',[150,210,200,250])
+        self.musou_saves_tree.bind('<<TreeviewSelect>>',lambda *_:self.select_musou_save())
+        bar=ttk.Frame(page);bar.pack(fill='x',pady=10)
+        self.remove_musou_button=ttk.Button(bar,text='Remove Selected Run',command=self.remove_musou_save)
+        self.remove_musou_button.pack(side='left',padx=(0,8));self.buttons.append(self.remove_musou_button)
+        self.remove_all_musou_button=ttk.Button(bar,text='Remove All Saved Runs',command=self.remove_all_musou_saves)
+        self.remove_all_musou_button.pack(side='left');self.buttons.append(self.remove_all_musou_button)
+        self.musou_saves_note=tk.StringVar(value='Open a save copy to view your saved runs.')
+        ttk.Label(page,textvariable=self.musou_saves_note,wraplength=960).pack(anchor='w')
+
+    def refresh_collections(self):
+        if self.document is None:return
+        state=collections.collection_state(self.document,list(self.changes.values()))
+        notes=[]
+        for key,title,button in (('music','Music',self.music_unlock_button),('movies','Movies',self.movie_unlock_button)):
+            row=state[key]
+            notes.append(f'{title}: {row["owned"]}/{row["total"]} unlocked.' if row['editable'] else title+': '+row['reason'])
+            button.configure(state='normal' if row['editable'] else 'disabled')
+        self.gallery_note.set(' '.join(notes))
+
+    def unlock_music(self):
+        if self.require_save():
+            try:self.stage_many(collections.unlock_music_changes(self.document))
+            except ValueError as error:messagebox.showerror('Cannot Unlock Music',str(error))
+
+    def unlock_movies(self):
+        if self.require_save():
+            try:self.stage_many(collections.unlock_movie_changes(self.document))
+            except ValueError as error:messagebox.showerror('Cannot Unlock Movies',str(error))
+
+    def refresh_musou_saves(self):
+        if self.document is None:return
+        selected=self.musou_saves_tree.selection()
+        self.musou_saves_tree.delete(*self.musou_saves_tree.get_children())
+        state=musou_slots.slot_state(self.document,list(self.changes.values()))
+        for row in state['slots']:
+            title=f'Slot {row["index"]+1}'
+            values=(row['officer_name'],f'{"Side story" if row["side_story"] else "Musou"} progress {row["stage"]}',row['saved_at']) if row['active'] else ('Empty','—','—')
+            self.musou_saves_tree.insert('', 'end',iid=str(row['index']),text=title,values=values)
+        if selected and self.musou_saves_tree.exists(selected[0]):self.musou_saves_tree.selection_set(selected[0])
+        self.musou_saves_note.set(state['reason'] or f'{state["active_count"]} saved runs. Removal keeps the slot layout intact; Undo restores pending removals.')
+        self.remove_all_musou_button.configure(state='normal' if any(row['active'] and row['editable'] for row in state['slots']) else 'disabled')
+        self.select_musou_save()
+
+    def select_musou_save(self):
+        selected=self.musou_saves_tree.selection()
+        state=musou_slots.slot_state(self.document,list(self.changes.values())) if self.document else {'slots':[]}
+        row=next((r for r in state['slots'] if selected and str(r['index'])==selected[0]),None)
+        self.remove_musou_button.configure(state='normal' if row and row['active'] and row['editable'] else 'disabled')
+        if row and row['active'] and not row['editable']:self.musou_saves_note.set(row['reason'])
+
+    def remove_musou_save(self):
+        if not self.selected_ok(self.musou_saves_tree):return
+        index=int(self.musou_saves_tree.selection()[0])
+        row=next(row for row in musou_slots.slot_state(self.document,list(self.changes.values()))['slots'] if row['index']==index)
+        if not row['active'] or not row['editable']:return
+        if not messagebox.askyesno('Remove Saved Musou Run',f'Remove slot {index+1} ({row["officer_name"]}) from the opened copy? This removes its between-stage campaign progress. Officer stats and completion flags stay unchanged. You can Undo before saving.'):return
+        self.stage_many([musou_slots.remove_slot_change(index)])
+
+    def remove_all_musou_saves(self):
+        if not self.require_save():return
+        if not messagebox.askyesno('Remove All Saved Musou Runs','Remove all supported between-stage campaign runs from the opened copy? Officer stats, unlocks and completion flags stay unchanged. You can Undo before saving.'):return
+        self.stage_many(musou_slots.remove_all_changes(self.document))
 
     def require_save(self):
         if self.document is None:
@@ -494,7 +615,7 @@ class Editor:
         self.filename.set(f'Opened copy: {self.document.source}')
         self.backup_label.set(f'Backup of originally opened copy: {self.backup}' if self.backup else 'No backup selected.')
         warnings = self.document.compatibility_warnings
-        self.compatibility_label.set(f'Compatibility notes: {len(warnings)}. Existing unusual values are preserved. Use Review Changes for details.' if warnings else '')
+        self.compatibility_label.set(f'Compatibility notes: {len(warnings)}. Saved values outside normal drop ranges are preserved. Use Review Changes for details.' if warnings else '')
 
     def officer_indices(self):
         return range(min(42,len(self.document.records('PCSaveDataArray'))))
@@ -511,6 +632,11 @@ class Editor:
                 yield i,row
 
     def original_value(self, change):
+        if change.category in collections.CATEGORIES:return collections.original_value(self.document,change)
+        if change.category in musou_slots.CATEGORIES:return musou_slots.original_value(self.document,change)
+        if change.category in customization.CATEGORIES:
+            family='appearances' if change.field=='AppearanceUnlocked' else 'outfits'
+            return next(row['unlocked'] for row in customization.customization_state(self.document)[family] if row['id']==change.index)
         if change.category in weapon_collection.CATEGORIES:return weapon_collection.original_value(self.document,change)
         if change.category in progression.CATEGORIES:
             if change.field == 'HuanglongElixirs':
@@ -735,6 +861,9 @@ class Editor:
             self.weapon_bonus_value_boxes[slot].configure(values=(),state='disabled')
             return
         values = sorted(weapon_editor.allowed_values(row,item_id)) if item_id is not None else []
+        saved=weapon_editor.original_skills(self.document,self.current_weapon_data_id)[slot]
+        if item_id is not None and saved['id']==item_id and saved['value']>0:
+            values=sorted(set(values+[saved['value']]))
         enabled = row['editable'] and bool(values)
         self.weapon_bonus_value_boxes[slot].configure(values=tuple(values),state='readonly' if enabled else 'disabled')
         if item_id is None: self.weapon_bonus_values[slot].set('')
@@ -755,7 +884,9 @@ class Editor:
                 if label not in self.weapon_bonus_choices: raise ValueError(f'Choose a supported bonus in slot {slot+1}.')
                 item_id = self.weapon_bonus_choices[label]
                 value = (original['value'] if item_id==original['id'] else 0) if item_id in weapon_editor.RARE_ITEMS else int(self.weapon_bonus_values[slot].get()) if item_id is not None else 0
-                if item_id in weapon_editor.NORMAL_ITEMS and value not in weapon_editor.allowed_values(row,item_id): raise ValueError(f'Slot {slot+1} has a value unavailable to this weapon.')
+                saved=weapon_editor.original_skills(self.document,self.current_weapon_data_id)[slot]
+                preserved=item_id==saved['id'] and value==saved['value'] and value>0
+                if item_id in weapon_editor.NORMAL_ITEMS and value not in weapon_editor.allowed_values(row,item_id) and not preserved: raise ValueError(f'Slot {slot+1} has a value unavailable to this weapon.')
                 skills.append({'id':item_id,'value':value})
             normal = [skill['id'] for skill in skills if skill['id'] in ITEMS and ITEMS[skill['id']]['kind']=='normal']
             if len(normal)>row['blue_limit']: raise ValueError(f'This weapon supports at most {row["blue_limit"]} normal bonuses.')
@@ -865,6 +996,9 @@ class Editor:
         if self.document is None: return
         self.refresh_officers(); self.refresh_items(); self.refresh_weapons(); self.refresh_bodyguards()
         self.refresh_story_status()
+        self.refresh_guard_customization()
+        self.refresh_collections()
+        self.refresh_musou_saves()
         self.refresh_elixirs()
         self.status.set(f'{len(self.changes)} pending changes. Applied in the editor; use Save As or Save Changes to write them.')
 
@@ -921,7 +1055,7 @@ class Editor:
         if not selected or self.document is None: return
         self.current_item = int(selected[0]); row = ITEMS[self.current_item]; cap = self.item_cap(self.current_item)
         self.item_selected.set(row['name'])
-        self.item_detail.set(f'{row.get("effect", "")}\nMaximum verified value: {cap}' if cap is not None else ('Rare item — ownership only.' if row['kind'] == 'rare' else 'Roll limit is still being verified.'))
+        self.item_detail.set(f'{row.get("effect", "")}\nNormal drop maximum: {cap}' if cap is not None else ('Rare item — ownership only.' if row['kind'] == 'rare' else 'Roll limit is still being verified.'))
         self.item_owned.set(self.value('item', self.current_item, 'Owned')); self.item_value.set(str(self.value('item', self.current_item, 'Value')))
         self.item_entry.configure(state='normal' if cap is not None and row['kind'] == 'normal' else 'disabled')
 
@@ -975,7 +1109,7 @@ class Editor:
         self.current_guard_item = int(selected[0]); metadata = GUARD_ITEMS[self.current_guard_item]
         state = guard_editor.item_state(self.document, list(self.changes.values()))[self.current_guard_item]
         self.guard_item_selected.set(metadata['name'])
-        self.guard_item_detail.set(f'{metadata.get("effect", "").strip()}\nMaximum value: {metadata["max_value"]}' if metadata['kind']=='normal' else 'Rare bodyguard item — ownership only.')
+        self.guard_item_detail.set(f'{metadata.get("effect", "").strip()}\nNormal drop maximum: {metadata["max_value"]}' if metadata['kind']=='normal' else 'Rare bodyguard item — ownership only.')
         self.guard_item_owned.set(state['owned']); self.guard_item_value.set(str(state['value'] or 1))
         self.guard_item_entry.configure(state='normal' if metadata['kind']=='normal' else 'disabled')
 
@@ -1021,7 +1155,12 @@ class Editor:
             self.guard_bonus_value_boxes[index].configure(values=(),state='disabled')
             return
         item = self.guard_bonus_choices.get(self.guard_bonus_items[index].get())
-        values = GUARD_WEAPONS[self.current_guard_weapon]['allowed_values_by_guard_item_id'].get(str(item),[]) if item is not None else []
+        values = list(GUARD_WEAPONS[self.current_guard_weapon]['allowed_values_by_guard_item_id'].get(str(item),[])) if item is not None else []
+        if self.guard_weapon_slot is not None:
+            pending=guard_editor.weapon_state(self.document,list(self.changes.values()))[self.guard_weapon_slot]
+            saved=pending.get('preservation_baseline',guard_editor.weapon_state(self.document)[self.guard_weapon_slot]['skills'])
+            if index<len(saved) and saved[index] is not None and item is not None and saved[index]['id']==item and saved[index]['value']>0:
+                values=sorted(set(values+[saved[index]['value']]))
         self.guard_bonus_value_boxes[index].configure(values=tuple(values),state='readonly' if values and self.guard_weapon_slot is not None else 'disabled')
         current = self.guard_bonus_values[index].get()
         if current not in [str(value) for value in values]: self.guard_bonus_values[index].set(str(values[-1]) if values else '')
@@ -1034,7 +1173,8 @@ class Editor:
                 item = self.guard_bonus_choices[itemvar.get()]
                 if item is not None: skills.append({'id':item,'value':int(valuevar.get())})
             if not skills: raise ValueError('Choose at least one bonus. Generated bodyguard weapons always have a bonus.')
-            skills = guard_editor.validate_skills(self.current_guard_weapon,skills)
+            pending=guard_editor.weapon_state(self.document,list(self.changes.values()))[self.guard_weapon_slot]
+            skills = guard_editor.validate_skills(self.current_guard_weapon,skills,original_skills=pending.get('preservation_baseline',guard_editor.weapon_state(self.document)[self.guard_weapon_slot]['skills']))
             self.stage_many([Change('guard_weapon_slot',self.guard_weapon_slot,'Skills',skills)])
         except (ValueError,KeyError) as error: messagebox.showerror('Invalid Weapon Bonuses',str(error))
 
@@ -1068,7 +1208,8 @@ class Editor:
             if self.item_owned.get() and cap is not None and ITEMS[index]['kind'] == 'normal':
                 value = int(self.item_value.get())
                 if value == 0: value = 1
-                if not 1 <= value <= cap: raise ValueError(f'{ITEMS[index]["name"]} must be 1–{cap}.')
+                unchanged=self.original_value(Change('item',index,'Owned',True)) and value==self.original_value(Change('item',index,'Value',value)) and value>0
+                if not 1 <= value <= cap and not unchanged: raise ValueError(f'{ITEMS[index]["name"]} must be 1–{cap}, or its unchanged saved value.')
                 changes.append(Change('item', index, 'Value', value))
             self.stage_many(changes)
         except ValueError as error: messagebox.showerror('Invalid Value', str(error))
@@ -1078,7 +1219,7 @@ class Editor:
         changes = []
         for index, row in self.editable_item_rows():
             cap = self.item_cap(index)
-            if row['kind'] == 'normal' and cap is not None: changes.extend([Change('item', index, 'Owned', True), Change('item', index, 'Value', cap)])
+            if row['kind'] == 'normal' and cap is not None: changes.extend([Change('item', index, 'Owned', True), Change('item', index, 'Value', weapon_editor.max_item_value(self.document,index,list(self.changes.values())))])
         self.stage_many(changes)
 
     def unlock_items(self, kind=None):
@@ -1144,7 +1285,9 @@ class Editor:
             changes = [Change('guard_item',index,'Owned',owned)]
             if owned and metadata['kind']=='normal':
                 value = int(self.guard_item_value.get())
-                if not 1 <= value <= metadata['max_value']: raise ValueError(f'{metadata["name"]} must be 1–{metadata["max_value"]}.')
+                original=guard_editor.item_state(self.document)[index]
+                unchanged=original['owned'] and value==original['value'] and value>0
+                if not 1 <= value <= metadata['max_value'] and not unchanged: raise ValueError(f'{metadata["name"]} must be 1–{metadata["max_value"]}, or its unchanged saved value.')
                 changes.append(Change('guard_item',index,'Value',value))
             self.stage_many(changes)
         except ValueError as error: messagebox.showerror('Invalid BG Item',str(error))
@@ -1155,7 +1298,7 @@ class Editor:
             state=guard_editor.item_state(self.document).get(index)
             if state is None or not state['editable']:continue
             changes.append(Change('guard_item',index,'Owned',True))
-            if maximum and metadata['kind']=='normal': changes.append(Change('guard_item',index,'Value',metadata['max_value']))
+            if maximum and metadata['kind']=='normal': changes.append(Change('guard_item',index,'Value',guard_editor.max_item_value(self.document,index,list(self.changes.values()))))
         return changes
 
     def unlock_guard_items(self):
@@ -1224,7 +1367,7 @@ class Editor:
         for index, item in self.editable_item_rows():
             cap = self.item_cap(index)
             if item['kind'] == 'rare': changes.append(Change('item', index, 'Owned', True))
-            elif cap is not None: changes.extend([Change('item', index, 'Owned', True), Change('item', index, 'Value', cap)])
+            elif cap is not None: changes.extend([Change('item', index, 'Owned', True), Change('item', index, 'Value', weapon_editor.max_item_value(self.document,index,list(self.changes.values())))])
         changes.extend(self.guard_growth_changes())
         changes.extend(self.guard_item_changes(True))
         changes.extend(self.guard_weapon_changes(True))
@@ -1237,6 +1380,10 @@ class Editor:
     def unlock_everything(self):
         if self.require_save():
             changes = self.grind_changes()
+            changes.extend(self.guard_customization_changes())
+            state=collections.collection_state(self.document)
+            if state['music']['editable']:changes.extend(collections.unlock_music_changes(self.document))
+            if state['movies']['editable']:changes.extend(collections.unlock_movie_changes(self.document))
             changes.extend(Change('unlock', index, field, True) for field, count in [('CanUseCharaArray', 42), ('CanUseScenarioArray', 108)] for index in range(min(count,len(self.document.properties[field]['value']['values']))))
             self.stage_many(changes)
 
@@ -1266,6 +1413,17 @@ class Editor:
         if change.category=='officer': label = NAMES.get(str(change.index),f'Officer {change.index}')
         elif change.category=='item': label = ITEMS[change.index]['name']
         elif change.category=='unique_weapon': label = UNIQUE_WEAPONS[change.index]['weapon_name']
+        elif change.category in collections.CATEGORIES:
+            family='music' if change.field=='Music' else 'movies'
+            row=next(row for row in collections.collection_state(self.document)[family]['rows'] if row['id']==change.index)
+            label=row['name'];fieldname='Collection available'
+        elif change.category in musou_slots.CATEGORIES:
+            row=next(row for row in musou_slots.slot_state(self.document)['slots'] if row['index']==change.index)
+            label=f'Musou save slot {change.index+1} ({row["officer_name"]})';fieldname='Remove saved run'
+        elif change.category in customization.CATEGORIES:
+            family='appearances' if change.field=='AppearanceUnlocked' else 'outfits'
+            row=next(row for row in customization.customization_state(self.document)[family] if row['id']==change.index)
+            label='Bodyguard '+row['name'];fieldname='Available'
         elif change.category in weapon_collection.CATEGORIES:
             label='Weapon gallery' if change.field=='CollectAll' else 'Lu Bu / Sun Shangxiang'
             fieldname='Complete collection' if change.field=='CollectAll' else 'Tactics costumes'

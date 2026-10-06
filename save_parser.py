@@ -119,7 +119,10 @@ def _validate_document(doc):
             maximum = ORDINARY_CAPS.get(index, 0) if ordinary else row['max_value']
             if ((not owned or row['kind'] == 'rare') and value != 0 or
                     owned and row['kind'] == 'normal' and not 1 <= value <= maximum):
-                warn(f'{name} slot {index} has a value outside the verified editing profile; its saved value is preserved.')
+                if owned and row['kind']=='normal' and value>maximum:
+                    warn(f'{row["name"]} has saved value {value}, above the normal drop maximum {maximum}. Max actions preserve this value.')
+                else:
+                    warn(f'{row["name"]} has an unfamiliar saved value {value}; it is preserved unless explicitly edited.')
     for index, record in enumerate(doc.records('GuardDataArray')):
         f = fields(record)
         _number(f.get('SPoint'), 'IntProperty', 4, f'bodyguard team {index} Merit')

@@ -35,12 +35,30 @@ def _requests(document,changes):
     return result
 
 
-def max_skills(weapon_id):
+def max_skills(weapon_id,skills=None,original_skills=None):
+    """Maximize a known profile without replacing types or decreasing rolls.
+
+    Calling with no existing skills returns the stock acquisition profile.
+    Saved high rolls are kept only in their original logical/physical slot;
+    callers must use the existing-record writer to retain physical positions.
+    """
     if type(weapon_id) is not int or weapon_id not in GUARD_WEAPONS:raise SaveError('Unsupported bodyguard weapon.')
-    return [dict(skill) for skill in GUARD_WEAPONS[weapon_id]['max_bonus_profile']]
+    stock=[dict(skill) for skill in GUARD_WEAPONS[weapon_id]['max_bonus_profile']]
+    if skills is None:return stock
+    baseline=skills if original_skills is None else original_skills
+    skills=validate_skills(weapon_id,skills,baseline)
+    values=GUARD_WEAPONS[weapon_id]['allowed_values_by_guard_item_id'];result=[]
+    for index,skill in enumerate(skills):
+        original=baseline[index] if index<len(baseline) else None
+        saved=original['value'] if original and original['id']==skill['id'] else 0
+        result.append({'id':skill['id'],'value':max(skill['value'],saved,max(values[str(skill['id'])]))})
+    for skill in stock:
+        if len(result)>=GUARD_WEAPONS[weapon_id]['max_skills']:break
+        if not any(row['id']==skill['id'] for row in result):result.append(skill)
+    return result
 
 
-def validate_skills(weapon_id,skills):
+def validate_skills(weapon_id,skills,original_skills=()):
     if type(weapon_id) is not int or weapon_id not in GUARD_WEAPONS:raise SaveError('Unlock a supported bodyguard weapon first.')
     row=GUARD_WEAPONS[weapon_id]
     if not isinstance(skills,(list,tuple)) or len(skills)>row['max_skills']:
@@ -48,12 +66,14 @@ def validate_skills(weapon_id,skills):
     if not skills and row['tier']!=1:
         raise SaveError('Dropped upgraded bodyguard weapons require at least one bonus.')
     result=[];seen=set()
-    for skill in skills:
+    for index,skill in enumerate(skills):
         if not isinstance(skill,dict) or set(skill)!={'id','value'}:raise SaveError('Each weapon bonus needs an item ID and value.')
         item,value=skill['id'],skill['value']
         if type(item) is not int or item not in row['allowed_skill_ids'] or item in seen:
             raise SaveError('Duplicate or ineligible bodyguard weapon bonus.')
-        if type(value) is not int or value not in row['allowed_values_by_guard_item_id'][str(item)]:
+        original=original_skills[index] if index<len(original_skills) else None
+        preserved=(type(value) is int and value>0 and skill==original)
+        if type(value) is not int or value not in row['allowed_values_by_guard_item_id'][str(item)] and not preserved:
             raise SaveError('This bonus value cannot be generated for this weapon tier.')
         seen.add(item);result.append({'id':item,'value':value})
     return result
@@ -93,7 +113,8 @@ def item_state(document,changes=()):
         owned=wanted.get('Owned',original_owned);value=wanted.get('Value',original_value)
         if type(owned) is not bool:raise SaveError('Item ownership requires a boolean.')
         if 'Value' in wanted:
-            if item['kind']!='normal' or type(value) is not int or not 1<=value<=item['max_value']:
+            preserved=original_owned and owned and type(value) is int and value>0 and value==original_value
+            if item['kind']!='normal' or type(value) is not int or not (1<=value<=item['max_value'] or preserved):
                 raise SaveError(f'{item["name"]} requires a verified normal-item value from 1 to {item["max_value"]}.')
             if 'Owned' not in wanted:owned=True
         if wanted and owned!=original_owned:
@@ -106,17 +127,49 @@ def item_state(document,changes=()):
     return result
 
 
+def max_item_value(document,item_id,changes=()):
+    """Return a normal-drop maximum, retaining higher owned saved values."""
+    if type(item_id) is not int or item_id not in GUARD_ITEMS or GUARD_ITEMS[item_id]['kind']!='normal' or item_id>=len(document.records('GuardEquipItemDataArray')):
+        raise SaveError('Choose a supported normal bodyguard item present in this save.')
+    current=item_state(document,changes)[item_id]
+    if not current['editable']:raise SaveError(current['reason'])
+    original=fields(document.records('GuardEquipItemDataArray')[item_id]);item=GUARD_ITEMS[item_id]
+    saved=original['Value']['value'] if original['GuardEquipItemID']['value']==item['enum'] else 0
+    return max(item['max_value'],saved,current['value'] if current['owned'] else 0)
+
+
+def _skill_positions(row,count):
+    """Keep existing positions, then prefer unused positions after them."""
+    occupied=row['skill_positions'];last=max(occupied,default=-1)
+    free=[i for i in range(last+1,9) if i not in occupied]
+    free.extend(i for i in range(last+1) if i not in occupied)
+    return (occupied+free)[:count]
+
+
+def _skill_baseline(row,positions):
+    saved=dict(zip(row['original_skill_positions'],row['original_skills']))
+    return [saved.get(position) for position in positions]
+
+
+def _set_skills(row,skills,positions=None):
+    positions=_skill_positions(row,len(skills)) if positions is None else positions
+    pairs=sorted(zip(positions,skills))
+    row['skill_positions']=[position for position,skill in pairs]
+    row['skills']=[dict(skill) for position,skill in pairs]
+    row['preservation_baseline']=_skill_baseline(row,row['skill_positions'])
+
+
 def weapon_state(document,changes=()):
     requests=_requests(document,changes);result=[]
     for index,row in enumerate(document.records('GuardWeaponDataArray')):
         record=fields(row);enum=record['WeaponID']['value']
         weapon_id=None if enum=='EWeaponID::NUM' else WEAPON_IDS.get(enum)
-        skills=[];unknown=False
-        for slot in record['Skill']['value']['records']:
+        skills=[];positions=[];unknown=False
+        for physical,slot in enumerate(record['Skill']['value']['records']):
             skill=fields(slot);item=skill['GuardEquipItemID']['value']
             if item!='EGuardEquipItemID::NUM':
                 if item not in ITEM_IDS:unknown=True
-                else:skills.append({'id':ITEM_IDS[item],'value':skill['Value']['value']})
+                else:skills.append({'id':ITEM_IDS[item],'value':skill['Value']['value']});positions.append(physical)
             elif skill['Value']['value']!=0:unknown=True
             if skill['EquipItemID']['value']!='EEquipItemID::NUM':unknown=True
         empty=(enum=='EWeaponID::NUM' and record['ID']['value']=='EWeaponID::NUM'
@@ -130,12 +183,14 @@ def weapon_state(document,changes=()):
         if known:
             try:
                 validate_saved_skills(skills)
-                validate_skills(weapon_id,skills)
+                validate_skills(weapon_id,skills,skills)
                 editable=True;reason=''
             except SaveError:
                 reason='This copy has bonuses outside the verified drop profiles. Its bonuses are view-only and preserved.'
         result.append({'slot':index,'weapon_id':weapon_id,'data_id':record['DataID']['value'],
-                       'skills':skills,'editable':editable,'reason':reason,'empty':empty,'identity_valid':identity_valid})
+                       'skills':skills,'skill_positions':positions,'original_skills':[dict(s) for s in skills],
+                       'original_skill_positions':list(positions),'preservation_baseline':[dict(s) for s in skills],
+                       'editable':editable,'reason':reason,'empty':empty,'identity_valid':identity_valid})
     for weapon_id,wanted in requests['guard_weapon'].items():
         for value in wanted.values():
             if value is not True:raise SaveError('Bodyguard weapon actions require True; removal is unsupported.')
@@ -143,14 +198,20 @@ def weapon_state(document,changes=()):
         if wanted.get('Owned') and not owned:
             blank=next((row for row in result if row['empty']),None)
             if blank is None:raise SaveError('Bodyguard weapon inventory is full. No existing weapon will be replaced.')
-            blank.update(weapon_id=weapon_id,data_id=blank['slot'],skills=max_skills(weapon_id),editable=True,reason='',empty=False,identity_valid=True);owned=[blank]
+            blank.update(weapon_id=weapon_id,data_id=blank['slot'],editable=True,reason='',empty=False,identity_valid=True)
+            _set_skills(blank,max_skills(weapon_id));owned=[blank]
         if wanted.get('MaxBonuses'):
             if not owned:raise SaveError('Unlock the bodyguard weapon before maximizing it.')
             for row in owned:
-                if row['editable']:row['skills']=max_skills(weapon_id)
+                if row['editable']:_set_skills(row,max_skills(weapon_id,row['skills'],row['preservation_baseline']))
     for index,wanted in requests['guard_weapon_slot'].items():
         if not result[index]['editable']:raise SaveError(result[index]['reason'])
-        result[index]['skills']=validate_skills(result[index]['weapon_id'],wanted['Skills'])
+        # A pending Max can add a slot before a late saved bonus. Compare high
+        # preservation against physical saved positions, not compact indexes.
+        if not isinstance(wanted['Skills'],(list,tuple)):raise SaveError('Bodyguard weapon bonuses must be a list.')
+        positions=_skill_positions(result[index],len(wanted['Skills']))
+        skills=validate_skills(result[index]['weapon_id'],wanted['Skills'],_skill_baseline(result[index],positions))
+        _set_skills(result[index],skills,positions)
     return result
 
 
@@ -250,8 +311,10 @@ def plan_bodyguard_changes(document,changes,add_property):
             for name in ('ID','WeaponID'):enum(record[name],GUARD_WEAPONS[state['weapon_id']]['enum'],reason+' identity')
             add_property(record['Attr'],struct.pack('<q',0),reason+' guard attribute flags')
             integer(record['DataID'],state['data_id'] if data_id is None else data_id,reason+' inventory/collection reference')
-        for index,slot in enumerate(record['Skill']['value']['records']):
-            target=fields(slot);skill=state['skills'][index] if index<len(state['skills']) else None
+        records=record['Skill']['value']['records']
+        targets=dict(zip(state['skill_positions'],state['skills']))
+        for index,slot in enumerate(records):
+            target=fields(slot);skill=targets.get(index)
             enum(target['EquipItemID'],'EEquipItemID::NUM',reason+' ordinary item sentinel')
             enum(target['GuardEquipItemID'],'EGuardEquipItemID::NUM' if skill is None else GUARD_ITEMS[skill['id']]['enum'],reason+' bodyguard bonus ID')
             integer(target['Value'],0 if skill is None else skill['value'],reason+' legitimate bonus value')

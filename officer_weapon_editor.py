@@ -20,6 +20,7 @@ UNIQUE_SLOTS={r['unique_save_index']:r for r in UNIQUES.values()}
 _rule_file=ROOT/'weapon_bonus_rules.json'
 RULES=json.loads(_rule_file.read_text(encoding='utf-8')) if _rule_file.exists() else {}
 NORMAL_ITEMS={int(r['id']):r for r in RULES.get('normal_items',[])}
+ITEM_CAPS={int(i):v for i,v in json.loads((ROOT/'item_limits.json').read_text())['maxima'].items()}
 RARE_ITEMS={int(r['id']):r for r in RULES.get('rare_items',[])}
 ELEMENTS=RULES.get('elements',{})
 ELEMENT_MASK=RULES.get('element_mask',0)
@@ -162,7 +163,8 @@ def validate_skills(info,skills):
             seen.add(item)
             if item in NORMAL_ITEMS:
                 blue+=1
-                if value not in allowed_values(info,item):raise SaveError(f'{ITEMS[item]["name"]} has an unsupported weapon roll.')
+                if value not in allowed_values(info,item) and not (value>0 and skill==original):
+                    raise SaveError(f'{ITEMS[item]["name"]} has an unsupported weapon roll. An existing saved value can only be preserved in its original slot.')
             else:red+=1
         result.append({'id':item,'value':value})
     if blue>info['blue_limit']:raise SaveError(f'This weapon supports at most {info["blue_limit"]} normal bonuses.')
@@ -176,6 +178,9 @@ def validate_skills(info,skills):
         # the final slot. Numeric-only edits preserve earlier saved rare slots.
         normal=[s for s in result if s['id'] in NORMAL_ITEMS]
         result=normal+[{'id':None,'value':0} for _ in range(8-len(normal))]+[new_red[0][1]]
+        for index,skill in enumerate(result):
+            if skill['id'] in NORMAL_ITEMS and skill['value'] not in allowed_values(info,skill['id']) and skill!=info['skills'][index]:
+                raise SaveError('An existing unsupported roll must stay in its original saved slot when replacing rare bonuses.')
     return result
 
 
@@ -209,7 +214,34 @@ def states(document,changes=()):
 def max_existing_skills(document,data_id,changes=()):
     info=state(document,data_id,changes)
     if not info['editable']:raise SaveError(info['reason'])
-    return [{'id':s['id'],'value':max(allowed_values(info,s['id'])) if s['id'] in NORMAL_ITEMS else s['value']} for s in info['skills']]
+    saved=original_skills(document,data_id)
+    result=[]
+    for index,skill in enumerate(info['skills']):
+        value=skill['value']
+        if skill['id'] in NORMAL_ITEMS:
+            baseline=saved[index]['value'] if index<len(saved) and saved[index]['id']==skill['id'] else 0
+            value=max(value,baseline,max(allowed_values(info,skill['id'])))
+        result.append({'id':skill['id'],'value':value})
+    return result
+
+
+def max_item_value(document,item_id,changes=()):
+    """Normal-drop maximum without decreasing an owned saved/pending roll."""
+    if type(item_id) is not int or item_id not in ITEM_CAPS or item_id>=len(document.records('EquipItemDataArray')):
+        raise SaveError('Choose a supported normal item present in this save.')
+    record=fields(document.records('EquipItemDataArray')[item_id]);expected='EEquipItemID::'+ITEMS[item_id]['enum']
+    if record['EquipItemID']['value'] not in ('EEquipItemID::NUM',expected) or record['GuardEquipItemID']['value']!='EGuardEquipItemID::NUM':
+        raise SaveError('This item has an unknown saved placement; preserve it without editing.')
+    saved=record['Value']['value'] if record['EquipItemID']['value']==expected else 0
+    owned=record['EquipItemID']['value']==expected;pending=saved;explicit_owned=False;has_value=False
+    for change in changes:
+        if change.category=='item' and change.index==item_id:
+            if change.field=='Owned':owned=change.value;explicit_owned=True
+            elif change.field=='Value':pending=change.value;has_value=True
+    if has_value and not explicit_owned:owned=True
+    if type(owned) is not bool or type(pending) is not int:
+        raise SaveError('Normal-item ownership and values need their supported types.')
+    return max(ITEM_CAPS[item_id],saved,pending if owned else 0)
 
 
 def plan_weapon_roll_changes(document,changes,add_property):

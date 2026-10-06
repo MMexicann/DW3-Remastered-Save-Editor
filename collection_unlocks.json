@@ -1,0 +1,31 @@
+{
+  "music": {
+    "label": "Music",
+    "array": "bPlayBGM",
+    "field": "Music",
+    "path": ["OptionData", "Sound"],
+    "struct_types": ["StructProperty(OptionSaveData(/Script/Refine))", "StructProperty(OptionSound(/Script/Refine))"],
+    "total": 100,
+    "rows": []
+  },
+  "movies": {
+    "label": "Movies",
+    "array": "bPlayMovie",
+    "field": "Movie",
+    "path": ["OptionData", "Edit"],
+    "struct_types": ["StructProperty(OptionSaveData(/Script/Refine))", "StructProperty(OptionEdit(/Script/Refine))"],
+    "total": 100,
+    "rows": [
+      {"id": 0, "name": "Opening movie"}, {"id": 1, "name": "Movie 01"}, {"id": 2, "name": "Movie 02"}, {"id": 3, "name": "Movie 03"}, {"id": 4, "name": "Movie 04"},
+      {"id": 5, "name": "Movie 05"}, {"id": 6, "name": "Movie 06"}, {"id": 7, "name": "Movie 07"}, {"id": 8, "name": "Movie 08"}, {"id": 9, "name": "Movie 09"},
+      {"id": 10, "name": "Movie 10"}, {"id": 11, "name": "Movie 11"}, {"id": 12, "name": "Movie 12"}, {"id": 13, "name": "Movie 13"}, {"id": 14, "name": "Movie 14"},
+      {"id": 15, "name": "Movie 15"}, {"id": 16, "name": "Movie 16"}, {"id": 17, "name": "Movie 17"}, {"id": 18, "name": "Movie 18"}, {"id": 19, "name": "Movie 19"},
+      {"id": 20, "name": "Movie 20"}, {"id": 21, "name": "Movie 21"}, {"id": 22, "name": "Movie 22"}, {"id": 23, "name": "Movie 23"}, {"id": 24, "name": "Movie 24"},
+      {"id": 25, "name": "Movie 25"}, {"id": 26, "name": "Movie 26"}, {"id": 27, "name": "Movie 27"}, {"id": 28, "name": "Movie 28"}, {"id": 29, "name": "Movie 29"},
+      {"id": 30, "name": "Movie 30"}, {"id": 31, "name": "Movie 31"}, {"id": 32, "name": "Movie 32"}, {"id": 33, "name": "Movie 33"}, {"id": 34, "name": "Movie 34"},
+      {"id": 35, "name": "Movie 35"}, {"id": 36, "name": "Movie 36"}, {"id": 37, "name": "Movie 37"}, {"id": 38, "name": "Movie 38"}, {"id": 39, "name": "Movie 39"},
+      {"id": 40, "name": "Movie 40"}, {"id": 41, "name": "Movie 41"}, {"id": 42, "name": "Movie 42"}, {"id": 43, "name": "Movie 43"}, {"id": 44, "name": "Movie 44"},
+      {"id": 45, "name": "Movie 45"}, {"id": 46, "name": "Movie 46"}, {"id": 47, "name": "Movie 47"}, {"id": 48, "name": "Movie 48"}, {"id": 49, "name": "Movie 49"}
+    ]
+  }
+}

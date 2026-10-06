@@ -3,8 +3,7 @@
 The Weapons tab now edits normal bonus types and values on owned regular,
 fourth and fifth weapon copies. It writes a supported fusion result directly,
 without consuming another weapon or changing achievement/story records.
-Edited saves have not yet been loaded in the game. Open a separate copy and
-keep its automatic backup.
+Open a separate copy and keep its automatic backup.
 
 ## Controls
 
@@ -13,6 +12,7 @@ the nine saved slots, then Apply Weapon Bonuses. Rare bonus types and elements
 also have verified controls; see [WEAPON_ATTRIBUTES_FIX.md](WEAPON_ATTRIBUTES_FIX.md).
 Max Selected Existing Bonus Rolls
 raises the current normal bonuses without adding or replacing their types.
+Existing higher saved rolls remain unchanged; a Max action never lowers them.
 Max All Owned Bonus Rolls applies this to all supported owned copies,
 including unique weapons you have just unlocked in the editor. View-only
 copies are counted and preserved. Save As writes a new file with a byte report.

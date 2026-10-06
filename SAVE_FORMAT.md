@@ -1,6 +1,59 @@
 # Dynasty Warriors 3: Complete Edition Remastered save format
 
-## v0.8 compatibility and progression update
+## v0.85 customization, collections and campaign saves
+
+`bodyguard_customization.py` handles four native lazy Bool arrays. Model
+availability and new-option notifications are stored in
+`CanUseSecretGuardModelArray` / `NewCanUseSecretGuardModelArray` (two known
+entries); colors use `CanUseSecretGuardColorArray` /
+`NewCanUseSecretGuardColorArray` (four known entries). Native model setter
+RVA `0x1512FF0` maps gender IDs 2/3 to slots 0/1 (Nanman Male/Female).
+Native color setter RVA `0x1513120` maps clothing IDs 5/6/7/8 to slots
+0/1/2/3 (Yellow/White/Black/Pink). Missing or short arrays are extended with
+zero entries like the native setters. Existing extra entries are preserved.
+A notification is set only when its corresponding choice becomes available
+for the first time. Equipped appearances, story clears and team growth are
+independent and remain unchanged. Confidence: confirmed native dataflow,
+localized names and supplied serialized records.
+
+`collection_editor.py` uses `OptionData.Edit.bPlayMovie`, a native 100-entry
+Bool array. Shipped `DT_MovieData` identifies supported playable movie IDs
+0–49. ID 50 and IDs 52–99 are placeholders; ID 51 is the title loop, so none
+of those are authored by the gallery action. Missing current flags are
+initialized false using the native default count and matching tagged Bool
+serialization. Existing sibling acknowledgement flags (`bPlayMovie_Old`)
+and other options are preserved; additional future array entries are kept.
+Nested insertions regenerate all enclosing property byte sizes. Confidence:
+confirmed schema, native defaults, authored table entries and byte round trips.
+
+Music current/acknowledgement arrays are `OptionData.Sound.bPlayBGM` and
+`bPlayBGM_Old` (native defaults: 100 false entries). The cooked BGM table has
+89 nonzero event hashes, but table IDs have not yet been traced reliably to
+saved availability indices. Music writes are disabled; array length or
+localized name count alone is insufficient evidence for an editing map.
+
+`musou_slots.py` handles between-stage runs in `EngiSaveDataArray`. Its saved
+count is retained; array positions remain slot identities. An explicit Remove
+action resets a supported record to shipped `EngiSaveData` constructor defaults:
+`CharaID = EPlayerCharaID::NUM`; `NowStage`, `EventFlag`, `PCColor` and DateTime
+`SaveDate` are zero; `StageSPoint`/`ClearTime` remain ten zero Int32 entries;
+`GuardNum` remains two zero Int32 entries; `isClearChara` and
+`isNewMusouMode` become false. Each of the ten KO history records has zero
+`KOCnt`, an empty `KOCommanderList` and false `isGekiMusou`. Unknown record
+fields or nested layouts make only that run view-only. No permanent officer,
+content availability or global completion fields are reset. Confidence:
+confirmed reflected schema, native constructor and supplied active campaigns.
+
+Maximum actions distinguish authored drop limits from existing saved values.
+A normal item Max uses the highest of its normal drop cap and its original or
+pending owned value. A saved positive high weapon bonus can be retained only
+with its original identity, value and physical slot. New values use verified
+ordinary/fusion or weapon-specific stock sets. Bodyguard Max retains existing
+eligible bonus types and physical positions and adds stock bonuses only within
+supported capacity. Existing higher values are not evidence of a different
+natural drop cap. See [WEAPON_ROLLS.md](WEAPON_ROLLS.md).
+
+## Existing compatibility and progression support
 
 Counts and offsets below describe the original research save. They are not
 universal layout constraints: complete tagged arrays use their saved counts.
@@ -34,7 +87,7 @@ separately from rules for spending new points. Unknown growth representations
 are preserved and shown as view-only.
 
 
-This document describes the Steam Windows save structures used by editor v0.8.
+This document describes the Steam Windows save structures used by editor v0.85.
 The codec, tagged structures and enabled edits are supported by supplied save
 copies, shipped metadata and static executable dataflow.
 

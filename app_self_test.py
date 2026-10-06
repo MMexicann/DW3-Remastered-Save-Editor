@@ -39,6 +39,10 @@ def run(editor, fixture: Path, output_directory: Path):
         copy=output/'input-copy.sav'
         copy.write_bytes(fixture.read_bytes())
         original=read_save(copy)
+        original_guards=bg.weapon_state(original)
+        def expected_guard_max(row):
+            before=original_guards[row['slot']]
+            return {skill['id']:skill['value'] for skill in (bg.max_skills(row['weapon_id'],before['skills']) if before['weapon_id']==row['weapon_id'] else bg.max_skills(row['weapon_id']))}
         replace(gui.messagebox,'askyesno',lambda *args,**kwargs:True)
         replace(gui.messagebox,'showinfo',lambda *args,**kwargs:None)
         replace(gui.messagebox,'showerror',lambda *args,**kwargs:errors.append(str(args)))
@@ -47,7 +51,7 @@ def run(editor, fixture: Path, output_directory: Path):
         editor.open()
         check('Open-copy callback creates byte-identical backup',editor.document is not None and editor.backup.read_bytes()==original.encrypted)
         first_backup=editor.backup
-        check('All five tabs and 42 officers/43 items load',len(editor.tabs)==5 and len(editor.officers.get_children())==42 and len(editor.items.get_children())==43)
+        check('All six tabs and 42 officers/43 items load',len(editor.tabs)==6 and len(editor.officers.get_children())==42 and len(editor.items.get_children())==43)
         editor.stage_many([Change('officer',0,'Attack',149)])
         previous_document=editor.document
         previous_changes=editor.changes.copy()
@@ -166,7 +170,7 @@ def run(editor, fixture: Path, output_directory: Path):
         editor.undo()
         editor.max_guard_weapons()
         pool=bg.weapon_state(editor.document,list(editor.changes.values()))
-        check('All fifteen BG weapon types acquire legal maximum bonuses; view-only copies preserved',{s['weapon_id'] for s in pool if s['weapon_id'] is not None}==set(bg.GUARD_WEAPONS) and all(s['skills']==bg.max_skills(s['weapon_id']) if s['editable'] else s['skills']==bg.weapon_state(original)[s['slot']]['skills'] for s in pool if s['weapon_id'] is not None))
+        check('All fifteen BG weapon types acquire legal maximum bonuses; view-only copies preserved',{s['weapon_id'] for s in pool if s['weapon_id'] is not None}==set(bg.GUARD_WEAPONS) and all({skill['id']:skill['value'] for skill in s['skills']}==expected_guard_max(s) if s['editable'] else s['skills']==bg.weapon_state(original)[s['slot']]['skills'] for s in pool if s['weapon_id'] is not None))
         row=next(s for s in pool if s['weapon_id']==175)
         editor.guard_weapons.selection_set(f'slot:{row["slot"]}');editor.select_guard_weapon()
         for index,skill in enumerate(bg.max_skills(175)):
@@ -175,7 +179,7 @@ def run(editor, fixture: Path, output_directory: Path):
         editor.apply_guard_bonuses()
         check('Actual per-copy bonus callback accepts legal dropdown choices',('guard_weapon_slot',row['slot'],'Skills') in editor.changes)
         editor.max_guard_weapon()
-        check('Max selected copies clears older custom overrides',('guard_weapon_slot',row['slot'],'Skills') not in editor.changes and bg.weapon_state(editor.document,list(editor.changes.values()))[row['slot']]['skills']==bg.max_skills(175))
+        check('Max selected copies clears older custom overrides',('guard_weapon_slot',row['slot'],'Skills') not in editor.changes and {skill['id']:skill['value'] for skill in bg.weapon_state(editor.document,list(editor.changes.values()))[row['slot']]['skills']}==expected_guard_max(row))
         editor.discard()
         editor.remove_grind()
         check('Remove The Grind leaves story and availability alone',not any(c.category=='unlock' for c in editor.changes.values()))
@@ -207,7 +211,7 @@ def run(editor, fixture: Path, output_directory: Path):
         pool=bg.weapon_state(edited)
         for weapon_id in bg.GUARD_WEAPONS:
             copies=[s for s in pool if s['weapon_id']==weapon_id]
-            check(f'BG weapon {weapon_id} owned with legal tier-specific bonuses or preserved view-only copies',bool(copies) and all(s['skills']==bg.max_skills(weapon_id) if s['editable'] else s['skills']==bg.weapon_state(original)[s['slot']]['skills'] for s in copies))
+            check(f'BG weapon {weapon_id} owned with legal tier-specific bonuses or preserved view-only copies',bool(copies) and all({skill['id']:skill['value'] for skill in s['skills']}==expected_guard_max(s) if s['editable'] else s['skills']==bg.weapon_state(original)[s['slot']]['skills'] for s in copies))
         check('Equipped BG item and inventory choices survive save/readback',bg.team_state(edited,1)['MemberItem']==9 and bg.team_state(edited,1)['MemberWeapon'][:5]==bg.best_weapon_refs(edited))
         check('Bodyguard-Musou cached item selections preserved',all(fields(a)['BGMusouEquipItem']['value']==fields(b)['BGMusouEquipItem']['value'] for a,b in zip(original.records('PCSaveDataArray'),edited.records('PCSaveDataArray'))))
         supported=list(save_writer.UNIQUE_WEAPONS.values())

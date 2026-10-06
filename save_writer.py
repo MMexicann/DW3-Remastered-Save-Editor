@@ -13,6 +13,9 @@ import bodyguard_editor
 import officer_weapon_editor
 import progression_editor
 import weapon_collection
+import bodyguard_customization
+import collection_editor
+import musou_slots
 
 CAPS={'SPoint':99999}  # Only limits proved from game code are enabled.
 OFFICER_FIELDS=('SPoint','MaxHealth','MaxMusou','Attack','Defence')
@@ -73,7 +76,17 @@ def plan_changes(document: SaveDocument, changes: list[Change]) -> list[Patch]:
     def add_insertion(offset,after,reason):
         if type(offset) is not int or not 4<=offset<len(document.plaintext):
             raise SaveError('Unsupported property insertion position.')
-        patches.append(Patch(offset,b'',after,reason))
+        if not isinstance(after,bytes) or not after:raise SaveError('Property insertions require nonempty bytes.')
+        for previous in patches:
+            if previous.offset==offset and not previous.before:
+                previous_index=patches.index(previous)
+                patches[previous_index]=Patch(offset,b'',previous.after+after,previous.reason+'; '+reason)
+                break
+        else:patches.append(Patch(offset,b'',after,reason))
+        # Nested lazy tags contribute to every enclosing tagged payload size.
+        for parent in all_properties:
+            if parent['data_offset']<=offset<parent['data_offset']+parent['data_size']:
+                size_deltas[parent['size_offset']]=size_deltas.get(parent['size_offset'],0)+len(after)
     for change in changes:
         if not isinstance(change,Change) or not isinstance(change.category,str) or not isinstance(change.field,str) or type(change.index) is not int:
             raise SaveError('Edits need a supported category, field and integer index.')
@@ -82,7 +95,7 @@ def plan_changes(document: SaveDocument, changes: list[Change]) -> list[Patch]:
         seen.add(ident)
         if change.category in bodyguard_editor.CATEGORIES or change.category in officer_weapon_editor.CATEGORIES or change.category in progression_editor.CATEGORIES:
             continue
-        if change.category=='unique_weapon' or change.category in weapon_collection.CATEGORIES:
+        if change.category=='unique_weapon' or change.category in weapon_collection.CATEGORIES or change.category in bodyguard_customization.CATEGORIES or change.category in collection_editor.CATEGORIES or change.category in musou_slots.CATEGORIES:
             continue
         if change.category=='item':
             if type(change.index) is not int or change.index not in ITEMS or change.field not in ('Owned','Value'):
@@ -129,7 +142,10 @@ def plan_changes(document: SaveDocument, changes: list[Change]) -> list[Patch]:
         original_owned=old_enum==expected
         if 'Value' in requested:
             if item['kind']!='normal' or index not in ITEM_CAPS:raise SaveError('The maximum for this item has not been verified.')
-            if type(value) is not int or not 1<=value<=ITEM_CAPS[index]:raise SaveError(f'{item["name"]} must be1–{ITEM_CAPS[index]}.')
+            preserved_high=(original_owned and owned and type(value) is int and value>0
+                            and value==record['Value']['value'])
+            if type(value) is not int or (not 1<=value<=ITEM_CAPS[index] and not preserved_high):
+                raise SaveError(f'{item["name"]} must be 1–{ITEM_CAPS[index]}, or its unchanged saved value.')
             if 'Owned' not in requested:owned=True
         if owned!=original_owned:
             if not owned or item['kind']=='rare':value=0
@@ -142,6 +158,9 @@ def plan_changes(document: SaveDocument, changes: list[Change]) -> list[Patch]:
     officer_weapon_editor.plan_weapon_roll_changes(document,changes,add_property)
     weapon_collection.plan_weapon_collection_changes(document,changes,add_property)
     progression_editor.plan_progression_changes(document,changes,add_property,add_insertion)
+    bodyguard_customization.plan_customization_changes(document,changes,add_property,add_insertion)
+    collection_editor.plan_collection_changes(document,changes,add_property,add_insertion)
+    musou_slots.plan_slot_changes(document,changes,add_property)
     for offset,delta in size_deltas.items():
         before=document.plaintext[offset:offset+4]
         value=struct.unpack('<i',before)[0]+delta

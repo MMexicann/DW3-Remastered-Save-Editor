@@ -9,6 +9,11 @@ from models import Change, fields
 from save_parser import read_save, parse_bytes, safe_path
 import save_writer
 import progression_editor as progression
+import bodyguard_customization as customization
+import bodyguard_editor as guards
+import officer_weapon_editor as weapons
+import collection_editor as collections
+import musou_slots
 
 
 def run(editor, fixture, output_directory):
@@ -85,6 +90,39 @@ def run(editor, fixture, output_directory):
                 edited,edit_audit=save_writer.serialize(editor.document,list(editor.changes.values()))
                 check(action+' output roundtrips',save_writer.serialize(parse_bytes(edited))[0]==edited)
                 editor.discard()
+            editor.unlock_guard_customization()
+            check('Bodyguard appearance action applies on supplied variant',not errors)
+            custom_raw,_=save_writer.serialize(editor.document,list(editor.changes.values()))
+            custom_doc=parse_bytes(custom_raw)
+            custom_state=customization.customization_state(custom_doc)
+            check('Both Nanman models and four special colors read back unlocked',all(row['unlocked'] for family in ('appearances','outfits') for row in custom_state[family]))
+            check('Appearance unlocks preserve equipped bodyguards and story completion',custom_doc.properties['GuardDataArray']['value']==original.properties['GuardDataArray']['value'] and custom_doc.properties['EngiClearCharaArray']['value']==original.properties['EngiClearCharaArray']['value'])
+            editor.discard()
+            editor.unlock_movies()
+            check('Movie collection callback validates',not errors)
+            movie_raw,_=save_writer.serialize(editor.document,list(editor.changes.values()))
+            movie_doc=parse_bytes(movie_raw)
+            movie_state=collections.collection_state(movie_doc)['movies']
+            check('Supported movies unlock and roundtrip',movie_state['owned']==movie_state['total'] and save_writer.serialize(movie_doc)[0]==movie_raw)
+            check('Movies preserve active campaigns and story completion',movie_doc.properties.get('EngiSaveDataArray',{}).get('value')==original.properties.get('EngiSaveDataArray',{}).get('value') and movie_doc.properties['EngiClearCharaArray']['value']==original.properties['EngiClearCharaArray']['value'])
+            editor.discard()
+            slots=musou_slots.slot_state(editor.document)
+            editor.remove_all_musou_saves()
+            check('Musou run removal callback validates on supplied layout',not errors)
+            slot_raw,_=save_writer.serialize(editor.document,list(editor.changes.values()))
+            slot_doc=parse_bytes(slot_raw)
+            check('All editable active campaign slots reset in place',all(not row['active'] for row in musou_slots.slot_state(slot_doc)['slots'] if row['editable']) and len(musou_slots.slot_state(slot_doc)['slots'])==len(slots['slots']))
+            check('Campaign removal preserves permanent stats and overall clears',slot_doc.properties['PCSaveDataArray']['value']==original.properties['PCSaveDataArray']['value'] and slot_doc.properties['EngiClearCharaArray']['value']==original.properties['EngiClearCharaArray']['value'])
+            check('Campaign removal output roundtrips byte-identically',save_writer.serialize(slot_doc)[0]==slot_raw)
+            editor.discard()
+            editor.max_items();editor.max_guard_items();editor.max_all_weapon_rolls();editor.max_guard_weapons()
+            check('Maximum actions apply on supplied variant',not errors)
+            max_raw,_=save_writer.serialize(editor.document,list(editor.changes.values()))
+            max_doc=parse_bytes(max_raw)
+            check('Normal item maximum never lowers original owned values',all(fields(max_doc.records('EquipItemDataArray')[i])['Value']['value']==weapons.max_item_value(original,i) for i,row in editor.editable_item_rows() if row['kind']=='normal'))
+            check('Bodyguard item maximum never lowers original owned values',all(guards.item_state(max_doc)[i]['value']==guards.max_item_value(original,i) for i,row in guards.GUARD_ITEMS.items() if row['kind']=='normal'))
+            check('Combined maximum output roundtrips byte-identically',save_writer.serialize(max_doc)[0]==max_raw)
+            editor.discard()
             editor.remove_grind()
             check('Grind preset validates on supplied variant',not errors)
             edited,edit_audit=save_writer.serialize(editor.document,list(editor.changes.values()))
