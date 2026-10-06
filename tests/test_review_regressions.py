@@ -106,8 +106,11 @@ class ReviewIntegrationTests(CopyTestCase):
                     with self.assertRaises(SaveError):writer.serialize(document,[Change('item',0,'Value',1)])
                 elif index==5:
                     self.assertEqual(writer.serialize(document,[Change('item',rare_id,'Owned',True)])[0],raw)
-                elif index in (1,2):
-                    with self.assertRaises(SaveError):writer.serialize(document,[Change('item',0,'Value',-1 if index==1 else writer.ITEM_CAPS[0]+1)])
+                elif index==1:
+                    with self.assertRaises(SaveError):writer.serialize(document,[Change('item',0,'Value',-1)])
+                elif index==2:
+                    self.assertEqual(writer.serialize(document,[Change('item',0,'Value',writer.ITEM_CAPS[0]+1)])[0],raw)
+                    with self.assertRaises(SaveError):writer.serialize(document,[Change('item',0,'Value',writer.ITEM_CAPS[0]+2)])
 
     def test_unknown_native_bonus_is_view_only_and_roundtrips(self):
         row = fields(self.document.records('WeaponDataArray')[36])

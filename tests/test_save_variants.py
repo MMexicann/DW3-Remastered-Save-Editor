@@ -185,22 +185,31 @@ class OriginalVariantIntegrationTests(TwoTeamChecks, unittest.TestCase):
         self.assertEqual(len(self.original.records('GuardDataArray')), 4)
         self.assertEqual(serialize(self.original)[0], self.original.encrypted)
 
-    def test_known_positive_nonprofile_weapon_roll_is_view_only_and_preserved(self):
+    def test_known_positive_nonprofile_weapon_roll_is_preserved_until_explicit_max(self):
         record = fields(self.document.records('GuardWeaponDataArray')[1])
         skill = fields(record['Skill']['value']['records'][0])
         self.assertNotIn(29, guard.GUARD_WEAPONS[175]['allowed_values_by_guard_item_id']['0'])
         document = parse_bytes(edited_fixture_bytes(self.document, [
             (skill['GuardEquipItemID'], enum_bytes(guard.GUARD_ITEMS[0]['enum'])),
             (skill['Value'], struct.pack('<i', 29))]))
-        self.assertFalse(guard.weapon_state(document)[1]['editable'])
-        self.assertTrue(guard.weapon_state(document)[1]['reason'])
+        self.assertTrue(guard.weapon_state(document)[1]['editable'])
+        self.assertFalse(guard.weapon_state(document)[1]['reason'])
         self.assertEqual(serialize(document)[0], document.encrypted)
         changes = [Change('guard_weapon', i, 'MaxBonuses', True)
                    for i in {r['weapon_id'] for r in guard.weapon_state(document) if r['weapon_id'] is not None}]
         edited = parse_bytes(serialize(document, changes)[0])
-        self.assertEqual(record_bytes(edited, 'GuardWeaponDataArray', 1), record_bytes(document, 'GuardWeaponDataArray', 1))
+        before = guard.weapon_state(document)[1]
+        after = guard.weapon_state(edited)[1]
+        for saved in before['skills']:
+            updated = next(row for row in after['skills'] if row['id'] == saved['id'])
+            self.assertGreaterEqual(updated['value'], saved['value'])
+        self.assertEqual(after['skills'][0], {'id': 0, 'value': 30})
+        unchanged = parse_bytes(serialize(document, [Change('guard_weapon_slot', 1, 'Skills', before['skills'])])[0])
+        self.assertEqual(unchanged.encrypted, document.encrypted)
+        bad = [dict(row) for row in before['skills']]
+        bad[0]['value'] = 31
         with self.assertRaises(SaveError):
-            serialize(document, [Change('guard_weapon_slot', 1, 'Skills', guard.max_skills(175))])
+            serialize(document, [Change('guard_weapon_slot', 1, 'Skills', bad)])
 
     def test_unrecognized_saved_bonuses_are_view_only_but_new_authored_bonuses_fail(self):
         record = fields(self.document.records('GuardWeaponDataArray')[1])

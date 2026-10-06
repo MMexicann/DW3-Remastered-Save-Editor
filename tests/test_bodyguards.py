@@ -261,7 +261,8 @@ class BodyguardIntegrationTests(unittest.TestCase):
         document, _ = self.edited([Change('guard_weapon', 174, 'MaxBonuses', True)])
         for row in bg.weapon_state(document):
             if row['weapon_id'] == 174:
-                self.assertEqual(row['skills'], bg.max_skills(174))
+                old_state=bg.weapon_state(self.document)[row['slot']]
+                self.assertEqual(row['skills'], bg.max_skills(174,old_state['skills']))
                 new = fields(document.records('GuardWeaponDataArray')[row['slot']])
                 old = fields(self.document.records('GuardWeaponDataArray')[row['slot']])
                 for name in ('ID', 'WeaponID', 'Attr', 'DataID', 'GetTime'):
@@ -394,6 +395,15 @@ class BodyguardIntegrationTests(unittest.TestCase):
                 self.assertEqual(serialize(document)[0], document.encrypted)
                 change = (Change('guard_item', 2, 'Value', 26) if prop['name'] == 'Value' else
                           Change('guard_item', 2, 'Owned', True))
+                if prop['name']=='Value':
+                    # Preserve an existing owned high roll, while refusing to
+                    # manufacture a higher roll or copy it to another item.
+                    self.assertEqual(serialize(document,[change])[0],document.encrypted)
+                    with self.assertRaises(SaveError):
+                        serialize(document,[Change('guard_item',2,'Value',27)])
+                    with self.assertRaises(SaveError):
+                        serialize(document,[Change('guard_item',3,'Value',26)])
+                    continue
                 with self.assertRaises(SaveError):
                     serialize(document, [change])
 
@@ -431,9 +441,20 @@ class BodyguardIntegrationTests(unittest.TestCase):
                                      (row['Value'], struct.pack('<i', skill['value'] if skill else 0))])
             return replacements
 
-        unsupported = [(0, [{'id': 0, 'value': 30}]),
-                       (1, [{'id': 0, 'value': 29}]),
-                       (1, [{'id': 4, 'value': 10}]),
+        preserved = [(0,[{'id':0,'value':30}]),(1,[{'id':0,'value':29}])]
+        for slot,skills in preserved:
+            with self.subTest(slot=slot,skills=skills):
+                raw=edited_fixture_bytes(self.document,skills_replacements(slot,skills));doc=parse_bytes(raw)
+                state=bg.weapon_state(doc)[slot]
+                self.assertTrue(state['editable'],state['reason'])
+                self.assertEqual(serialize(doc,[Change('guard_weapon_slot',slot,'Skills',skills)])[0],raw)
+                with self.assertRaises(SaveError):
+                    serialize(doc,[Change('guard_weapon_slot',slot,'Skills',[{'id':0,'value':31}])])
+                maximum,_=self.edited([Change('guard_weapon',state['weapon_id'],'MaxBonuses',True)],doc)
+                after=bg.weapon_state(maximum)[slot]
+                self.assertEqual(after['skills'][0],bg.max_skills(state['weapon_id'],skills)[0])
+                self.assertGreaterEqual(after['skills'][0]['value'],skills[0]['value'])
+        unsupported = [(1, [{'id': 4, 'value': 10}]),
                        (12, [{'id': 2, 'value': 5}]),
                        (1, [])]
         for slot, skills in unsupported:

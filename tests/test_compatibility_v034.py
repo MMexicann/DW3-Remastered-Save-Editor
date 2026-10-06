@@ -139,8 +139,9 @@ class TaggedArrayCompatibilityTests(unittest.TestCase):
         self.assertTrue(document.compatibility_warnings)
         edited = parse_bytes(serialize(document, [Change('officer', 0, 'SPoint', 99998)])[0])
         self.assertEqual(fields(edited.records('EquipItemDataArray')[0])['Value']['value'], 1234)
+        self.assertEqual(serialize(document, [Change('item', 0, 'Value', 1234)])[0], document.encrypted)
         with self.assertRaises(SaveError):
-            serialize(document, [Change('item', 0, 'Value', 1234)])
+            serialize(document, [Change('item', 0, 'Value', 1235)])
 
     def test_unknown_growth_shape_is_view_only_and_survives_unrelated_edit(self):
         prop = fields(self.document.records('GuardDataArray')[0])['BGLevels']
