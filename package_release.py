@@ -151,7 +151,7 @@ def package(root=ROOT,output=None):
     binary=executable.read_bytes()
     if not binary.startswith(b'MZ'):raise ValueError('The built executable is not a Windows executable.')
     output=Path(output) if output is not None else root/'release'
-    assets=[output/f'{name}-Windows.zip',output/f'{name}-Source.zip',output/'SHA256SUMS.txt']
+    assets=[output/f'{name}-Windows.zip',output/f'{name}-Source.zip',output/f'{name}.exe',output/'SHA256SUMS.txt']
     if any(path.exists() for path in assets):raise ValueError('Release outputs already exist; choose a new output directory.')
     windows={doc:sources[doc] for doc in WINDOWS_DOCS}
     windows.update({path:data for path,data in sources.items() if path.startswith('licenses/')})
@@ -160,8 +160,9 @@ def package(root=ROOT,output=None):
     output.mkdir(parents=True,exist_ok=True)
     write_zip(assets[0],windows)
     write_zip(assets[1],{prefix+path:data for path,data in sources.items()})
-    with assets[2].open('x',encoding='ascii',newline='\n') as stream:
-        for path in assets[:2]:stream.write(f'{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n')
+    with assets[2].open('xb') as stream:stream.write(binary)
+    with assets[3].open('x',encoding='ascii',newline='\n') as stream:
+        for path in assets[:3]:stream.write(f'{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n')
     return assets
 
 

@@ -51,8 +51,11 @@ class PackagingTests(unittest.TestCase):
             prefix='DW3RemasteredSaveEditor-v1.0-Source/'
             self.assertEqual(set(archive.namelist()),{prefix+name for name in self.sources}|{prefix+'SOURCE_MANIFEST.json'})
             for name,data in self.sources.items():self.assertEqual(archive.read(prefix+name),data)
-        checksums=assets[2].read_text().splitlines()
-        self.assertEqual(checksums,[f'{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}' for path in assets[:2]])
+        self.assertEqual(assets[2].read_bytes(),(self.root/'dist/DW3RemasteredSaveEditor-v1.0.exe').read_bytes())
+        with zipfile.ZipFile(assets[0]) as archive:
+            self.assertEqual(assets[2].read_bytes(),archive.read(assets[2].name))
+        checksums=assets[3].read_text().splitlines()
+        self.assertEqual(checksums,[f'{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}' for path in assets[:3]])
         second=release.package(self.root,self.root/'second-output')
         self.assertEqual(assets[1].read_bytes(),second[1].read_bytes())
         with self.assertRaises(ValueError):release.package(self.root)

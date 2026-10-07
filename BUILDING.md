@@ -44,7 +44,7 @@ python package_release.py --verify-executable
 python package_release.py
 ```
 
-The packager creates the Windows ZIP, a source ZIP and `SHA256SUMS.txt` in
+The packager creates the standalone Windows EXE, Windows ZIP, source ZIP and `SHA256SUMS.txt` in
 `release/`. The source ZIP contains only verified manifest entries and the
 manifest itself. Save files, research folders, build output and personal home
 paths are excluded or rejected. The Windows ZIP contains the executable,

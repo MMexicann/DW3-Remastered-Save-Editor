@@ -80,5 +80,67 @@ jobs:
           }
           $windows = "release/DW3RemasteredSaveEditor-v$version-Windows.zip"
           $source = "release/DW3RemasteredSaveEditor-v$version-Source.zip"
-          gh release create $tag $windows $source 'release/SHA256SUMS.txt' --target $env:RELEASE_COMMIT --title "$tag — Official release" --notes-file RELEASE_NOTES.md
+          gh release create $tag $windows $source "release/DW3RemasteredSaveEditor-v$version.exe" 'release/SHA256SUMS.txt' --target $env:RELEASE_COMMIT --title "$tag — Official release" --notes-file RELEASE_NOTES.md
           if ($LASTEXITCODE -ne 0) { throw 'GitHub release creation failed.' }
+
+  standalone:
+    if: github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[standalone]')
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+      - name: Attach the existing release executable
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          $version = python package_release.py --version
+          if ($LASTEXITCODE -ne 0) { throw 'Version validation failed.' }
+          $tag = "v$version"
+          $executable = "DW3RemasteredSaveEditor-v$version.exe"
+          $archive = "DW3RemasteredSaveEditor-v$version-Windows.zip"
+          $release = gh api "repos/$env:GH_REPO/releases/tags/$tag" | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0) { throw 'Existing release was not found.' }
+          if (@($release.assets | Where-Object { $_.name -eq $executable }).Count -ne 0) { throw 'Standalone executable already exists.' }
+          gh release download $tag --pattern $archive --pattern SHA256SUMS.txt --dir work/standalone
+          if ($LASTEXITCODE -ne 0) { throw 'Could not download the existing verified release.' }
+          @'
+          from pathlib import Path
+          import hashlib
+          import sys
+          import zipfile
+          folder = Path('work/standalone')
+          version = sys.argv[1]
+          name = f'DW3RemasteredSaveEditor-v{version}'
+          archive = folder / f'{name}-Windows.zip'
+          sums = folder / 'SHA256SUMS.txt'
+          rows = sums.read_text(encoding='ascii').splitlines()
+          hashes = dict((filename, digest) for digest, filename in (row.split() for row in rows))
+          if hashlib.sha256(archive.read_bytes()).hexdigest() != hashes[archive.name]:
+              raise ValueError('Published Windows ZIP checksum mismatch.')
+          with zipfile.ZipFile(archive) as bundle:
+              if bundle.namelist().count(f'{name}.exe') != 1:
+                  raise ValueError('Expected exactly one executable in the published ZIP.')
+              binary = bundle.read(f'{name}.exe')
+          if not binary.startswith(b'MZ'):
+              raise ValueError('Expected a Windows executable.')
+          executable = folder / f'{name}.exe'
+          with executable.open('xb') as stream:
+              stream.write(binary)
+          rows.append(f'{hashlib.sha256(binary).hexdigest()}  {executable.name}')
+          sums.write_text('\n'.join(rows) + '\n', encoding='ascii', newline='\n')
+          '@ | python - $version
+          if ($LASTEXITCODE -ne 0) { throw 'Published executable verification failed.' }
+          gh release upload $tag "work/standalone/$executable"
+          if ($LASTEXITCODE -ne 0) { throw 'Standalone upload failed.' }
+          gh release upload $tag work/standalone/SHA256SUMS.txt --clobber
+          if ($LASTEXITCODE -ne 0) { throw 'Checksum upload failed.' }

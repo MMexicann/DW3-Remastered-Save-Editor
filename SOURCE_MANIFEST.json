@@ -3,8 +3,8 @@
   "files": [
     {
       "path": ".github/workflows/windows-release.yml",
-      "bytes": 3588,
-      "sha256": "d57f20248c145af78bcc17c142bd2329ec6c33b35055d4ebb1b76cf7640d8a7c"
+      "bytes": 6732,
+      "sha256": "78a5b787e3ec8a70aa816c8ac7c71d41265399c6a0699c5c550a56260b7d50ef"
     },
     {
       "path": ".gitignore",
@@ -28,8 +28,8 @@
     },
     {
       "path": "BUILDING.md",
-      "bytes": 3150,
-      "sha256": "44b7baf70de02f715b16820e4c62a6b86a6420e19b79045634917c69b37cecbd"
+      "bytes": 3172,
+      "sha256": "818a4a00c21bc27877aa2783ecde39843707289364fdb3cd05d792ed98350f28"
     },
     {
       "path": "CHANGELOG.md",
@@ -208,8 +208,8 @@
     },
     {
       "path": "package_release.py",
-      "bytes": 9940,
-      "sha256": "ef7cae0bf49eb4cddf9f03c58554174e4e2443f472be28b582cd08e03c6c9a7b"
+      "bytes": 10022,
+      "sha256": "75f2714cd081db240dd8d74c3fec562f632143b88f097268f5e18dcefd450b23"
     },
     {
       "path": "progression_editor.py",
@@ -313,8 +313,8 @@
     },
     {
       "path": "tests/test_package_release.py",
-      "bytes": 6159,
-      "sha256": "0ff37c5fce79aa0e74d87058861791d4e7d244afa98eb8b2c1754e7b3bb4ac35"
+      "bytes": 6407,
+      "sha256": "7f379e0fbc60b9d2bce3cc706317c78464516f17a36b88a546c05cb25fc1576d"
     },
     {
       "path": "tests/test_progression_v034.py",
