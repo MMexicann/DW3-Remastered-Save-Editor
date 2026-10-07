@@ -21,7 +21,7 @@ import officer_weapon_editor as weapon
 import bodyguard_editor as guard
 from test_weapon_rolls import edited_fixture_bytes, enum_bytes
 
-FIXTURE = PROJECT.parent.parent / 'work/original-upload/GameStatusData.sav'
+FIXTURE = PROJECT / 'work/original-upload/GameStatusData.sav'
 RUNS = PROJECT / 'tests/.review-test-runs'
 
 

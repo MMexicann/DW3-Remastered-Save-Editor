@@ -16,7 +16,7 @@ from save_parser import read_save, parse_bytes
 from unreal import Reader, tags
 from test_review_regressions import edited_fixture_bytes
 
-FIXTURE=PROJECT.parents[1]/'work/original-upload/GameStatusData.sav'
+FIXTURE=PROJECT/'work/original-upload/GameStatusData.sav'
 
 @unittest.skipUnless(FIXTURE.exists(),'Private supplied fixture is required.')
 class NewGuiRegressions(unittest.TestCase):
@@ -58,7 +58,7 @@ class NewGuiRegressions(unittest.TestCase):
         self.editor.change_weapon_bonus(8)
         self.assertFalse(self.errors)
     def test_saved_growth_with_different_auto_gate_has_stat_preview(self):
-        files=list((PROJECT.parents[1]/'work/received-v034').glob('report-1*.sav'))
+        files=list((PROJECT/'work/received-v034').glob('report-1*.sav'))
         if not files:self.skipTest('Private reporter fixture is required.')
         self.editor.document=read_save(files[0]);self.editor.refresh()
         self.editor.bodyguards.selection_set('3');self.editor.select_bodyguard()

@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 import hashlib
 import json
+import math
 import os
 import struct
 import uuid
@@ -170,9 +171,34 @@ def plan_changes(document: SaveDocument, changes: list[Change]) -> list[Patch]:
         if a.offset+len(a.before)>b.offset: raise SaveError('Overlapping patches.')
     return patches
 
+def _same_parsed_tree(saved, current):
+    """Compare verified parse trees strictly, preserving nonfinite float fields.
+
+    A fresh decode creates different NaN objects, which ordinary container
+    equality rejects. The original encrypted/plaintext comparison still checks
+    their exact payload bytes; this comparison checks structure and offsets.
+    """
+    if type(saved) is not type(current):
+        return False
+    if isinstance(saved, dict):
+        if (saved.keys()!=current.keys() or
+                any(type(key) is not str for key in saved) or
+                any(type(key) is not str for key in current)):
+            return False
+        return all(_same_parsed_tree(value,current[key]) for key,value in saved.items())
+    if isinstance(saved, list):
+        return len(saved)==len(current) and all(_same_parsed_tree(a,b) for a,b in zip(saved,current))
+    if isinstance(saved, float):
+        if math.isnan(saved):
+            return math.isnan(current)
+        if saved==0 and current==0:
+            return math.copysign(1,saved)==math.copysign(1,current)
+    return saved==current
+
+
 def serialize(document: SaveDocument, changes: list[Change]=()) -> tuple[bytes,dict]:
     fresh=parse_bytes(document.encrypted,document.source)
-    if fresh.plaintext!=document.plaintext or fresh.parsed!=document.parsed:
+    if fresh.plaintext!=document.plaintext or not _same_parsed_tree(fresh.parsed,document.parsed):
         raise SaveError('Document bytes or offsets changed outside verified edit operations.')
     patches=plan_changes(document,list(changes))
     original_payload_size=struct.unpack_from('>I',document.plaintext)[0]

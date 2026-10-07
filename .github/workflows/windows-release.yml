@@ -1,0 +1,84 @@
+name: Windows release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[release]'))
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Preserve exact source bytes
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+          architecture: x64
+      - name: Verify public source manifest
+        run: |
+          python package_release.py --verify-only
+          if ($LASTEXITCODE -ne 0) { throw 'Source manifest validation failed.' }
+      - name: Run public tests and GUI startup
+        run: |
+          python -m unittest discover -s tests -v
+          if ($LASTEXITCODE -ne 0) { throw 'Public tests failed.' }
+          python gui.py --smoke-test
+          if ($LASTEXITCODE -ne 0) { throw 'GUI startup failed.' }
+      - name: Build Windows executable
+        run: |
+          python -m pip install -r build-requirements.txt
+          if ($LASTEXITCODE -ne 0) { throw 'Build dependency installation failed.' }
+          python build_windows.py
+          if ($LASTEXITCODE -ne 0) { throw 'Windows build failed.' }
+          $version = python package_release.py --version
+          if ($LASTEXITCODE -ne 0) { throw 'Version validation failed.' }
+          $smoke = Start-Process -FilePath "dist/DW3RemasteredSaveEditor-v$version.exe" -ArgumentList '--smoke-test' -WindowStyle Hidden -Wait -PassThru
+          if ($smoke.ExitCode -ne 0) { throw 'Packaged GUI startup failed.' }
+          python package_release.py --verify-executable
+          if ($LASTEXITCODE -ne 0) { throw 'Bundled privacy or metadata validation failed.' }
+      - name: Package verified public downloads
+        run: |
+          python package_release.py
+          if ($LASTEXITCODE -ne 0) { throw 'Release packaging failed.' }
+      - name: Publish official release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_COMMIT: ${{ github.sha }}
+        run: |
+          $version = python package_release.py --version
+          if ($LASTEXITCODE -ne 0) { throw 'Version validation failed.' }
+          $tag = "v$version"
+          $headers = @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = 'application/vnd.github+json' }
+          foreach ($endpoint in @("releases/tags/$tag", "git/ref/tags/$tag")) {
+            $exists = $false
+            try {
+              Invoke-WebRequest -Uri "https://api.github.com/repos/$env:GH_REPO/$endpoint" -Headers $headers | Out-Null
+              $exists = $true
+            } catch {
+              if ([int]$_.Exception.Response.StatusCode -ne 404) { throw }
+            }
+            if ($exists) { throw "Refusing to replace an existing release or tag: $tag" }
+          }
+          $windows = "release/DW3RemasteredSaveEditor-v$version-Windows.zip"
+          $source = "release/DW3RemasteredSaveEditor-v$version-Source.zip"
+          gh release create $tag $windows $source 'release/SHA256SUMS.txt' --target $env:RELEASE_COMMIT --title "$tag — Official release" --notes-file RELEASE_NOTES.md
+          if ($LASTEXITCODE -ne 0) { throw 'GitHub release creation failed.' }

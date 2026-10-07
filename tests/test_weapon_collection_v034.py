@@ -6,7 +6,7 @@ import sys
 import unittest
 
 PROJECT=Path(__file__).resolve().parents[1]
-WORKSPACE=PROJECT.parent.parent
+WORKSPACE=PROJECT
 sys.path.insert(0,str(PROJECT))
 from models import Change, SaveError, fields
 from save_parser import read_save, parse_bytes
@@ -156,7 +156,7 @@ class WeaponCollectionTests(unittest.TestCase):
         self.assertTrue(collection.has_all_collection(new))
         self.assertEqual(tag_bytes(new,new.properties['WeaponDataArray']),tag_bytes(old,old.properties['WeaponDataArray']))
 
-    def test_nonstandard_complete_skill_count_is_view_only(self):
+    def test_nonstandard_complete_skill_count_preserves_bonuses_but_allows_elements(self):
         f=fields(self.document.records('WeaponDataArray')[36]);prop=f['Skill']
         rows=prop['value']['records'];start=rows[0][0]['tag_offset'];end=rows[1][0]['tag_offset']
         # Construct a structurally complete ten-slot array; malformed counts are
@@ -165,7 +165,7 @@ class WeaponCollectionTests(unittest.TestCase):
         payload=struct.pack('<i',10)+raw[4:]+self.document.plaintext[start:end]
         old=parse_bytes(edited_fixture_bytes(self.document,[(prop,payload)]))
         info=weapon.state(old,36)
-        self.assertFalse(info['editable']);self.assertFalse(info['element_editable'])
+        self.assertFalse(info['editable']);self.assertTrue(info['element_editable'])
         self.assertEqual(len(info['skills']),10)
         self.assertEqual(serialize(old)[0],old.encrypted)
 

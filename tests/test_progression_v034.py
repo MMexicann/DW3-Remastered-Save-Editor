@@ -6,7 +6,7 @@ import sys
 import unittest
 
 PROJECT = Path(__file__).resolve().parents[1]
-WORKSPACE = PROJECT.parent.parent
+WORKSPACE = PROJECT
 sys.path.insert(0, str(PROJECT))
 sys.path.insert(0, str(PROJECT / 'tests'))
 from models import Change, SaveError, fields

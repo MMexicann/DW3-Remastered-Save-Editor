@@ -17,7 +17,7 @@ from models import Change, fields
 from save_parser import read_save, parse_bytes
 from save_writer import serialize
 
-WORKSPACE = PROJECT.parents[1]
+WORKSPACE = PROJECT
 FIXTURE = WORKSPACE / 'work/original-upload/GameStatusData.sav'
 REPORT = WORKSPACE / 'work/received-v034/report-2-dd54eb37ba5d.sav'
 

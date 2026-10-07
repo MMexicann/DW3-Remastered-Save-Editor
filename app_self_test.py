@@ -51,7 +51,7 @@ def run(editor, fixture: Path, output_directory: Path):
         editor.open()
         check('Open-copy callback creates byte-identical backup',editor.document is not None and editor.backup.read_bytes()==original.encrypted)
         first_backup=editor.backup
-        check('All six tabs and 42 officers/43 items load',len(editor.tabs)==6 and len(editor.officers.get_children())==42 and len(editor.items.get_children())==43)
+        check('All seven tabs and 42 officers/43 items load',len(editor.tabs)==7 and len(editor.officers.get_children())==42 and len(editor.items.get_children())==43)
         editor.stage_many([Change('officer',0,'Attack',149)])
         previous_document=editor.document
         previous_changes=editor.changes.copy()

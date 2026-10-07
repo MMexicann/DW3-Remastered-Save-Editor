@@ -1,10 +1,15 @@
 {
-  "version": "0.85",
+  "version": "1.0",
   "files": [
     {
+      "path": ".github/workflows/windows-release.yml",
+      "bytes": 3588,
+      "sha256": "d57f20248c145af78bcc17c142bd2329ec6c33b35055d4ebb1b76cf7640d8a7c"
+    },
+    {
       "path": ".gitignore",
-      "bytes": 175,
-      "sha256": "384da3fe880c87bdb60926a598332c5352fb651ec5ee8b613b70e0c4078aa6bc"
+      "bytes": 193,
+      "sha256": "4f23f863144bddc6dbadf63c314322f1f986981521b6c32af3b93d04205eb472"
     },
     {
       "path": "BODYGUARDS.md",
@@ -23,8 +28,13 @@
     },
     {
       "path": "BUILDING.md",
-      "bytes": 1652,
-      "sha256": "388bdd445bffe2d40d3287a8a8a1bc4c595e7d828c344b2e8d4c361bfd8fab14"
+      "bytes": 3150,
+      "sha256": "44b7baf70de02f715b16820e4c62a6b86a6420e19b79045634917c69b37cecbd"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 989,
+      "sha256": "04ae105403eaec527868b1dc3072371a289764e470e317e6a3b7a31f30aa6d80"
     },
     {
       "path": "COMPATIBILITY_FIX.md",
@@ -38,8 +48,13 @@
     },
     {
       "path": "README.md",
-      "bytes": 1776,
-      "sha256": "c3a89e6c345ffbccb70ff2992bce0b8e8c158fdf7937bf9b66b1151182fa3697"
+      "bytes": 2142,
+      "sha256": "697b054b71f371bb4f920b8f7f54501d8496dd1d673d96c7342445f47ec78cb7"
+    },
+    {
+      "path": "RELEASE_NOTES.md",
+      "bytes": 1316,
+      "sha256": "7bd875bea3f362cfbf6f642bcedb49609969bb07e9bb6e93ededfec6dbfeefac"
     },
     {
       "path": "SAVE_COMPATIBILITY.md",
@@ -48,8 +63,8 @@
     },
     {
       "path": "SAVE_FORMAT.md",
-      "bytes": 34605,
-      "sha256": "34c98d038e506c4062a49b7d4b1b9005141d64c1386d28a0abb17a63b6e61bcf"
+      "bytes": 36146,
+      "sha256": "3c3812d8ea9d0c93992a42c6fee2b6127a895128c6eb544ae4f9c6c18baed9c6"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -63,8 +78,8 @@
     },
     {
       "path": "WEAPON_ATTRIBUTES_FIX.md",
-      "bytes": 4330,
-      "sha256": "6651f4e3c1bd70d5674a6a4cc5580189dad2babcc44af85af2b4ab3d5bcd9d40"
+      "bytes": 5501,
+      "sha256": "d3551a3df29dfb128a36627a93d573b70835e446ab563dab30fd9362da0ed77d"
     },
     {
       "path": "WEAPON_ROLLS.md",
@@ -73,8 +88,8 @@
     },
     {
       "path": "app_self_test.py",
-      "bytes": 21964,
-      "sha256": "edb09f43c61655736fab15b72f4fd2d5c798b91a31e1374f709bfacf0d610c6b"
+      "bytes": 21965,
+      "sha256": "b1ec4c037f797bd3433c76dc6542b54b9fc8cff4389501677388e285194089f6"
     },
     {
       "path": "bodyguard_customization.py",
@@ -113,23 +128,23 @@
     },
     {
       "path": "build_windows.py",
-      "bytes": 914,
-      "sha256": "3e1af988287b9a890f6cf095b8055ba922ab1ebb10bd16a55eb48554713e4758"
+      "bytes": 932,
+      "sha256": "08e7bc40d7ed178e9fa3372687283295aaeefb8abdfb500f1765a3cc62d28490"
     },
     {
       "path": "collection_editor.py",
-      "bytes": 8113,
-      "sha256": "363c9ef046704f82f5a8ff72ea1101e9d6b61a98f312ade42040f4d4631162ff"
+      "bytes": 7990,
+      "sha256": "dd257424df535d748b1589756f0e17d84b397a9bffd27e2c763dee4b21bf8fcd"
     },
     {
       "path": "collection_unlocks.json",
-      "bytes": 2217,
-      "sha256": "0fe125e834628a98bd82283d11c00a4a3cdf75771f76a09326794898f0a1aab1"
+      "bytes": 6991,
+      "sha256": "f308ac48de3c4292bfc0611182d8908050dfd164e0f7851aa3982d1ad33f12fe"
     },
     {
       "path": "compatibility_self_test.py",
-      "bytes": 11482,
-      "sha256": "f86bb5c930eea79d8c3ebdda7a2bb8946aa4540098bcbaba7bafe2d0ce5d067f"
+      "bytes": 14276,
+      "sha256": "5e6d478fbad5c07d1b17f17801184c31f297246a7d4f09fc0b133e9d0c72e3e9"
     },
     {
       "path": "game_metadata.json",
@@ -138,8 +153,8 @@
     },
     {
       "path": "gui.py",
-      "bytes": 108515,
-      "sha256": "7c6657d34cc047efbcbbb6dd3f6ec593459f4975889f7b58e672d86d5b877269"
+      "bytes": 116242,
+      "sha256": "8cface35c3c4bb93db6165fb265ff5011de839b8dfbcfb756972acb7166d2474"
     },
     {
       "path": "item_limits.json",
@@ -188,8 +203,13 @@
     },
     {
       "path": "officer_weapon_editor.py",
-      "bytes": 16654,
-      "sha256": "de15794167787bedf720f67e236b960cc4fb83b4fdb12f2a6b47c772e04a192b"
+      "bytes": 18568,
+      "sha256": "0f8ee2a067fba35c66328650dc6de710834eb3d49490542207208231dbd9788b"
+    },
+    {
+      "path": "package_release.py",
+      "bytes": 9940,
+      "sha256": "ef7cae0bf49eb4cddf9f03c58554174e4e2443f472be28b582cd08e03c6c9a7b"
     },
     {
       "path": "progression_editor.py",
@@ -213,8 +233,8 @@
     },
     {
       "path": "save_writer.py",
-      "bytes": 18387,
-      "sha256": "aee954583966b3eedb8c26e409ceaed3ece0f6bc60ef4bcf0dd32dbfd63ec15f"
+      "bytes": 19523,
+      "sha256": "04cf9f2aeaf7ac90744b3e36c8554b7641030d16d3ec5e5d5c29151ff5661bf4"
     },
     {
       "path": "tests/test_bodyguard_rules.py",
@@ -223,88 +243,113 @@
     },
     {
       "path": "tests/test_bodyguards.py",
-      "bytes": 32819,
-      "sha256": "9e300b15c894c5c627260aa889205361704c4e4401dec6d4454027ab43ab5914"
+      "bytes": 32805,
+      "sha256": "dbff0c2054dc299cd99f5deae1b443d1b6d8ccab7904e4a72ef57ff9aef7dbf1"
     },
     {
       "path": "tests/test_collections_v085.py",
-      "bytes": 5590,
-      "sha256": "3025ce0ef9594c9ef11eff8705d65bc8dac9f7a9598a6b4acfb8f16638f265c4"
+      "bytes": 5657,
+      "sha256": "0052a53d103de8318e1141d89b9924b7216e333fe5f31b3c20cdb7afa12e39ee"
     },
     {
       "path": "tests/test_compatibility_v034.py",
-      "bytes": 11634,
-      "sha256": "9523ffbf4882205c0f34ccfc1d749641cde8476988fe4257143dce90751c72b1"
+      "bytes": 11620,
+      "sha256": "e8dd4d1c0a21dbb727b65ccb75437b6f2a4a29ebd0e620b226376b3f22550d3e"
     },
     {
       "path": "tests/test_editor.py",
-      "bytes": 16262,
-      "sha256": "3d648d2e15973bd8da02f470fbf320ae8de8c3dce42525ce3c80b576d52fd03e"
+      "bytes": 16248,
+      "sha256": "51268cca8d01d8359dfdfab3d143ea8798cb94d92910fde3101c60f838c1667f"
     },
     {
       "path": "tests/test_elixirs_v08.py",
-      "bytes": 11163,
-      "sha256": "ad98a31eb822c73217cfa9e9ce10e2caf4ad1dd39ab2fce7cf2cd77e04967b5a"
+      "bytes": 11149,
+      "sha256": "57f28891f62818953e2cb34bf1389e96e7952c0fbc432fd89a86ac1ac366250a"
     },
     {
       "path": "tests/test_guard_customization_v085.py",
-      "bytes": 11822,
-      "sha256": "0a80173f8f462ba371b681afd72d0d702f27aaceaa5b1b5d7ee3214737a6ecd0"
+      "bytes": 11808,
+      "sha256": "7747deec038bf17b4708ac9714349ec6eea9c96c8de2745102c7812a44f6af9d"
     },
     {
       "path": "tests/test_gui_v034.py",
-      "bytes": 3627,
-      "sha256": "4b9b3b9a3b55f534690041128d593eb4233060f43ec9f3c649097e9d48947876"
+      "bytes": 3605,
+      "sha256": "16dd36bc38938eb158c251441b86cc081749b6c42d8879fbda07b0948710a6a0"
     },
     {
       "path": "tests/test_gui_v08.py",
-      "bytes": 5028,
-      "sha256": "698980fc65d38f23b2cbf22e6de3ecc754cae895ce79536c30a1e10e919e550c"
+      "bytes": 5017,
+      "sha256": "ebe4bb10b203ceb76837d5589aa2b8feafa80ab5a49c23b85defc41ea7004730"
     },
     {
       "path": "tests/test_gui_v085.py",
-      "bytes": 6996,
-      "sha256": "d933838ac44dc40b1ffbf806b7f817e9cfb20512b766a78863d6b6d320ccdd5f"
+      "bytes": 6985,
+      "sha256": "a121782e181167e5ceb1bcabd73a419764099d752bc1cd350746249543045c84"
+    },
+    {
+      "path": "tests/test_gui_v10.py",
+      "bytes": 4750,
+      "sha256": "a5409d3fbfa3e60b5c0b8a46ccf423c1a26467414fffc17a523ce17c5c311501"
     },
     {
       "path": "tests/test_maximum_preservation_v085.py",
-      "bytes": 12937,
-      "sha256": "ed0a1b64e8c2e7ff346f779efb2c550123d29a6b1e78ae13506832fb62087155"
+      "bytes": 12923,
+      "sha256": "c6e0925197ef50d3576f0970e42defe0087ca19fbcdd737faf30c2a0b8613f75"
+    },
+    {
+      "path": "tests/test_music_v10.py",
+      "bytes": 7603,
+      "sha256": "976f23c7182a22cbcd18e87aed7594ed7d27ff3c494bbba168615c9b8a605d20"
     },
     {
       "path": "tests/test_musou_slots_v085.py",
-      "bytes": 6599,
-      "sha256": "b39b029a839934f6e37102b9af5e37fff6bf0b1653995a1abd85f129468b5e99"
+      "bytes": 6585,
+      "sha256": "67b1d895333bccf81e16fa526d65c2b07dd340f598f3ec153dc558f39a3b83ab"
+    },
+    {
+      "path": "tests/test_nan_preservation_v10.py",
+      "bytes": 5227,
+      "sha256": "a871d9b2e4bd0645957ad54f57d400e7f37d4afdfccaacfa89b95c09ad0b0cb6"
+    },
+    {
+      "path": "tests/test_package_release.py",
+      "bytes": 6159,
+      "sha256": "0ff37c5fce79aa0e74d87058861791d4e7d244afa98eb8b2c1754e7b3bb4ac35"
     },
     {
       "path": "tests/test_progression_v034.py",
-      "bytes": 11141,
-      "sha256": "3b129835b724375a9a154e5346cf484263dbe6a148eed0974676d24b9566bcaa"
+      "bytes": 11127,
+      "sha256": "f990703aa93fd073870f8046f2b8e5bbcb53875cc1aaa7f66be4ac5e071e2781"
     },
     {
       "path": "tests/test_review_regressions.py",
-      "bytes": 14305,
-      "sha256": "42545db08c9169622146da8c41a743926897c723169bcf00fa03acc1b4b5c059"
+      "bytes": 14291,
+      "sha256": "79a352401773e6348c6590d2edec06cb59c13b675f0e7f4fc0952f3efc99d716"
     },
     {
       "path": "tests/test_save_variants.py",
-      "bytes": 16606,
-      "sha256": "62ecf5467afcdce967d452b15057683d440cfc8f002d1f344c83f752b56cb402"
+      "bytes": 16592,
+      "sha256": "3cba52b7ca1d601b4396ccd4d5efeed4cc3597dca5306cb4c991accc48f57bf6"
+    },
+    {
+      "path": "tests/test_unique_elements_v10.py",
+      "bytes": 8529,
+      "sha256": "fc2e77838b76bf1f718319d3fed3fb6e37162f3273e719fb9f9c492f66f5b570"
     },
     {
       "path": "tests/test_weapon_attributes.py",
-      "bytes": 23346,
-      "sha256": "914b1928952288795c624b8ad3c41c109dab23b38de57fac1f25a6467b85a6f1"
+      "bytes": 23459,
+      "sha256": "94a34d9021077340c41178453c6175f9cb6e72c724423ef833ff2afe093af5d3"
     },
     {
       "path": "tests/test_weapon_collection_v034.py",
-      "bytes": 11229,
-      "sha256": "6b00ead142c5836618ca2b0f6d06bef4a8a39ec45bc92be2773aea4ec3058245"
+      "bytes": 11237,
+      "sha256": "9a947d3b9c1c29518aa889be2d0009ceda93d43cc5a425b1a9f5b472c4080a6e"
     },
     {
       "path": "tests/test_weapon_rolls.py",
-      "bytes": 20350,
-      "sha256": "cdc8b080265cd5448b4147522ade027ceb5c3c4b4d0f7aa12c0235fc8a740bef"
+      "bytes": 20336,
+      "sha256": "219966e48dccc6854ab1bf6420cae7c36307bea9f03a9d5d788d6557980c9533"
     },
     {
       "path": "tests/test_weapon_rules.py",

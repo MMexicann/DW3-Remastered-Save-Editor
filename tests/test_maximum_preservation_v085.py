@@ -6,7 +6,7 @@ import sys
 import unittest
 
 PROJECT=Path(__file__).resolve().parents[1]
-WORKSPACE=PROJECT.parent.parent
+WORKSPACE=PROJECT
 sys.path.insert(0,str(PROJECT))
 from models import Change,SaveError,fields
 from save_parser import read_save,parse_bytes

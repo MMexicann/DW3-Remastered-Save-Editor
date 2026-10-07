@@ -23,8 +23,8 @@ from save_writer import serialize, UNIQUE_WEAPONS
 import officer_weapon_editor as weapon
 from test_weapon_rolls import edited_fixture_bytes, enum_bytes, record_bytes, tag_bytes, clone_skills
 
-FIXTURE = PROJECT.parent.parent / 'work' / 'original-upload' / 'GameStatusData.sav'
-GUI_RUNS = PROJECT.parent.parent / 'work' / 'weapon-attribute-gui-tests'
+FIXTURE = PROJECT / 'work' / 'original-upload' / 'GameStatusData.sav'
+GUI_RUNS = PROJECT / 'work' / 'weapon-attribute-gui-tests'
 
 
 def blank_skills():
@@ -381,8 +381,9 @@ class WeaponAttributeGuiTests(unittest.TestCase):
             for child in widget.winfo_children():
                 yield child
                 yield from descendants(child)
-        texts = [widget.get('1.0', 'end') for widget in descendants(self.root)
-                 if isinstance(widget, self.tk.Text)]
+        from tkinter import ttk
+        texts = [str((widget.item(row, 'text'), widget.item(row, 'values'))) for widget in descendants(self.root)
+                 if isinstance(widget, ttk.Treeview) for row in widget.get_children()]
         self.assertTrue(any('Wind' in text and template['weapon_name'] in text for text in texts))
         reread = parse_bytes(serialize(app.document, list(app.changes.values()))[0])
         state = weapon.state(reread, template['data_id'])
@@ -412,11 +413,12 @@ class WeaponAttributeGuiTests(unittest.TestCase):
         self.assertFalse(self.errors)
         self.select('WeaponDataArray:36')
         self.assertFalse(weapon.state(app.document, 36)['editable'])
-        self.assertFalse(weapon.state(app.document, 36)['element_editable'])
+        self.assertTrue(weapon.state(app.document, 36)['element_editable'])
         app.set_loaded(True)
-        for button in (app.weapon_roll_button, app.weapon_max_button, app.weapon_element_button):
+        for button in (app.weapon_roll_button, app.weapon_max_button):
             self.assertEqual(str(button['state']), 'disabled')
-        self.assertEqual(str(app.weapon_element_box['state']), 'disabled')
+        self.assertEqual(str(app.weapon_element_button['state']), 'normal')
+        self.assertEqual(str(app.weapon_element_box['state']), 'readonly')
         self.assertEqual(str(app.weapon_bonus_boxes[6]['state']), 'disabled')
         self.assertEqual(str(app.weapon_bonus_value_boxes[6]['state']), 'disabled')
         self.assertEqual(path.read_bytes(), raw)

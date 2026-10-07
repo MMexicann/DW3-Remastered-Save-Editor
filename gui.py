@@ -3,6 +3,7 @@ from pathlib import Path
 import json
 import sys
 import tkinter as tk
+import webbrowser
 from tkinter import filedialog, messagebox, ttk
 from models import Change, fields
 from save_parser import read_save, safe_path
@@ -17,6 +18,9 @@ import collection_editor as collections
 import musou_slots
 
 ROOT = Path(__file__).resolve().parent
+VERSION = '1.0'
+DISCORD_USERNAME = 'mexicannn'
+STEAM_PROFILE = 'https://steamcommunity.com/id/theonlyjuandeagingmexican/'
 NAMES = json.loads((ROOT / 'officer_names.json').read_text(encoding='utf-8'))
 METADATA = json.loads((ROOT / 'game_metadata.json').read_text(encoding='utf-8'))
 ITEMS = {row['id']: row for row in METADATA['items']}
@@ -49,9 +53,9 @@ class Editor:
         self.backup = None
         self.buttons = []
         self.scroll_areas = []
-        root.title('Dynasty Warriors 3 Remastered Save Editor — v0.85')
+        root.title(f'Dynasty Warriors 3 Remastered Save Editor — v{VERSION}')
         root.geometry('1140x870')
-        root.minsize(1040, 790)
+        root.minsize(1040, 740)
         style = ttk.Style()
         style.theme_use('clam')
         root.option_add('*Font', ('Segoe UI', 10))
@@ -62,7 +66,12 @@ class Editor:
         style.map('Primary.TButton', background=[('disabled', '#d8dde3'), ('active', '#76282e')],
                   foreground=[('disabled', '#7b8590')])
         style.configure('TNotebook.Tab', padding=(12, 6))
-        style.map('TNotebook.Tab', background=[('selected', '#ffffff')])
+        style.map('TNotebook.Tab', background=[('selected', '#ffffff')],
+                  foreground=[('selected', '#92353b')])
+        style.configure('Section.TLabel', font=('Segoe UI', 11, 'bold'))
+        style.configure('Muted.TLabel', foreground='#586879')
+        style.configure('TLabelframe', bordercolor='#d8dfe6', relief='solid')
+        style.configure('TLabelframe.Label', font=('Segoe UI', 11, 'bold'))
         style.configure('Treeview', rowheight=27, background='#ffffff', fieldbackground='#ffffff',
                         bordercolor='#d8dfe6')
         style.configure('Treeview.Heading', font=('Segoe UI', 10, 'bold'), background='#e7ecf1',
@@ -70,11 +79,15 @@ class Editor:
         style.map('Treeview', background=[('selected', '#92353b')], foreground=[('selected', '#ffffff')])
         banner = tk.Frame(root, background='#202a37', padx=20, pady=12)
         banner.pack(fill='x')
-        tk.Label(banner, text='DYNASTY WARRIORS 3', font=('Segoe UI', 16, 'bold'),
-                 background='#202a37', foreground='#e6c379').pack(side='left')
+        brand = tk.Frame(banner, background='#202a37')
+        brand.pack(side='left')
+        tk.Label(brand, text='DYNASTY WARRIORS 3', font=('Segoe UI', 16, 'bold'),
+                 background='#202a37', foreground='#e6c379').pack(anchor='w')
+        tk.Label(brand, text='COMPLETE EDITION REMASTERED', font=('Segoe UI', 9),
+                 background='#202a37', foreground='#c4cddb').pack(anchor='w')
         credits = tk.Frame(banner, background='#202a37')
         credits.pack(side='right')
-        tk.Label(credits, text='SAVE EDITOR  ·  v0.85', font=('Segoe UI', 10, 'bold'),
+        tk.Label(credits, text=f'SAVE EDITOR  ·  v{VERSION}', font=('Segoe UI', 10, 'bold'),
                  background='#202a37', foreground='#ffffff').pack(anchor='e')
         self.author_label = tk.Label(credits, text='Made by Mexican', font=('Segoe UI', 10),
                                      background='#202a37', foreground='#d2d9e2')
@@ -88,16 +101,20 @@ class Editor:
             button = ttk.Button(bar, text=text, command=command, style='Primary.TButton' if text == 'Save As…' else 'TButton')
             button.pack(side='left', padx=(0, 7))
             if text != 'Restore Backup…': self.buttons.append(button)
+        locations_button = ttk.Button(bar, text='File Locations', command=self.show_file_locations)
+        locations_button.pack(side='right')
+        self.buttons.append(locations_button)
+        ttk.Button(bar, text='Contact', command=self.show_contact).pack(side='right', padx=(0, 7))
         self.filename = tk.StringVar(value='Open a copy of GameStatusData.sav to begin.')
         self.backup_label = tk.StringVar(value='An untouched backup is created automatically when a copy opens.')
         ttk.Label(outer, textvariable=self.filename, wraplength=990).pack(fill='x', pady=(12, 3))
         ttk.Label(outer, textvariable=self.backup_label, wraplength=990).pack(fill='x', pady=(0, 10))
         self.compatibility_label = tk.StringVar()
-        ttk.Label(outer, textvariable=self.compatibility_label, wraplength=990).pack(fill='x')
+        ttk.Label(outer, textvariable=self.compatibility_label, wraplength=990, style='Muted.TLabel').pack(fill='x')
         self.notebook = ttk.Notebook(outer)
         self.notebook.pack(fill='both', expand=True)
         self.tabs = {}
-        for name in ('Officers', 'Items', 'Weapons', 'Bodyguards', 'Unlocks', 'Musou Saves'):
+        for name in ('Officers', 'Items', 'Weapons', 'Bodyguards', 'Unlocks', 'Collections', 'Musou Saves'):
             tab = ttk.Frame(self.notebook, padding=12)
             self.notebook.add(tab, text=name)
             self.tabs[name] = tab
@@ -106,6 +123,7 @@ class Editor:
         self.build_weapons()
         self.build_bodyguards()
         self.build_unlocks()
+        self.build_collections()
         self.build_musou_saves()
         self.bind_form_scrolling()
         bottom = ttk.Frame(outer)
@@ -117,6 +135,13 @@ class Editor:
             button.pack(side='right', padx=(7, 0))
             self.buttons.append(button)
         self.set_loaded(False)
+        for shortcut, command in (('<Control-o>', self.open), ('<Control-s>', self.save_changes),
+                                  ('<Control-Shift-S>', self.save_as), ('<Control-z>', self.undo),
+                                  ('<Control-r>', self.review)):
+            def invoke(_event, action=command):
+                action()
+                return 'break'
+            root.bind(shortcut, invoke)
         root.protocol('WM_DELETE_WINDOW', self.close)
 
     def set_loaded(self, loaded):
@@ -284,6 +309,15 @@ class Editor:
         self.weapon_element_box.pack(side='left',padx=(0,8))
         self.weapon_element_button=ttk.Button(element_form,text='Apply Element',command=self.apply_weapon_element)
         self.weapon_element_button.pack(side='left');self.buttons.append(self.weapon_element_button)
+        bulk_element_form = ttk.Frame(right)
+        bulk_element_form.pack(fill='x')
+        ttk.Label(bulk_element_form, text='All owned unique weapons:').pack(side='left', padx=(0, 6))
+        self.unique_weapon_element = tk.StringVar(value='Lightning')
+        self.unique_element_choices = {label: mask for label, mask in weapon_editor.ELEMENTS.items() if mask}
+        self.unique_weapon_element_box = ttk.Combobox(bulk_element_form, textvariable=self.unique_weapon_element,
+                                                     values=tuple(self.unique_element_choices), state='readonly', width=12)
+        self.unique_weapon_element_box.pack(side='left')
+        self.weapon_element_all_button=self.action(right,'Apply Element to All Owned Unique Weapons',self.apply_unique_weapon_elements)
         form = ttk.Frame(right); form.pack(fill='x')
         ttk.Label(form, text='Bonus').grid(row=0, column=1, sticky='w', pady=(0, 4))
         ttk.Label(form, text='Value').grid(row=0, column=2, sticky='w', pady=(0, 4))
@@ -462,12 +496,6 @@ class Editor:
         self.action(left,'Unlock All Side Stories',self.unlock_side_stories)
         ttk.Label(left,text='Side stories unlock the three rulers’ side campaigns and their Free Mode variants. They are not marked completed.',wraplength=440).pack(anchor='w',pady=8)
         ttk.Separator(left).pack(fill='x',pady=10)
-        ttk.Label(left,text='Movie and music collection',font=('Segoe UI',10,'bold')).pack(anchor='w')
-        self.gallery_note=tk.StringVar(value='Open a save copy to view the collections.')
-        ttk.Label(left,textvariable=self.gallery_note,wraplength=440).pack(anchor='w',pady=6)
-        self.music_unlock_button=self.action(left,'Unlock All Music',self.unlock_music)
-        self.movie_unlock_button=self.action(left,'Unlock All Movies',self.unlock_movies)
-        ttk.Separator(left).pack(fill='x',pady=10)
         ttk.Label(left,text='Musou completion — separate action',font=('Segoe UI',10,'bold')).pack(anchor='w')
         self.story_officer_choices={NAMES.get(str(i),f'Officer {i}'):i for i,row in progression.ROUTES.items() if row['route_length']}
         self.story_officer=tk.StringVar(value=next(iter(self.story_officer_choices)))
@@ -483,7 +511,7 @@ class Editor:
         self.action(right, 'Remove The Grind', self.remove_grind)
         ttk.Label(right, text='Max permanent officer stats and Merit, normal item rolls, rare items, all unique weapons and supported bodyguard growth/equipment inventories. Equipped choices and story completion are preserved.', wraplength=440).pack(anchor='w', pady=8)
         self.action(right, 'Unlock Everything Supported', self.unlock_everything)
-        ttk.Label(right, text='Adds playable officers, stages, bodyguard appearance options and movie/music collections to Remove The Grind. Story completion and saved runs have separate controls.', wraplength=440).pack(anchor='w', pady=8)
+        ttk.Label(right, text='Adds officers, stages, side stories, bodyguard appearance options, the weapon collection, Tactics costumes and music/movie galleries. Story completion and saved runs have separate controls.', wraplength=440).pack(anchor='w', pady=8)
         ttk.Separator(right).pack(fill='x', pady=12)
         ttk.Label(right, text='Huanglong Elixirs', font=('Segoe UI', 11, 'bold')).pack(anchor='w')
         ttk.Label(right, text=f'Choose your final balance: 0–{progression.ELIXIR_MAX}.', wraplength=440).pack(anchor='w', pady=(5, 7))
@@ -497,6 +525,25 @@ class Editor:
         ttk.Label(right, textvariable=self.elixir_note, wraplength=440).pack(anchor='w', pady=(5, 0))
         ttk.Label(right, text='An applied count includes any pending Musou clear rewards.', wraplength=440).pack(anchor='w', pady=5)
         ttk.Label(right,text='Changes remain pending until you save. Review Changes shows each action. Opening a copy creates a backup automatically.',wraplength=440).pack(anchor='w',pady=12)
+
+    def build_collections(self):
+        page = self.tabs['Collections']
+        ttk.Label(page, text='Music & movie galleries', style='Section.TLabel').pack(anchor='w', pady=(0, 5))
+        ttk.Label(page, text='Unlock the in-game collection entries. Your sound settings, story progress and saved campaigns stay as they are.',
+                  wraplength=960, style='Muted.TLabel').pack(anchor='w', pady=(0, 12))
+        actions = ttk.Frame(page)
+        actions.pack(fill='x', pady=(0, 10))
+        self.music_unlock_button = ttk.Button(actions, text='Unlock All Music', command=self.unlock_music)
+        self.music_unlock_button.pack(side='left', padx=(0, 8))
+        self.movie_unlock_button = ttk.Button(actions, text='Unlock All Movies', command=self.unlock_movies)
+        self.movie_unlock_button.pack(side='left')
+        self.buttons.extend((self.music_unlock_button, self.movie_unlock_button))
+        self.gallery_note = tk.StringVar(value='Open a save copy to view your collections.')
+        ttk.Label(page, textvariable=self.gallery_note, wraplength=960).pack(anchor='w', pady=(0, 10))
+        self.collection_filter = tk.StringVar()
+        self.add_search(page, self.collection_filter, self.refresh_collections)
+        self.collection_tree = self.make_tree(page, [('kind', 'Gallery'), ('id', 'Entry ID'), ('owned', 'Unlocked')],
+                                              'Collection entry', [520, 130, 90, 100])
 
     def build_musou_saves(self):
         page=self.tabs['Musou Saves']
@@ -521,6 +568,14 @@ class Editor:
             notes.append(f'{title}: {row["owned"]}/{row["total"]} unlocked.' if row['editable'] else title+': '+row['reason'])
             button.configure(state='normal' if row['editable'] else 'disabled')
         self.gallery_note.set(' '.join(notes))
+        self.collection_tree.delete(*self.collection_tree.get_children())
+        search = self.collection_filter.get().strip().casefold()
+        for key, title in (('music', 'Music'), ('movies', 'Movie')):
+            for row in state[key]['rows']:
+                if search and search not in f'{title} {row["name"]} {row["id"]}'.casefold():
+                    continue
+                self.collection_tree.insert('', 'end', iid=f'{key}:{row["id"]}', text=row['name'],
+                                            values=(title, row['id'], 'Yes' if row['unlocked'] else 'No'))
 
     def unlock_music(self):
         if self.require_save():
@@ -612,10 +667,39 @@ class Editor:
             messagebox.showerror('Cannot Open Save', str(error))
 
     def update_paths(self):
-        self.filename.set(f'Opened copy: {self.document.source}')
-        self.backup_label.set(f'Backup of originally opened copy: {self.backup}' if self.backup else 'No backup selected.')
+        self.filename.set(f'Opened copy: {self.document.source.name}')
+        self.backup_label.set(f'Original backup: {self.backup.name}' if self.backup else 'No backup selected.')
         warnings = self.document.compatibility_warnings
         self.compatibility_label.set(f'Compatibility notes: {len(warnings)}. Saved values outside normal drop ranges are preserved. Use Review Changes for details.' if warnings else '')
+
+    def show_file_locations(self):
+        if self.require_save():
+            messagebox.showinfo('Save and Backup Locations',
+                                f'Opened copy:\n{self.document.source}\n\nOriginal backup:\n{self.backup or "No backup selected."}')
+
+    def show_contact(self):
+        window = tk.Toplevel(self.root)
+        window.title('Contact Mexican')
+        window.resizable(False, False)
+        panel = ttk.Frame(window, padding=22)
+        panel.pack(fill='both', expand=True)
+        ttk.Label(panel, text='Made by Mexican', font=('Segoe UI', 14, 'bold')).pack(anchor='w')
+        ttk.Label(panel, text='Report a bug, suggest a feature or get in touch.', style='Muted.TLabel').pack(anchor='w', pady=(5, 18))
+        ttk.Label(panel, text='Discord username', style='Section.TLabel').pack(anchor='w')
+        discord_row = ttk.Frame(panel)
+        discord_row.pack(fill='x', pady=(5, 16))
+        window.discord_name = tk.StringVar(window, value=DISCORD_USERNAME)
+        ttk.Entry(discord_row, textvariable=window.discord_name, state='readonly', width=33).pack(side='left', padx=(0, 8))
+        copied = tk.StringVar(window)
+        def copy_discord():
+            window.clipboard_clear()
+            window.clipboard_append(DISCORD_USERNAME)
+            copied.set('Discord username copied.')
+        ttk.Button(discord_row, text='Copy', command=copy_discord).pack(side='left')
+        ttk.Label(panel, text='Steam', style='Section.TLabel').pack(anchor='w')
+        ttk.Label(panel, text='Leave a comment on my Steam profile.', style='Muted.TLabel').pack(anchor='w', pady=(5, 6))
+        ttk.Button(panel, text='Open Steam Profile', command=lambda: webbrowser.open(STEAM_PROFILE)).pack(anchor='w')
+        ttk.Label(panel, textvariable=copied, style='Muted.TLabel').pack(anchor='w', pady=(15, 0))
 
     def officer_indices(self):
         return range(min(42,len(self.document.records('PCSaveDataArray'))))
@@ -753,6 +837,7 @@ class Editor:
         self.weapons.delete(*self.weapons.get_children())
         changes = list(self.changes.values())
         states = list(weapon_editor.states(self.document, changes))
+        self.weapon_element_all_button.configure(state='normal' if any(row['array']=='UniqueWeaponDataArray' and row['element_editable'] for row in states) else 'disabled')
         by_data = {row['data_id']:row for row in states}
         self.weapon_rows = {}
         query = self.weapon_filter.get().strip().casefold()
@@ -911,6 +996,17 @@ class Editor:
             skills = weapon_editor.max_existing_skills(self.document,self.current_weapon_data_id,list(self.changes.values()))
             self.stage_many([Change('weapon_roll',self.current_weapon_data_id,'Skills',skills)])
         except (ValueError,TypeError) as error: messagebox.showerror('Cannot Max Weapon Bonuses',str(error))
+
+    def apply_unique_weapon_elements(self):
+        if not self.require_save(): return
+        try:
+            label = self.unique_weapon_element.get()
+            mask = self.unique_element_choices[label]
+            changes = weapon_editor.owned_unique_element_changes(self.document, mask, list(self.changes.values()))
+            if self.stage_many(changes):
+                self.status.set(f'{label} applied to {len(changes)} owned unique weapons. Save to write the changes.')
+        except (ValueError, TypeError, KeyError) as error:
+            messagebox.showerror('Cannot Apply Unique Weapon Elements', str(error))
 
     def max_all_weapon_rolls(self):
         if not self.require_save(): return
@@ -1381,6 +1477,9 @@ class Editor:
         if self.require_save():
             changes = self.grind_changes()
             changes.extend(self.guard_customization_changes())
+            changes.extend(progression.side_story_changes())
+            changes.extend(weapon_collection.all_collection_changes())
+            changes.extend(weapon_collection.tactics_costume_changes())
             state=collections.collection_state(self.document)
             if state['music']['editable']:changes.extend(collections.unlock_music_changes(self.document))
             if state['movies']['editable']:changes.extend(collections.unlock_movie_changes(self.document))
@@ -1395,16 +1494,32 @@ class Editor:
 
     def review(self):
         if not self.require_save(): return
-        window = tk.Toplevel(self.root); window.title('Review Pending Changes'); window.geometry('760x460')
-        ttk.Label(window, text='These changes are applied in the editor. Save to write them into a file and create a change report.', padding=12).pack(fill='x')
-        text = tk.Text(window, wrap='word', padx=12, pady=8); text.pack(fill='both', expand=True)
-        for warning in self.document.compatibility_warnings:
-            text.insert('end', f'Compatibility: {warning}\n')
+        window = tk.Toplevel(self.root); window.title('Review Pending Changes'); window.geometry('900x520')
+        ttk.Label(window, text=f'{len(self.changes)} pending changes. Save to write them into your copy.', padding=12).pack(fill='x')
+        pages = ttk.Notebook(window)
+        pages.pack(fill='both', expand=True, padx=12, pady=(0, 12))
+        changes_page = ttk.Frame(pages, padding=8)
+        pages.add(changes_page, text='Pending Changes')
+        tree = self.make_tree(changes_page, [('field', 'Setting'), ('before', 'Saved'), ('after', 'Pending')],
+                              'Officer / item / content', [310, 165, 155, 155])
         for change in self.changes.values():
             label, fieldname, before, after = self.review_change(change)
-            text.insert('end', f'{label}: {fieldname} {before} → {after}\n')
-        if not self.changes: text.insert('end', 'No pending changes.')
-        text.configure(state='disabled')
+            tree.insert('', 'end', text=label, values=(fieldname, before, after))
+        if not self.changes:
+            ttk.Label(changes_page, text='No pending changes. Your copy has not been edited.').pack(anchor='w', pady=(8, 0))
+        if self.document.compatibility_warnings:
+            notes_page = ttk.Frame(pages, padding=8)
+            pages.add(notes_page, text=f'Saved-value Notes ({len(self.document.compatibility_warnings)})')
+            ttk.Label(notes_page, text='These notes describe values already in your save. They are preserved unless you apply a supported change.',
+                      wraplength=800).pack(fill='x', pady=(0, 8))
+            text = tk.Text(notes_page, wrap='word', padx=10, pady=8, background='#ffffff', relief='flat')
+            scroll = ttk.Scrollbar(notes_page, orient='vertical', command=text.yview)
+            text.configure(yscrollcommand=scroll.set)
+            scroll.pack(side='right', fill='y')
+            text.pack(fill='both', expand=True)
+            for warning in self.document.compatibility_warnings:
+                text.insert('end', f'{warning}\n\n')
+            text.configure(state='disabled')
 
     def review_change(self, change):
         before, after = self.original_value(change), change.value

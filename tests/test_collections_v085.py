@@ -6,7 +6,7 @@ import sys
 import unittest
 
 PROJECT = Path(__file__).resolve().parents[1]
-WORKSPACE = PROJECT.parent.parent
+WORKSPACE = PROJECT
 sys.path.insert(0, str(PROJECT))
 
 from models import Change, SaveError
@@ -28,13 +28,13 @@ class CollectionUnlockTests(unittest.TestCase):
     def tearDownClass(cls):
         assert hashlib.sha256(FIXTURE.read_bytes()).hexdigest() == cls.digest
 
-    def test_movie_catalog_excludes_loop_and_placeholders_music_stays_view_only(self):
+    def test_gallery_catalogs_exclude_audio_only_rows_and_movie_placeholders(self):
         state = collection.collection_state(self.document)
         self.assertEqual([row['id'] for row in state['movies']['rows']], list(range(50)))
-        self.assertFalse(state['music']['editable'])
-        self.assertIn('not yet prove', state['music']['reason'])
-        with self.assertRaises(SaveError):
-            collection.unlock_music_changes(self.document)
+        self.assertTrue(state['music']['editable'])
+        self.assertEqual(state['music']['total'], 42)
+        self.assertEqual([row['id'] for row in state['music']['rows']], list(range(42)))
+        self.assertEqual([c.index for c in collection.unlock_music_changes(self.document)], list(range(42)))
         self.assertEqual([c.index for c in collection.unlock_movie_changes(self.document)], list(range(50)))
 
     def test_unlock_changes_only_movie_array_and_preserves_old_acknowledgements(self):

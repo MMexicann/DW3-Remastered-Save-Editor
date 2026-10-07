@@ -113,7 +113,6 @@ def _base_state(document,data_id,changes):
           'red_minimum':sum(s['id'] in ITEMS and ITEMS[s['id']]['kind']=='rare' for s in skills),
           'editable':False,'reason':'','element_editable':False,'element_reason':''}
     if not owned:info['reason']='Unlock this unique weapon before editing its rolls.'
-    elif not NORMAL_ITEMS:info['reason']='Weapon bonus limits have not been verified.'
     elif array=='WeaponDataArray' and weapon_id not in set(range(89))|{188,189,190}:
         info['reason']='This ordinary inventory identity is not a supported playable weapon.'
     elif array=='UniqueWeaponDataArray' and (template is None or weapon_id!=template['weapon_id']):
@@ -122,6 +121,21 @@ def _base_state(document,data_id,changes):
         info['reason']='This inventory exceeds the native unique-reference boundary; preserve it without editing.'
     elif not newly_acquired and (record['ID']['value']!=record['WeaponID']['value'] or record['DataID']['value']!=data_id):
         info['reason']='Weapon identity or inventory reference is inconsistent.'
+    if info['reason']:
+        info['element_reason']=info['reason']
+        return info
+    # An element edit replaces only the four proven Attr bits. Bonus
+    # transfer rules do not govern this leaf; unusual saved bonuses remain
+    # byte-for-byte intact even when their own controls are unavailable.
+    if not ELEMENTS or not ELEMENT_MASK:
+        info['element_reason']='Element transfer rules are unavailable.'
+    elif not newly_acquired and (record['Attr'].get('type')!='Int64Property' or
+                                 record['Attr'].get('data_size')!=8 or
+                                 type(attr) is not int or not -(1<<63)<=attr<(1<<63)):
+        info['element_reason']='This weapon has no verified Int64 attribute field.'
+    else:info['element_editable']=True
+
+    if not NORMAL_ITEMS:info['reason']='Weapon bonus limits have not been verified.'
     elif any(s['id'] is not None and s['id'] not in ITEMS for s in skills):
         info['reason']='This copy contains a reserved bonus identity with no verified edit rules.'
     elif record and any(fields(s)['EquipItemID']['value']!='EEquipItemID::NUM' and fields(s)['EquipItemID']['value'] not in ITEM_IDS for s in record['Skill']['value']['records']):
@@ -133,11 +147,11 @@ def _base_state(document,data_id,changes):
         if not rank_row:info['reason']='Weapon rank limits are unsupported.'
         else:
             info['rank']=rank_row['rank'];info['blue_limit']=rank_row['max_blue'];info['editable']=True
-            info['element_editable']=bool(ELEMENTS and ELEMENT_MASK)
             try:validate_skills(info,skills)
             except SaveError as error:
-                info['editable']=False;info['element_editable']=False;info['reason']=str(error)
-    if not info['element_editable']:info['element_reason']=info['reason'] or 'Element transfer rules are unavailable.'
+                info['editable']=False;info['reason']=str(error)
+    if not info['element_editable'] and not info['element_reason']:
+        info['element_reason']=info['reason'] or 'Element transfer rules are unavailable.'
     return info
 
 
@@ -209,6 +223,33 @@ def states(document,changes=()):
         if index>=existing:
             info=state(document,10000+index,changes)
             if info['owned']:yield info
+
+
+def element_changes(document,data_ids,mask,changes=()):
+    """Validate a whole selection before returning pending element edits.
+
+    No bonus roll, inventory identity or non-element flag is authored here.
+    Callers merge the returned records into their pending changes by key.
+    """
+    changes=list(changes);result=[];seen=set()
+    for data_id in data_ids:
+        if type(data_id) is not int or data_id in seen:
+            raise SaveError('Choose distinct integer weapon inventory references.')
+        seen.add(data_id)
+        info=state(document,data_id,changes)
+        wanted=validate_elements(info,mask)
+        if wanted!=info['elements']:
+            result.append(Change('weapon_element',data_id,'Elements',wanted))
+    if not seen:raise SaveError('Choose at least one supported owned weapon.')
+    return result
+
+
+def owned_unique_element_changes(document,mask,changes=()):
+    """Apply one chosen native element to supported owned unique copies."""
+    changes=list(changes)
+    data_ids=[row['data_id'] for row in states(document,changes)
+              if row['array']=='UniqueWeaponDataArray' and row['element_editable']]
+    return element_changes(document,data_ids,mask,changes)
 
 
 def max_existing_skills(document,data_id,changes=()):

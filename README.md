@@ -1,22 +1,27 @@
 # Dynasty Warriors 3 Remastered Save Editor
 
-A small, free Windows save editor by Mexican for Dynasty Warriors 3: Complete Edition Remastered. Skip repetitive farming, with story completion kept separate from stat and item changes.
+A free Windows save editor by Mexican for Dynasty Warriors 3: Complete Edition Remastered. Edit a save copy, skip repetitive farming and choose which unlocks you want.
 
 - Officers: edit Merit and permanent Life, Musou, Attack and Defense for all 42 officers.
 - Items: unlock 16 normal and 27 rare items, and maximize normal item values.
-- Weapons: unlock all 84 unique weapons, including Ziluan's 4th/5th weapons; edit normal/rare bonuses and individual elements; complete the weapon collection gallery and unlock Lu Bu's and Sun Shangxiang's Tactics costumes.
+- Weapons: unlock all 84 unique weapons, including Ziluan's 4th/5th weapons; edit normal and rare bonuses; choose Fire, Lightning, Steel or Wind individually or for all owned unique weapons; complete the weapon collection and unlock Lu Bu's and Sun Shangxiang's Tactics costumes.
 - Bodyguards: edit Merit, growth, items, weapons and team equipment; unlock both Nanman models and all special colors.
-- Unlocks: unlock officers, stages and all three side stories; separately mark the 39 supported Musou stories cleared.
-- Collections: unlock the supported movie gallery.
+- Unlocks: unlock all 42 officers, 108 playable stages and three side stories; separately mark the 39 supported Musou stories cleared.
+- Collections: unlock all 42 music tracks and 50 movies in the dedicated Collections tab.
 - Musou Saves: view and remove between-stage campaign runs without resetting your officers or story completion.
-- Huanglong Elixirs: set your count from 0 to 999 on the Unlocks tab.
-- Refreshed tabbed interface with automatic backups, Undo, Review Changes and backup restore.
+- Huanglong Elixirs: set your count from 0 to 999. Automatic backups, Undo, Review Changes and backup restore help you manage your edits.
+
+The refreshed interface keeps story completion separate from stat and item edits. Max actions use supported limits and preserve higher existing item and weapon values.
 
 ## Getting started
 
 1. Download the Windows ZIP from [Releases](https://github.com/MMexicann/DW3-Remastered-Save-Editor/releases) and extract it.
-2. Run `DW3RemasteredSaveEditor-v0.85.exe`. You don't need Python.
+2. Run `DW3RemasteredSaveEditor-v1.0.exe`. You don't need Python or an installer.
 3. Make a separate copy of `GameStatusData.sav`, then choose **Open Save Copy**. Keep your own untouched backup too.
 4. Make your changes, choose **Review Changes**, then **Save As** to save an edited copy.
 
-Thanks to OrdinalSumo, wingatk, Domenikus, revidwi, GoooD1 and austinkun for their reports and suggestions, and to everyone sharing feedback.
+See [what changed in v1.0](CHANGELOG.md) or [build from source](BUILDING.md).
+
+## Contact
+
+Message `mexicannn` on Discord or leave a comment on [my Steam profile](https://steamcommunity.com/id/theonlyjuandeagingmexican/). You can also use the editor's Contact button.

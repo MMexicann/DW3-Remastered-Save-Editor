@@ -34,7 +34,8 @@ def _array(document, spec):
     if prop is None:
         return owner, props, None, [False] * spec['total']
     val = prop.get('value')
-    if (prop.get('type') != 'ArrayProperty(BoolProperty)' or not isinstance(val, dict) or
+    if (prop.get('type') != 'ArrayProperty(BoolProperty)' or
+            prop.get('flags') != 0 or prop.get('array_index') != 0 or not isinstance(val, dict) or
             type(val.get('count')) is not int or val['count'] < spec['total'] or
             not isinstance(val.get('values'), list) or len(val['values']) != val.get('count') or
             any(type(value) not in (int, bool) or value not in (0, 1, False, True) for value in val['values']) or
@@ -60,8 +61,7 @@ def collection_state(document, changes=()):
     for key, spec in DATA.items():
         try:
             _, _, _, saved = _array(document, spec)
-            editable, reason = (key != 'music', '' if key != 'music' else
-                                'The game data does not yet prove which music IDs the gallery presents.')
+            editable, reason = True, ''
         except (SaveError, KeyError, TypeError):
             saved = [False] * spec['total']
             editable, reason = False, f"{spec['label']} unlock data is missing or has an unsupported layout."
@@ -77,7 +77,9 @@ def collection_state(document, changes=()):
 
 
 def unlock_music_changes(document):
-    raise SaveError('The selectable music gallery IDs are not verified yet; music unlocks are view-only.')
+    spec = DATA['music']
+    _array(document, spec)
+    return [Change('collection', row['id'], spec['field'], True) for row in spec['rows']]
 
 
 def unlock_movie_changes(document):
@@ -159,9 +161,7 @@ def plan_collection_changes(document, changes, add_property, add_insertion):
         if key in seen:
             raise SaveError('Duplicate collection action.')
         seen.add(key)
-        if change.field == 'Music':
-            raise SaveError('The selectable music gallery IDs are not verified yet; music unlocks are view-only.')
-    grouped = {'Movie': [c.index for c in requests if c.field == 'Movie']}
+    grouped = {field: [c.index for c in requests if c.field == field] for field in by_field}
     for field, indices in grouped.items():
         if not indices:
             continue
@@ -170,9 +170,10 @@ def plan_collection_changes(document, changes, add_property, add_insertion):
         changed = list(values)
         for index in indices:
             changed[index] = True
+        reason = f"Unlock {'music' if field == 'Music' else 'movie'} gallery"
         if prop is None:
             tag = _make_tag(document, owner, props, spec, changed)
-            add_insertion(_insert_at(owner, props, document), tag, 'Unlock movie gallery')
+            add_insertion(_insert_at(owner, props, document), tag, reason)
         else:
-            add_property(prop, struct.pack('<i', len(changed)) + bytes(changed), 'Unlock movie gallery')
+            add_property(prop, struct.pack('<i', len(changed)) + bytes(changed), reason)
 

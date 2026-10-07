@@ -15,7 +15,7 @@ import save_writer
 from save_parser import read_save, parse_bytes
 from test_bodyguards import edited_fixture_bytes
 
-FIXTURE = PROJECT.parents[1] / 'work/original-upload/GameStatusData.sav'
+FIXTURE = PROJECT / 'work/original-upload/GameStatusData.sav'
 
 
 @unittest.skipUnless(FIXTURE.exists(), 'Private supplied fixture is required.')

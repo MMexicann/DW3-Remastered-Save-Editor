@@ -75,3 +75,22 @@ result directly without consuming fusion materials.
 No game executable, extracted assets or private save is distributed.
 See [VALIDATION.md](VALIDATION.md) for automated results. This update awaits
 in-game feedback. Keep an untouched backup and edit a separate copy.
+
+## v1.0 unique element coverage
+
+All 84 native unique weapon templates support Fire, Lightning, Steel or Wind,
+including weapons acquired in the same pending batch. Element eligibility is
+checked independently from bonus eligibility: an owned copy with a supported
+identity, matching inventory reference and parsed Int64 `Attr` field can change
+its element while its unusual or unsupported saved bonuses remain untouched.
+The bonus controls remain protected on those copies. An unknown weapon identity,
+inconsistent reference or unsupported attribute field still blocks element edits.
+
+`element_changes` validates a whole selection before returning pending edits.
+`owned_unique_element_changes` applies the chosen element to all supported owned
+unique copies, including pending acquisitions, and omits copies already using it.
+Neither action chooses an element automatically. New combined masks, invented
+bits and clearing an existing element remain unsupported. Regression checks
+serialize all 84 unique copies with each of the four elements and verify that
+bonus tags, acquisition fields, collection snapshots, other inventory and all
+non-element flags remain unchanged.

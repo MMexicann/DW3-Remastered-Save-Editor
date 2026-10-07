@@ -27,10 +27,30 @@ Nested insertions regenerate all enclosing property byte sizes. Confidence:
 confirmed schema, native defaults, authored table entries and byte round trips.
 
 Music current/acknowledgement arrays are `OptionData.Sound.bPlayBGM` and
-`bPlayBGM_Old` (native defaults: 100 false entries). The cooked BGM table has
-89 nonzero event hashes, but table IDs have not yet been traced reliably to
-saved availability indices. Music writes are disabled; array length or
-localized name count alone is insufficient evidence for an editing map.
+`bPlayBGM_Old` (native defaults: 100 false entries). In v1.0,
+`collection_editor.py` unlocks the **42 displayed MUSIC gallery entries,
+IDs 0–41**. The copied executable's native `BGMGalleryWidget` constructor
+RVA `0x12AE520` sets its private list count to 42 at instance offset `0x388`.
+NativeConstruct `0x16C7600` builds IDs 0–41 in order, and list population
+`0x16C85F0` passes each unchanged ID to item setup `0x16C8C60`.
+The item reads `bPlayBGM[id]` directly: reflected OptionData offset `0x1C8`,
+Sound offset `0x48`, current-array offset `0x18` (OptionData + `0x60`).
+The native count is not a reflected Blueprint property.
+
+`bPlayBGM_Old` is the game's acknowledgement state, at Sound + `0x28`
+(OptionData + `0x70`). The item displays NEW when current is true and old
+is false; native acknowledge function `0x16C8EE0` sets old[id] to true.
+The editor preserves that array and every current slot from 42 onward,
+including pre-existing audio flags outside the gallery. It refuses new
+edits for those IDs even though `DT_BGMDefsData` has 89 nonzero event hashes
+(IDs 0–44 and 50–93). English labels use shipped main-title keys 000–041;
+the native title enum confirms the same numeric values.
+Missing current arrays use the verified 100-slot tagged Bool layout;
+malformed arrays remain view-only. Combined music/movie insertions regenerate
+enclosing sizes and retain acknowledgement arrays. Confidence: high for this
+inspected build, with constructor/vtable/indexed-read evidence and byte-level
+round-trip, preservation, sparse-insertion and idempotence tests. Other
+builds/platforms remain outside the verified contract.
 
 `musou_slots.py` handles between-stage runs in `EngiSaveDataArray`. Its saved
 count is retained; array positions remain slot identities. An explicit Remove
@@ -481,6 +501,7 @@ assigned invented offsets or values.
 | Weapon ownership/4th/5th stock properties/cache | High for 84 entries: native acquisition mapping and shipped templates | Implemented; owned entries preserved |
 | Ziluan unique slots and expansion | High: native insertion pads through slots 102/103; confirmed 104-row reported save | Implemented native padding and indexed acquisition |
 | Playable weapon collection/Tactics costumes | High: native 176-definition collection predicate and two-officer costume setter | Gallery completion and separate Lu Bu/Sun Shangxiang costume flags implemented |
+| MUSIC gallery availability | High: native 42-entry constructor, unchanged ID list population and direct bPlayBGM[id] reads | IDs 0–41 implemented; old acknowledgement flags and all later slots preserved |
 | Officer weapon normal fusion outcomes | High: native direct-copy path, exact donor value sets, rank limits and stock exceptions | Per-copy bonus editing/max; material workflow remains unsupported |
 | Bodyguard Merit/growth/count/AI | High: native 99,999 clamp, shipped level/gate/budget tables and associated officer count dataflow | Legal final allocations and presets implemented |
 | Bodyguard normal/rare items | High: shipped IDs/roll tables and actual generation/acquisition/equipment paths | Nine normal caps, one rare ownership and team equipment implemented |
