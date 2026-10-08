@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1
+
+- Fixed Huanglong Elixir editing and Musou completion on new/reset saves with an omitted zero Elixir counter. A completed story is no longer required before using these controls.
+- Added an Unlock Yellow Uniform shortcut under Bodyguards → Appearance Unlocks, using the existing special-color unlock.
+- Added Light and Dark appearance options, with updated spacing and colors across forms and review dialogs.
+
 ## v1.0
 
 - Added unlocks for all 42 music tracks alongside the 50 movies in a dedicated Collections tab.

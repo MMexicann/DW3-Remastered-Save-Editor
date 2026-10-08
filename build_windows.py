@@ -4,7 +4,7 @@ import os
 from PyInstaller.__main__ import run
 
 ROOT=Path(__file__).resolve().parent
-VERSION='1.0'
+VERSION='1.1'
 if os.name!='nt':raise SystemExit('Build on Windows for the Windows CNG runtime.')
 data=['officer_names.json','game_metadata.json','unique_weapons.json',
       'verified_limits.json','item_limits.json','native_enums.json',

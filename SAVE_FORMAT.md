@@ -16,6 +16,13 @@ for the first time. Equipped appearances, story clears and team growth are
 independent and remain unchanged. Confidence: confirmed native dataflow,
 localized names and supplied serialized records.
 
+The Yellow uniform is clothing ID5 and special-color flag0; v1.1 adds a GUI
+shortcut to this existing action. Native bodyguard customization menu code at
+RVA 0x168F0D0–0x168F148 iterates only the four gender/model IDs0–3, and shipped
+localization names clothing5 `Yellow`. The story-unlock evaluator maps Zhang
+Jiao's clear to that uniform. A distinct Yellow Turban mesh/headgear option has
+not been established, so the editor does not invent an additional model flag.
+
 `collection_editor.py` uses `OptionData.Edit.bPlayMovie`, a native 100-entry
 Bool array. Shipped `DT_MovieData` identifies supported playable movie IDs
 0–49. ID 50 and IDs 52–99 are placeholders; ID 51 is the title loop, so none
@@ -442,8 +449,18 @@ stats and item values.
 Edits require an ordinary scalar tag (`flags == 0`, `array_index == 0`), a
 payload matching its parsed integer, and a saved balance within 0–999. New
 values must have exact integer type and be within that same range; booleans,
-floats, strings, negative numbers and values over 999 are rejected. Missing or
+floats, strings, negative numbers and values over 999 are rejected. Existing
 unfamiliar counter layouts remain view-only. No counter offset is hard-coded.
+
+An omitted `BeansNum` is the native zero default. Reflection maps this Int32 to
+native member +0x350; the constructor at RVA 0x1369480 zeros that member at
+0x136966f, and initialization/reset zeros it again at 0x1506ea6. v1.1 exposes
+missing counters as editable zero. A nonzero balance or first-clear award adds
+one canonical 42-byte `BeansNum` IntProperty tag at the parsed top-level
+terminator. Its serialization is verified against an actual native saved tag.
+The writer merges other lazy insertions and regenerates envelope size/padding.
+An explicit zero preserves the omitted field and unchanged saves stay
+byte-identical. Existing malformed counters are never treated as missing.
 
 Without an explicit balance, newly cleared Musou routes award three Elixirs
 each, capped at 999. Repeating an already-cleared route awards nothing. An

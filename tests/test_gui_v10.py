@@ -83,7 +83,7 @@ class ReleaseGuiTests(unittest.TestCase):
         self.assertEqual(labels[0], 'Pending Changes')
         if g.document.compatibility_warnings:
             self.assertTrue(labels[1].startswith('Saved-value Notes'))
-        self.assertEqual(gui.VERSION, '1.0')
+        self.assertEqual(gui.VERSION, '1.1')
         self.assertEqual(g.author_label.cget('text'), 'Made by Mexican')
 
     def test_contact_available_without_a_save_and_opens_only_the_requested_link(self):

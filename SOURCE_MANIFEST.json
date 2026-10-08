@@ -1,5 +1,5 @@
 {
-  "version": "1.0",
+  "version": "1.1",
   "files": [
     {
       "path": ".github/workflows/windows-release.yml",
@@ -29,12 +29,12 @@
     {
       "path": "BUILDING.md",
       "bytes": 3172,
-      "sha256": "818a4a00c21bc27877aa2783ecde39843707289364fdb3cd05d792ed98350f28"
+      "sha256": "f4fb03d6cde1f9ed97e792dbf7dd0973303cd7342cd4f60dd4e9d5e9bf3efb78"
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 989,
-      "sha256": "04ae105403eaec527868b1dc3072371a289764e470e317e6a3b7a31f30aa6d80"
+      "bytes": 1410,
+      "sha256": "2aa4ad6a25a564182155b447880d09ee557a0b087b0f66a7e0a89d2494b10d4c"
     },
     {
       "path": "COMPATIBILITY_FIX.md",
@@ -48,13 +48,13 @@
     },
     {
       "path": "README.md",
-      "bytes": 2142,
-      "sha256": "697b054b71f371bb4f920b8f7f54501d8496dd1d673d96c7342445f47ec78cb7"
+      "bytes": 2245,
+      "sha256": "b703fb77e68ddd1aa9b714e550ae4557d9d1f851a71737aa499d1c269aa09b66"
     },
     {
       "path": "RELEASE_NOTES.md",
-      "bytes": 1316,
-      "sha256": "7bd875bea3f362cfbf6f642bcedb49609969bb07e9bb6e93ededfec6dbfeefac"
+      "bytes": 1566,
+      "sha256": "2f130b571b7945f8e3c70ea9936097d8053678e4f3f5c19f8efcc609b45c551e"
     },
     {
       "path": "SAVE_COMPATIBILITY.md",
@@ -63,8 +63,8 @@
     },
     {
       "path": "SAVE_FORMAT.md",
-      "bytes": 36146,
-      "sha256": "3c3812d8ea9d0c93992a42c6fee2b6127a895128c6eb544ae4f9c6c18baed9c6"
+      "bytes": 37303,
+      "sha256": "1f56b2afcc9489f078a5e4aa3f46627fa5ac55d732a0ff028211f6688701d92b"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",
@@ -129,7 +129,7 @@
     {
       "path": "build_windows.py",
       "bytes": 932,
-      "sha256": "08e7bc40d7ed178e9fa3372687283295aaeefb8abdfb500f1765a3cc62d28490"
+      "sha256": "1be7c91aeb346b54e708611bafcec8f28c1442c2390bc529eb5d632f39a1b7c9"
     },
     {
       "path": "collection_editor.py",
@@ -143,8 +143,8 @@
     },
     {
       "path": "compatibility_self_test.py",
-      "bytes": 14276,
-      "sha256": "5e6d478fbad5c07d1b17f17801184c31f297246a7d4f09fc0b133e9d0c72e3e9"
+      "bytes": 14880,
+      "sha256": "b748217c0864d9fb5eb1bc63113fb9b378aae4bb67e2f300513047be4e66235c"
     },
     {
       "path": "game_metadata.json",
@@ -153,8 +153,8 @@
     },
     {
       "path": "gui.py",
-      "bytes": 116242,
-      "sha256": "8cface35c3c4bb93db6165fb265ff5011de839b8dfbcfb756972acb7166d2474"
+      "bytes": 122575,
+      "sha256": "48eb14d43bbde08d23d39c261bd9c1f7a375713cea879909748de03e7a9393bf"
     },
     {
       "path": "item_limits.json",
@@ -213,8 +213,8 @@
     },
     {
       "path": "progression_editor.py",
-      "bytes": 15248,
-      "sha256": "95953213170e6dfb4a27be173cef41437b66d15e41b333ae077475d23a100db0"
+      "bytes": 15790,
+      "sha256": "d64c26159d9ca7c4449629773e9d31cb40a5465fcc13c05c4f8d1c1b3c49f6e6"
     },
     {
       "path": "progression_routes.json",
@@ -263,8 +263,13 @@
     },
     {
       "path": "tests/test_elixirs_v08.py",
-      "bytes": 11149,
-      "sha256": "57f28891f62818953e2cb34bf1389e96e7952c0fbc432fd89a86ac1ac366250a"
+      "bytes": 17866,
+      "sha256": "a137eb5d90df69078a51494c55254883cf53d36b422997e1941bb436b2f14561"
+    },
+    {
+      "path": "tests/test_elixirs_v11.py",
+      "bytes": 6456,
+      "sha256": "f4f6f0af6ff7355278de635b6e01cee2171e4d912196eee0aaa58997284d798a"
     },
     {
       "path": "tests/test_guard_customization_v085.py",
@@ -289,7 +294,12 @@
     {
       "path": "tests/test_gui_v10.py",
       "bytes": 4750,
-      "sha256": "a5409d3fbfa3e60b5c0b8a46ccf423c1a26467414fffc17a523ce17c5c311501"
+      "sha256": "a5bfa9fbfd1dd1c6a335762d61c7b518baaeff02d5d9dfd451c7137467ce7c73"
+    },
+    {
+      "path": "tests/test_gui_v11.py",
+      "bytes": 9143,
+      "sha256": "549327dfcfb284496a2d92fb4610c6f1f64f714474e69b982fc5500ac589aa06"
     },
     {
       "path": "tests/test_maximum_preservation_v085.py",

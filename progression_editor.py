@@ -20,10 +20,12 @@ FIRST_CLEAR_ELIXIRS = METADATA['limits']['first_clear_elixirs']
 
 
 def _elixir_property(document):
-    """Return a verified scalar or a read-only explanation for other layouts."""
+    """Return a verified scalar, native omitted zero, or a layout refusal."""
     prop = document.properties.get('BeansNum')
     if prop is None:
-        return None, None, 'This save has no Huanglong Elixir counter (BeansNum).'
+        # GameStatusSaveGame's constructor/reset initialize this Int32 to zero.
+        # Default-valued tags can be omitted from a new/reset save.
+        return None, 0, ''
     if (not isinstance(prop, dict) or prop.get('type') != 'IntProperty' or
             prop.get('data_size') != 4 or prop.get('flags') != 0 or
             prop.get('array_index') != 0 or type(prop.get('value')) is not int):
@@ -67,7 +69,7 @@ def elixir_state(document, changes=()):
     new Musou clears. Otherwise each new clear awards three, capped at 999.
     """
     prop, saved, reason = _elixir_property(document)
-    if prop is None:
+    if reason:
         return {'value': saved, 'saved_value': saved, 'editable': False, 'reason': reason}
     requests = list(changes)
     explicit = _requested_elixir_count(requests)
@@ -162,6 +164,12 @@ def _array_payload(entries):
 def _fstring(value):
     raw = value.encode('utf-8') + b'\0'
     return struct.pack('<i', len(raw)) + raw
+
+
+def _new_elixir_tag(value):
+    """Verified complete scalar tag: no type children, four bytes, no flags."""
+    return (_fstring('BeansNum') + _fstring('IntProperty') +
+            struct.pack('<iiBi', 0, 4, 0, value))
 
 
 def _new_bool_array_tag(document, name, entries):
@@ -262,18 +270,22 @@ def plan_progression_changes(document, changes, add_property, add_insertion):
         add_property(progress, struct.pack('<i', value),
                      f'{route["officer"]}: Musou progress -> {value}')
         newly_cleared += not was_cleared
+    missing = []
     if explicit_elixirs is not None or newly_cleared:
         beans, saved_elixirs, reason = _elixir_property(document)
-        if beans is None:
+        if reason:
             raise SaveError(reason)
         value = (explicit_elixirs if explicit_elixirs is not None else
                  min(ELIXIR_MAX, saved_elixirs + FIRST_CLEAR_ELIXIRS * newly_cleared))
         reason = (f'Huanglong Elixirs: explicit final balance -> {value}'
                   if explicit_elixirs is not None else
                   f'{newly_cleared} new Musou clears: Huanglong Elixirs -> {value}')
-        add_property(beans, struct.pack('<i', value),
-                     reason)
-    missing = []
+        if beans is not None:
+            add_property(beans, struct.pack('<i', value), reason)
+        elif value:
+            # Keep an unchanged implicit zero byte-identical; materialize only
+            # a requested nondefault balance (including first-clear rewards).
+            missing.append(_new_elixir_tag(value))
     for name, (prop, entries) in arrays.items():
         if prop is None:
             missing.append(_new_bool_array_tag(document, name, entries))
@@ -295,4 +307,4 @@ def plan_progression_changes(document, changes, add_property, add_insertion):
             add_property(prop, _array_payload(entries), f'{name}: explicit story action')
     if missing:
         add_insertion(_top_terminator(document), b''.join(missing),
-                      'Add native lazily initialized side-story availability arrays')
+                      'Add native lazily initialized progression properties')

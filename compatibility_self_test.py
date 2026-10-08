@@ -45,15 +45,20 @@ def run(editor, fixture, output_directory):
             check('Unchanged serialization is byte-identical',unchanged==source and not audit['plaintext_changes'])
             target=output/'unchanged.sav';editor.save_to(target)
             check('Save As callback writes identical bytes',target.read_bytes()==source and not errors)
-            saved_elixirs=original.properties['BeansNum']['value']
+            saved_elixirs=progression.elixir_state(original)['saved_value']
             check('Elixir form reads the saved balance',int(editor.elixir_input.get())==saved_elixirs and str(editor.elixir_entry.cget('state'))=='normal')
             for value in (0,999):
                 editor.elixir_input.set(str(value));editor.apply_elixirs()
                 raw,elixir_audit=save_writer.serialize(editor.document,list(editor.changes.values()))
                 result=parse_bytes(raw)
-                check('Elixir '+str(value)+' form output reads back',result.properties['BeansNum']['value']==value and not errors)
-                offset=original.properties['BeansNum']['data_offset']
-                check('Elixir '+str(value)+' changes only its scalar',result.plaintext[:offset]==original.plaintext[:offset] and result.plaintext[offset+4:]==original.plaintext[offset+4:])
+                check('Elixir '+str(value)+' form output reads back',progression.elixir_state(result)['value']==value and not errors)
+                if 'BeansNum' in original.properties:
+                    offset=original.properties['BeansNum']['data_offset']
+                    check('Elixir '+str(value)+' changes only its scalar',result.plaintext[:offset]==original.plaintext[:offset] and result.plaintext[offset+4:]==original.plaintext[offset+4:])
+                elif value==0:
+                    check('Omitted zero Elixir balance stays byte-identical',raw==source and 'BeansNum' not in result.properties)
+                else:
+                    check('Missing counter is created without altering other saved bytes',all(original.plaintext[prop['tag_offset']:prop['data_offset']+prop['data_size']]==result.plaintext[result.properties[name]['tag_offset']:result.properties[name]['data_offset']+result.properties[name]['data_size']] for name,prop in original.properties.items()))
                 editor.discard()
             editor.max_elixirs()
             check('Max Elixirs form uses999',int(editor.elixir_input.get())==999)

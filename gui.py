@@ -18,7 +18,7 @@ import collection_editor as collections
 import musou_slots
 
 ROOT = Path(__file__).resolve().parent
-VERSION = '1.0'
+VERSION = '1.1'
 DISCORD_USERNAME = 'mexicannn'
 STEAM_PROFILE = 'https://steamcommunity.com/id/theonlyjuandeagingmexican/'
 NAMES = json.loads((ROOT / 'officer_names.json').read_text(encoding='utf-8'))
@@ -33,6 +33,20 @@ UNIQUE_WEAPONS = getattr(save_writer, 'UNIQUE_WEAPONS', {})
 LABELS = {'SPoint': 'Merit', 'MaxHealth': 'Life / HP', 'MaxMusou': 'Musou', 'Attack': 'Attack', 'Defence': 'Defense'}
 GUARD_ITEMS = guard_editor.GUARD_ITEMS
 GUARD_WEAPONS = guard_editor.GUARD_WEAPONS
+THEMES = {
+    'Light': {
+        'background': '#f3f5f7', 'surface': '#ffffff', 'text': '#243142',
+        'muted': '#586879', 'border': '#d8dfe6', 'hover': '#e7ecf1',
+        'disabled': '#edf0f3', 'disabled_text': '#7b8590',
+        'accent': '#92353b', 'accent_hover': '#76282e', 'tab_text': '#92353b',
+    },
+    'Dark': {
+        'background': '#18212d', 'surface': '#232f3e', 'text': '#e9eef5',
+        'muted': '#b4c1d0', 'border': '#405065', 'hover': '#2e3c4f',
+        'disabled': '#293444', 'disabled_text': '#8b9bad',
+        'accent': '#a83c46', 'accent_hover': '#bb4953', 'tab_text': '#efacaf',
+    },
+}
 
 
 class Editor:
@@ -56,27 +70,11 @@ class Editor:
         root.title(f'Dynasty Warriors 3 Remastered Save Editor — v{VERSION}')
         root.geometry('1140x870')
         root.minsize(1040, 740)
-        style = ttk.Style()
-        style.theme_use('clam')
+        self.style = ttk.Style(root)
+        self.style.theme_use('clam')
+        self.theme_name = tk.StringVar(root, value='Light')
         root.option_add('*Font', ('Segoe UI', 10))
-        style.configure('.', font=('Segoe UI', 10), background='#f3f5f7', foreground='#243142')
-        style.configure('TButton', padding=(9, 5), background='#ffffff')
-        style.map('TButton', background=[('active', '#e7ecf1'), ('disabled', '#edf0f3')])
-        style.configure('Primary.TButton', background='#92353b', foreground='#ffffff')
-        style.map('Primary.TButton', background=[('disabled', '#d8dde3'), ('active', '#76282e')],
-                  foreground=[('disabled', '#7b8590')])
-        style.configure('TNotebook.Tab', padding=(12, 6))
-        style.map('TNotebook.Tab', background=[('selected', '#ffffff')],
-                  foreground=[('selected', '#92353b')])
-        style.configure('Section.TLabel', font=('Segoe UI', 11, 'bold'))
-        style.configure('Muted.TLabel', foreground='#586879')
-        style.configure('TLabelframe', bordercolor='#d8dfe6', relief='solid')
-        style.configure('TLabelframe.Label', font=('Segoe UI', 11, 'bold'))
-        style.configure('Treeview', rowheight=27, background='#ffffff', fieldbackground='#ffffff',
-                        bordercolor='#d8dfe6')
-        style.configure('Treeview.Heading', font=('Segoe UI', 10, 'bold'), background='#e7ecf1',
-                        padding=(6, 6))
-        style.map('Treeview', background=[('selected', '#92353b')], foreground=[('selected', '#ffffff')])
+        self.apply_theme('Light')
         banner = tk.Frame(root, background='#202a37', padx=20, pady=12)
         banner.pack(fill='x')
         brand = tk.Frame(banner, background='#202a37')
@@ -92,6 +90,13 @@ class Editor:
         self.author_label = tk.Label(credits, text='Made by Mexican', font=('Segoe UI', 10),
                                      background='#202a37', foreground='#d2d9e2')
         self.author_label.pack(anchor='e')
+        appearance = ttk.Frame(credits, style='Header.TFrame')
+        appearance.pack(anchor='e', pady=(8, 0))
+        ttk.Label(appearance, text='Appearance', style='Header.TLabel').pack(side='left', padx=(0, 7))
+        self.theme_selector = ttk.Combobox(appearance, textvariable=self.theme_name,
+                                           values=tuple(THEMES), state='readonly', width=7)
+        self.theme_selector.pack(side='left')
+        self.theme_selector.bind('<<ComboboxSelected>>', lambda _event: self.apply_theme(self.theme_name.get()))
         outer = ttk.Frame(root, padding=15)
         outer.pack(fill='both', expand=True)
         bar = ttk.Frame(outer)
@@ -108,10 +113,11 @@ class Editor:
         self.filename = tk.StringVar(value='Open a copy of GameStatusData.sav to begin.')
         self.backup_label = tk.StringVar(value='An untouched backup is created automatically when a copy opens.')
         ttk.Label(outer, textvariable=self.filename, wraplength=990).pack(fill='x', pady=(12, 3))
-        ttk.Label(outer, textvariable=self.backup_label, wraplength=990).pack(fill='x', pady=(0, 10))
+        ttk.Label(outer, textvariable=self.backup_label, wraplength=990, style='Muted.TLabel').pack(fill='x', pady=(0, 10))
         self.compatibility_label = tk.StringVar()
         ttk.Label(outer, textvariable=self.compatibility_label, wraplength=990, style='Muted.TLabel').pack(fill='x')
-        self.notebook = ttk.Notebook(outer)
+        # Long forms scroll instead of enlarging the window's requested height.
+        self.notebook = ttk.Notebook(outer, height=360)
         self.notebook.pack(fill='both', expand=True)
         self.tabs = {}
         for name in ('Officers', 'Items', 'Weapons', 'Bodyguards', 'Unlocks', 'Collections', 'Musou Saves'):
@@ -127,7 +133,7 @@ class Editor:
         self.build_musou_saves()
         self.bind_form_scrolling()
         bottom = ttk.Frame(outer)
-        bottom.pack(fill='x', pady=(12, 0))
+        bottom.pack(side='bottom', fill='x', pady=(12, 0), before=self.notebook)
         self.status = tk.StringVar(value='No save open.')
         ttk.Label(bottom, textvariable=self.status, wraplength=560).pack(side='left')
         for text, command in [('Review Changes', self.review), ('Discard Changes', self.discard), ('Undo', self.undo)]:
@@ -143,6 +149,79 @@ class Editor:
                 return 'break'
             root.bind(shortcut, invoke)
         root.protocol('WM_DELETE_WINDOW', self.close)
+
+    def apply_theme(self, name):
+        """Change appearance without rebuilding forms or touching pending edits."""
+        if name not in THEMES:
+            raise ValueError('Unsupported appearance.')
+        palette = THEMES[name]
+        self.theme_name.set(name)
+        style = self.style
+        style.configure('.', font=('Segoe UI', 10), background=palette['background'],
+                        foreground=palette['text'], bordercolor=palette['border'],
+                        lightcolor=palette['border'], darkcolor=palette['border'],
+                        troughcolor=palette['background'])
+        style.configure('TButton', padding=(9, 6), background=palette['surface'])
+        style.map('TButton', background=[('disabled', palette['disabled']), ('active', palette['hover'])],
+                  foreground=[('disabled', palette['disabled_text'])])
+        style.configure('Primary.TButton', background=palette['accent'], foreground='#ffffff')
+        style.map('Primary.TButton', background=[('disabled', palette['disabled']), ('active', palette['accent_hover'])],
+                  foreground=[('disabled', palette['disabled_text']), ('!disabled', '#ffffff')])
+        style.configure('TNotebook', tabmargins=(0, 5, 0, 0))
+        style.configure('TNotebook.Tab', padding=(12, 7))
+        style.map('TNotebook.Tab', background=[('selected', palette['surface']), ('active', palette['hover'])],
+                  foreground=[('selected', palette['tab_text'])])
+        style.configure('Section.TLabel', font=('Segoe UI', 11, 'bold'))
+        style.configure('Muted.TLabel', foreground=palette['muted'])
+        style.configure('Header.TFrame', background='#202a37')
+        style.configure('Header.TLabel', background='#202a37', foreground='#d2d9e2', font=('Segoe UI', 9))
+        style.configure('TLabelframe', relief='solid')
+        style.configure('TLabelframe.Label', font=('Segoe UI', 11, 'bold'))
+        for fieldstyle in ('TEntry', 'TCombobox', 'TSpinbox'):
+            style.configure(fieldstyle, fieldbackground=palette['surface'], foreground=palette['text'],
+                            background=palette['surface'], insertcolor=palette['text'], padding=5,
+                            selectbackground=palette['accent'], selectforeground='#ffffff')
+            style.map(fieldstyle,
+                      fieldbackground=[('disabled', palette['disabled']), ('readonly', palette['surface'])],
+                      foreground=[('disabled', palette['disabled_text']), ('readonly', palette['text'])])
+        for control in ('TCheckbutton', 'TRadiobutton'):
+            style.map(control, background=[('active', palette['background'])],
+                      foreground=[('disabled', palette['disabled_text'])],
+                      indicatorbackground=[('disabled', palette['disabled']), ('selected', palette['accent']),
+                                           ('!selected', palette['surface'])])
+        style.configure('Treeview', rowheight=29, background=palette['surface'], fieldbackground=palette['surface'])
+        style.configure('Treeview.Heading', font=('Segoe UI', 10, 'bold'), background=palette['hover'], padding=(6, 7))
+        style.map('Treeview.Heading', background=[('active', palette['border'])])
+        style.map('Treeview', background=[('selected', palette['accent'])], foreground=[('selected', '#ffffff')])
+        style.configure('TScrollbar', background=palette['hover'], arrowcolor=palette['muted'])
+        style.map('TScrollbar', background=[('active', palette['border'])])
+        self.root.option_add('*TCombobox*Listbox.background', palette['surface'])
+        self.root.option_add('*TCombobox*Listbox.foreground', palette['text'])
+        self.root.option_add('*TCombobox*Listbox.selectBackground', palette['accent'])
+        self.root.option_add('*TCombobox*Listbox.selectForeground', '#ffffff')
+        self.theme_widgets(self.root)
+
+    def theme_widgets(self, parent):
+        """Apply colors to the small number of widgets outside ttk's styling."""
+        palette = THEMES[self.theme_name.get()]
+        stack = [parent]
+        while stack:
+            widget = stack.pop()
+            stack.extend(widget.winfo_children())
+            if isinstance(widget, (tk.Tk, tk.Toplevel, tk.Canvas)):
+                widget.configure(background=palette['background'])
+            elif isinstance(widget, tk.Text):
+                widget.configure(background=palette['surface'], foreground=palette['text'],
+                                 insertbackground=palette['text'], selectbackground=palette['accent'],
+                                 selectforeground='#ffffff')
+            elif isinstance(widget, ttk.Combobox):
+                # Tk keeps dropdown listboxes after their first use. The option
+                # database covers new ones; recolor any already-created popup.
+                listbox = f'{widget}.popdown.f.l'
+                if widget.tk.call('winfo', 'exists', listbox):
+                    widget.tk.call(listbox, 'configure', '-background', palette['surface'],
+                                   '-foreground', palette['text'], '-selectbackground', palette['accent'],
+                                   '-selectforeground', '#ffffff')
 
     def set_loaded(self, loaded):
         for button in self.buttons: button.configure(state='normal' if loaded else 'disabled')
@@ -203,7 +282,7 @@ class Editor:
         shell = ttk.Frame(parent)
         shell.pack(fill='both', expand=True)
         canvas = tk.Canvas(shell, width=width, height=200, highlightthickness=0,
-                           background='#f3f5f7')
+                           background=THEMES[self.theme_name.get()]['background'])
         scroll = ttk.Scrollbar(shell, orient='vertical', command=canvas.yview)
         scroll.pack(side='right', fill='y')
         canvas.pack(side='left', fill='both', expand=True)
@@ -386,12 +465,16 @@ class Editor:
 
     def build_guard_customization(self, page):
         ttk.Label(page,text='Bodyguard appearance and color availability',font=('Segoe UI',11,'bold')).pack(anchor='w',pady=(0,8))
-        self.guard_customization_tree=self.make_tree(page,[('kind','Type'),('owned','Available')],'Option',[250,120,100])
-        bar=ttk.Frame(page);bar.pack(fill='x',pady=10)
+        footer=ttk.Frame(page);footer.pack(side='bottom',fill='x',pady=(8,0))
+        bar=ttk.Frame(footer);bar.pack(fill='x',pady=(0,6))
         for text,command in (('Unlock Selected',self.unlock_selected_guard_customization),('Unlock All Bodyguard Options',self.unlock_guard_customization)):
             button=ttk.Button(bar,text=text,command=command);button.pack(side='left',padx=(0,8));self.buttons.append(button)
+        self.yellow_uniform_button=ttk.Button(bar,text='Unlock Yellow Uniform',command=self.unlock_yellow_uniform)
+        self.yellow_uniform_button.pack(side='left',padx=(0,8));self.buttons.append(self.yellow_uniform_button)
         self.guard_customization_note=tk.StringVar(value='Open a save copy to view appearance unlocks.')
-        ttk.Label(page,textvariable=self.guard_customization_note,wraplength=640).pack(anchor='w')
+        ttk.Label(footer,textvariable=self.guard_customization_note,wraplength=640).pack(anchor='w')
+        table=ttk.Frame(page);table.pack(fill='both',expand=True)
+        self.guard_customization_tree=self.make_tree(table,[('kind','Type'),('owned','Available')],'Option',[250,120,100])
 
     def refresh_guard_customization(self):
         if self.document is None:return
@@ -403,7 +486,9 @@ class Editor:
                 available='Default' if row['available_by_default'] else 'Yes' if row['unlocked'] else 'No' if row['unlocked'] is False else 'View only'
                 self.guard_customization_tree.insert('', 'end',iid=f'{family}:{row["id"]}',text=row['name'],values=(kind,available))
         if selected and self.guard_customization_tree.exists(selected[0]):self.guard_customization_tree.selection_set(selected[0])
-        self.guard_customization_note.set(state['reason'] or 'Unlocks both Nanman models and yellow, white, black and pink colors. Equipped appearances, team growth and story completion are preserved.')
+        yellow=next(row for row in state['outfits'] if row['id']==5)
+        self.yellow_uniform_button.configure(state='normal' if yellow['editable'] else 'disabled')
+        self.guard_customization_note.set(state['reason'] or 'The Yellow uniform is in the Color list. Unlocks both Nanman models and yellow, white, black and pink colors. Equipped appearances, team growth and story completion are preserved.')
 
     def guard_customization_changes(self):
         state=customization.customization_state(self.document)
@@ -412,6 +497,13 @@ class Editor:
 
     def unlock_guard_customization(self):
         if self.require_save():self.stage_many(self.guard_customization_changes())
+
+    def unlock_yellow_uniform(self):
+        if not self.require_save():return
+        row=next(row for row in customization.customization_state(self.document)['outfits'] if row['id']==5)
+        if not row['editable']:
+            messagebox.showerror('Cannot Unlock Yellow Uniform',row['reason']);return
+        self.stage_many(customization.customization_unlock_changes('outfit',5))
 
     def unlock_selected_guard_customization(self):
         if not self.selected_ok(self.guard_customization_tree):return
@@ -700,6 +792,7 @@ class Editor:
         ttk.Label(panel, text='Leave a comment on my Steam profile.', style='Muted.TLabel').pack(anchor='w', pady=(5, 6))
         ttk.Button(panel, text='Open Steam Profile', command=lambda: webbrowser.open(STEAM_PROFILE)).pack(anchor='w')
         ttk.Label(panel, textvariable=copied, style='Muted.TLabel').pack(anchor='w', pady=(15, 0))
+        self.theme_widgets(window)
 
     def officer_indices(self):
         return range(min(42,len(self.document.records('PCSaveDataArray'))))
@@ -1520,6 +1613,7 @@ class Editor:
             for warning in self.document.compatibility_warnings:
                 text.insert('end', f'{warning}\n\n')
             text.configure(state='disabled')
+        self.theme_widgets(window)
 
     def review_change(self, change):
         before, after = self.original_value(change), change.value

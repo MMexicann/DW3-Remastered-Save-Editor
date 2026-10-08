@@ -153,14 +153,13 @@ class ElixirWriteTests(unittest.TestCase):
                 with self.assertRaises(SaveError):
                     plan_changes(unusual, progression.musou_clear_changes(unusual, self.new_clear_ids[0]))
 
-    def test_missing_and_unknown_counter_layouts_do_not_break_save_open(self):
+    def test_unknown_counter_layouts_do_not_break_save_open(self):
         prop = self.document.properties['BeansNum']
-        missing = replace_top_tag(self.document, prop, b'')
         # Native integer tag replaced by an equally bounded FloatProperty tag.
         float_tag = (progression._fstring('BeansNum') + progression._fstring('FloatProperty') +
                      struct.pack('<iiBf', 0, 4, 0, 3.0))
         unknown = replace_top_tag(self.document, prop, float_tag)
-        for document in (missing, unknown):
+        for document in (unknown,):
             with self.subTest(layout=document.properties.get('BeansNum')):
                 state = progression.elixir_state(document)
                 self.assertEqual(state['value'], None)
@@ -178,6 +177,109 @@ class ElixirWriteTests(unittest.TestCase):
         self.assertEqual(serialize(indexed)[0], indexed.encrypted)
         with self.assertRaises(SaveError):
             plan_changes(indexed, [progression.elixir_count_change(3)])
+
+    def test_missing_counter_is_native_zero_and_zero_edits_are_exact_noops(self):
+        missing = replace_top_tag(self.document, self.document.properties['BeansNum'], b'')
+        self.assertEqual(progression.elixir_state(missing),
+                         {'value': 0, 'saved_value': 0, 'editable': True, 'reason': ''})
+        for changes in ([], [progression.elixir_count_change(0)]):
+            raw, audit = serialize(missing, changes)
+            self.assertEqual(raw, missing.encrypted)
+            self.assertNotIn('BeansNum', parse_bytes(raw).properties)
+            self.assertEqual(audit['plaintext_changes'], [])
+            self.assertEqual(audit['changed_aes_blocks'], [])
+            self.assertFalse(audit['resized'])
+
+    def test_missing_counter_materializes_native_tag_and_preserves_other_tags(self):
+        original = self.document.properties['BeansNum']
+        missing = replace_top_tag(self.document, original, b'')
+        for count in (3, 999):
+            with self.subTest(count=count):
+                raw, audit = serialize(missing, [progression.elixir_count_change(count)])
+                result = parse_bytes(raw)
+                beans = result.properties['BeansNum']
+                self.assertEqual((beans['type'], beans['data_size'], beans['flags'],
+                                  beans['array_index'], beans['value']),
+                                 ('IntProperty', 4, 0, 0, count))
+                # Compare to an actual saved native scalar tag, independently
+                # of the insertion helper's implementation.
+                self.assertEqual(tag_bytes(result, beans),
+                                 tag_bytes(self.document, original)[:-4] + struct.pack('<i', count))
+                insertions = [p for p in audit['plaintext_changes'] if p['old_length'] == 0]
+                self.assertEqual(len(insertions), 1)
+                self.assertEqual(insertions[0]['offset'], progression._top_terminator(missing))
+                expected = bytearray(missing.plaintext[:4 + missing.parsed['payload_size']])
+                offset = insertions[0]['offset']
+                expected[offset:offset] = tag_bytes(result, beans)
+                struct.pack_into('>I', expected, 0, len(expected) - 4)
+                expected.extend(bytes((-len(expected)) % 16))
+                self.assertEqual(result.plaintext, bytes(expected))
+                self.assertEqual(audit['output_payload_size'] - audit['source_payload_size'],
+                                 len(tag_bytes(result, beans)))
+                for name, prop in missing.properties.items():
+                    self.assertEqual(tag_bytes(missing, prop), tag_bytes(result, result.properties[name]), name)
+                self.assertEqual(serialize(result)[0], raw)
+                self.assertEqual(serialize(result, [progression.elixir_count_change(count)])[0], raw)
+
+    def test_missing_counter_awards_once_and_explicit_final_balance_wins(self):
+        missing = replace_top_tag(self.document, self.document.properties['BeansNum'], b'')
+        clears = [Change('progression', i, 'MusouCleared', True) for i in self.new_clear_ids]
+        self.assertEqual(progression.elixir_state(missing, clears)['value'], 6)
+        awarded = parse_bytes(serialize(missing, clears)[0])
+        self.assertEqual(awarded.properties['BeansNum']['value'], 6)
+        self.assertEqual(serialize(awarded, clears)[0], awarded.encrypted)
+        for count in (0, 17, 999):
+            with self.subTest(count=count):
+                explicit = progression.elixir_count_change(count)
+                first = [explicit, *clears]
+                last = [*reversed(clears), explicit]
+                self.assertEqual(progression.elixir_state(missing, first)['value'], count)
+                raw = serialize(missing, first)[0]
+                self.assertEqual(raw, serialize(missing, last)[0])
+                result = parse_bytes(raw)
+                self.assertEqual(progression.elixir_state(result)['value'], count)
+                self.assertEqual('BeansNum' in result.properties, count != 0)
+                self.assertTrue(all(result.properties['EngiClearCharaArray']['value']['values'][i]
+                                    for i in self.new_clear_ids))
+                self.assertEqual(serialize(result, first)[0], raw)
+        already_cleared = replace_top_tag(awarded, awarded.properties['BeansNum'], b'')
+        self.assertEqual(progression.elixir_state(already_cleared, clears)['value'], 0)
+        self.assertEqual(serialize(already_cleared, clears)[0], already_cleared.encrypted)
+
+    def test_missing_counter_combines_with_lazy_side_arrays(self):
+        missing = replace_top_tag(self.document, self.document.properties['BeansNum'], b'')
+        for name in progression.SIDE_ARRAYS:
+            if name in missing.properties:
+                missing = replace_top_tag(missing, missing.properties[name], b'')
+        changes = (progression.side_story_changes() +
+                   progression.musou_clear_changes(missing, self.new_clear_ids[0]))
+        raw, audit = serialize(missing, changes)
+        result = parse_bytes(raw)
+        self.assertEqual(result.properties['BeansNum']['value'], 3)
+        for name in progression.SIDE_ARRAYS:
+            self.assertEqual(result.properties[name]['value']['values'], [1, 1, 1])
+        self.assertEqual(sum(p['old_length'] == 0 for p in audit['plaintext_changes']), 1)
+        self.assertEqual(result.parsed['trailer_hex'], missing.parsed['trailer_hex'])
+        self.assertEqual(serialize(result, changes)[0], raw)
+
+    def test_existing_malformed_counter_is_never_replaced_by_lazy_scalar(self):
+        prop = self.document.properties['BeansNum']
+        malformed_tags = [
+            progression._fstring('BeansNum') + progression._fstring('IntProperty') +
+            struct.pack('<iiB', 0, 8, 0) + bytes(8),
+            progression._fstring('BeansNum') + progression._fstring('IntProperty') +
+            struct.pack('<iiB', 0, 4, 2) + bytes(16) + struct.pack('<i', 3),
+        ]
+        for tag in malformed_tags:
+            with self.subTest(tag=tag.hex()):
+                malformed = replace_top_tag(self.document, prop, tag)
+                self.assertFalse(progression.elixir_state(malformed)['editable'])
+                self.assertEqual(serialize(malformed)[0], malformed.encrypted)
+                for changes in ([progression.elixir_count_change(0)],
+                                [progression.elixir_count_change(3)],
+                                progression.musou_clear_changes(malformed, self.new_clear_ids[0])):
+                    with self.assertRaises(SaveError):
+                        serialize(malformed, changes)
 
     def test_supplied_report_copies_accept_counter_edits_without_source_writes(self):
         for path in sorted(REPORTS.glob('*.sav')):
