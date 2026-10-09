@@ -1,6 +1,6 @@
 # Verified Windows PC layouts and research scope
 
-The application edits **native Windows PC saves only**. Console saves are not
+This document covers **native Windows PC save backends**. Console saves are not
 accepted by these PC backends. The separate DW4 XL PS2 adapter has its own
 container and platform checks. Console references can help
 identify a field, but a console offset is never sufficient to enable a PC edit.
@@ -10,17 +10,18 @@ Console-only releases, including Pirate Warriors 1 and 2, are excluded.
 
 ## What "file editing verified" means
 
-New games enter `game_registry.GAMES` only after an explicit adapter can identify
-and validate an actual PC save, decode it, change evidenced gameplay fields,
-regenerate native integrity data and reparse the result. Unchanged saves must
+`game_registry.GAMES` separates independent native-file verification from
+source-backed published-format support. An explicit adapter must identify its
+implemented layout, decode it, change evidenced gameplay fields, regenerate
+native integrity data and reparse the result. Unchanged saves must
 round-trip byte for byte and changed plaintext must be limited to declared
 fields. Procedural regressions cover rejection and preservation behavior.
 
 **This is not an in-game load test.** The cloud cannot run these Windows games.
-DW8 XL and Pirate Warriors 3 explicitly display that in-game checks are pending.
+DW8 XL and Pirate Warriors 3 have native-file evidence; game loading remains pending.
 Their editors support the layouts described here, not every platform, patch,
-mod, region or DLC combination. Origins remains research copy tools, accessed
-in contributor documentation rather than the editor library.
+mod, region or DLC combination. Origins retains opaque copy tools available by
+explicit CLI selection, with contributor evidence outside the editor library.
 
 ## Dynasty Warriors 8: Xtreme Legends Complete Edition
 

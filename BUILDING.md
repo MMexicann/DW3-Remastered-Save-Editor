@@ -55,6 +55,7 @@ Other editors use an explicit game ID:
 .\dist\UniversalKoeiTecmoSaveEditor-v1.3.exe --game dw8xl --self-test "D:\SaveCopies\save.dat" "D:\SaveCopies\DW8Test"
 .\dist\UniversalKoeiTecmoSaveEditor-v1.3.exe --game pw3 --self-test "D:\SaveCopies\OP3WIN0000.dat" "D:\SaveCopies\PW3Test"
 .\dist\UniversalKoeiTecmoSaveEditor-v1.3.exe --game dw4xl_ps2 --self-test "D:\SaveCopies\DW4XL.psu" "D:\SaveCopies\DW4XLTest"
+.\dist\UniversalKoeiTecmoSaveEditor-v1.3.exe --game atelier_sophie2 --self-test "D:\SaveCopies\data.dat" "D:\SaveCopies\Sophie2Test"
 ```
 
 Use a separate input copy and a new/empty output folder. Require exit 0,

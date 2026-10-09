@@ -43,8 +43,8 @@
     },
     {
       "path": "BUILDING.md",
-      "bytes": 3985,
-      "sha256": "f6944fe17448d3bcbf6ef589cb9fb88a5447da63268d422486fad7941007c9f0"
+      "bytes": 4118,
+      "sha256": "8b7bedd21bf22a3c6a3db46f61445c4d778ec8f5b64d818f8c13f119f5e18595"
     },
     {
       "path": "CHANGELOG.md",
@@ -78,8 +78,8 @@
     },
     {
       "path": "KOEI_FORMATS.md",
-      "bytes": 13250,
-      "sha256": "6882549c8b8d8e6d2440369501df59fe573ae10dd5c9ea33c3825d2002adf96f"
+      "bytes": 13333,
+      "sha256": "5ab40a9952f0682eb5e86ac6f8dc23dd2089be67f5aa0303204cf7714091daf7"
     },
     {
       "path": "LICENSE",
