@@ -1,3 +1,3 @@
-from gui import main
+from application import main
 
 main()

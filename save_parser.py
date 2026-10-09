@@ -207,38 +207,9 @@ def _validate_document(doc):
     doc.compatibility_warnings = warnings
 
 
-def _reserved_windows_path(path):
-    """Keep Python 3.10+ compatibility without os.path.isreserved (3.13+)."""
-    windows=PureWindowsPath(str(path))
-    devices={'CON','PRN','AUX','NUL','CONIN$','CONOUT$'}
-    devices.update(prefix+digit for prefix in ('COM','LPT') for digit in '123456789\u00b9\u00b2\u00b3')
-    return any(part.endswith((' ','.')) or any(ord(c)<32 or c in ':<>"|?*' for c in part)
-               or part.split('.',1)[0].rstrip(' ').upper() in devices
-               for part in windows.parts if part!=windows.anchor)
+# Keep the public DW3 path API; all games share the same copy-only policy.
+from save_safety import safe_path, reserved_windows_path as _reserved_windows_path
 
-def safe_path(path: Path) -> Path:
-    path=Path(path)
-    if os.name=='nt' and _reserved_windows_path(path):
-        raise SaveError('Use an ordinary file name, without device names or alternate data streams.')
-    # Check lexically before resolving/accessing the named live save directory.
-    for text in (str(path).replace('\\','/').lower(), str(path.absolute()).replace('\\','/').lower()):
-        if re.search(r'/koeitecmo/dw3ce_re/saved(?:/|$)',text):
-            raise SaveError('Use a copied save outside the live game folder.')
-        if re.search(r'/steam/userdata(?:/|$)',text) or re.search(r'/userdata/[^/]+/[^/]+/remote(?:/|$)',text):
-            raise SaveError('Steam Cloud folders cannot be accessed. Use a separate save copy.')
-    if path.name.lower() in ('steam_autocloud.vdf','remotecache.vdf'):
-        raise SaveError('Steam Cloud metadata cannot be opened or changed.')
-    resolved=path.resolve()
-    if resolved.name.lower() in ('steam_autocloud.vdf','remotecache.vdf'):
-        raise SaveError('Steam Cloud metadata cannot be opened or changed through an alias.')
-    if os.name=='nt' and _reserved_windows_path(resolved):
-        raise SaveError('The resolved file name is unsupported.')
-    if re.search(r'/koeitecmo/dw3ce_re/saved(?:/|$)',str(resolved).replace('\\','/').lower()):
-        raise SaveError('Live save folders cannot be accessed by this editor.')
-    text=str(resolved).replace('\\','/').lower()
-    if re.search(r'/steam/userdata(?:/|$)',text) or re.search(r'/userdata/[^/]+/[^/]+/remote(?:/|$)',text):
-        raise SaveError('Steam Cloud folders cannot be accessed.')
-    return resolved
 
 def parse_bytes(raw: bytes, source: Path | None=None) -> SaveDocument:
     try:

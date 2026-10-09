@@ -1,20 +1,25 @@
-# Dynasty Warriors 3 Remastered Save Editor v1.1
+# Universal Koei Tecmo Save Editor v1.2
 
-v1.1 fixes Elixir editing on new saves, makes the Yellow bodyguard uniform easier to find and adds a choice of Light or Dark appearance.
+One standalone Windows application for five game editors. Choose a platform and
+game from the library, switch games without restarting, and keep separate editing
+sessions with shared Light/Dark appearance.
 
-- Huanglong Elixir editing and Musou completion now work when a save has not earned any Elixirs yet. You no longer need to complete a story first to create the counter.
-- Added **Unlock Yellow Uniform** under Bodyguards → Appearance Unlocks. This uses the existing Yellow color unlock alongside the Nanman models and other special colors.
-- Added a Light/Dark selector at the top of the window, with clearer spacing and readable forms in both themes.
+| Game | Platform | Features |
+| --- | --- | --- |
+| DW3: Complete Edition Remastered | Windows PC | Complete existing editor, including officers, weapons, items, bodyguards, unlocks and collections |
+| DW4 Hyper | Windows PC | Officer stats/EXP/unlocks, weapon EXP, items, bodyguard points and difficulty |
+| DW8: Xtreme Legends Complete Edition | Windows PC | Gold, gems, materials, officer stats and existing weapon attribute ranks |
+| One Piece: Pirate Warriors 3 | Windows PC | Character stats, special bars and skill slots, with progression/currency inspection |
+| DW4: Xtreme Legends | PS2 USA SLUS-20812 | Officer stats/points, weapon EXP, items, bodyguard points and difficulty in `.psu` exports |
 
-Supported features:
+- Windows PC is the default platform; PS2 exports have a separate game entry.
+- Individual and bulk edits, supported Max actions, automatic backups, Undo,
+  Review Changes, Save As and backup restore.
+- All DW3 v1.1 features and Mexican's author branding retained.
+- New [contributor guide](https://github.com/MMexicann/DW3-Remastered-Save-Editor/blob/main/CONTRIBUTING.md) and [AI agent guide](https://github.com/MMexicann/DW3-Remastered-Save-Editor/blob/main/AGENTS.md) cover
+  architecture, save mapping, tests and Windows builds.
 
-- Officer Merit and permanent stats for all 42 officers.
-- Normal item values and normal/rare item unlocks.
-- All 84 unique weapons, including Ziluan's 4th/5th weapons; weapon bonus rolls, rare bonuses and elements, plus weapon collection and Tactics costumes.
-- Bodyguard Merit, growth, items, weapons, equipment, Nanman models and special colors.
-- Officer, stage and side-story unlocks, with separate Musou completion controls.
-- All 42 music tracks and 50 movies.
-- Saved Musou campaign run removal and Huanglong Elixirs from 0 to 999.
-- Backups, Undo, Review Changes and backup restore, plus Discord and Steam contact links.
-
-Download the standalone EXE, or extract the Windows ZIP and run `DW3RemasteredSaveEditor-v1.1.exe`. No Python or installer is needed. Open a separate copy of `GameStatusData.sav`, keep an untouched backup, review your changes and use **Save As** to create an edited copy.
+Download **UniversalKoeiTecmoSaveEditor-v1.2.exe** and work on a separate save copy.
+No installer or Python setup is required. Source and Windows packages include
+SHA-256 checksums. Contributor test coverage and validation limits are documented
+in [VALIDATION.md](https://github.com/MMexicann/DW3-Remastered-Save-Editor/blob/main/VALIDATION.md).

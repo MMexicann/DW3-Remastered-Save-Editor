@@ -1,0 +1,2 @@
+# Optional development provider on non-Windows machines. Windows uses native CNG.
+cryptography==50.0.0

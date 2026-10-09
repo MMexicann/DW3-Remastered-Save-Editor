@@ -1,64 +1,91 @@
 # Building the Windows executable
 
-Build on 64-bit Windows with Python and Tkinter installed. The build dependency
-pins PyInstaller 6.22.3. Python and PyInstaller are needed to build from source;
-users of the finished executable only need to extract the Windows ZIP and run it.
+Build on 64-bit Windows with Python and Tkinter. The Windows workflow uses
+Python 3.14, and `build-requirements.txt` pins PyInstaller 6.22.3. The application
+itself requires no third-party runtime package on Windows.
 
 ```powershell
 python -m pip install -r build-requirements.txt
+python package_release.py --verify-only
 python build_windows.py
 ```
 
-The result is `dist/DW3RemasteredSaveEditor-v1.1.exe`. It bundles the GUI,
-Windows CNG AES wrapper, Tk runtime, parser/writer and twelve JSON
-metadata files. It does not bundle research saves or installed game files.
+The output is **`dist/UniversalKoeiTecmoSaveEditor-v1.2.exe`**, a single standalone
+executable containing the game library, all five game editors, Tk runtime and
+public application metadata. Native Windows CNG handles DW3 encryption. Save
+samples, installed game files and private reports are excluded.
 
-Check startup and the complete file workflow after building. Wait for each
-windowed test process to finish before checking its exit code/report:
+`build_windows.py` requires Windows for compilation. Inspect the build inputs on
+any OS with:
+
+```text
+python build_windows.py --print-config
+```
+
+## Build checks
 
 ```powershell
-$smoke = Start-Process -FilePath .\dist\DW3RemasteredSaveEditor-v1.1.exe -ArgumentList '--smoke-test' -WindowStyle Hidden -Wait -PassThru
+python -m unittest discover -s tests -v
+python application.py --smoke-test
+$smoke = Start-Process -FilePath .\dist\UniversalKoeiTecmoSaveEditor-v1.2.exe -ArgumentList '--smoke-test' -WindowStyle Hidden -Wait -PassThru
 $smoke.ExitCode
-$selfTest = Start-Process -FilePath .\dist\DW3RemasteredSaveEditor-v1.1.exe -ArgumentList '--self-test "D:\SaveCopies\GameStatusData.sav" "D:\SaveCopies\BundledTest"' -WindowStyle Hidden -Wait -PassThru
+python package_release.py --verify-executable
+```
+
+The smoke test initializes the library and registered editors, switches games and
+appearance, then exits. Require exit code 0. Save-format and game-load validation
+are separate; see [VALIDATION.md](VALIDATION.md) for coverage and limitations.
+
+Direct startup supports `--game dw3`, `--game dw4hyper`, `--game dw8xl`,
+`--game pw3` and `--game dw4xl_ps2`.
+
+## Copied-save workflow checks
+
+The executable retains the DW3 copied-save self-test:
+
+```powershell
+$selfTest = Start-Process -FilePath .\dist\UniversalKoeiTecmoSaveEditor-v1.2.exe -ArgumentList '--self-test "D:\SaveCopies\GameStatusData.sav" "D:\SaveCopies\DW3Test"' -WindowStyle Hidden -Wait -PassThru
 $selfTest.ExitCode
 ```
 
-The second command writes `self-test-report.json` in a new/empty output
-folder. Exit code 0 and `success: true` confirm completion. The report also
-confirms the supplied input's hash stayed unchanged. The executable is a
-windowed app, so the JSON report is the useful result rather than console
-output.
+Other editors use an explicit game ID:
 
-PyInstaller's one-file executable extracts its bundled runtime into a
-temporary directory at startup. That does not access the game installation
-or save directories. No installer or administrator access is required.
+```powershell
+.\dist\UniversalKoeiTecmoSaveEditor-v1.2.exe --game dw4hyper --self-test "D:\SaveCopies\save.dat" "D:\SaveCopies\DW4Test"
+.\dist\UniversalKoeiTecmoSaveEditor-v1.2.exe --game dw8xl --self-test "D:\SaveCopies\save.dat" "D:\SaveCopies\DW8Test"
+.\dist\UniversalKoeiTecmoSaveEditor-v1.2.exe --game pw3 --self-test "D:\SaveCopies\OP3WIN0000.dat" "D:\SaveCopies\PW3Test"
+.\dist\UniversalKoeiTecmoSaveEditor-v1.2.exe --game dw4xl_ps2 --self-test "D:\SaveCopies\DW4XL.psu" "D:\SaveCopies\DW4XLTest"
+```
 
-## Release packaging
+Use a separate input copy and a new/empty output folder. Require exit 0,
+`success: true` in `self-test-report.json` and preservation of the input hash.
+These workflows create edited copies, backups and restored copies. Source
+invocations use `python application.py` in place of the executable. They do not
+establish actual game loading.
 
-`SOURCE_MANIFEST.json` records the version, length and SHA-256 hash of every
-public source file. Regenerate it after final source edits, then run:
+## Package integrity
+
+`SOURCE_MANIFEST.json` records public source file versions, lengths and SHA-256
+hashes. Refresh it after reviewed edits with `python refresh_manifest.py`; use
+`--add FILE...` only for reviewed public sources. Then run:
 
 ```powershell
 python package_release.py --verify-only
 python package_release.py --verify-executable
-python package_release.py
+python package_release.py --output work/local-universal-package
 ```
 
-The packager creates the standalone Windows EXE, Windows ZIP, source ZIP and `SHA256SUMS.txt` in
-`release/`. The source ZIP contains only verified manifest entries and the
-manifest itself. Save files, research folders, build output and personal home
-paths are excluded or rejected. The Windows ZIP contains the executable,
-README, changelog and licenses. Existing output files are never replaced;
-use `--output` with a new directory to package again.
+The packager produces the EXE, Windows ZIP, source ZIP and `SHA256SUMS.txt`.
+Existing outputs are never replaced. It checks the embedded archive, metadata and
+source hashes, and rejects save/game-file entries and personal paths.
 
-The executable check inspects its embedded archive in memory, including
-compressed Python modules. It rejects private save/research entries and
-personal home paths, and compares bundled metadata with the verified source.
+The Windows workflow runs the tests, builds the executable and verifies its
+startup and archive before creating downloadable build assets. Building locally
+uses the same scripts. A completed build is a prerequisite for packaging.
+Manual workflow runs only build artifacts. Pushing a tag matching the application
+version, such as `v1.2`, publishes a new release after the native build and checks
+succeed. Existing releases are not replaced.
 
-The Windows release workflow uses Python 3.14 and the pinned build dependency.
-It verifies the manifest, runs the public tests and checks both source and
-packaged GUI startup before packaging. Private fixture cases skip in CI.
-A push to `main` with `[release]` in its final commit message, or a manual run
-on `main`, publishes an official release for that exact commit. Existing tags
-or releases stop publication. The workflow's GitHub token has only repository
-contents permission; no personal access token is required.
+PyInstaller's one-file runtime extracts into a temporary directory at startup.
+An already-built executable requires no installer, game-directory access or
+administrator privileges.

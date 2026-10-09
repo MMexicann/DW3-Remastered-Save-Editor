@@ -1,0 +1,368 @@
+"""Copy-only editing for explicitly verified PC save layouts.
+
+Only declared scalar fields can change. Unknown bytes and original cipher seeds
+are retained. No sample save or third-party implementation is distributed.
+"""
+from dataclasses import dataclass
+from functools import lru_cache
+import hashlib
+from pathlib import Path
+import struct
+from types import MappingProxyType
+from game_content import DW8_ATTRIBUTE_NAMES, PW3_COSTUME_ASSOCIATIONS
+from copy_storage import atomic_new, snapshot_backup, restore_snapshot
+from koei_codec import byte_cipher, mix_word, word_cipher, word_sum
+from models import SaveError
+from save_safety import safe_path
+
+
+@dataclass(frozen=True)
+class Field:
+    id: str
+    label: str
+    offset: int
+    size: int
+    maximum: int
+    group: str = 'Resources'
+    slot: int = 0
+    minimum: int = 0
+
+    def value(self, payload):
+        return int.from_bytes(payload[self.offset:self.offset + self.size], 'little')
+
+    def validate(self, value):
+        if type(value) is not int or not self.minimum <= value <= self.maximum:
+            raise SaveError(f'{self.label} requires a whole number from {self.minimum:,} to {self.maximum:,}.')
+
+
+@dataclass(frozen=True)
+class Format:
+    id: str
+    title: str
+    size: int
+    magic: tuple
+    fields: tuple
+    inner_seed: object = None
+    note: str = ''
+
+
+DW8_FIELDS = tuple([
+    Field('gold', 'Gold', 0x105, 4, 9_999_999),
+    Field('gems', 'Gems', 0x1d43, 2, 9_999),
+    Field('facility_materials', 'Facility materials', 0x1f6d1, 2, 9_999),
+    Field('weapon_materials', 'Weapon materials', 0x1f6d3, 2, 9_999),
+] + [Field(f'officer_{slot}_{name}', label, offset + slot * 0x48, 2, maximum,
+           'Officers', slot + 1)
+     for slot in range(82)
+     for name, label, offset, maximum in (('attack', 'Attack', 0x7fd5, 1500),
+                                         ('defense', 'Defense', 0x7fd7, 1500),
+                                         ('hp', 'Health', 0x7fd9, 1000))])
+
+PW3_FIELDS = tuple([Field(f'character_{slot}_{name}', label, offset + slot * 0x1f0, size, maximum,
+           'Characters', slot + 1, minimum)
+     for slot in range(47)
+     for name, label, offset, size, maximum, minimum in (
+         ('hp', 'Health', 0x654, 2, 10000, 0),
+         ('attack', 'Attack', 0x656, 2, 1000, 0),
+         ('defense', 'Defense', 0x658, 2, 1000, 0),
+         ('special', 'Special bars', 0x65a, 1, 4, 1),
+         ('skills', 'Skill slots', 0x65c, 1, 6, 1))])
+
+FORMATS = {
+    'dw8xl': Format('dw8xl', 'Dynasty Warriors 8: Xtreme Legends Complete Edition',
+                    0xb7f49, (bytes.fromhex('f002101309'), bytes.fromhex('f027021909')),
+                    DW8_FIELDS, 0x13100200,
+                    'Windows PC save.dat. Resources, officer stats and existing ranked weapon attributes. '
+                    'Gems use the community-corroborated 9,999 inventory limit. '
+                    'Levels, XP, equipped references and weapon identities are inspected without changing them.'),
+    'pw3': Format('pw3', 'One Piece: Pirate Warriors 3', 0x135d04,
+                  (b'ONE PIECE: PIRATE WARRIORS 3\x00',), PW3_FIELDS, None,
+                  'Windows PC OP3WIN0000.dat. Character stats may reset on level-up. '
+                  'Numbered character slots avoid assuming unverified names. '
+                  'Currency, levels, experience and the adjacent currency-related counter remain untouched '
+                  'pending controlled PC samples. Medals and story progress are also preserved.'),
+}
+
+# Published shared layout, corroborated against the converter's native PC sample.
+# This is the physical save pool, not a claim about in-game inventory capacity.
+DW8_WEAPON_BASE, DW8_WEAPON_STRIDE, DW8_WEAPON_COUNT = 0xe715, 0x18, 1830
+# These IDs have ranks 2..10 in populated genuine PC records. Consistently-one
+# and unobserved IDs remain untouched; numeric IDs are not assigned guessed names.
+DW8_RANKED_ATTRIBUTES = frozenset([0, *range(2, 24), *range(28, 36), 39, 41, 42, 43, 44])
+
+
+def _weapon_record(payload, index):
+    offset = DW8_WEAPON_BASE + index * DW8_WEAPON_STRIDE
+    state = payload[offset]
+    identity = int.from_bytes(payload[offset + 2:offset + 4], 'little')
+    if state not in (1, 3) or identity == 0xffff:
+        return None
+    return {'slot':index + 1, 'state':state, 'id':identity,
+            'affinity':payload[offset + 4], 'attack':payload[offset + 5],
+            'attributes':tuple(zip(payload[offset + 6:offset + 12], payload[offset + 12:offset + 18]))}
+
+
+@lru_cache(maxsize=8)
+def _field_index(game_id, payload):
+    fields = {field.id:field for field in get_format(game_id).fields}
+    if game_id == 'dw8xl':
+        for index in range(DW8_WEAPON_COUNT):
+            record = _weapon_record(payload, index)
+            if record is None:
+                continue
+            for attribute, (identity, rank) in enumerate(record['attributes']):
+                if identity not in DW8_RANKED_ATTRIBUTES or rank == 0:
+                    continue
+                field = Field(f'weapon_{index}_attribute_{attribute}_rank',
+                              f'{DW8_ATTRIBUTE_NAMES.get(identity, "Attribute " + str(attribute + 1))} rank (ID {identity})',
+                              DW8_WEAPON_BASE + index * DW8_WEAPON_STRIDE + 12 + attribute,
+                              1, 10, 'Weapon attributes', index + 1, 1)
+                fields[field.id] = field
+    return MappingProxyType(fields)
+
+
+def fields_for(document):
+    """Editable fields for this immutable snapshot, including existing weapons."""
+    return tuple(field_map(document).values())
+
+
+def weapons(document):
+    """Read-only populated physical weapon records; stale flag-zero rows are omitted."""
+    if document.format.id != 'dw8xl':
+        raise SaveError('Weapon inspection is mapped only for this DW8 PC layout.')
+    validate_document(document)
+    return tuple(record for index in range(DW8_WEAPON_COUNT)
+                 if (record := _weapon_record(document.payload, index)) is not None)
+
+
+def weapon(document, slot):
+    if document.format.id != 'dw8xl' or type(slot) is not int or not 1 <= slot <= DW8_WEAPON_COUNT:
+        raise SaveError('Choose an existing DW8 PC weapon record.')
+    validate_document(document)
+    record = _weapon_record(document.payload, slot - 1)
+    if record is None:
+        raise SaveError('This physical record is not an observed populated weapon.')
+    return record
+
+
+@dataclass(frozen=True)
+class Document:
+    format: Format
+    source: Path
+    raw: bytes
+    payload: bytes
+    seed: int
+
+    @property
+    def sha256(self):
+        return hashlib.sha256(self.raw).hexdigest()
+
+
+def get_format(game_id):
+    try:
+        return FORMATS[game_id]
+    except KeyError as error:
+        raise SaveError('No verified editing format is registered for this game.') from error
+
+
+def decode(raw, game_id, source=Path('copy.dat')):
+    layout = get_format(game_id)
+    if len(raw) != layout.size:
+        raise SaveError(f'{layout.title}: this PC layout requires exactly {layout.size:,} bytes.')
+    checksum, seed = struct.unpack_from('<HH', raw)
+    encrypted_inner = word_cipher(raw[4:-1] if layout.inner_seed is not None else raw[4:], seed)
+    if word_sum(encrypted_inner) != checksum:
+        raise SaveError('Save integrity check failed. The selected game or file may be incorrect.')
+    payload = encrypted_inner
+    if layout.inner_seed is not None:
+        payload = byte_cipher(payload, layout.inner_seed)
+        if (sum(payload) & 0xff) != (raw[-1] ^ (mix_word(seed) & 0xff)):
+            raise SaveError('DW8 Xtreme Legends plaintext checksum failed.')
+    if not any(payload.startswith(magic) for magic in layout.magic):
+        raise SaveError('Game identity or save revision does not match the selected PC editor.')
+    if layout.id == 'pw3' and (payload[0x500:0x508] != bytes.fromhex('0000000002000000') or
+                              payload[0x518:0x51c] != bytes.fromhex('d0000000')):
+        raise SaveError('Pirate Warriors 3 PC record layout is not a verified revision.')
+    return Document(layout, Path(source), bytes(raw), payload, seed)
+
+
+def read_save(path, game_id):
+    path = safe_path(path)
+    if path.suffix.lower() != '.dat':
+        raise SaveError('Open a separate PC .dat save copy.')
+    layout = get_format(game_id)
+    with path.open('rb') as stream:
+        raw = stream.read(layout.size + 1)
+    return decode(raw, game_id, path)
+
+
+def field_map(document):
+    return _field_index(document.format.id, document.payload)
+
+
+def validate_document(document):
+    layout = get_format(document.format.id)
+    if document.format != layout:
+        raise SaveError('Unregistered editing layout.')
+    original = decode(document.raw, layout.id, document.source)
+    if original.payload != document.payload or original.seed != document.seed:
+        raise SaveError('The opened document was changed outside the edit workflow.')
+
+
+def observed_beli(document):
+    """Read the candidate balance; its coupling to adjacent currency data is unknown."""
+    if document.format.id != 'pw3':
+        return None
+    validate_document(document)
+    return int.from_bytes(document.payload[0xc5d4:0xc5d8], 'little')
+
+
+def observed_health_curve(level_index):
+    """PW3 pattern corroborated across two PC samples, not a native clamp."""
+    if type(level_index) is not int or not 0 <= level_index <= 99:
+        return None
+    if level_index <= 49:
+        return 2000 + (3000 * level_index // 49)
+    return 5000 + 20 * (level_index - 49)
+
+
+def progression(document, slot):
+    """Read-only progression; XP thresholds and recalculation are not write rules."""
+    count = 82 if document.format.id == 'dw8xl' else 47 if document.format.id == 'pw3' else 0
+    if type(slot) is not int or not 1 <= slot <= count:
+        raise SaveError('Choose a mapped officer or character record slot.')
+    validate_document(document)
+    return _progression(document, slot)
+
+
+def progressions(document):
+    """Inspect all mapped progression records with one snapshot validation."""
+    if document.format.id not in ('dw8xl', 'pw3'):
+        raise SaveError('Progression inspection is not mapped for this game.')
+    validate_document(document)
+    return tuple(_progression(document, slot) for slot in range(1, 83 if document.format.id == 'dw8xl' else 48))
+
+
+def _progression(document, slot):
+    if document.format.id == 'dw8xl':
+        offset = 0x7fc9 + (slot - 1) * 0x48
+        index = document.payload[offset + 0x17]
+        return {'level':index + 1, 'level_index':index,
+                'experience':int.from_bytes(document.payload[offset + 0x1c:offset + 0x20], 'little'),
+                'leadership':int.from_bytes(document.payload[offset + 0x18:offset + 0x1c], 'little') + 1,
+                'leadership_experience':int.from_bytes(document.payload[offset + 0x20:offset + 0x24], 'little'),
+                'observed_health':None,
+                'weapon_slots':tuple(int.from_bytes(document.payload[offset + n:offset + n + 2], 'little') + 1
+                                     for n in (0x30, 0x32))}
+    offset = 0x650 + (slot - 1) * 0x1f0
+    index = document.payload[offset + 0xb]
+    return {'level':index + 1, 'level_index':index,
+            'experience':int.from_bytes(document.payload[offset:offset + 4], 'little'),
+            'observed_health':observed_health_curve(index)}
+
+
+def costume_associations(document):
+    """Read documented PC asset associations; never infer unlock/equipped flags."""
+    if document.format.id != 'pw3':
+        raise SaveError('Costume associations are mapped only for PW3.')
+    validate_document(document)
+    return tuple({'slot':character + 1, 'local_slot':local, 'asset_costume_id':identity,
+                  'stored_id':document.payload[0x650 + character * 0x1f0 + 0x2f + local]}
+                 for character, local, identity in PW3_COSTUME_ASSOCIATIONS)
+
+
+def changed_payload(document, changes):
+    fields = field_map(document)
+    result = bytearray(document.payload)
+    for key, value in changes.items():
+        if key not in fields:
+            raise SaveError('A requested field is not verified for this game.')
+        field = fields[key]
+        field.validate(value)
+        result[field.offset:field.offset + field.size] = value.to_bytes(field.size, 'little')
+    return bytes(result)
+
+
+def serialize(document, changes):
+    validate_document(document)
+    payload = changed_payload(document, changes)
+    if payload == document.payload:
+        return document.raw
+    layout = document.format
+    inner = byte_cipher(payload, layout.inner_seed) if layout.inner_seed is not None else payload
+    raw = struct.pack('<HH', word_sum(inner), document.seed) + word_cipher(inner, document.seed)
+    if layout.inner_seed is not None:
+        raw += bytes([(sum(payload) & 0xff) ^ (mix_word(document.seed) & 0xff)])
+    verified = decode(raw, layout.id, document.source)
+    if verified.payload != payload:
+        raise SaveError('Edited save verification failed.')
+    return raw
+
+
+def stage(document, changes, key, value):
+    fields = field_map(document)
+    if key not in fields:
+        raise SaveError('A requested field is not verified for this game.')
+    result = dict(changes)
+    if type(value) is int and value == fields[key].value(document.payload):
+        result.pop(key, None)
+    else:
+        fields[key].validate(value)
+        result[key] = value
+    return result
+
+
+def limit_values(document, changes, keys):
+    """Published limits never lower higher values already present in a copy."""
+    fields = field_map(document)
+    result = {}
+    for key in keys:
+        if key not in fields:
+            raise SaveError('A requested field is not verified for this game.')
+        field = fields[key]
+        current = changes.get(key, field.value(document.payload))
+        if current <= field.maximum:
+            result[key] = field.maximum
+    return result
+
+
+def maximums(document, changes, group=None):
+    result = dict(changes)
+    keys = [field.id for field in fields_for(document) if group is None or field.group == group]
+    for key, value in limit_values(document, changes, keys).items():
+        result = stage(document, result, key, value)
+    return result
+
+
+def review(document, changes):
+    changed_payload(document, changes)
+    return [(field, field.value(document.payload), changes[field.id])
+            for field in fields_for(document) if field.id in changes]
+
+
+def backup(document):
+    validate_document(document)
+    return snapshot_backup(document.raw, document.source, document.format.id,
+                           document.source.parent / 'WarriorsEditorBackups')
+
+
+def save_as(document, changes, destination):
+    destination = safe_path(destination)
+    if destination.suffix.lower() != '.dat':
+        raise SaveError('Choose a new .dat destination.')
+    # Detect edits by another program before preserving the opened snapshot.
+    with safe_path(document.source).open('rb') as stream:
+        current = stream.read(document.format.size + 1)
+    if current != document.raw:
+        raise SaveError('The opened copy changed on disk. Reopen it before saving.')
+    raw = serialize(document, changes)
+    backup(document)
+    atomic_new(raw, destination)
+    return decode(raw, document.format.id, destination)
+
+
+def restore(backup_path, destination, game_id):
+    layout = get_format(game_id)
+    # Verify native integrity as well as the backup hash before creating output.
+    read_save(backup_path, game_id)
+    return restore_snapshot(backup_path, destination, game_id, '.dat', layout.size)

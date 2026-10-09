@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.2
+
+- Expand the DW3 editor into one Universal Koei Tecmo Save Editor executable.
+- Add a game library with Windows PC selected by default and a separate
+  PlayStation 2 platform option. Keep each game's session while switching.
+- Add DW4 Hyper PC officer stats/EXP/unlocks, weapon EXP, items, bodyguard points
+  and difficulty editing.
+- Add DW8 XL Complete Edition PC resources, officer stats and existing weapon
+  attribute ranks, with progression/equipment inspection.
+- Add Pirate Warriors 3 PC character stats, special bars and skill slots, with
+  read-only level/XP, currency and costume inspection.
+- Add USA PS2 DW4 Xtreme Legends `.psu` editing for officers, weapon EXP, items,
+  bodyguard points and difficulty.
+- Share Light/Dark appearance across editors and retain Mexican's Contact dialog.
+- Preserve all DW3 v1.1 features, automatic backups, Undo, Review Changes, Save As
+  and backup restore. New editors write to a new destination and preserve unrelated data.
+- Update standalone Windows packaging, source manifests and integrity checks.
+
 ## v1.1
 
 - Fixed Huanglong Elixir editing and Musou completion on new/reset saves with an omitted zero Elixir counter. A completed story is no longer required before using these controls.

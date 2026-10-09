@@ -1,0 +1,539 @@
+"""Real Tk callbacks exercise game switching and isolated retained sessions."""
+import os
+from pathlib import Path
+import tempfile
+import tkinter as tk
+from tkinter import ttk
+import unittest
+from unittest.mock import patch
+import sys
+
+PROJECT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT))
+from application import Application
+import gui
+import origins_gui
+from models import Change
+
+
+def widget_texts(widget, *, mapped_only=False):
+    """Read actual Tk text, including labels backed by StringVars and headings."""
+    texts = []
+    if not mapped_only or widget.winfo_ismapped():
+        options = widget.keys()
+        if 'text' in options:
+            texts.append(str(widget.cget('text')))
+        if 'textvariable' in options and widget.cget('textvariable'):
+            texts.append(str(widget.getvar(widget.cget('textvariable'))))
+        if isinstance(widget, tk.Toplevel):
+            texts.append(widget.title())
+        if isinstance(widget, ttk.Treeview):
+            texts.extend(widget.heading(column, 'text') for column in widget.cget('columns'))
+        if isinstance(widget, ttk.Notebook):
+            texts.extend(widget.tab(tab, 'text') for tab in widget.tabs())
+    for child in widget.winfo_children():
+        texts.extend(widget_texts(child, mapped_only=mapped_only))
+    return texts
+
+
+REMOVED_UI_PHRASES = (
+    'Research & Planned Games', 'Game Mechanics', 'published', 'verified',
+    'verification', 'qualification', 'independent sample', 'development',
+)
+
+
+@unittest.skipUnless(os.name == 'nt' or os.environ.get('DISPLAY'), 'A graphical display is required.')
+class UniversalGuiTests(unittest.TestCase):
+    def setUp(self):
+        self.root = tk.Tk()
+        self.root.withdraw()
+        self.app = Application(self.root)
+
+    def tearDown(self):
+        try:
+            self.root.destroy()
+        except tk.TclError:
+            pass
+
+    def test_selector_initializes_both_games_with_isolated_sessions(self):
+        self.assertIsNone(self.app.active_game)
+        self.assertEqual(set(self.app.game_buttons), {'dw3', 'dw8xl', 'pw3', 'dw4hyper', 'dw4xl_ps2'})
+        dw3 = self.app.select_game('dw3')
+        origins = self.app.select_game('origins')
+        self.assertIsInstance(dw3, gui.Editor)
+        self.assertIsInstance(origins, origins_gui.Editor)
+        self.assertIsNot(dw3.changes, origins.changes)
+        self.assertIsNone(dw3.document)
+        self.assertIsNone(origins.document)
+        self.assertEqual(set(dw3.tabs), {'Officers', 'Items', 'Weapons', 'Bodyguards', 'Unlocks',
+                                         'Collections', 'Musou Saves'})
+        self.assertEqual(len(origins.features.get_children()), 11)
+
+    def test_switching_and_theme_changes_retain_pending_edits_and_form_values(self):
+        dw3 = self.app.select_game('dw3')
+        change = Change('officer', 0, 'SPoint', 999)
+        dw3.changes = {('officer', 0, 'SPoint'): change}
+        dw3.history = [{}]
+        dw3.item_filter.set('Peacock')
+        dw3.item_value.set('12')
+        dw3.notebook.select(dw3.tabs['Items'])
+        self.app.select_game('origins')
+        self.app.apply_theme('Dark')
+        self.app.show_library()
+        self.assertIs(self.app.select_game('dw3'), dw3)
+        self.assertEqual(dw3.theme_name.get(), 'Dark')
+        self.assertEqual(dw3.item_filter.get(), 'Peacock')
+        self.assertEqual(dw3.item_value.get(), '12')
+        self.assertEqual(dw3.notebook.select(), str(dw3.tabs['Items']))
+        self.assertEqual(list(dw3.changes.values()), [change])
+        self.assertEqual(dw3.history, [{}])
+        self.assertFalse(self.app.sessions['origins'][1].changes)
+        dw3.apply_theme('Light')
+        self.assertEqual(self.app.theme_name.get(), 'Light')
+        self.assertEqual(self.app.sessions['origins'][1].theme_name.get(), 'Light')
+
+    def test_shortcuts_dispatch_only_to_visible_game(self):
+        dw3 = self.app.select_game('dw3')
+        origins = self.app.select_game('origins')
+        with patch.object(dw3, 'open') as first, patch.object(origins, 'open') as second:
+            self.app.dispatch('open')
+            first.assert_not_called()
+            second.assert_called_once()
+            self.app.show_library()
+            self.app.dispatch('open')
+            self.assertEqual(second.call_count, 1)
+
+    def test_close_checks_hidden_dw3_pending_edits_and_honors_cancel(self):
+        dw3 = self.app.select_game('dw3')
+        self.app.select_game('origins')
+        with patch.object(dw3, 'dirty_ok', return_value=False) as confirm, patch.object(self.root, 'destroy') as destroy:
+            self.app.close()
+            confirm.assert_called_once()
+            destroy.assert_not_called()
+
+    def test_origins_open_backup_compare_export_save_copy_and_restore_callbacks(self):
+        editor = self.app.select_game('origins')
+        raw = bytes(range(256)) * 4
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'SLOT0001.dat'
+            after = Path(folder) / 'SLOT0002.dat'
+            source.write_bytes(raw)
+            after.write_bytes(raw[:-1] + bytes([raw[-1] ^ 1]))
+            with patch.object(origins_gui.filedialog, 'askopenfilename', return_value=str(source)):
+                editor.open()
+            self.assertEqual(editor.backup.read_bytes(), raw)
+            self.assertIn('Unverified file', editor.summary.get())
+            with patch.object(origins_gui.filedialog, 'askopenfilename', return_value=str(after)):
+                editor.compare()
+            self.assertEqual(editor.comparison['changed_bytes'], 1)
+            target = Path(folder) / 'same-copy.dat'
+            with patch.object(origins_gui.filedialog, 'asksaveasfilename', return_value=str(target)):
+                editor.save_as()
+            self.assertEqual(target.read_bytes(), raw)
+            restored = Path(folder) / 'restored.dat'
+            with patch.object(origins_gui.filedialog, 'askopenfilename', return_value=str(editor.backup)), \
+                    patch.object(origins_gui.filedialog, 'asksaveasfilename', return_value=str(restored)):
+                editor.restore()
+            self.assertEqual(restored.read_bytes(), raw)
+            report = Path(folder) / 'result.changes.json'
+            with patch.object(origins_gui.filedialog, 'asksaveasfilename', return_value=str(report)):
+                editor.export()
+            self.assertTrue(report.is_file())
+            self.assertEqual(source.read_bytes(), raw)
+            self.assertEqual(after.read_bytes(), raw[:-1] + bytes([raw[-1] ^ 1]))
+
+    def test_failed_origins_open_preserves_previous_session(self):
+        editor = self.app.select_game('origins')
+        original = object()
+        editor.document = original
+        with patch.object(origins_gui.filedialog, 'askopenfilename', return_value='wrong.sav'), \
+                patch.object(origins_gui.messagebox, 'showerror') as error:
+            editor.open()
+            error.assert_called_once()
+        self.assertIs(editor.document, original)
+
+    def test_contact_dialog_uses_existing_author_branding(self):
+        self.app.apply_theme('Dark')
+        self.app.contact()
+        dialog = next(widget for widget in self.root.winfo_children() if isinstance(widget, tk.Toplevel))
+        self.assertEqual(dialog.title(), 'Contact Mexican')
+
+    def test_pc_scalar_editors_open_stage_undo_switch_review_and_save_as(self):
+        from tests.test_verified_editors import synthetic_raw
+        import verified_editor as backend
+        import verified_gui
+        for game_id, key in (('dw8xl', 'gold'), ('pw3', 'character_0_attack')):
+            editor = self.app.select_game(game_id)
+            with tempfile.TemporaryDirectory() as folder:
+                source = Path(folder)/'save.dat'
+                raw = synthetic_raw(game_id)
+                source.write_bytes(raw)
+                with patch.object(verified_gui.filedialog, 'askopenfilename', return_value=str(source)), \
+                        patch.object(verified_gui.messagebox, 'showerror') as error:
+                    editor.open()
+                    error.assert_not_called()
+                self.assertEqual(editor.backup.read_bytes(), raw)
+                self.assertEqual(editor.status.get(), 'Opened save copy. Automatic backup: ' + editor.backup.name)
+                self.assertEqual(len(editor.fields.get_children()), len(editor.layout.fields))
+                editor.fields.selection_set(key)
+                editor.value.set('123')
+                editor.apply_selected()
+                self.assertEqual(editor.changes[key], 123)
+                editor.undo()
+                self.assertFalse(editor.changes)
+                editor.value.set('321')
+                editor.apply_selected()
+                self.app.select_game('dw3')
+                self.app.apply_theme('Dark')
+                self.assertIs(self.app.select_game(game_id), editor)
+                self.assertEqual(editor.changes[key], 321)
+                editor.review()
+                target = Path(folder)/'edited.dat'
+                with patch.object(verified_gui.filedialog, 'asksaveasfilename', return_value=str(target)), \
+                        patch.object(verified_gui.messagebox, 'showerror') as error:
+                    editor.save_as()
+                    error.assert_not_called()
+                self.assertEqual(backend.field_map(editor.document)[key].value(editor.document.payload), 321)
+                self.assertFalse(editor.changes)
+                self.assertEqual(source.read_bytes(), raw)
+                restored = Path(folder)/'restored.dat'
+                with patch.object(verified_gui.filedialog, 'askopenfilename', return_value=str(editor.backup)), \
+                        patch.object(verified_gui.filedialog, 'asksaveasfilename', return_value=str(restored)), \
+                        patch.object(verified_gui.messagebox, 'showerror') as error:
+                    editor.restore()
+                    error.assert_not_called()
+                self.assertEqual(restored.read_bytes(), raw)
+
+    def test_scalar_max_visible_is_one_undoable_batch_and_invalid_batch_is_atomic(self):
+        from tests.test_verified_editors import synthetic_raw
+        import verified_editor as backend
+        import verified_gui
+        editor = self.app.select_game('pw3')
+        editor.document = backend.decode(synthetic_raw('pw3'), 'pw3')
+        editor.group.set('Characters')
+        editor.refresh()
+        editor.max_visible()
+        self.assertEqual(len(editor.history), 1)
+        self.assertNotIn('beli', editor.changes)
+        editor.undo()
+        self.assertFalse(editor.changes)
+        with patch.object(verified_gui.messagebox, 'showerror') as error:
+            editor.stage_values({'character_0_attack':100, 'character_0_special':100})
+            error.assert_called_once()
+        self.assertFalse(editor.changes)
+        self.assertFalse(editor.history)
+
+    def test_dw4_candidate_uses_own_backend_copy_workflow_and_retains_session(self):
+        from tests.test_dw4hyper_format import procedural_raw
+        import dw4hyper_parser as candidate
+        import verified_gui
+        editor = self.app.select_game('dw4hyper')
+        self.assertIs(editor.backend, candidate)
+        self.assertIn('dw4hyper', self.app.game_buttons)
+        self.assertEqual(editor.subtitle, 'Windows PC save editor')
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'save.dat'
+            raw = procedural_raw()
+            source.write_bytes(raw)
+            with patch.object(verified_gui.filedialog, 'askopenfilename', return_value=str(source)), \
+                    patch.object(verified_gui.messagebox, 'showerror') as error:
+                editor.open()
+                error.assert_not_called()
+            self.assertEqual(editor.backup.read_bytes(), raw)
+            self.assertEqual(editor.status.get(), 'Opened save copy. Automatic backup: ' + editor.backup.name)
+            self.assertEqual(len(editor.fields.get_children()), 331)
+            self.assertEqual(editor.fields.item('officer_0_attack')['values'][0], 'Zhao Yun')
+            editor.fields.selection_set('officer_0_weapon_experience')
+            editor.selected()
+            self.assertIn('no Lv.11', editor.selection_info.get())
+            editor.fields.selection_set('officer_0_attack')
+            editor.value.set('99')
+            editor.apply_selected()
+            self.assertEqual(editor.changes, {'officer_0_attack': 99})
+            editor.undo()
+            self.assertFalse(editor.changes)
+            editor.group.set('Officers')
+            editor.refresh()
+            editor.max_visible()
+            self.assertTrue(all(key.endswith('_unlocked') for key in editor.changes))
+            editor.undo()
+            editor.stage_values({'officer_0_attack': 99, 'item_0': 20})
+            self.app.select_game('pw3')
+            self.app.apply_theme('Dark')
+            self.assertIs(self.app.select_game('dw4hyper'), editor)
+            self.assertEqual(editor.theme_name.get(), 'Dark')
+            editor.show_inspector()
+            editor.review()
+            target = Path(folder) / 'edited.dat'
+            with patch.object(verified_gui.filedialog, 'asksaveasfilename', return_value=str(target)), \
+                    patch.object(verified_gui.messagebox, 'showerror') as error:
+                editor.save_as()
+                error.assert_not_called()
+            self.assertEqual(candidate.field_map(editor.document)['officer_0_attack'].value(editor.document.payload), 99)
+            self.assertEqual(candidate.field_map(editor.document)['item_0'].value(editor.document.payload), 20)
+            self.assertFalse(editor.changes)
+            self.assertEqual(source.read_bytes(), raw)
+
+    def test_dw4_candidate_minimum_window_preserves_status_and_selected_field_hint(self):
+        from tests.test_dw4hyper_format import procedural_raw
+        import dw4hyper_parser
+        editor = self.app.select_game('dw4hyper')
+        editor.document = dw4hyper_parser.decode(procedural_raw())
+        editor.refresh()
+        editor.fields.selection_set('officer_0_attack')
+        editor.selected()
+        self.root.deiconify()
+        self.root.geometry('1080x820')
+        self.root.update()
+        for label in (editor.selection_label, editor.status_label):
+            self.assertTrue(label.winfo_ismapped())
+            bottom = label.winfo_rooty() + label.winfo_height()
+            self.assertLessEqual(bottom, self.root.winfo_rooty() + self.root.winfo_height())
+            self.assertGreaterEqual(label.winfo_height(), label.winfo_reqheight())
+
+    def test_candidate_self_test_reports_pending_qualification(self):
+        from tests.test_dw4hyper_format import procedural_raw
+        from verified_self_test import run
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'save.dat'
+            raw = procedural_raw()
+            source.write_bytes(raw)
+            report = run('dw4hyper', source, Path(folder) / 'test-output')
+            self.assertEqual(report['fields_checked'], 331)
+            self.assertTrue(report['checksum_verified'])
+            self.assertTrue(report['input_preserved'])
+            self.assertFalse(report['format_sample_verified'])
+            self.assertFalse(report['native_integrity_verified'])
+            self.assertFalse(report['in_game_load_tested'])
+            self.assertEqual(source.read_bytes(), raw)
+
+    def test_platform_filter_separates_editions_without_losing_sessions(self):
+        pc = self.app.select_game('dw4hyper')
+        pc.changes = {'officer_0_attack': 99}
+        self.app.show_library()
+        self.app.platform_choice.set('PlayStation 2')
+        self.app.show_platform()
+        self.root.deiconify()
+        self.root.update()
+        self.assertTrue(self.app.game_buttons['dw4xl_ps2'].winfo_ismapped())
+        self.assertFalse(self.app.game_buttons['dw4hyper'].winfo_ismapped())
+        self.assertEqual(pc.changes, {'officer_0_attack': 99})
+        self.app.platform_choice.set('Windows PC')
+        self.app.show_platform()
+        self.root.update()
+        self.assertTrue(self.app.game_buttons['dw4hyper'].winfo_ismapped())
+        self.assertFalse(self.app.game_buttons['dw4xl_ps2'].winfo_ismapped())
+        self.assertIs(self.app.select_game('dw4hyper'), pc)
+
+    def test_ps2_xl_gui_copy_workflow_and_cross_platform_rejection(self):
+        from tests.test_dw4xl_format import procedural_psu
+        from tests.test_dw4hyper_format import procedural_raw
+        import dw4xl_parser
+        import verified_gui
+        from game_registry import get_game
+        from models import SaveError
+        from verified_self_test import run
+        editor = self.app.select_game('dw4xl_ps2')
+        self.assertEqual(self.app.platform_choice.get(), 'PlayStation 2')
+        self.assertEqual(editor.save_extension, '.psu')
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'copy.psu'
+            raw = procedural_psu()
+            source.write_bytes(raw)
+            with patch.object(verified_gui.filedialog, 'askopenfilename', return_value=str(source)), \
+                    patch.object(verified_gui.messagebox, 'showerror') as error:
+                editor.open()
+                error.assert_not_called()
+            self.assertEqual(len(editor.fields.get_children()), 298)
+            self.assertEqual(editor.status.get(), 'Opened save copy. Automatic backup: ' + editor.backup.name)
+            editor.stage_values({'officer_0_attack': 99, 'item_19': 1})
+            editor.undo()
+            self.assertFalse(editor.changes)
+            editor.stage_values({'officer_0_attack': 99, 'item_19': 1})
+            editor.show_inspector()
+            editor.review()
+            target = Path(folder) / 'edited.psu'
+            with patch.object(verified_gui.filedialog, 'asksaveasfilename', return_value=str(target)) as dialog, \
+                    patch.object(verified_gui.messagebox, 'showerror') as error:
+                editor.save_as()
+                error.assert_not_called()
+                self.assertEqual(dialog.call_args.kwargs['defaultextension'], '.psu')
+            self.assertEqual(dw4xl_parser.field_map(editor.document)['officer_0_attack'].value(editor.document.payload), 99)
+            self.assertEqual(source.read_bytes(), raw)
+            report = run('dw4xl_ps2', source, Path(folder) / 'self-test')
+            self.assertFalse(report['format_sample_verified'])
+            self.assertTrue(report['backup_restored'])
+            self.assertTrue((Path(folder) / 'self-test' / 'edited.psu').is_file())
+            foreign = Path(folder) / 'wrong.psu'
+            foreign.write_bytes(procedural_raw())
+            with self.assertRaises(SaveError):
+                get_game('dw4xl_ps2').read_save(foreign)
+            foreign = Path(folder) / 'wrong.dat'
+            foreign.write_bytes(raw)
+            with self.assertRaises(SaveError):
+                get_game('dw4hyper').read_save(foreign)
+
+    def test_removed_research_and_mechanics_screens_are_absent(self):
+        self.assertNotIn('origins', self.app.game_buttons)
+        for name in ('show_research', 'show_mechanics', 'research_button', 'mechanics_button'):
+            self.assertFalse(hasattr(self.app, name), name)
+        texts = '\n'.join(widget_texts(self.app.library)).lower()
+        for phrase in REMOVED_UI_PHRASES:
+            self.assertNotIn(phrase.lower(), texts)
+        self.assertFalse(any(isinstance(widget, tk.Toplevel) for widget in self.root.winfo_children()))
+        self.assertNotIn('development', self.root.title().lower())
+        self.assertIsNone(self.app.active_game)
+
+    def test_minimum_window_keeps_library_actions_accessible_on_both_platforms(self):
+        from game_registry import get_game
+        self.root.deiconify()
+        self.root.geometry('1080x820')
+        for theme in ('Light', 'Dark'):
+            self.app.apply_theme(theme)
+            for platform in ('Windows PC', 'PlayStation 2'):
+                self.app.platform_choice.set(platform)
+                self.app.show_platform()
+                self.root.update()
+                self.assertIn(platform, self.app.library_hint.get())
+                for game_id, button in self.app.game_buttons.items():
+                    visible = get_game(game_id).platform == platform
+                    self.assertEqual(bool(button.winfo_ismapped()), visible)
+                    if visible:
+                        self.assertGreaterEqual(button.winfo_height(), button.winfo_reqheight())
+                        self.assertLessEqual(button.winfo_rooty() + button.winfo_height(),
+                                             self.root.winfo_rooty() + self.root.winfo_height())
+                button = self.app.contact_button
+                self.assertEqual(button.cget('text'), 'Contact Mexican')
+                self.assertTrue(button.winfo_ismapped())
+                self.assertLessEqual(button.winfo_rooty() + button.winfo_height(),
+                                     self.root.winfo_rooty() + self.root.winfo_height())
+                texts = '\n'.join(widget_texts(self.app.library, mapped_only=True)).lower()
+                for phrase in REMOVED_UI_PHRASES:
+                    self.assertNotIn(phrase.lower(), texts)
+
+    def test_read_only_pc_progression_and_data_inspection_callbacks(self):
+        from tests.test_verified_editors import synthetic_raw
+        import verified_editor as backend
+        editor = self.app.select_game('pw3')
+        editor.document = backend.decode(synthetic_raw('pw3'),'pw3')
+        editor.refresh()
+        editor.fields.selection_set('character_0_attack')
+        editor.selected()
+        self.assertIn('level 1', editor.selection_info.get())
+        self.assertIn('read only', editor.selection_info.get())
+        editor.show_inspector()
+        self.root.update_idletasks()
+        dialogs = [widget for widget in self.root.winfo_children() if isinstance(widget, tk.Toplevel)]
+        self.assertEqual(len(dialogs), 1)
+        self.assertIn('Read Only', dialogs[0].title())
+        self.assertIn('Progression', '\n'.join(widget_texts(dialogs[0])))
+        self.assertIn('Costume associations', '\n'.join(widget_texts(dialogs[0])))
+        self.assertFalse(hasattr(editor, 'show_mechanics'))
+
+    def test_scalar_editor_keeps_editing_controls_and_removes_evidence_panels(self):
+        self.root.deiconify()
+        for game_id in ('dw8xl', 'pw3', 'dw4hyper', 'dw4xl_ps2'):
+            editor = self.app.select_game(game_id)
+            self.root.update()
+            frame = self.app.sessions[game_id][0]
+            texts = widget_texts(frame, mapped_only=True)
+            visible = '\n'.join(texts).lower()
+            for phrase in REMOVED_UI_PHRASES:
+                self.assertNotIn(phrase.lower(), visible, game_id)
+            self.assertEqual(editor.fields.heading('limit', 'text'), 'Edit limit')
+            for label in ('Open Save Copy', 'Save As...', 'Backup Save', 'Review Changes',
+                          'Undo', 'Restore Backup...', 'Apply Selected', 'Max Selected',
+                          'Max Visible Fields', 'Inspect Data'):
+                self.assertIn(label, texts, (game_id, label))
+            self.assertNotIn(editor.layout.note, texts)
+            self.assertFalse(hasattr(editor, 'show_mechanics'))
+
+    def test_dw4_selected_field_guidance_preserves_ranges_and_max_rules(self):
+        from tests.test_dw4hyper_format import procedural_raw
+        from tests.test_dw4xl_format import procedural_psu
+        self.root.deiconify()
+        self.root.geometry('1080x820')
+        for game_id, raw, special in (('dw4hyper', procedural_raw(), '36001'),
+                                      ('dw4xl_ps2', procedural_psu(), '36002')):
+            editor = self.app.select_game(game_id)
+            editor.document = editor.backend.decode(raw, game_id)
+            editor.refresh()
+            for key, expected in (('officer_0_attack', '255'),
+                                  ('officer_0_weapon_experience', special),
+                                  ('item_0', '1..20'),
+                                  ('team_0_points', 'excluded from bulk Max'),
+                                  ('difficulty', 'Difficulty is excluded from bulk Max')):
+                with self.subTest(game=game_id, field=key):
+                    editor.fields.selection_set(key)
+                    editor.selected()
+                    self.root.update()
+                    self.assertIn(expected, editor.selection_info.get())
+                    for phrase in REMOVED_UI_PHRASES:
+                        self.assertNotIn(phrase.lower(), editor.selection_info.get().lower())
+                    self.assertTrue(editor.selection_label.winfo_ismapped())
+                    self.assertGreaterEqual(editor.selection_label.winfo_height(),
+                                            editor.selection_label.winfo_reqheight())
+                    self.assertLessEqual(editor.selection_label.winfo_rooty() + editor.selection_label.winfo_height(),
+                                         self.root.winfo_rooty() + self.root.winfo_height())
+
+    def test_dw3_cli_dispatch_normalizes_accepted_argument_order(self):
+        from application import main
+        args = ['application.py','--self-test','copy.sav','output','--game','dw3']
+        observed = []
+        with patch.object(sys, 'argv', args), patch.object(gui, 'main', side_effect=lambda: observed.extend(sys.argv)):
+            main()
+            self.assertIs(sys.argv, args)
+        self.assertEqual(observed, ['application.py','--self-test','copy.sav','output'])
+
+    def test_hidden_pc_edits_can_cancel_close_and_failed_open_preserves_edits(self):
+        from tests.test_verified_editors import synthetic_raw
+        import verified_editor as backend
+        import verified_gui
+        editor = self.app.select_game('pw3')
+        editor.document = backend.decode(synthetic_raw('pw3'), 'pw3')
+        editor.stage_values({'character_0_attack':123})
+        self.app.show_library()
+        with patch.object(verified_gui.messagebox, 'askyesno', return_value=False), \
+                patch.object(self.root, 'destroy') as destroy:
+            self.app.close()
+            destroy.assert_not_called()
+        with patch.object(verified_gui.filedialog, 'askopenfilename', return_value='wrong.bin'), \
+                patch.object(verified_gui.messagebox, 'showerror') as error:
+            editor.open()
+            error.assert_called_once()
+        self.assertEqual(editor.changes, {'character_0_attack':123})
+
+    def test_dw3_synthetic_save_edit_undo_review_switch_and_save_as_workflow(self):
+        from tests.test_elixirs_v11 import synthetic_reset_save
+        from save_parser import read_save
+        import progression_editor
+        editor = self.app.select_game('dw3')
+        document = synthetic_reset_save()
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'GameStatusData.sav'
+            source.write_bytes(document.encrypted)
+            errors = []
+            with patch.object(gui.messagebox, 'showerror', side_effect=lambda *args: errors.append(args)), \
+                    patch.object(gui.filedialog, 'askopenfilename', return_value=str(source)):
+                editor.open()
+                self.assertEqual(errors, [])
+                self.assertEqual(editor.backup.read_bytes(), document.encrypted)
+                editor.max_elixirs()
+                self.assertTrue(editor.changes)
+                editor.undo()
+                self.assertFalse(editor.changes)
+                editor.max_elixirs()
+                editor.review()
+                self.app.select_game('origins')
+                self.app.apply_theme('Dark')
+                self.assertIs(self.app.select_game('dw3'), editor)
+                target = Path(folder) / 'edited.sav'
+                editor.save_to(target)
+                self.assertEqual(errors, [])
+                self.assertEqual(progression_editor.elixir_state(read_save(target))['value'], 999)
+                self.assertEqual(source.read_bytes(), document.encrypted)
+                self.assertFalse(editor.changes)
+
+
+if __name__ == '__main__':
+    unittest.main()

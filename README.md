@@ -1,27 +1,73 @@
-# Dynasty Warriors 3 Remastered Save Editor
+# Universal Koei Tecmo Save Editor
 
-A free Windows save editor by Mexican for Dynasty Warriors 3: Complete Edition Remastered. Edit a save copy, skip repetitive farming and choose which unlocks you want.
+A lightweight Windows save editor by **Mexican**. Version **1.2** brings five game
+editors into one standalone application, with a game library, shared Light/Dark
+appearance and switching between games without restarting.
 
-- Officers: edit Merit and permanent Life, Musou, Attack and Defense for all 42 officers.
-- Items: unlock 16 normal and 27 rare items, and maximize normal item values.
-- Weapons: unlock all 84 unique weapons, including Ziluan's 4th/5th weapons; edit normal and rare bonuses; choose Fire, Lightning, Steel or Wind individually or for all owned unique weapons; complete the weapon collection and unlock Lu Bu's and Sun Shangxiang's Tactics costumes.
-- Bodyguards: edit Merit, growth, items, weapons and team equipment; unlock both Nanman models and all special colors, with a shortcut for the Yellow uniform.
-- Unlocks: unlock all 42 officers, 108 playable stages and three side stories; separately mark the 39 supported Musou stories cleared.
-- Collections: unlock all 42 music tracks and 50 movies in the dedicated Collections tab.
-- Musou Saves: view and remove between-stage campaign runs without resetting your officers or story completion.
-- Huanglong Elixirs: set your count from 0 to 999, including on new saves that have not earned any yet. Automatic backups, Undo, Review Changes and backup restore help you manage your edits.
+Contributing a fix or a new game? Start with [CONTRIBUTING.md](CONTRIBUTING.md).
+AI coding agents should read [AGENTS.md](AGENTS.md).
 
-Choose Light or Dark under Appearance at the top of the window. Story completion has its own controls, separate from stat and item edits.
+## Games and platforms
+
+**Windows PC** is selected by default. Choose **PlayStation 2** for supported
+memory-card exports.
+
+| Game | Platform | Editing features |
+| --- | --- | --- |
+| Dynasty Warriors 3: Complete Edition Remastered | Windows PC | Full editor: officers, weapons, items, bodyguards, unlocks, stories and collections |
+| Dynasty Warriors 4 Hyper | Windows PC | Officer stats/EXP/playable flags, weapon EXP, items, bodyguard points and difficulty |
+| Dynasty Warriors 8: Xtreme Legends Complete Edition | Windows PC | Gold, gems, materials, officer health/attack/defense and existing weapon attribute ranks |
+| One Piece: Pirate Warriors 3 | Windows PC | Character health/attack/defense, special bars and skill slots; level/XP, currency and costume inspection |
+| Dynasty Warriors 4: Xtreme Legends | PlayStation 2, USA SLUS-20812 | Officer stats/points, weapon EXP, items, bodyguard points and difficulty in `.psu` exports |
+
+Each game uses its own save format. The PS2 editor opens exported `.psu` saves;
+export the save from your memory card before opening it.
 
 ## Getting started
 
-1. Download the standalone EXE or the Windows ZIP from [Releases](https://github.com/MMexicann/DW3-Remastered-Save-Editor/releases). Extract the ZIP if you choose it.
-2. Run `DW3RemasteredSaveEditor-v1.1.exe`. You don't need Python or an installer.
-3. Make a separate copy of `GameStatusData.sav`, then choose **Open Save Copy**. Keep your own untouched backup too.
-4. Make your changes, choose **Review Changes**, then **Save As** to save an edited copy.
+Download `UniversalKoeiTecmoSaveEditor-v1.2.exe` from the GitHub release and run it.
+No installation or Python setup is needed for the standalone executable.
 
-See [what changed in v1.1](CHANGELOG.md) or [build from source](BUILDING.md).
+1. Make a separate copy of your save outside the live game and Steam Cloud folders.
+2. Select the platform and game, then choose **Open Save Copy**.
+3. Edit individual values or select multiple fields for bulk edits. Max options
+   apply to the fields that support them.
+4. Use **Review Changes** to inspect pending edits. **Undo** reverses an edit batch.
+5. Choose **Save As** to create an edited copy. Automatic backups and backup
+   restore are available.
+6. Return to **Game Library** to switch games. Each session retains its open copy
+   and pending changes.
+
+## DW3 features
+
+All existing DW3 functionality remains available:
+
+- All 42 officers: Merit and permanent Life/Musou/Attack/Defense.
+- 16 normal and 27 rare items, including supported normal-item maximum values.
+- All 84 unique weapons, Ziluan 4th/5th weapons, normal/rare bonuses, individual
+  and bulk elements, weapon collection and Tactics costumes.
+- Bodyguard Merit, growth, items, weapons, equipment, Nanman models and special
+  colors, including the Yellow uniform shortcut.
+- All 42 officer unlocks, 108 playable stages, three side stories and 39 supported
+  Musou story clears.
+- 42 music tracks, 50 movies, between-stage Musou saves and Huanglong Elixirs.
+- Backups, Undo, Review Changes, Save As, backup restore and value validation.
+
+## Run or build from source
+
+On Windows with Python and Tkinter:
+
+```powershell
+python application.py
+```
+
+Or double-click `launch.pyw`. No third-party runtime package is required on
+Windows. See [BUILDING.md](BUILDING.md) for the standalone executable build,
+[ARCHITECTURE.md](ARCHITECTURE.md) for contributor details and
+[VALIDATION.md](VALIDATION.md) for test coverage and validation limits.
 
 ## Contact
 
-Message `mexicannn` on Discord or leave a comment on [my Steam profile](https://steamcommunity.com/id/theonlyjuandeagingmexican/). You can also use the editor's Contact button.
+Discord: `mexicannn`.
+[Mexican's Steam profile](https://steamcommunity.com/id/theonlyjuandeagingmexican/).
+The application also includes the existing Contact dialog.

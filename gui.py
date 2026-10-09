@@ -33,25 +33,15 @@ UNIQUE_WEAPONS = getattr(save_writer, 'UNIQUE_WEAPONS', {})
 LABELS = {'SPoint': 'Merit', 'MaxHealth': 'Life / HP', 'MaxMusou': 'Musou', 'Attack': 'Attack', 'Defence': 'Defense'}
 GUARD_ITEMS = guard_editor.GUARD_ITEMS
 GUARD_WEAPONS = guard_editor.GUARD_WEAPONS
-THEMES = {
-    'Light': {
-        'background': '#f3f5f7', 'surface': '#ffffff', 'text': '#243142',
-        'muted': '#586879', 'border': '#d8dfe6', 'hover': '#e7ecf1',
-        'disabled': '#edf0f3', 'disabled_text': '#7b8590',
-        'accent': '#92353b', 'accent_hover': '#76282e', 'tab_text': '#92353b',
-    },
-    'Dark': {
-        'background': '#18212d', 'surface': '#232f3e', 'text': '#e9eef5',
-        'muted': '#b4c1d0', 'border': '#405065', 'hover': '#2e3c4f',
-        'disabled': '#293444', 'disabled_text': '#8b9bad',
-        'accent': '#a83c46', 'accent_hover': '#bb4953', 'tab_text': '#efacaf',
-    },
-}
+from appearance import THEMES, Appearance, ui_font
 
 
-class Editor:
-    def __init__(self, root):
+class Editor(Appearance):
+    def __init__(self, root, parent=None, theme='Light', on_theme=None):
         self.root = root
+        self.on_theme = on_theme
+        host = parent if parent is not None else root
+        embedded = parent is not None
         self.document = None
         self.changes = {}
         self.history = []
@@ -67,27 +57,29 @@ class Editor:
         self.backup = None
         self.buttons = []
         self.scroll_areas = []
-        root.title(f'Dynasty Warriors 3 Remastered Save Editor — v{VERSION}')
-        root.geometry('1140x870')
-        root.minsize(1040, 740)
+        if not embedded:
+            root.title(f'Dynasty Warriors 3 Remastered Save Editor — v{VERSION}')
+            root.geometry('1140x870')
+            root.minsize(1040, 740)
         self.style = ttk.Style(root)
         self.style.theme_use('clam')
         self.theme_name = tk.StringVar(root, value='Light')
-        root.option_add('*Font', ('Segoe UI', 10))
-        self.apply_theme('Light')
-        banner = tk.Frame(root, background='#202a37', padx=20, pady=12)
+        self.font_family = ui_font(root)
+        root.option_add('*Font', (self.font_family, 10))
+        self.apply_theme(theme)
+        banner = tk.Frame(host, background='#202a37', padx=20, pady=12)
         banner.pack(fill='x')
         brand = tk.Frame(banner, background='#202a37')
         brand.pack(side='left')
-        tk.Label(brand, text='DYNASTY WARRIORS 3', font=('Segoe UI', 16, 'bold'),
+        tk.Label(brand, text='DYNASTY WARRIORS 3', font=(self.font_family, 16, 'bold'),
                  background='#202a37', foreground='#e6c379').pack(anchor='w')
-        tk.Label(brand, text='COMPLETE EDITION REMASTERED', font=('Segoe UI', 9),
+        tk.Label(brand, text='COMPLETE EDITION REMASTERED', font=(self.font_family, 9),
                  background='#202a37', foreground='#c4cddb').pack(anchor='w')
         credits = tk.Frame(banner, background='#202a37')
         credits.pack(side='right')
-        tk.Label(credits, text=f'SAVE EDITOR  ·  v{VERSION}', font=('Segoe UI', 10, 'bold'),
+        tk.Label(credits, text=f'SAVE EDITOR  ·  v{VERSION}', font=(self.font_family, 10, 'bold'),
                  background='#202a37', foreground='#ffffff').pack(anchor='e')
-        self.author_label = tk.Label(credits, text='Made by Mexican', font=('Segoe UI', 10),
+        self.author_label = tk.Label(credits, text='Made by Mexican', font=(self.font_family, 10),
                                      background='#202a37', foreground='#d2d9e2')
         self.author_label.pack(anchor='e')
         appearance = ttk.Frame(credits, style='Header.TFrame')
@@ -97,7 +89,7 @@ class Editor:
                                            values=tuple(THEMES), state='readonly', width=7)
         self.theme_selector.pack(side='left')
         self.theme_selector.bind('<<ComboboxSelected>>', lambda _event: self.apply_theme(self.theme_name.get()))
-        outer = ttk.Frame(root, padding=15)
+        outer = ttk.Frame(host, padding=15)
         outer.pack(fill='both', expand=True)
         bar = ttk.Frame(outer)
         bar.pack(fill='x')
@@ -147,81 +139,15 @@ class Editor:
             def invoke(_event, action=command):
                 action()
                 return 'break'
-            root.bind(shortcut, invoke)
-        root.protocol('WM_DELETE_WINDOW', self.close)
+            if not embedded:
+                root.bind(shortcut, invoke)
+        if not embedded:
+            root.protocol('WM_DELETE_WINDOW', self.close)
 
     def apply_theme(self, name):
-        """Change appearance without rebuilding forms or touching pending edits."""
-        if name not in THEMES:
-            raise ValueError('Unsupported appearance.')
-        palette = THEMES[name]
-        self.theme_name.set(name)
-        style = self.style
-        style.configure('.', font=('Segoe UI', 10), background=palette['background'],
-                        foreground=palette['text'], bordercolor=palette['border'],
-                        lightcolor=palette['border'], darkcolor=palette['border'],
-                        troughcolor=palette['background'])
-        style.configure('TButton', padding=(9, 6), background=palette['surface'])
-        style.map('TButton', background=[('disabled', palette['disabled']), ('active', palette['hover'])],
-                  foreground=[('disabled', palette['disabled_text'])])
-        style.configure('Primary.TButton', background=palette['accent'], foreground='#ffffff')
-        style.map('Primary.TButton', background=[('disabled', palette['disabled']), ('active', palette['accent_hover'])],
-                  foreground=[('disabled', palette['disabled_text']), ('!disabled', '#ffffff')])
-        style.configure('TNotebook', tabmargins=(0, 5, 0, 0))
-        style.configure('TNotebook.Tab', padding=(12, 7))
-        style.map('TNotebook.Tab', background=[('selected', palette['surface']), ('active', palette['hover'])],
-                  foreground=[('selected', palette['tab_text'])])
-        style.configure('Section.TLabel', font=('Segoe UI', 11, 'bold'))
-        style.configure('Muted.TLabel', foreground=palette['muted'])
-        style.configure('Header.TFrame', background='#202a37')
-        style.configure('Header.TLabel', background='#202a37', foreground='#d2d9e2', font=('Segoe UI', 9))
-        style.configure('TLabelframe', relief='solid')
-        style.configure('TLabelframe.Label', font=('Segoe UI', 11, 'bold'))
-        for fieldstyle in ('TEntry', 'TCombobox', 'TSpinbox'):
-            style.configure(fieldstyle, fieldbackground=palette['surface'], foreground=palette['text'],
-                            background=palette['surface'], insertcolor=palette['text'], padding=5,
-                            selectbackground=palette['accent'], selectforeground='#ffffff')
-            style.map(fieldstyle,
-                      fieldbackground=[('disabled', palette['disabled']), ('readonly', palette['surface'])],
-                      foreground=[('disabled', palette['disabled_text']), ('readonly', palette['text'])])
-        for control in ('TCheckbutton', 'TRadiobutton'):
-            style.map(control, background=[('active', palette['background'])],
-                      foreground=[('disabled', palette['disabled_text'])],
-                      indicatorbackground=[('disabled', palette['disabled']), ('selected', palette['accent']),
-                                           ('!selected', palette['surface'])])
-        style.configure('Treeview', rowheight=29, background=palette['surface'], fieldbackground=palette['surface'])
-        style.configure('Treeview.Heading', font=('Segoe UI', 10, 'bold'), background=palette['hover'], padding=(6, 7))
-        style.map('Treeview.Heading', background=[('active', palette['border'])])
-        style.map('Treeview', background=[('selected', palette['accent'])], foreground=[('selected', '#ffffff')])
-        style.configure('TScrollbar', background=palette['hover'], arrowcolor=palette['muted'])
-        style.map('TScrollbar', background=[('active', palette['border'])])
-        self.root.option_add('*TCombobox*Listbox.background', palette['surface'])
-        self.root.option_add('*TCombobox*Listbox.foreground', palette['text'])
-        self.root.option_add('*TCombobox*Listbox.selectBackground', palette['accent'])
-        self.root.option_add('*TCombobox*Listbox.selectForeground', '#ffffff')
-        self.theme_widgets(self.root)
-
-    def theme_widgets(self, parent):
-        """Apply colors to the small number of widgets outside ttk's styling."""
-        palette = THEMES[self.theme_name.get()]
-        stack = [parent]
-        while stack:
-            widget = stack.pop()
-            stack.extend(widget.winfo_children())
-            if isinstance(widget, (tk.Tk, tk.Toplevel, tk.Canvas)):
-                widget.configure(background=palette['background'])
-            elif isinstance(widget, tk.Text):
-                widget.configure(background=palette['surface'], foreground=palette['text'],
-                                 insertbackground=palette['text'], selectbackground=palette['accent'],
-                                 selectforeground='#ffffff')
-            elif isinstance(widget, ttk.Combobox):
-                # Tk keeps dropdown listboxes after their first use. The option
-                # database covers new ones; recolor any already-created popup.
-                listbox = f'{widget}.popdown.f.l'
-                if widget.tk.call('winfo', 'exists', listbox):
-                    widget.tk.call(listbox, 'configure', '-background', palette['surface'],
-                                   '-foreground', palette['text'], '-selectbackground', palette['accent'],
-                                   '-selectforeground', '#ffffff')
+        super().apply_theme(name)
+        if self.on_theme is not None:
+            self.on_theme(name)
 
     def set_loaded(self, loaded):
         for button in self.buttons: button.configure(state='normal' if loaded else 'disabled')
@@ -326,7 +252,7 @@ class Editor:
         self.officers = self.make_tree(left, [('merit', 'Merit'), ('hp', 'HP'), ('musou', 'Musou'), ('attack', 'Attack'), ('defense', 'Defense')], 'Officer', [155, 80, 65, 65, 65, 65])
         self.officers.bind('<<TreeviewSelect>>', self.select_officer)
         self.selected = tk.StringVar(value='Select an officer')
-        ttk.Label(right, textvariable=self.selected, font=('Segoe UI', 11, 'bold')).pack(anchor='w', pady=(0, 12))
+        ttk.Label(right, textvariable=self.selected, font=(self.font_family, 11, 'bold')).pack(anchor='w', pady=(0, 12))
         self.inputs = {}
         for field, label in LABELS.items():
             cap = CAPS.get(field)
@@ -347,7 +273,7 @@ class Editor:
         self.item_detail = tk.StringVar()
         self.item_owned = tk.BooleanVar()
         self.item_value = tk.StringVar()
-        ttk.Label(right, textvariable=self.item_selected, font=('Segoe UI', 11, 'bold'), wraplength=220).pack(anchor='w', pady=(0, 12))
+        ttk.Label(right, textvariable=self.item_selected, font=(self.font_family, 11, 'bold'), wraplength=220).pack(anchor='w', pady=(0, 12))
         ttk.Label(right, textvariable=self.item_detail, wraplength=220).pack(anchor='w', pady=(0, 12))
         ttk.Checkbutton(right, text='Owned', variable=self.item_owned).pack(anchor='w', pady=6)
         ttk.Label(right, text='Normal item value').pack(anchor='w', pady=(10, 3))
@@ -378,7 +304,7 @@ class Editor:
         self.weapons.bind('<<TreeviewSelect>>', self.select_weapon)
         self.weapon_selected = tk.StringVar(value='Select a weapon')
         self.weapon_detail = tk.StringVar(value='Select a weapon to see its bonuses.')
-        ttk.Label(right, textvariable=self.weapon_selected, font=('Segoe UI', 11, 'bold'), wraplength=370).pack(anchor='w', pady=(0, 6))
+        ttk.Label(right, textvariable=self.weapon_selected, font=(self.font_family, 11, 'bold'), wraplength=370).pack(anchor='w', pady=(0, 6))
         ttk.Label(right, textvariable=self.weapon_detail, wraplength=370).pack(anchor='w', pady=(0, 8))
         element_form=ttk.Frame(right);element_form.pack(fill='x',pady=(0,8))
         ttk.Label(element_form,text='Element:').pack(side='left',padx=(0,6))
@@ -429,7 +355,7 @@ class Editor:
         self.bodyguard_selected = tk.StringVar(value='Select a bodyguard team')
         self.bodyguard_merit = tk.StringVar()
         self.bodyguard_limit = tk.StringVar(value='Merit (max 99,999)')
-        ttk.Label(right, textvariable=self.bodyguard_selected, font=('Segoe UI', 11, 'bold')).pack(anchor='w', pady=(0, 8))
+        ttk.Label(right, textvariable=self.bodyguard_selected, font=(self.font_family, 11, 'bold')).pack(anchor='w', pady=(0, 8))
         self.guard_tabs = ttk.Notebook(right); self.guard_tabs.pack(fill='both', expand=True)
         pages = {}
         for name in ('Growth', 'Team Equipment', 'BG Items', 'BG Weapons', 'Appearance Unlocks'):
@@ -449,7 +375,7 @@ class Editor:
             variable.trace_add('write', lambda *_: self.preview_growth())
         self.bodyguard_merit.trace_add('write', lambda *_: self.preview_growth())
         self.guard_budget = tk.StringVar(); self.guard_automatic = tk.StringVar(); self.guard_stats = tk.StringVar()
-        ttk.Label(page, textvariable=self.guard_budget, font=('Segoe UI', 10, 'bold'), wraplength=640).pack(anchor='w', pady=(10, 4))
+        ttk.Label(page, textvariable=self.guard_budget, font=(self.font_family, 10, 'bold'), wraplength=640).pack(anchor='w', pady=(10, 4))
         ttk.Label(page, textvariable=self.guard_automatic, wraplength=640).pack(anchor='w', pady=4)
         ttk.Label(page, textvariable=self.guard_stats, wraplength=640).pack(anchor='w', pady=4)
         self.action(page, 'Apply Team Growth', self.apply_bodyguard)
@@ -464,7 +390,7 @@ class Editor:
         self.build_guard_customization(pages['Appearance Unlocks'])
 
     def build_guard_customization(self, page):
-        ttk.Label(page,text='Bodyguard appearance and color availability',font=('Segoe UI',11,'bold')).pack(anchor='w',pady=(0,8))
+        ttk.Label(page,text='Bodyguard appearance and color availability',font=(self.font_family,11,'bold')).pack(anchor='w',pady=(0,8))
         footer=ttk.Frame(page);footer.pack(side='bottom',fill='x',pady=(8,0))
         bar=ttk.Frame(footer);bar.pack(fill='x',pady=(0,6))
         for text,command in (('Unlock Selected',self.unlock_selected_guard_customization),('Unlock All Bodyguard Options',self.unlock_guard_customization)):
@@ -541,7 +467,7 @@ class Editor:
         self.guard_items.bind('<<TreeviewSelect>>', self.select_guard_item)
         self.guard_item_selected = tk.StringVar(value='Select an item'); self.guard_item_detail = tk.StringVar()
         self.guard_item_owned = tk.BooleanVar(); self.guard_item_value = tk.StringVar()
-        ttk.Label(right, textvariable=self.guard_item_selected, font=('Segoe UI',10,'bold'), wraplength=205).pack(anchor='w', pady=(0,8))
+        ttk.Label(right, textvariable=self.guard_item_selected, font=(self.font_family,10,'bold'), wraplength=205).pack(anchor='w', pady=(0,8))
         ttk.Label(right, textvariable=self.guard_item_detail, wraplength=205).pack(anchor='w', pady=(0,8))
         ttk.Checkbutton(right, text='Owned', variable=self.guard_item_owned).pack(anchor='w', pady=5)
         self.guard_item_entry = ttk.Entry(right, textvariable=self.guard_item_value, width=20); self.guard_item_entry.pack(anchor='w', pady=8)
@@ -582,13 +508,13 @@ class Editor:
         left=ttk.Frame(tab,padding=(0,0,18,0));left.grid(row=0,column=0,sticky='nsew')
         right=ttk.Frame(tab,padding=(18,0,0,0));right.grid(row=0,column=1,sticky='nsew')
         left=self.scroll_content(left,width=440);right=self.scroll_content(right,width=440)
-        ttk.Label(left,text='Content availability',font=('Segoe UI',11,'bold')).pack(anchor='w',pady=(0,10))
+        ttk.Label(left,text='Content availability',font=(self.font_family,11,'bold')).pack(anchor='w',pady=(0,10))
         self.action(left, 'Unlock All Playable Officers', lambda: self.unlock('CanUseCharaArray', 42))
         self.action(left, 'Unlock All 108 Playable Stages', lambda: self.unlock('CanUseScenarioArray', 108))
         self.action(left,'Unlock All Side Stories',self.unlock_side_stories)
         ttk.Label(left,text='Side stories unlock the three rulers’ side campaigns and their Free Mode variants. They are not marked completed.',wraplength=440).pack(anchor='w',pady=8)
         ttk.Separator(left).pack(fill='x',pady=10)
-        ttk.Label(left,text='Musou completion — separate action',font=('Segoe UI',10,'bold')).pack(anchor='w')
+        ttk.Label(left,text='Musou completion — separate action',font=(self.font_family,10,'bold')).pack(anchor='w')
         self.story_officer_choices={NAMES.get(str(i),f'Officer {i}'):i for i,row in progression.ROUTES.items() if row['route_length']}
         self.story_officer=tk.StringVar(value=next(iter(self.story_officer_choices)))
         self.story_officer_box=ttk.Combobox(left,textvariable=self.story_officer,values=tuple(self.story_officer_choices),state='readonly')
@@ -599,13 +525,13 @@ class Editor:
         self.action(left,'Mark Selected Musou Cleared',self.complete_selected_musou)
         self.action(left,'Mark All Supported Musou Cleared',self.complete_all_musou)
         ttk.Label(left,text='Sets clear flags and route progress. Awards 3 Huanglong Elixirs per first clear, capped at 999. Existing saved runs and battle records are preserved.',wraplength=440).pack(anchor='w',pady=8)
-        ttk.Label(right,text='Grind presets',font=('Segoe UI',11,'bold')).pack(anchor='w',pady=(0,10))
+        ttk.Label(right,text='Grind presets',font=(self.font_family,11,'bold')).pack(anchor='w',pady=(0,10))
         self.action(right, 'Remove The Grind', self.remove_grind)
         ttk.Label(right, text='Max permanent officer stats and Merit, normal item rolls, rare items, all unique weapons and supported bodyguard growth/equipment inventories. Equipped choices and story completion are preserved.', wraplength=440).pack(anchor='w', pady=8)
         self.action(right, 'Unlock Everything Supported', self.unlock_everything)
         ttk.Label(right, text='Adds officers, stages, side stories, bodyguard appearance options, the weapon collection, Tactics costumes and music/movie galleries. Story completion and saved runs have separate controls.', wraplength=440).pack(anchor='w', pady=8)
         ttk.Separator(right).pack(fill='x', pady=12)
-        ttk.Label(right, text='Huanglong Elixirs', font=('Segoe UI', 11, 'bold')).pack(anchor='w')
+        ttk.Label(right, text='Huanglong Elixirs', font=(self.font_family, 11, 'bold')).pack(anchor='w')
         ttk.Label(right, text=f'Choose your final balance: 0–{progression.ELIXIR_MAX}.', wraplength=440).pack(anchor='w', pady=(5, 7))
         self.elixir_input = tk.StringVar()
         self.elixir_entry = ttk.Entry(right, textvariable=self.elixir_input, width=16)
@@ -639,7 +565,7 @@ class Editor:
 
     def build_musou_saves(self):
         page=self.tabs['Musou Saves']
-        ttk.Label(page,text='Between-stage Musou campaign saves',font=('Segoe UI',11,'bold')).pack(anchor='w',pady=(0,6))
+        ttk.Label(page,text='Between-stage Musou campaign saves',font=(self.font_family,11,'bold')).pack(anchor='w',pady=(0,6))
         ttk.Label(page,text='Remove a saved run to free a campaign slot. This does not reset officer stats, unlocks or Musou completion. Changes apply to your opened copy only when you save.',wraplength=960).pack(anchor='w',pady=(0,12))
         self.musou_saves_tree=self.make_tree(page,[('officer','Officer'),('stage','Saved progress'),('date','Saved at')],'Slot',[150,210,200,250])
         self.musou_saves_tree.bind('<<TreeviewSelect>>',lambda *_:self.select_musou_save())
@@ -775,7 +701,7 @@ class Editor:
         window.resizable(False, False)
         panel = ttk.Frame(window, padding=22)
         panel.pack(fill='both', expand=True)
-        ttk.Label(panel, text='Made by Mexican', font=('Segoe UI', 14, 'bold')).pack(anchor='w')
+        ttk.Label(panel, text='Made by Mexican', font=(self.font_family, 14, 'bold')).pack(anchor='w')
         ttk.Label(panel, text='Report a bug, suggest a feature or get in touch.', style='Muted.TLabel').pack(anchor='w', pady=(5, 18))
         ttk.Label(panel, text='Discord username', style='Section.TLabel').pack(anchor='w')
         discord_row = ttk.Frame(panel)
@@ -1685,7 +1611,7 @@ class Editor:
     def save_to(self, path, overwrite=False):
         self.set_loaded(False)
         self.status.set('Saving and validating the edited copy…')
-        self.root.configure(cursor='wait')
+        self.root.configure(cursor='wait' if sys.platform == 'win32' else 'watch')
         self.root.update_idletasks()
         try:
             try:
@@ -1737,6 +1663,9 @@ class Editor:
 
 
 def main():
+    if not any(flag in sys.argv for flag in ('--smoke-test', '--self-test', '--compatibility-test')):
+        from application import main as application_main
+        return application_main()
     root = tk.Tk()
     if any(flag in sys.argv for flag in ('--smoke-test','--self-test','--compatibility-test')): root.withdraw()
     editor = Editor(root)

@@ -17,7 +17,8 @@ PERSONAL_PATH=re.compile(r'(?i)(?:[a-z]:[\\/]+Users[\\/]+(?!Player(?:[\\/]|\b))[
 
 def version(root=ROOT):
     values=[]
-    for name in ('gui.py','build_windows.py'):
+    entry='application.py' if (root/'application.py').exists() else 'gui.py'
+    for name in (entry,'build_windows.py'):
         tree=ast.parse((root/name).read_text(encoding='utf-8'))
         assignments=[node for node in tree.body if isinstance(node,ast.Assign)
                      and any(isinstance(target,ast.Name) and target.id=='VERSION' for target in node.targets)]
@@ -26,8 +27,13 @@ def version(root=ROOT):
         if not isinstance(value,str) or not re.fullmatch(r'\d+\.\d+(?:\.\d+)?',value):
             raise ValueError(f'{name} has an unsupported release version.')
         values.append(value)
-    if values[0]!=values[1]:raise ValueError('GUI and build versions do not match.')
+    if values[0]!=values[1]:raise ValueError('Application and build versions do not match.')
     return values[0]
+
+
+def artifact_name(root=ROOT):
+    prefix='UniversalKoeiTecmoSaveEditor' if (root/'application.py').exists() else 'DW3RemasteredSaveEditor'
+    return f'{prefix}-v{version(root)}'
 
 
 def public_path(name):
@@ -80,6 +86,21 @@ def verified_sources(root=ROOT):
         sources[name]=data
     required=set(WINDOWS_DOCS)|{'gui.py','build_windows.py','build-requirements.txt','package_release.py',
                                'RELEASE_NOTES.md','.github/workflows/windows-release.yml'}
+    if (root/'application.py').exists():
+        required.update({'application.py','appearance.py','game_registry.py','origins_gui.py',
+                         'origins_editor.py','origins_evidence.json','save_safety.py','copy_storage.py',
+                         'ORIGINS_FORMAT.md','launch.pyw'})
+        if (root/'verified_editor.py').exists() or b'dw8xl_editor' in sources.get('game_registry.py',b''):
+            required.update({'verified_editor.py','verified_gui.py','koei_codec.py','dw8xl_editor.py',
+                             'pw3_editor.py','support_catalog.py','support_catalog.json','KOEI_FORMATS.md',
+                             'verified_self_test.py','game_knowledge.py','game_content.py','GAME_MECHANICS.md','PC_EDITOR_ATTEMPTS.md'})
+        if b'dw4hyper_editor' in sources.get('game_registry.py', b''):
+            required.update({'dw4hyper_editor.py', 'dw4hyper_parser.py', 'PC_RESEARCH_RETRY.md'})
+        if b'dw4xl_editor' in sources.get('game_registry.py', b''):
+            required.update({'dw4xl_editor.py', 'dw4xl_parser.py', 'DW4_PLATFORM_FORMATS.md'})
+        for research_module in ('p5s_codec.py', 'dw8e_candidate_codec.py'):
+            if (root/research_module).exists():
+                required.add(research_module)
     missing=required-sources.keys()
     if missing:raise ValueError('Required public sources missing from manifest: '+', '.join(sorted(missing)))
     licenses={name for name in sources if name.startswith('licenses/')}
@@ -109,7 +130,7 @@ def scan_bundled_data(label,data):
 def verify_executable(root=ROOT,archive_reader=None):
     """Inspect the built archive in memory, without extracting runtime files."""
     release_version,sources=verified_sources(root)
-    executable=root/'dist'/f'DW3RemasteredSaveEditor-v{release_version}.exe'
+    executable=root/'dist'/f'{artifact_name(root)}.exe'
     if executable.is_symlink() or not executable.resolve().is_relative_to(root.resolve()):
         raise ValueError('The executable must be built inside this repository.')
     binary=executable.read_bytes()
@@ -124,7 +145,7 @@ def verify_executable(root=ROOT,archive_reader=None):
         path=PurePosixPath(normalized)
         if (path.is_absolute() or ':' in normalized or '..' in path.parts or
             any(part.lower() in {'work','tests','fixtures','source-fixtures'} for part in path.parts) or
-            path.suffix.lower() in {'.sav','.pak','.key'}):
+            path.suffix.lower() in {'.sav','.dat','.bin','.pak','.key','.psu','.ps2','.psv','.max','.cbs','.vmc','.sys'}):
             raise ValueError(f'Private or unsafe file in executable archive: {name}')
         data=archive.extract(name)
         scan_bundled_data(name,data)
@@ -144,16 +165,22 @@ def verify_executable(root=ROOT,archive_reader=None):
 
 def package(root=ROOT,output=None):
     root=root.resolve();release_version,sources=verified_sources(root)
-    name=f'DW3RemasteredSaveEditor-v{release_version}'
+    name=artifact_name(root)
     executable=root/'dist'/f'{name}.exe'
     if executable.is_symlink() or not executable.resolve().is_relative_to(root):
         raise ValueError('The executable must be built inside this repository.')
     binary=executable.read_bytes()
     if not binary.startswith(b'MZ'):raise ValueError('The built executable is not a Windows executable.')
+    # Inspect the real bundled runtime before producing distributable assets.
+    # Legacy DW3 archives retain their original packaging contract.
+    if (root/'application.py').exists():verify_executable(root)
     output=Path(output) if output is not None else root/'release'
     assets=[output/f'{name}-Windows.zip',output/f'{name}-Source.zip',output/f'{name}.exe',output/'SHA256SUMS.txt']
     if any(path.exists() for path in assets):raise ValueError('Release outputs already exist; choose a new output directory.')
     windows={doc:sources[doc] for doc in WINDOWS_DOCS}
+    if 'application.py' in sources:
+        windows.update({doc:sources[doc] for doc in ('RELEASE_NOTES.md','AGENTS.md','CONTRIBUTING.md')
+                        if doc in sources})
     windows.update({path:data for path,data in sources.items() if path.startswith('licenses/')})
     windows[f'{name}.exe']=binary
     prefix=f'{name}-Source/'

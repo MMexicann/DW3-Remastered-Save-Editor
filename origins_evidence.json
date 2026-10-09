@@ -1,0 +1,35 @@
+{
+  "game_id": "origins",
+  "format_status": "opaque; encryption and gameplay schema unverified",
+  "references": [
+    {
+      "source": "https://github.com/VdustR/game-save-dwo-d4h",
+      "commit": "b5e853eec865417edf473eb9b39330b1cf0f74e8",
+      "file": "SLOT0008.dat",
+      "bytes": 2561636,
+      "sha256": "1e0e1668c6398bc9c67d47d5510833c30d0720e2eddb2c11795bfa49ce4ac758",
+      "description": "Public Steam Dream of the 4 Heroes DLC save, identified by its publisher; not independently game-load validated",
+      "license": "Unlicense"
+    }
+  ],
+  "asset_research": {
+    "source": "https://github.com/Kelebek1/dwo",
+    "commit": "5de9b3e615691f2280ceeb6100416275adfbe75c",
+    "scope": "LINKDATA assets and stage scripts, not a save schema",
+    "finding": "Published asset AES key did not produce a recognizable save structure when tested; it is not used by this editor"
+  },
+  "editable_fields": [],
+  "features": [
+    "Character progression and levels",
+    "Skill points",
+    "Weapons and proficiency",
+    "Equipment",
+    "Gems",
+    "Horses",
+    "Resources",
+    "Unlocks",
+    "Battle Arts",
+    "Bonds",
+    "Story progression"
+  ]
+}

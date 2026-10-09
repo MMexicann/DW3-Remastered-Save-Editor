@@ -1,0 +1,383 @@
+{
+  "schema_version": 1,
+  "policy": "The library contains independently verified file editors and explicitly labelled implementations of published platform-specific editors. editing_verified remains false until independent genuine-file qualification for new published formats.",
+  "references": [
+    "https://github.com/koko-tsuu/dw8xl_save_converter",
+    "https://github.com/Ceraph1216/pirateWarriors3Save",
+    "https://github.com/bucanero/apollo-patches",
+    "https://github.com/bucanero/apollo-saves",
+    "https://github.com/bucanero/ps3-save-decrypters",
+    "https://github.com/alsharfa/Dynasty-Warriors-Strikeforce-ps3-save-editor",
+    "https://github.com/gamesaves/OPPW3",
+    "https://github.com/Hexorg/CheatEngineTables",
+    "https://github.com/Glubus/oppw4-sdk",
+    "https://github.com/Glubus/oppw4-data",
+    "https://github.com/ayozetr/berserk-band-of-the-hawk-es",
+    "https://github.com/mtkennerly/ludusavi-manifest/blob/f956ad520f4bea18097ec21af6418bcc37a3bb9d/data/manifest.yaml",
+    "https://github.com/talkative-platano/dw4hyper-save-editor",
+    "https://github.com/talkative-platano/dw4xl-save-editor",
+    "https://github.com/cnopt/dynastywarriors6-reverse-engineering",
+    "https://github.com/zarroboogs/p5spc.saveutil"
+  ],
+  "games": [
+    {
+      "id": "dw3",
+      "title": "Dynasty Warriors 3: Complete Edition Remastered",
+      "platform": "Windows PC",
+      "status": "Existing full editor",
+      "evidence": "Existing v1.1 native schema, encryption and regression tests retained.",
+      "needed": "Private fixtures and native Windows regression checks for this development version.",
+      "editing_verified": true
+    },
+    {
+      "id": "dw8xl",
+      "title": "Dynasty Warriors 8: Xtreme Legends Complete Edition",
+      "platform": "Windows PC",
+      "status": "File editing verified",
+      "evidence": "Genuine PC sample passes both integrity layers. Resources, 82 officer stat records and supported existing weapon attribute ranks are editable; progression and equipment identities are inspected read only.",
+      "needed": "In-game load checks on copies; controlled attribute/progression pairs and version-labelled samples.",
+      "editing_verified": true
+    },
+    {
+      "id": "pw3",
+      "title": "One Piece: Pirate Warriors 3",
+      "platform": "Windows PC",
+      "status": "File editing verified",
+      "evidence": "Two genuine PC samples pass integrity. Stats, bars and skill slots are editable; 16 character IDs and 28 costume associations have native PC evidence. Level/XP, currency and costume ownership remain read only.",
+      "needed": "Controlled progression, coin and Beli pairs, further character identity mapping and in-game load checks.",
+      "editing_verified": true
+    },
+    {
+      "id": "origins",
+      "title": "Dynasty Warriors: Origins",
+      "platform": "Windows PC",
+      "status": "Research copy tools only",
+      "evidence": "One real public Steam DLC save inspected. Asset cipher and older save ciphers did not establish a valid gameplay payload.",
+      "needed": "Version/DLC-labelled control and single-value before/after saves; verified save encryption and checksums.",
+      "editing_verified": false
+    },
+    {
+      "id": "berserk",
+      "title": "Berserk and the Band of the Hawk",
+      "platform": "Windows PC",
+      "status": "PC mechanics evidence; sample missing",
+      "evidence": "PC tutorials/guides distinguish character progression, accessory enhancement +9, skill rank and per-character/global Eclipse rewards. No native PC save or disk codec verified.",
+      "needed": "Copied native PC save, build labels, checksums and controlled character/accessory/Eclipse pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "pw4",
+      "title": "One Piece: Pirate Warriors 4",
+      "platform": "Windows PC",
+      "status": "PC archive link; download blocked",
+      "evidence": "Steam PC guide links save_data.rar with Windows import instructions and successful-load reports; Mediafire blocked. Runtime Beli/medal/crew/Soul systems are separate; no disk decoder verified.",
+      "needed": "Copied native PC gameplay files, build/DLC labels, integrity evidence and controlled Beli, medal, growth and Soul Map pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "dw6_original",
+      "title": "Dynasty Warriors 6",
+      "platform": "Windows PC (legacy edition)",
+      "status": "Plaintext PC reader lead",
+      "evidence": "Native PC save.dat reader and author-reported successful edits found. Officer/weapon/unlock layouts partly corroborated by screenshots; no independent complete save validation.",
+      "needed": "Genuine PC save.dat, accepted size/title/integrity rules and controlled officer, weapon and horse pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "dw8_empires",
+      "title": "Dynasty Warriors 8: Empires",
+      "platform": "Windows PC",
+      "status": "Candidate codec; PC sample blocked",
+      "evidence": "Independently implemented published two-layer cipher candidate passes procedural checksum/preservation tests. Steam users share a PC save, but its Google Drive download is blocked; title identity and fields remain unverified.",
+      "needed": "Copied native system and campaign .dat files, build/DLC labels, native identity and resource/merit/bonus-point pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "dw9_original",
+      "title": "Dynasty Warriors 9",
+      "platform": "Windows PC",
+      "status": "PC save link; download blocked",
+      "evidence": "Steam users confirm a public PC save and describe unlock/story coverage; savegame.pro blocked here. PC gem guide maps runtime taxonomy, not serialized fields.",
+      "needed": "Copied gameplay files from Dynasty Warriors 9 for Steam, full/trial/build/DLC labels, gem/resource/story pairs; actual gameplay basename remains unknown.",
+      "editing_verified": false
+    },
+    {
+      "id": "dw9_empires",
+      "title": "Dynasty Warriors 9: Empires",
+      "platform": "Windows PC",
+      "status": "PC mechanics mapped; sample missing",
+      "evidence": "PC guides distinguish reputation/title, artifact/gem, proficiency/inheritance and CAW dependencies. Public hex and .caw tools edit process memory, not native saves; no disk codec verified.",
+      "needed": "Copied system, campaign and CAW data from the independent Empires directory, actual build/DLC labels and controlled resource/title/equipment/proficiency pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "dw7_definitive",
+      "title": "Dynasty Warriors 7: Xtreme Legends Definitive Edition",
+      "platform": "Windows PC",
+      "status": "PC save link; download blocked",
+      "evidence": "Steam users share annotated PC saves and restoration instructions. Google Drive archive blocked here; no bytes reached a decoder trial.",
+      "needed": "Copied native save data, version labels, integrity/decryption evidence and single-value progression pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "sw2",
+      "title": "Samurai Warriors 2",
+      "platform": "Windows PC (legacy edition)",
+      "status": "Save search unresolved",
+      "evidence": "Located PC Sugoroku tool modifies SW2.exe map properties rather than saves. It is not a save decoder; no native PC sample or integrity evidence verified.",
+      "needed": "Unchanged copied native PC save, checksum/identity evidence and single-value character/weapon pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "sw5",
+      "title": "Samurai Warriors 5",
+      "platform": "Windows PC",
+      "status": "PC path identified; no codec",
+      "evidence": "Published PC backup manifest identifies the Windows save location and Steam edition. No native PC decoder or gameplay edit was verified.",
+      "needed": "Platform/edition-labelled native copies, checksum and field verification.",
+      "editing_verified": false
+    },
+    {
+      "id": "sw4ii",
+      "title": "Samurai Warriors 4-II",
+      "platform": "Windows PC",
+      "status": "Sample link blocked; platform check pending",
+      "evidence": "Steam PC discussion links a Dropbox save; download blocked and uploaded filename still needs platform verification. PC runtime maps weapons, mounts and strategy tomes without proving disk offsets.",
+      "needed": "Copied native Windows save, edition/build labels, integrity checks and weapon/tome/progression pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "sw4dx",
+      "title": "Samurai Warriors 4 DX",
+      "platform": "Windows PC",
+      "status": "PC path identified; no codec",
+      "evidence": "Published PC backup manifest identifies the Windows save location and Steam edition. No native PC decoder or gameplay edit was verified.",
+      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "editing_verified": false
+    },
+    {
+      "id": "sw_sanada",
+      "title": "Samurai Warriors: Spirit of Sanada",
+      "platform": "Windows PC",
+      "status": "PC path identified; no codec",
+      "evidence": "Published PC backup manifest identifies the Windows save location and Steam edition. No native PC decoder or gameplay edit was verified.",
+      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "editing_verified": false
+    },
+    {
+      "id": "wo1",
+      "title": "Warriors Orochi",
+      "platform": "Windows PC (legacy edition)",
+      "status": "Save search unresolved",
+      "evidence": "Bounded native PC decoder/sample search found no applicable disk reader. This is a missing-evidence blocker, not a demonstrated decryption failure.",
+      "needed": "Unchanged copied native PC save and controlled progression, weapon and resource pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "wo3",
+      "title": "Warriors Orochi 3 Ultimate Definitive Edition",
+      "platform": "Windows PC",
+      "status": "PC archive link; download blocked",
+      "evidence": "Annotated Steam PC save archive found; Mediafire blocked here. Promotions, growth, crafting, upgrade stones and bonds researched; console layouts remain unverified for PC Definitive.",
+      "needed": "Copied native SAVEDATA.BIN, build/DLC labels, checksums and promotion/crafting/bond single-change pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "wo4",
+      "title": "Warriors Orochi 4 / Ultimate",
+      "platform": "Windows PC",
+      "status": "Console format leads only",
+      "evidence": "Public decrypted PS4 sample indexed; no verified PC editing layout.",
+      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "editing_verified": false
+    },
+    {
+      "id": "allstars",
+      "title": "Warriors All-Stars",
+      "platform": "Windows PC",
+      "status": "Candidate only",
+      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
+      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "editing_verified": false
+    },
+    {
+      "id": "arslan",
+      "title": "Arslan: The Warriors of Legend",
+      "platform": "Windows PC",
+      "status": "Candidate only",
+      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
+      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "editing_verified": false
+    },
+    {
+      "id": "aot1",
+      "title": "Attack on Titan: Wings of Freedom",
+      "platform": "Windows PC",
+      "status": "Candidate only",
+      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
+      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "editing_verified": false
+    },
+    {
+      "id": "aot2",
+      "title": "Attack on Titan 2 / Final Battle",
+      "platform": "Windows PC",
+      "status": "Candidate only",
+      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
+      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "editing_verified": false
+    },
+    {
+      "id": "fate",
+      "title": "Fate/Samurai Remnant",
+      "platform": "Windows PC",
+      "status": "Candidate only",
+      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
+      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "editing_verified": false
+    },
+    {
+      "id": "touken",
+      "title": "Touken Ranbu Warriors",
+      "platform": "Windows PC",
+      "status": "Candidate only",
+      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
+      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "editing_verified": false
+    },
+    {
+      "id": "nioh",
+      "title": "Nioh series (PC editions)",
+      "platform": "Windows PC",
+      "status": "Candidate only",
+      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
+      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "editing_verified": false
+    },
+    {
+      "id": "wolong",
+      "title": "Wo Long: Fallen Dynasty",
+      "platform": "Windows PC",
+      "status": "Candidate only",
+      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
+      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "editing_verified": false
+    },
+    {
+      "id": "stranger",
+      "title": "Stranger of Paradise: Final Fantasy Origin",
+      "platform": "Windows PC",
+      "status": "Candidate only",
+      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
+      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier",
+      "title": "Atelier series",
+      "platform": "Windows PC",
+      "status": "Candidate only",
+      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
+      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "editing_verified": false
+    },
+    {
+      "id": "ninjagaiden",
+      "title": "Ninja Gaiden series (PC editions)",
+      "platform": "Windows PC",
+      "status": "Candidate only",
+      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
+      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "editing_verified": false
+    },
+    {
+      "id": "rotk",
+      "title": "Romance of the Three Kingdoms / Nobunaga’s Ambition",
+      "platform": "Windows PC",
+      "status": "Candidate only",
+      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
+      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "editing_verified": false
+    },
+    {
+      "id": "dw4hyper",
+      "title": "Dynasty Warriors 4 Hyper",
+      "platform": "Windows PC (legacy edition)",
+      "status": "Available PC editor; sample check pending",
+      "evidence": "Published native PC editor independently implemented: 331 bounded fields, named officers, semantic items and surgical copy serialization. Main PC library entry; procedural tests pass, independent genuine-file and in-game checks pending.",
+      "needed": "Unchanged native PC save.dat (69,568 bytes), build/region, displayed values and controlled in-game reload.",
+      "editing_verified": false
+    },
+    {
+      "id": "dw5_special",
+      "title": "Dynasty Warriors 5 Special (Asian PC release)",
+      "platform": "Windows PC (legacy edition)",
+      "status": "Candidate only",
+      "evidence": "Native Windows edition requires its own save layout; no applicable PC adapter verified.",
+      "needed": "Edition/region-labelled PC save copies, controlled value pairs and checksum verification.",
+      "editing_verified": false
+    },
+    {
+      "id": "p5s",
+      "title": "Persona 5 Strikers",
+      "platform": "Windows PC",
+      "status": "PC stream vector verified; integrity pending",
+      "evidence": "Independent byte-stream recovery reproduces a published 32-byte PC vector without an account ID. Read-only structural inspection implemented; no complete sample/checksum/gameplay writer verified.",
+      "needed": "Copied native PC SAVEDATA.BIN with build and displayed slot values; incoming integrity rules and controlled gameplay pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "dqh1",
+      "title": "Dragon Quest Heroes",
+      "platform": "Windows PC",
+      "status": "PC runtime evidence only",
+      "evidence": "PC progression runtime tables describe level, EXP, skill points and skill trees. No native save decoder or serialized offsets verified.",
+      "needed": "Copied native PC save and controlled skill/resource/progression pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "dqh2",
+      "title": "Dragon Quest Heroes II",
+      "platform": "Windows PC",
+      "status": "PC path identified; no codec",
+      "evidence": "Native PC backup path identified; no usable sample, disk codec or editable schema verified.",
+      "needed": "Copied native sequel save, build labels and independent integrity/field evidence.",
+      "editing_verified": false
+    },
+    {
+      "id": "abyss",
+      "title": "Warriors: Abyss",
+      "platform": "Windows PC",
+      "status": "PC path identified; no codec",
+      "evidence": "Native PC edition and GAMEDATA*.BIN filenames identified; no file decoding/editing verified.",
+      "needed": "Copied native GAMEDATA*.BIN, build labels and controlled resource/unlock pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "dw4xl_ps2",
+      "title": "Dynasty Warriors 4: Xtreme Legends (SLUS-20812)",
+      "platform": "PlayStation 2",
+      "status": "Available published-format editor; sample check pending",
+      "evidence": "Dedicated USA PS2 PSU parser and surgical payload checksum updates based on the supplied published editor. Separate from PC Hyper; exported memory-card container and metadata preserved. Independent genuine-file validation pending.",
+      "needed": "Unchanged SLUS-20812 .psu export, displayed values and controlled game reload; other wrappers/regions unsupported.",
+      "editing_verified": false
+    }
+  ],
+  "scope": "Windows application with explicit platform selection. Native PC formats and supported PS2 memory-card exports have separate parsers, validation and backup identities.",
+  "mechanics_reference": "GAME_MECHANICS.md",
+  "qualification_reference": "PC_EDITOR_ATTEMPTS.md",
+  "pursuit_policy": "Implement only evidenced platform-specific save formats. Published-format availability is labelled separately from independent genuine-file and in-game verification.",
+  "retry_reference": "PC_RESEARCH_RETRY.md",
+  "console_scope": "Only source-backed DW4 XL PS2 SLUS-20812 PSU editing currently; other console formats are unimplemented.",
+  "pc_scope_exclusions": [
+    "Dynasty Warriors 1–3 original console editions and console-only expansions",
+    "Dynasty Warriors 4–7 Empires",
+    "Dynasty Warriors: Gundam series",
+    "One Piece: Pirate Warriors 1 and 2",
+    "Berserk PS Vita",
+    "Hyrule Warriors",
+    "Fire Emblem Warriors",
+    "Warriors Orochi 2",
+    "Samurai Warriors console-only editions"
+  ]
+}

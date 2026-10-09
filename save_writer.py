@@ -256,8 +256,12 @@ def _atomic_write(data: bytes,path: Path,overwrite=False,expected_bytes=None):
         else:
             # On Windows os.rename fails if destination exists, including races.
             # It also works on FAT/exFAT, which lack hard links.
-            if os.name!='nt':raise SaveError('Safe publishing is supported on Windows only.')
-            os.rename(temp,path)
+            if os.name == 'nt':
+                os.rename(temp,path)
+            else:
+                # Link creation is atomic and refuses an existing destination.
+                os.link(temp,path)
+                temp.unlink()
     finally:
         if temp.exists(): temp.unlink()
     return path

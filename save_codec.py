@@ -1,4 +1,4 @@
-"""Title AES-256-ECB envelope codec. Uses Windows built-in cryptography."""
+"""DW3 AES-256-ECB envelope. Native Windows crypto; optional development provider."""
 import ctypes as c
 import struct
 import sys
@@ -28,8 +28,17 @@ class CNG_AES:
     def __init__(self, mode: str):
         if mode not in ('ECB', 'CBC'):
             raise ValueError('Unsupported AES mode.')
-        if sys.platform != 'win32':
-            raise RuntimeError('This research helper requires Windows CNG.')
+        self._portable = sys.platform != 'win32'
+        self.mode = mode
+        if self._portable:
+            # Optional development provider only; Windows always uses native CNG.
+            from importlib import import_module
+            try:
+                self._ciphers = import_module('cryptography.hazmat.primitives.ciphers')
+            except ImportError as error:
+                raise RuntimeError('Non-Windows development needs the optional cryptography package.') from error
+            self._open = True
+            return
         self.mode = mode
         self.dll = c.WinDLL('bcrypt.dll')
         signatures = {
@@ -63,6 +72,14 @@ class CNG_AES:
     def transform(self, data: bytes, key: bytes, *, direction: str,
                   iv: bytes | None = None) -> bytes:
         validate_parameters(data, key, self.mode, iv, direction)
+        if self._portable:
+            if not self._open:
+                raise RuntimeError('AES provider is closed.')
+            provider = self._ciphers
+            mode = provider.modes.ECB() if self.mode == 'ECB' else provider.modes.CBC(iv)
+            cipher = provider.Cipher(provider.algorithms.AES(key), mode)
+            worker = cipher.decryptor() if direction == 'decrypt' else cipher.encryptor()
+            return worker.update(data) + worker.finalize()
         if not self.handle.value:
             raise RuntimeError('AES provider is closed.')
         handle = c.c_void_p()
@@ -86,6 +103,9 @@ class CNG_AES:
             self.dll.BCryptDestroyKey(handle)
 
     def close(self) -> None:
+        if self._portable:
+            self._open = False
+            return
         if self.handle.value:
             self._check(self.dll.BCryptCloseAlgorithmProvider(self.handle, 0))
             self.handle.value = None
