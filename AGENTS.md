@@ -19,6 +19,12 @@ what has actually been tested.
   `pw3_editor.py`. Frozen documents and explicit `Field`/`Format` definitions.
 - DW4 PC: `dw4hyper_parser.py` / `dw4hyper_editor.py`. DW4 PS2 USA PSU:
   `dw4xl_parser.py` / `dw4xl_editor.py`. Their containers and identities differ.
+- Sophie 2 PC: `atelier_sophie2_codec.py`, `atelier_sophie2_parser.py` and
+  `atelier_sophie2_editor.py`. Adapted MIT codec, tagged record qualification and
+  dynamic fields for occupied items; do not manufacture empty records.
+- `katana_codec.py` / `nioh2_parser.py`: source-only PC research. Nioh-family and
+  SOP gameplay integrity is unmapped; do not enable writes by clearing flags.
+  A Wo Long dummy cipher vector is not a valid gameplay fixture.
 - `verified_gui.py`: injected-backend scalar editor, staged edits, batch Undo,
   review, backups and Save As. `appearance.py` shares the existing themes.
 - `save_safety.py` / `copy_storage.py`: resolved-path restrictions, immutable

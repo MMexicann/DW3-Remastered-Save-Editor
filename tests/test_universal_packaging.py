@@ -63,6 +63,31 @@ class UniversalPackagingTests(legacy.PackagingTests):
         with self.assertRaisesRegex(ValueError, 'Required public sources'):
             release.verified_sources(self.root)
 
+    def test_standalone_adapted_codec_cannot_omit_or_change_its_license(self):
+        extra = {'atelier_sophie2_codec.py': b'# MIT adapted codec\n',
+                 'atelier_sophie2_parser.py': b'# Parser\n',
+                 'atelier_sophie2_editor.py': b'# Adapter\n',
+                 'ATELIER_SOPHIE2_FORMAT.md': b'# Layout\n',
+                 'licenses/atelier-sophie2-save-editor-MIT.txt': b'MIT adapted-code notice\n'}
+        self.sources.update(extra)
+        for name, data in extra.items():
+            (self.root / name).write_bytes(data)
+        self.write_manifest()
+        names = ('origins_evidence.json', 'LICENSE', 'THIRD_PARTY_NOTICES.md',
+                 'licenses/atelier-sophie2-save-editor-MIT.txt')
+        blobs = {name: self.sources[name] for name in names}
+        archive = SimpleNamespace(toc={name: (0, 0, 0, 0, 'x') for name in names},
+                                  extract=lambda name: blobs[name])
+        self.assertEqual(release.verify_executable(self.root, lambda _: archive), 4)
+        license_name = names[-1]
+        del archive.toc[license_name]
+        with self.assertRaisesRegex(ValueError, 'missing from executable'):
+            release.verify_executable(self.root, lambda _: archive)
+        archive.toc[license_name] = (0, 0, 0, 0, 'x')
+        blobs[license_name] = b'Incorrect notice'
+        with self.assertRaisesRegex(ValueError, 'differs from manifest'):
+            release.verify_executable(self.root, lambda _: archive)
+
     def test_failed_bundle_validation_prevents_creating_any_downloads(self):
         with patch.object(release, 'verify_executable', side_effect=ValueError('Private artifact')):
             with self.assertRaisesRegex(ValueError, 'Private artifact'):
@@ -92,17 +117,19 @@ class WindowsBuildConfigurationTests(unittest.TestCase):
         args = build_windows.build_args()
         self.assertIn('--onefile', args)
         self.assertIn('--windowed', args)
-        self.assertEqual(args[args.index('--name') + 1], 'UniversalKoeiTecmoSaveEditor-v1.2')
+        self.assertEqual(args[args.index('--name') + 1], 'UniversalKoeiTecmoSaveEditor-v1.3')
         self.assertEqual(Path(args[-1]).name, 'application.py')
         for module in ('gui', 'save_parser', 'origins_gui', 'origins_editor', 'dw8xl_editor', 'pw3_editor',
                        'dw4hyper_editor', 'dw4hyper_parser', 'dw4xl_editor', 'dw4xl_parser'):
+            self.assertIn(module, args)
+        for module in ('atelier_sophie2_editor', 'atelier_sophie2_parser'):
             self.assertIn(module, args)
         self.assertTrue(any('origins_evidence.json' in argument for argument in args))
         self.assertTrue(any('support_catalog.json' in argument for argument in args))
 
     def test_application_and_build_have_matching_versions(self):
-        self.assertEqual(release.version(PROJECT), '1.2')
-        self.assertEqual(release.artifact_name(PROJECT), 'UniversalKoeiTecmoSaveEditor-v1.2')
+        self.assertEqual(release.version(PROJECT), '1.3')
+        self.assertEqual(release.artifact_name(PROJECT), 'UniversalKoeiTecmoSaveEditor-v1.3')
 
     def test_publication_requires_a_tag_and_successful_native_build(self):
         workflow = (PROJECT / '.github/workflows/windows-release.yml').read_text()

@@ -249,8 +249,8 @@
       "id": "nioh",
       "title": "Nioh series (PC editions)",
       "platform": "Windows PC",
-      "status": "Candidate only",
-      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
+      "status": "Native PC codec evidence; gameplay checksums unresolved",
+      "evidence": "MIT Katana source supplies native PC decryption pairs. Nioh editor references disable unreversed gameplay checksum checks; no writable gameplay editor is registered.",
       "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
       "editing_verified": false
     },
@@ -258,8 +258,8 @@
       "id": "wolong",
       "title": "Wo Long: Fallen Dynasty",
       "platform": "Windows PC",
-      "status": "Candidate only",
-      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
+      "status": "PC cipher vector; supplied fixture integrity invalid",
+      "evidence": "MIT Katana source provides PC cipher and complete checksum algorithms. Published dummy pair demonstrates encryption but decrypted JSON and data checksum are invalid; no gameplay editor is registered.",
       "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
       "editing_verified": false
     },
@@ -360,6 +360,24 @@
       "status": "Available published-format editor; sample check pending",
       "evidence": "Dedicated USA PS2 PSU parser and surgical payload checksum updates based on the supplied published editor. Separate from PC Hyper; exported memory-card container and metadata preserved. Independent genuine-file validation pending.",
       "needed": "Unchanged SLUS-20812 .psu export, displayed values and controlled game reload; other wrappers/regions unsupported.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_sophie2",
+      "title": "Atelier Sophie 2: The Alchemist of the Mysterious Dream",
+      "platform": "Windows PC (Steam 1.08 layout)",
+      "status": "Available PC editor; independent sample check pending",
+      "evidence": "MIT-licensed Steam PC editor codec integrated with strict tagged-layout qualification, bounded existing item/equipment quality edits, two alchemy EXP fields, complete integrity and surgical copied-save writes. Upstream differential vectors and procedural preservation tests; no complete independent native save acquired.",
+      "needed": "Unchanged copied Steam 1.08 data.dat, displayed quality/alchemy values, edition/language and controlled game reload.",
+      "editing_verified": false
+    },
+    {
+      "id": "nioh2",
+      "title": "Nioh 2: The Complete Edition",
+      "platform": "Windows PC",
+      "status": "Native PC decode and read-only map; checksum unresolved",
+      "evidence": "Published NIOHUSR revision and complete native sample pair establish decryption. Twenty scalar mappings inspected. Existing editor clears four integrity flags instead of calculating checksums; this project preserves flags and rejects gameplay writes.",
+      "needed": "Documented native integrity algorithm, controlled native field/dependency pairs and edited game reload; do not disable integrity flags as a substitute.",
       "editing_verified": false
     }
   ],

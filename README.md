@@ -1,6 +1,6 @@
 # Universal Koei Tecmo Save Editor
 
-A lightweight Windows save editor by **Mexican**. Version **1.2** brings five game
+A lightweight Windows save editor by **Mexican**. Version **1.3** brings six game
 editors into one standalone application, with a game library, shared Light/Dark
 appearance and switching between games without restarting.
 
@@ -19,13 +19,14 @@ memory-card exports.
 | Dynasty Warriors 8: Xtreme Legends Complete Edition | Windows PC | Gold, gems, materials, officer health/attack/defense and existing weapon attribute ranks |
 | One Piece: Pirate Warriors 3 | Windows PC | Character health/attack/defense, special bars and skill slots; level/XP, currency and costume inspection |
 | Dynasty Warriors 4: Xtreme Legends | PlayStation 2, USA SLUS-20812 | Officer stats/points, weapon EXP, items, bodyguard points and difficulty in `.psu` exports |
+| Atelier Sophie 2: The Alchemist of the Mysterious Dream | Windows PC, Steam 1.08 layout | Existing item/equipment quality; Sophie and Plachta alchemy EXP |
 
 Each game uses its own save format. The PS2 editor opens exported `.psu` saves;
 export the save from your memory card before opening it.
 
 ## Getting started
 
-Download `UniversalKoeiTecmoSaveEditor-v1.2.exe` from the GitHub release and run it.
+Download `UniversalKoeiTecmoSaveEditor-v1.3.exe` from the GitHub release and run it.
 No installation or Python setup is needed for the standalone executable.
 
 1. Make a separate copy of your save outside the live game and Steam Cloud folders.

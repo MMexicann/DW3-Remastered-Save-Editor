@@ -132,3 +132,42 @@ local documentation links were checked. Native Windows build and game loading
 remain separate checks. New contributor and AI-agent guides are included in
 the public source whitelist. The matching-version tag workflow gates publication
 on native Windows tests, executable startup, archive privacy and artifact hashes.
+
+## v1.3 existing-editor integration
+
+The final source run passed **544 tests: 289 passed, 255 skipped, no failures
+or errors**, with DW8/PW3 copies, the published native Nioh 2 user copy and all
+five upstream Katana encrypted/decrypted pairs explicitly selected. Missing
+private DW3, genuine DW4/Sophie2 and other copied-native cases remain skipped.
+
+Sophie 2's focused suite passed 19 tests, with its one real-copy case skipped.
+Frozen upstream vectors and a separately loaded upstream model establish codec
+and field agreement on procedural data, not independent game-save qualification.
+Peer review reproduced and fixed opaque encrypted-footer loss, scalar range
+crossing into equipment, extra palette data and live-backup-directory aliases.
+The copied-save self-test checks 14 procedural fields, changes 10 supported
+quality values, preserves higher qualities and both EXP fields, verifies all
+integrity/payload expectations, and restores original bytes. Its sample/in-game
+flags remain false. Twenty-four GUI tests cover retained sessions, dynamic
+field groups, quality/EXP edits, Undo, review, inspection, Save As, restore and
+scroll/focus accessibility in both themes at the minimum window size.
+
+Katana source-only tests passed 17 with four copied-native cases skipped. Full
+Nioh1/2/3 and SOP cipher pairs match in both directions with original header key
+material retained; all gameplay edits are rejected where integrity is unmapped.
+Wo Long's dummy demonstrates CBC only and is rejected for malformed JSON and
+stale native checksums. Independent literal-C checksum/custom-cipher vectors and
+procedural corruption/identity tests pass. Nioh 2's 14 inspection tests pass,
+including its genuine 2,715,432-byte PC user fixture, with active runtime
+integrity flags unchanged. These sources add no selectable gameplay editor.
+
+Source and Linux bundled startup checks pass. The validation archive has 393
+entries, 14 exact JSON files, 266 Python modules and three exact embedded
+notices; privacy checks pass. The bundled procedural Sophie2 copied-save
+workflow also passes all 14 fields and original/backup restoration checks.
+The standalone build embeds the
+Sophie 2 MIT notice and checks its exact bytes as well as public JSON metadata;
+saves/account data and third-party binaries remain excluded. Native Windows
+release validation runs through the matching-tag workflow. No in-game reload
+was performed in this cloud environment. See EXISTING_EDITORS.md for exact source
+licences, platform distinctions and download failures.

@@ -15,10 +15,15 @@ or external services are needed.
 
 `GAMES` contains implemented platform-specific editors. Independent native-file
 verification (`editing_verified`) is separate from cited published-format support
-(`published_format`). The four PC entries and PS2 XL entry are filtered by their
+(`published_format`). The five PC entries and PS2 XL entry are filtered by their
 explicit `platform`; switching platforms retains game sessions. `RESEARCH_TOOLS`
 contains Origins copy tools. `ALL_ADAPTERS` includes both for packaging and startup.
 `support_catalog.py` checks independent verification flags against the registry. Research rows never create parsers.
+
+Platforms with more than four entries use a scrollable three-column library.
+The footer stays visible, focus reveals the selected card, and scrolling applies
+only to the visible library. Scalar field groups refresh from the loaded document,
+allowing adapters with dynamic occupied-record maps to use the same GUI.
 
 `koei_codec.py` independently implements the verified DWORD and byte save ciphers.
 `verified_editor.py` owns immutable documents, explicit layouts, native checksums,
@@ -44,6 +49,16 @@ exports, validates BASLUS-20812 and its native checksum, and preserves wrapper
 metadata/padding. Its adapter requests `.psu`; Hyper requests `.dat`. Distinct
 game IDs prevent cross-platform backup restore and parser fallback.
 
+The Sophie 2 adapter separately qualifies the published Steam 1.08 tagged layout.
+Its MIT codec rebuilds compression and both integrity values while preserving
+header, seed, opaque metadata, trailer and unrelated decoded data. Existing item
+and equipment quality fields are discovered dynamically; alchemy EXP is excluded
+from bulk Max. Source and provenance are recorded in ATELIER_SOPHIE2_FORMAT.md.
+`katana_codec.py` implements source-only explicit PC envelope profiles, and
+`nioh2_parser.py` exposes inspection only. Nioh/SOP writes stay disabled because
+their native gameplay integrity is not mapped; no hidden checksum bypass or
+gameplay library card is supplied. Wo Long codec checks do not supply a game map.
+
 `p5s_codec.py` is a source-only research primitive with a published PC stream vector
 and read-only structural inspection. `dw8e_candidate_codec.py` is a source-only
 candidate for the independently classified Empires system/battle cipher layers.
@@ -57,7 +72,7 @@ Segoe UI is used on Windows, with a portable Helvetica fallback for GUI tests.
 DW3 retains `gui.Editor` and all existing parsing/editing modules. Its constructor
 accepts an optional container for embedding; default construction still supports
 the existing tests. Its module version remains 1.1 while the universal application's
-release version is 1.2. DW3's tagged Unreal schema, AES envelope, metadata,
+release version is 1.3. DW3's tagged Unreal schema, AES envelope, metadata,
 edit limits, atomic save writer and audit reports remain game specific. Explicit
 DW3 self-test and compatibility-test command lines continue to work.
 

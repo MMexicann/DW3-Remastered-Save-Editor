@@ -1,25 +1,28 @@
-# Universal Koei Tecmo Save Editor v1.2
+# Universal Koei Tecmo Save Editor v1.3
 
-One standalone Windows application for five game editors. Choose a platform and
-game from the library, switch games without restarting, and keep separate editing
-sessions with shared Light/Dark appearance.
+Added **Atelier Sophie 2: The Alchemist of the Mysterious Dream** for its Steam PC
+1.08 layout. Edit quality on existing inventory and equipped items, or change
+Sophie and Plachta's alchemy EXP. Quality supports individual and bulk Max;
+EXP is excluded from Max. Uses the shared backups, Undo, Review Changes and
+new-destination Save As workflow.
 
-| Game | Platform | Features |
-| --- | --- | --- |
-| DW3: Complete Edition Remastered | Windows PC | Complete existing editor, including officers, weapons, items, bodyguards, unlocks and collections |
-| DW4 Hyper | Windows PC | Officer stats/EXP/unlocks, weapon EXP, items, bodyguard points and difficulty |
-| DW8: Xtreme Legends Complete Edition | Windows PC | Gold, gems, materials, officer stats and existing weapon attribute ranks |
-| One Piece: Pirate Warriors 3 | Windows PC | Character stats, special bars and skill slots, with progression/currency inspection |
-| DW4: Xtreme Legends | PS2 USA SLUS-20812 | Officer stats/points, weapon EXP, items, bodyguard points and difficulty in `.psu` exports |
+- Six game editors in one Windows executable: DW3 Remastered, DW4 Hyper,
+  DW8 XL Complete Edition, Pirate Warriors 3, Atelier Sophie 2 and the separate
+  PS2 USA DW4 XL export editor.
+- A scrollable game grid keeps additional games accessible; field groups
+  follow the records in the loaded save. Light/Dark themes and retained sessions
+  remain available.
+- The MIT-licensed Sophie 2 codec is adapted with preserved unknown data,
+  full integrity read-back and embedded attribution. Existing DW3 functionality
+  and Mexican's branding are retained.
 
-- Windows PC is the default platform; PS2 exports have a separate game entry.
-- Individual and bulk edits, supported Max actions, automatic backups, Undo,
-  Review Changes, Save As and backup restore.
-- All DW3 v1.1 features and Mexican's author branding retained.
-- New [contributor guide](https://github.com/MMexicann/DW3-Remastered-Save-Editor/blob/main/CONTRIBUTING.md) and [AI agent guide](https://github.com/MMexicann/DW3-Remastered-Save-Editor/blob/main/AGENTS.md) cover
-  architecture, save mapping, tests and Windows builds.
+Download **UniversalKoeiTecmoSaveEditor-v1.3.exe** and work on separate save copies.
+Source and Windows archives include SHA-256 checksums. Independent Sophie 2
+native-save and in-game checks remain pending; exact limits and test evidence
+are in [VALIDATION.md](https://github.com/MMexicann/DW3-Remastered-Save-Editor/blob/main/VALIDATION.md).
 
-Download **UniversalKoeiTecmoSaveEditor-v1.2.exe** and work on a separate save copy.
-No installer or Python setup is required. Source and Windows packages include
-SHA-256 checksums. Contributor test coverage and validation limits are documented
-in [VALIDATION.md](https://github.com/MMexicann/DW3-Remastered-Save-Editor/blob/main/VALIDATION.md).
+Contributors can start with
+[CONTRIBUTING.md](https://github.com/MMexicann/DW3-Remastered-Save-Editor/blob/main/CONTRIBUTING.md)
+and [AGENTS.md](https://github.com/MMexicann/DW3-Remastered-Save-Editor/blob/main/AGENTS.md).
+Checked editor sources are documented in
+[EXISTING_EDITORS.md](https://github.com/MMexicann/DW3-Remastered-Save-Editor/blob/main/EXISTING_EDITORS.md).

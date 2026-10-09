@@ -54,6 +54,7 @@ class Editor(Appearance):
         if self.game_id == 'dw8xl':
             groups += ('Weapon attributes',)
         select = ttk.Combobox(tools, textvariable=self.group, values=groups, state='readonly', width=18)
+        self.group_selector = select
         select.pack(side='left')
         select.bind('<<ComboboxSelected>>', lambda _event: self.refresh())
         ttk.Label(tools, text='Value').pack(side='left', padx=(18, 8))
@@ -137,7 +138,12 @@ class Editor(Appearance):
         self.selection_info.set('Select a record to inspect its values.')
         if self.document is None:
             return
-        for field in self.backend.fields_for(self.document):
+        fields = self.backend.fields_for(self.document)
+        groups = ('All fields',) + tuple(dict.fromkeys(field.group for field in fields))
+        self.group_selector.configure(values=groups)
+        if self.group.get() not in groups:
+            self.group.set('All fields')
+        for field in fields:
             if self.group.get() not in ('All fields', field.group):
                 continue
             original = field.value(self.document.payload)

@@ -98,7 +98,11 @@ def verified_sources(root=ROOT):
             required.update({'dw4hyper_editor.py', 'dw4hyper_parser.py', 'PC_RESEARCH_RETRY.md'})
         if b'dw4xl_editor' in sources.get('game_registry.py', b''):
             required.update({'dw4xl_editor.py', 'dw4xl_parser.py', 'DW4_PLATFORM_FORMATS.md'})
-        for research_module in ('p5s_codec.py', 'dw8e_candidate_codec.py'):
+        if b'atelier_sophie2_editor' in sources.get('game_registry.py', b''):
+            required.update({'atelier_sophie2_codec.py', 'atelier_sophie2_parser.py',
+                             'atelier_sophie2_editor.py', 'ATELIER_SOPHIE2_FORMAT.md',
+                             'licenses/atelier-sophie2-save-editor-MIT.txt'})
+        for research_module in ('p5s_codec.py', 'dw8e_candidate_codec.py', 'katana_codec.py', 'nioh2_parser.py'):
             if (root/research_module).exists():
                 required.add(research_module)
     missing=required-sources.keys()
@@ -140,6 +144,9 @@ def verify_executable(root=ROOT,archive_reader=None):
         from PyInstaller.archive.readers import CArchiveReader
         archive_reader=CArchiveReader
     archive=archive_reader(str(executable));bundled=set()
+    expected={name for name in sources if '/' not in name and name.endswith('.json') and name!='SOURCE_MANIFEST.json'}
+    if 'atelier_sophie2_codec.py' in sources:
+        expected.update({'LICENSE','THIRD_PARTY_NOTICES.md','licenses/atelier-sophie2-save-editor-MIT.txt'})
     for name,entry in archive.toc.items():
         normalized=name.replace('\\','/')
         path=PurePosixPath(normalized)
@@ -149,7 +156,7 @@ def verify_executable(root=ROOT,archive_reader=None):
             raise ValueError(f'Private or unsafe file in executable archive: {name}')
         data=archive.extract(name)
         scan_bundled_data(name,data)
-        if normalized in sources and path.suffix=='.json':
+        if normalized in expected:
             if data!=sources[normalized]:raise ValueError(f'Bundled metadata differs from manifest: {name}')
             bundled.add(normalized)
         if entry[-1]=='z':
@@ -158,7 +165,6 @@ def verify_executable(root=ROOT,archive_reader=None):
         elif path.suffix=='.zip':
             with zipfile.ZipFile(io.BytesIO(data)) as library:
                 for module in library.namelist():scan_bundled_data(module,library.read(module))
-    expected={name for name in sources if '/' not in name and name.endswith('.json') and name!='SOURCE_MANIFEST.json'}
     if expected-bundled:raise ValueError('Verified metadata missing from executable: '+', '.join(sorted(expected-bundled)))
     return len(archive.toc)
 

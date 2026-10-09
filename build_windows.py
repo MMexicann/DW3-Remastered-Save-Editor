@@ -6,12 +6,13 @@ from pathlib import Path
 from game_registry import ALL_ADAPTERS
 
 ROOT = Path(__file__).resolve().parent
-VERSION = '1.2'
+VERSION = '1.3'
 DATA = ['officer_names.json', 'game_metadata.json', 'unique_weapons.json',
         'verified_limits.json', 'item_limits.json', 'native_enums.json',
         'bodyguard_growth.json', 'bodyguard_items.json', 'bodyguard_weapons.json',
         'weapon_bonus_rules.json', 'progression_routes.json', 'collection_unlocks.json',
-        'origins_evidence.json', 'support_catalog.json']
+        'origins_evidence.json', 'support_catalog.json', 'LICENSE',
+        'THIRD_PARTY_NOTICES.md', 'licenses/atelier-sophie2-save-editor-MIT.txt']
 
 
 def build_args(root=ROOT):
@@ -20,7 +21,7 @@ def build_args(root=ROOT):
             '--distpath', str(root / 'dist'), '--workpath', str(root / 'build'),
             '--specpath', str(root / 'build')]
     for name in DATA:
-        args.extend(['--add-data', str(root / name) + os.pathsep + '.'])
+        args.extend(['--add-data', str(root / name) + os.pathsep + Path(name).parent.as_posix()])
     for game in ALL_ADAPTERS:
         for module in (game.editor_module, game.parser_module):
             args.extend(['--hidden-import', module])

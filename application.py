@@ -6,7 +6,7 @@ from tkinter import ttk
 from appearance import Appearance, THEMES
 from game_registry import GAMES, ALL_ADAPTERS, get_game
 
-VERSION = '1.2'
+VERSION = '1.3'
 
 
 class Application(Appearance):
@@ -65,20 +65,45 @@ class Application(Appearance):
         cards = ttk.Frame(self.library)
         cards.pack(fill='both', expand=True)
         self.platform_frames = {platform: ttk.Frame(cards) for platform in platforms}
+        self.platform_canvases = {}
+        self._library_contents = {}
+        self._library_windows = {}
+        for platform, frame in self.platform_frames.items():
+            frame.columnconfigure(0, weight=1)
+            frame.rowconfigure(0, weight=1)
+            canvas = tk.Canvas(frame, width=1, height=1, highlightthickness=0,
+                               background=THEMES[self.theme_name.get()]['background'])
+            canvas.grid(row=0, column=0, sticky='nsew')
+            scrollbar = ttk.Scrollbar(frame, orient='vertical', command=canvas.yview)
+            if sum(game.platform == platform for game in GAMES) > 4:
+                scrollbar.grid(row=0, column=1, sticky='ns', padx=(8, 0))
+            canvas.configure(yscrollcommand=scrollbar.set)
+            content = ttk.Frame(canvas)
+            self.platform_canvases[platform] = canvas
+            self._library_contents[platform] = content
+            self._library_windows[platform] = canvas.create_window(0, 0, anchor='nw', window=content)
+            canvas.bind('<Configure>', lambda _event, name=platform: self.resize_library_cards(name))
+            content.bind('<Configure>', lambda _event, name=platform: self.resize_library_cards(name))
         self.game_buttons = {}
         for game in GAMES:
             platform_games = [entry for entry in GAMES if entry.platform == game.platform]
             index = platform_games.index(game)
             compact = len(platform_games) > 3
-            platform_frame = self.platform_frames[game.platform]
-            platform_frame.columnconfigure(index, weight=1, uniform='cards')
+            columns = 3 if len(platform_games) > 4 else len(platform_games)
+            row, column = divmod(index, columns)
+            platform_frame = self._library_contents[game.platform]
+            platform_frame.columnconfigure(column, weight=1, uniform='cards')
+            platform_frame.rowconfigure(row, weight=1, uniform='cards')
             card = ttk.Frame(platform_frame, padding=16 if compact else 20, relief='solid')
-            card.grid(row=0, column=index, sticky='nsew', padx=(0, 14) if index < len(platform_games) - 1 else (0, 0))
+            card.grid(row=row, column=column, sticky='nsew',
+                      padx=(0, 14) if column < columns - 1 else (0, 0),
+                      pady=(0, 14) if row < (len(platform_games) - 1) // columns else (0, 0))
             # Reserve the action before decorative and descriptive content.
             button = ttk.Button(card, text='Open Editor',
                                 style='Primary.TButton', command=lambda game_id=game.id: self.select_game(game_id))
             button.pack(anchor='w', side='bottom')
             self.game_buttons[game.id] = button
+            button.bind('<FocusIn>', lambda _event, game_id=game.id: self.reveal_game_button(game_id))
             banner = tk.Canvas(card, width=240, height=100 if compact else 140, background='#202a37', highlightthickness=0)
             banner._decorative = True
             banner.pack(fill='x', pady=(0, 16))
@@ -102,13 +127,15 @@ class Application(Appearance):
                       ttk.Label(card, text=game.description, wraplength=265, justify='left')]
             for label, padding in zip(labels, ((0, 0), (5, 10), (0, 0))):
                 label.pack(anchor='w', pady=padding)
-            def wrap_labels(event, widgets=labels, padding=32 if compact else 40):
-                for widget in widgets:
-                    widget.configure(wraplength=max(140, event.width - padding))
+            def wrap_labels(event, widgets=labels, padding=40 if compact else 48):
+                width = max(140, event.width - padding)
+                for index, widget in enumerate(widgets):
+                    widget.configure(wraplength=min(265, width) if index == 0 else width)
             card.bind('<Configure>', wrap_labels)
-        for frame in self.platform_frames.values():
-            frame.rowconfigure(0, weight=1)
         self.show_platform()
+        root.bind('<MouseWheel>', self.scroll_library, add='+')
+        root.bind('<Button-4>', lambda event: self.scroll_library(event, -1), add='+')
+        root.bind('<Button-5>', lambda event: self.scroll_library(event, 1), add='+')
         for shortcut, method in (('<Control-o>', 'open'), ('<Control-s>', 'save_changes'),
                                  ('<Control-Shift-S>', 'save_as'), ('<Control-z>', 'undo'), ('<Control-r>', 'review')):
             root.bind(shortcut, lambda _event, name=method: self.dispatch(name))
@@ -118,6 +145,52 @@ class Application(Appearance):
         super().apply_theme(name)
         for _frame, editor in self.sessions.values():
             editor.theme_name.set(name)
+
+    def resize_library_cards(self, platform):
+        canvas = self.platform_canvases[platform]
+        content = self._library_contents[platform]
+        height = max(canvas.winfo_height(), content.winfo_reqheight())
+        canvas.itemconfigure(self._library_windows[platform], width=canvas.winfo_width(), height=height)
+        canvas.configure(scrollregion=(0, 0, canvas.winfo_width(), height))
+
+    def scroll_library(self, event, units=None):
+        if self.active_game is not None or not self.library.winfo_ismapped():
+            return
+        platform = self.platform_choice.get()
+        frame = self.platform_frames.get(platform)
+        widget = event.widget
+        while widget is not None and widget != frame:
+            widget = getattr(widget, 'master', None)
+        if widget is None:
+            return
+        canvas = self.platform_canvases[platform]
+        if not canvas.winfo_ismapped() or canvas.yview() == (0.0, 1.0):
+            return
+        if units is None:
+            if not event.delta:
+                return
+            units = -int(event.delta / 120) or (-1 if event.delta > 0 else 1)
+        canvas.yview_scroll(units, 'units')
+        return 'break'
+
+    def reveal_game_button(self, game_id):
+        if self.active_game is not None or not self.library.winfo_ismapped():
+            return
+        platform = get_game(game_id).platform
+        canvas = self.platform_canvases[platform]
+        if not canvas.winfo_ismapped():
+            return
+        canvas.update_idletasks()
+        button = self.game_buttons[game_id]
+        content = self._library_contents[platform]
+        top = button.winfo_rooty() - content.winfo_rooty()
+        bottom = top + button.winfo_height()
+        visible_top = canvas.canvasy(0)
+        visible_bottom = visible_top + canvas.winfo_height()
+        if top - 12 < visible_top:
+            canvas.yview_moveto(max(0, top - 12) / content.winfo_height())
+        elif bottom + 12 > visible_bottom:
+            canvas.yview_moveto((bottom + 12 - canvas.winfo_height()) / content.winfo_height())
 
     def select_game(self, game_id):
         game = get_game(game_id)
@@ -183,7 +256,7 @@ def main():
     tests.add_argument('--self-test', nargs=2, metavar=('INPUT', 'OUTPUT'))
     tests.add_argument('--compatibility-test', nargs=2, metavar=('INPUT', 'OUTPUT'))
     arguments = parser.parse_args()
-    if arguments.self_test and arguments.game in ('dw8xl', 'pw3', 'dw4hyper', 'dw4xl_ps2'):
+    if arguments.self_test and arguments.game in ('dw8xl', 'pw3', 'dw4hyper', 'dw4xl_ps2', 'atelier_sophie2'):
         from verified_self_test import run
         report = run(arguments.game, *arguments.self_test)
         status = ('Candidate copy checks passed; independent qualification pending'

@@ -113,6 +113,9 @@ Optional copied real saves are selected locally:
 | `PW3_SAVE_COPY` | Native PC Pirate Warriors 3 `.dat` |
 | `DW4HYPER_SAVE_COPY` | Native PC Hyper `save.dat` copy |
 | `DW4XL_PSU_COPY` | USA PS2 XL `.psu` export |
+| `SOPHIE2_SAVE_COPY` | Native Steam 1.08 Atelier Sophie 2 `data.dat` copy |
+| `NIOH2_SAVE_COPY` | PC Nioh 2 user `.bin` copy for read-only inspection |
+| `KATANA_GOLDEN_DIR` | Locally reviewed upstream encrypted/decrypted reference-pair directory |
 | `DW3_TEST_REPORTED_SAVE` | Explicit DW3 regression copy used by `test_save_variants.py` |
 
 For example:
@@ -125,6 +128,8 @@ python -m unittest discover -s tests -p 'test_verified_editors.py' -v
 Tests requiring a missing fixture skip. Count skips honestly. A real-file
 roundtrip is stronger than a generator test, but still does not prove that the
 edited file loads in-game. Do not commit fixture contents or private source URLs.
+See [EXISTING_EDITORS.md](EXISTING_EDITORS.md) for source/licence checks and
+[ATELIER_SOPHIE2_FORMAT.md](ATELIER_SOPHIE2_FORMAT.md) for the new tagged adapter.
 
 ## Submit code and build artifacts
 

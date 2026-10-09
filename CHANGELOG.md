@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.3
+
+- Added Atelier Sophie 2 (Steam PC 1.08 layout), adapting the MIT-licensed
+  existing save codec to the standard copy/backup/Undo/review/Save As workflow.
+  Edit existing item/equipment quality and Sophie/Plachta alchemy EXP; supported
+  quality fields have individual and bulk Max actions.
+- Added a scrollable game grid and document-specific field groups so additional
+  editors remain accessible at the minimum window size.
+- Added native PC Nioh-family and Wo Long codec research with known-answer tests,
+  and strict read-only Nioh 2 inspection. These have no gameplay editor cards.
+- Documented checked existing-editor sources, licensing, actual blockers and
+  repository name/About settings.
+
+
 ## v1.2
 
 - Expand the DW3 editor into one Universal Koei Tecmo Save Editor executable.

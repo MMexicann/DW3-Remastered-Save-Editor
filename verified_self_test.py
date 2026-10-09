@@ -13,10 +13,12 @@ def run(game_id, source, output):
         import dw4hyper_parser as game_backend
     elif game_id == 'dw4xl_ps2':
         import dw4xl_parser as game_backend
+    elif game_id == 'atelier_sophie2':
+        import atelier_sophie2_parser as game_backend
     elif game_id in ('dw8xl', 'pw3'):
         game_backend = backend
     else:
-        raise SaveError('Choose an explicit PC editor or implemented candidate.')
+        raise SaveError('Choose an explicitly registered save editor.')
     return _run(game_backend, game_id, source, output)
 
 

@@ -36,6 +36,13 @@ def widget_texts(widget, *, mapped_only=False):
     return texts
 
 
+def widgets_of_type(widget, kind):
+    if isinstance(widget, kind):
+        yield widget
+    for child in widget.winfo_children():
+        yield from widgets_of_type(child, kind)
+
+
 REMOVED_UI_PHRASES = (
     'Research & Planned Games', 'Game Mechanics', 'published', 'verified',
     'verification', 'qualification', 'independent sample', 'development',
@@ -57,7 +64,8 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_selector_initializes_both_games_with_isolated_sessions(self):
         self.assertIsNone(self.app.active_game)
-        self.assertEqual(set(self.app.game_buttons), {'dw3', 'dw8xl', 'pw3', 'dw4hyper', 'dw4xl_ps2'})
+        self.assertEqual(set(self.app.game_buttons),
+                         {'dw3', 'dw8xl', 'pw3', 'dw4hyper', 'dw4xl_ps2', 'atelier_sophie2'})
         dw3 = self.app.select_game('dw3')
         origins = self.app.select_game('origins')
         self.assertIsInstance(dw3, gui.Editor)
@@ -291,6 +299,115 @@ class UniversalGuiTests(unittest.TestCase):
             self.assertLessEqual(bottom, self.root.winfo_rooty() + self.root.winfo_height())
             self.assertGreaterEqual(label.winfo_height(), label.winfo_reqheight())
 
+    def test_sophie2_shared_gui_copy_edits_max_undo_review_inspect_and_restore(self):
+        from tests.test_atelier_sophie2_format import procedural_raw
+        import atelier_sophie2_parser as backend
+        import verified_gui
+        self.app.game_buttons['atelier_sophie2'].invoke()
+        editor = self.app.sessions['atelier_sophie2'][1]
+        self.assertIs(editor.backend, backend)
+        frame = self.app.sessions['atelier_sophie2'][0]
+
+        def invoke(label):
+            button = next(button for button in widgets_of_type(frame, ttk.Button)
+                          if button.cget('text') == label)
+            self.assertNotIn('disabled', button.state())
+            button.invoke()
+
+        def edit(key, value):
+            editor.fields.selection_set(key)
+            editor.selected()
+            editor.value.set(str(value))
+            invoke('Apply Selected')
+            editor.selected()
+
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'data.dat'
+            raw = procedural_raw()
+            source.write_bytes(raw)
+            with patch.object(verified_gui.filedialog, 'askopenfilename', return_value=str(source)), \
+                    patch.object(verified_gui.messagebox, 'showerror') as error:
+                invoke('Open Save Copy')
+                error.assert_not_called()
+            self.assertEqual(editor.backup.read_bytes(), raw)
+            self.assertEqual(len(editor.fields.get_children()), 14)
+            group_selector = next(widgets_of_type(frame, ttk.Combobox))
+            self.assertIn('Material container', group_selector.cget('values'))
+            self.assertIn('Alchemy', group_selector.cget('values'))
+            self.assertIn('Sophie equipment', group_selector.cget('values'))
+            self.assertNotIn('Consumable container', group_selector.cget('values'))
+
+            edit('materials_0_quality', 777)
+            self.assertEqual(editor.changes, {'materials_0_quality': 777})
+            invoke('Undo')
+            self.assertFalse(editor.changes)
+            editor.group.set('Material container')
+            editor.refresh()
+            invoke('Max Visible Fields')
+            self.assertEqual(editor.changes, {'materials_0_quality': 999})
+            self.assertNotIn('materials_1_quality', editor.changes)
+            invoke('Undo')
+
+            editor.group.set('Alchemy')
+            editor.refresh()
+            edit('sophie_exp', 3456)
+            self.assertIn('storage bound', editor.selection_info.get())
+            self.assertIn('Excluded from Max', editor.selection_info.get())
+            for phrase in REMOVED_UI_PHRASES:
+                self.assertNotIn(phrase.lower(), editor.selection_info.get().lower())
+            invoke('Max Selected')
+            invoke('Max Visible Fields')
+            self.assertEqual(editor.changes, {'sophie_exp': 3456})
+            self.assertEqual(len(editor.history), 1)
+            invoke('Undo')
+            self.assertFalse(editor.changes)
+
+            editor.group.set('All fields')
+            editor.refresh()
+            edit('materials_0_quality', 777)
+            edit('sophie_exp', 3456)
+            self.app.select_game('dw3')
+            self.app.apply_theme('Dark')
+            self.assertIs(self.app.select_game('atelier_sophie2'), editor)
+            self.assertEqual(editor.theme_name.get(), 'Dark')
+            self.assertEqual(editor.changes, {'materials_0_quality': 777, 'sophie_exp': 3456})
+            invoke('Review Changes')
+            review = next(dialog for dialog in self.root.winfo_children()
+                          if isinstance(dialog, tk.Toplevel) and dialog.title() == 'Review Changes')
+            tree = next(widgets_of_type(review, ttk.Treeview))
+            self.assertEqual(len(tree.get_children()), 2)
+            self.assertEqual({int(tree.item(key)['values'][2]) for key in tree.get_children()}, {777, 3456})
+            review.destroy()
+            invoke('Inspect Data')
+            inspector = next(dialog for dialog in self.root.winfo_children()
+                             if isinstance(dialog, tk.Toplevel) and 'Read Only' in dialog.title())
+            inspected = [tree.item(key)['values'] for tree in widgets_of_type(inspector, ttk.Treeview)
+                         for key in tree.get_children()]
+            self.assertEqual(len(inspected), 15)
+            self.assertEqual({row[0] for row in inspected}, {'Alchemy', 'Resources', 'Inventory', 'Equipment'})
+            self.assertTrue(any('m_mixGem' in str(row) and str(row[-1]) == '4' for row in inspected))
+            inspector.destroy()
+
+            target = Path(folder) / 'edited.dat'
+            with patch.object(verified_gui.filedialog, 'asksaveasfilename', return_value=str(target)), \
+                    patch.object(verified_gui.messagebox, 'showerror') as error:
+                invoke('Save As...')
+                error.assert_not_called()
+            output = backend.read_save(target)
+            self.assertEqual(backend.field_map(output)['materials_0_quality'].value(output.payload), 777)
+            self.assertEqual(backend.field_map(output)['sophie_exp'].value(output.payload), 3456)
+            self.assertEqual(backend.field_map(output)['materials_1_quality'].value(output.payload), 1200)
+            self.assertFalse(editor.changes)
+            self.assertEqual(source.read_bytes(), raw)
+            restored = Path(folder) / 'restored.dat'
+            with patch.object(verified_gui.filedialog, 'askopenfilename', return_value=str(editor.backup)), \
+                    patch.object(verified_gui.filedialog, 'asksaveasfilename', return_value=str(restored)), \
+                    patch.object(verified_gui.messagebox, 'showerror') as error:
+                invoke('Restore Backup...')
+                error.assert_not_called()
+            self.assertEqual(restored.read_bytes(), raw)
+            self.assertEqual(source.read_bytes(), raw)
+
     def test_candidate_self_test_reports_pending_qualification(self):
         from tests.test_dw4hyper_format import procedural_raw
         from verified_self_test import run
@@ -397,11 +514,24 @@ class UniversalGuiTests(unittest.TestCase):
                 self.assertIn(platform, self.app.library_hint.get())
                 for game_id, button in self.app.game_buttons.items():
                     visible = get_game(game_id).platform == platform
-                    self.assertEqual(bool(button.winfo_ismapped()), visible)
+                    canvas = self.app.platform_canvases[get_game(game_id).platform]
+                    self.assertEqual(bool(canvas.winfo_ismapped()), visible)
                     if visible:
+                        self.assertTrue(button.winfo_ismapped())
+                        button.focus_force()
+                        self.root.update()
+                        canvas = self.app.platform_canvases[platform]
                         self.assertGreaterEqual(button.winfo_height(), button.winfo_reqheight())
+                        self.assertGreaterEqual(button.winfo_rooty(), canvas.winfo_rooty())
                         self.assertLessEqual(button.winfo_rooty() + button.winfo_height(),
-                                             self.root.winfo_rooty() + self.root.winfo_height())
+                                             canvas.winfo_rooty() + canvas.winfo_height())
+                        for label in widgets_of_type(button.master, ttk.Label):
+                            self.assertGreaterEqual(label.winfo_width(), label.winfo_reqwidth())
+                            self.assertGreaterEqual(label.winfo_height(), label.winfo_reqheight())
+                        button.invoke()
+                        self.assertEqual(self.app.active_game, game_id)
+                        self.app.show_library()
+                        self.root.update()
                 button = self.app.contact_button
                 self.assertEqual(button.cget('text'), 'Contact Mexican')
                 self.assertTrue(button.winfo_ismapped())
@@ -410,6 +540,55 @@ class UniversalGuiTests(unittest.TestCase):
                 texts = '\n'.join(widget_texts(self.app.library, mapped_only=True)).lower()
                 for phrase in REMOVED_UI_PHRASES:
                     self.assertNotIn(phrase.lower(), texts)
+
+    def test_future_library_rows_scroll_focus_reveal_and_invoke_real_buttons(self):
+        from dataclasses import replace
+        import game_registry
+        from game_registry import GAMES
+        expanded = GAMES + tuple(replace(GAMES[2], id=f'future_{index}',
+                                        title=f'FUTURE WARRIORS {index + 1}') for index in range(7))
+        future_root = tk.Tk()
+        try:
+            with patch('application.GAMES', expanded), \
+                    patch.object(game_registry, 'ALL_ADAPTERS', expanded + game_registry.RESEARCH_TOOLS):
+                app = Application(future_root)
+                future_root.geometry('1080x820')
+                future_root.update()
+                canvas = app.platform_canvases['Windows PC']
+                self.assertLess(canvas.yview()[1], 1.0)
+                canvas.event_generate('<Button-5>', x=10, y=10)
+                future_root.update()
+                self.assertGreater(canvas.yview()[0], 0)
+                canvas.yview_moveto(0)
+                canvas.event_generate('<MouseWheel>', delta=-120, x=10, y=10)
+                future_root.update()
+                self.assertGreater(canvas.yview()[0], 0)
+                before = canvas.yview()
+                app.contact_button.event_generate('<MouseWheel>', delta=-120)
+                self.assertEqual(canvas.yview(), before)
+                button = app.game_buttons['future_6']
+                button.focus_force()
+                future_root.update()
+                self.assertGreaterEqual(button.winfo_rooty(), canvas.winfo_rooty())
+                self.assertLessEqual(button.winfo_rooty() + button.winfo_height(),
+                                     canvas.winfo_rooty() + canvas.winfo_height())
+                self.assertTrue(app.contact_button.winfo_ismapped())
+                self.assertLessEqual(app.contact_button.winfo_rooty() + app.contact_button.winfo_height(),
+                                     future_root.winfo_rooty() + future_root.winfo_height())
+                before = canvas.yview()
+                button.invoke()
+                self.assertEqual(app.active_game, 'future_6')
+                canvas.event_generate('<Button-5>', x=10, y=10)
+                self.assertEqual(canvas.yview(), before)
+                self.assertIs(app.select_game('future_6'), app.sessions['future_6'][1])
+                app.show_library()
+                app.platform_choice.set('PlayStation 2')
+                app.show_platform()
+                future_root.update()
+                self.assertFalse(canvas.winfo_ismapped())
+                self.assertTrue(app.game_buttons['dw4xl_ps2'].winfo_ismapped())
+        finally:
+            future_root.destroy()
 
     def test_read_only_pc_progression_and_data_inspection_callbacks(self):
         from tests.test_verified_editors import synthetic_raw
@@ -432,7 +611,7 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_scalar_editor_keeps_editing_controls_and_removes_evidence_panels(self):
         self.root.deiconify()
-        for game_id in ('dw8xl', 'pw3', 'dw4hyper', 'dw4xl_ps2'):
+        for game_id in ('dw8xl', 'pw3', 'dw4hyper', 'dw4xl_ps2', 'atelier_sophie2'):
             editor = self.app.select_game(game_id)
             self.root.update()
             frame = self.app.sessions[game_id][0]

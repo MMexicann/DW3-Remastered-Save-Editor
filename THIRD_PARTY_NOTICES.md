@@ -30,3 +30,23 @@ and inspected commits are recorded in PC_RESEARCH_RETRY.md. No implementation
 from the supplied DW4 repositories or P5S utility, downloaded executables,
 screenshots or external guide prose is bundled. Officer/item names and numerical
 layout observations are factual labels; candidate status remains explicit.
+
+The Atelier Sophie 2 codec is adapted from
+[Tartarshia/Sophie2SaveEditor](https://github.com/Tartarshia/Sophie2SaveEditor/tree/93d807072a852c73799394af4d32fb164841cd3e),
+copyright 2026 Sophie2SaveEditor contributors, under MIT. The complete notice
+is retained in `licenses/atelier-sophie2-save-editor-MIT.txt` and embedded in the
+standalone EXE. Changes add bounded parsing and preserve opaque footer and
+decoded trailing-zero data. Its GUI and player saves are not bundled.
+
+Source-only `katana_codec.py` adapts algorithms from
+[mi5hmash/KatanaSaveDataResigner](https://github.com/mi5hmash/KatanaSaveDataResigner/tree/4c90a2b388438cb27a9752e6eab7333257de215f),
+copyright 2026 Michał Gębicki, MIT. See
+`licenses/katana-save-data-resigner-MIT.txt`. Native encrypted/decrypted pairs
+stay outside public packages. Nioh and SOP gameplay writes are disabled here;
+no native checksum-bypass behavior is copied into the application.
+
+Source-only Nioh 2 inspection references the published Apache-2.0 scalar map in
+[alfizari/Nioh-2-Save-Editor](https://github.com/alfizari/Nioh-2-Save-Editor/tree/7de1e3d5b20b7f94b055eb228a5e3b0746ea1452).
+The attribution, modification notice and licence are retained in
+`licenses/nioh2-save-editor-Apache-2.0.txt`. This implementation exposes no
+editable Nioh 2 fields and does not redistribute its native utility or save.

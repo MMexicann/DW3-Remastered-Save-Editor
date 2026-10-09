@@ -1,7 +1,8 @@
 # Verified Windows PC layouts and research scope
 
 The application edits **native Windows PC saves only**. Console saves are not
-accepted and no console editor is registered. Console references can help
+accepted by these PC backends. The separate DW4 XL PS2 adapter has its own
+container and platform checks. Console references can help
 identify a field, but a console offset is never sufficient to enable a PC edit.
 The read-only `support_catalog.json` covers PC editions in the Dynasty Warriors,
 Pirate Warriors, Berserk, Samurai Warriors, Warriors Orochi and related series.
@@ -19,7 +20,7 @@ fields. Procedural regressions cover rejection and preservation behavior.
 DW8 XL and Pirate Warriors 3 explicitly display that in-game checks are pending.
 Their editors support the layouts described here, not every platform, patch,
 mod, region or DLC combination. Origins remains research copy tools, accessed
-from Research & Planned Games rather than the editor library.
+in contributor documentation rather than the editor library.
 
 ## Dynasty Warriors 8: Xtreme Legends Complete Edition
 
