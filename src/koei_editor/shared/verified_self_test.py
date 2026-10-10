@@ -19,6 +19,14 @@ def _run(backend, game_id, source, output):
     output = safe_path(output)
     if output.exists() and (not output.is_dir() or any(output.iterdir())):
         raise SaveError('Self-test output must be a new or empty directory.')
+    prepare_context = getattr(backend.backend, 'prepare_copy_context', None)
+    if prepare_context is not None:
+        if not callable(prepare_context):
+            raise SaveError('The backend declares an invalid copied-save context hook.')
+        # Console backends can preserve their mandatory original companion in
+        # this private local output. Qualification and opaque copying stay in
+        # the game adapter; no title IDs, account parsing or signing live here.
+        prepare_context(original, output)
     extension = original.source.suffix
     working_path = atomic_new(original.raw, output / ('input-copy' + extension))
     working = backend.read_save(working_path, game_id)

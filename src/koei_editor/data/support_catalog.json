@@ -490,6 +490,105 @@
       "editing_verified": true,
       "evidence": "Six independently shared complete native SlotData exports qualify 143 top-level plus one nested own-body checksum. Manual gold reductions and qualified original owned/deployed character names update exact header/body mirrors; all other game systems remain byte-identical. Searchable named character and weapon inspection.",
       "needed": "Edited game loading; controlled growth/EXP/class/mastery, materials/acquisition, weapon forging/equipment, support and route/reward action pairs. Other revisions/Unicode name encoding require independent profiles."
+    },
+    {
+      "id": "sw2hd_ps3",
+      "title": "Samurai Warriors 2 HD (Japanese NPJB00439)",
+      "platform": "PlayStation 3",
+      "status": "Unregistered checksum and record research",
+      "editing_verified": false,
+      "evidence": "Published Japanese money and duplicated first-section additive checksum facts; separately reported growth and weapon anchors are read-only candidates, not a complete native profile. No matching genuine complete export acquired.",
+      "needed": "Complete decrypted NPJB00439 DATA.BIN with exact title, edition, revision and full integrity coverage; controlled growth/skills/weapon/guard/horse/Survival and reward pairs."
+    },
+    {
+      "id": "strikeforce_ps3",
+      "title": "Dynasty Warriors: Strikeforce (US BLUS30471)",
+      "platform": "PlayStation 3",
+      "status": "Unregistered genuine-file structural inspection",
+      "editing_verified": false,
+      "evidence": "Two genuine publicly shared modified exports qualify exact directory/length and anonymous occupied player/officer/storehouse records. Correct item-ID array begins eight bytes after the published broad patch range. Existing direct-payload writers do not establish native integrity behavior.",
+      "needed": "Native PS3 loader/serializer integrity evidence or credible controlled edited US game-load proof; item acquisition/ownership, growth/ability, equipment and mission-reward pairs before gameplay writes."
+    },
+    {
+      "id": "dw8e_ps3",
+      "title": "Dynasty Warriors 8 Empires (US NPUB31656 SYSTEM)",
+      "platform": "PlayStation 3",
+      "status": "Native SYSTEM custom-horse editor",
+      "editing_verified": true,
+      "evidence": "Genuine decrypted US SYSTEM export independently qualifies console size/revision, game-layer cipher and byte checksum, and all 150 custom-horse identities at PS3-specific table 0x39B94. Manual existing Body Type positions 0..4 preserve ownership/model/stats/abilities; official console-inclusive Edit Mode documentation corroborates the mechanic.",
+      "needed": "Apollo reimport/resigning and actual console loading; controlled PS3 appearance pairs before additional sliders, horse growth/equipment or SYSTEM unlocks. Campaign resource order and owner bridge remain unresolved."
+    },
+    {
+      "id": "dw5e_xbox360",
+      "title": "Dynasty Warriors 5 Empires",
+      "platform": "Xbox 360",
+      "status": "Legacy editor leads; no qualified adapter",
+      "editing_verified": false,
+      "evidence": "Public binary-editor descriptions are leads, not reusable licensed source or independently qualified native gameplay mappings. No editor/game binary executed.",
+      "needed": "No reusable native source, genuine extracted profile or checksum/record map; resource and shop/turn/Delegate dependencies require controlled pairs. External STFS reimport/hash rebuilding/resigning remains necessary for any future extracted-payload editor."
+    },
+    {
+      "id": "dw6e_xbox360",
+      "title": "Dynasty Warriors 6 Empires",
+      "platform": "Xbox 360",
+      "status": "Legacy editor leads; no qualified adapter",
+      "editing_verified": false,
+      "evidence": "Public binary-editor descriptions are leads, not reusable licensed source or independently qualified native gameplay mappings. No editor/game binary executed.",
+      "needed": "Genuine ruler/officer campaign exports, native revision/checksum and independently proved funds/gems ownership/order and forging dependencies. External STFS reimport/hash rebuilding/resigning remains necessary for any future extracted-payload editor."
+    },
+    {
+      "id": "dw7_xbox360",
+      "title": "Dynasty Warriors 7",
+      "platform": "Xbox 360",
+      "status": "Legacy editor leads; no qualified adapter",
+      "editing_verified": false,
+      "evidence": "Public binary-editor descriptions are leads, not reusable licensed source or independently qualified native gameplay mappings. No editor/game binary executed.",
+      "needed": "Genuine Xbox Conquest exports and native checksum/revision; money, skills, weapon/seal acquisition and growth pairs. An old download listing now returns a sunset page. External STFS reimport/hash rebuilding/resigning remains necessary for any future extracted-payload editor."
+    },
+    {
+      "id": "sw2_xbox360",
+      "title": "Samurai Warriors 2 (base game)",
+      "platform": "Xbox 360",
+      "status": "Unregistered native research",
+      "editing_verified": false,
+      "evidence": "Genuine base-game CON entry Samurai2.dat independently extracted at declared 0xAF000 length with STFS block/hash relationships checked privately. Three observed additive relationships are read-only diagnostics; RSA and complete native integrity remain unqualified.",
+      "needed": "Native region/revision, complete integrity including ambiguous second checksum endpoint, money ownership and controlled shop/growth/weapon/guard/horse pairs. External STFS reimport/hash rebuilding/resigning remains necessary for any future extracted-payload editor."
+    },
+    {
+      "id": "sw2xl_xbox360",
+      "title": "Samurai Warriors 2 Xtreme Legends",
+      "platform": "Xbox 360",
+      "status": "Legacy editor leads; no qualified adapter",
+      "editing_verified": false,
+      "evidence": "Public binary-editor descriptions are leads, not reusable licensed source or independently qualified native gameplay mappings. No editor/game binary executed.",
+      "needed": "Distinct genuine XL payload, title update/revision/region and full native integrity; base SW2 and advertised container basenames do not qualify XL. External STFS reimport/hash rebuilding/resigning remains necessary for any future extracted-payload editor."
+    },
+    {
+      "id": "wo1_xbox360",
+      "title": "Warriors Orochi",
+      "platform": "Xbox 360",
+      "status": "Legacy editor leads; no qualified adapter",
+      "editing_verified": false,
+      "evidence": "Public binary-editor descriptions are leads, not reusable licensed source or independently qualified native gameplay mappings. No editor/game binary executed.",
+      "needed": "Genuine Xbox extracted gameplay file, complete integrity and Growth Points versus officer EXP/equipment ownership. Xbox GameFAQs page aggregates other-platform saves. External STFS reimport/hash rebuilding/resigning remains necessary for any future extracted-payload editor."
+    },
+    {
+      "id": "wo2_xbox360",
+      "title": "Warriors Orochi 2",
+      "platform": "Xbox 360",
+      "status": "Legacy editor leads; no qualified adapter",
+      "editing_verified": false,
+      "evidence": "Public binary-editor descriptions are leads, not reusable licensed source or independently qualified native gameplay mappings. No editor/game binary executed.",
+      "needed": "Freely accessible genuine Xbox OROCHI_EX gameplay export, native integrity/identity and growth/proficiency/fusion/skills/stage dependencies; listed save download requires login. External STFS reimport/hash rebuilding/resigning remains necessary for any future extracted-payload editor."
+    },
+    {
+      "id": "wo3u_ps3",
+      "title": "Warriors Orochi 3 Ultimate (US NPUB31505)",
+      "platform": "PlayStation 3",
+      "status": "Native decrypted-export resource editor",
+      "editing_verified": true,
+      "evidence": "Two genuine US Ultimate exports independently qualify exact length/revision and all 150 officer/2320 weapon PS3 markers; mandatory original NPUB31505-SAVEDATA SFO distinguishes region/edition. A firsthand US PS3 direct-edit success report corroborates growth/gems at 0x1378/0x137C. Only these two balances are writable manually; richer systems remain inspected without progression/ownership changes.",
+      "needed": "External Apollo reimport/PFD resigning and our own actual console load/re-save; full native integrity/source evidence and controlled growth/fusion/equipment/reward pairs before additional field writes. Unknown-byte corruption is not globally authenticated by the structure checks."
     }
   ],
   "scope": "Windows application with explicitly selected game/platform parsers and separate backup identities.",

@@ -173,6 +173,15 @@ GAMES = (
          'Gold reductions, owned Shez/Byleth name customization and searchable character/weapon records.',
          '', '', '#657b43', 'koei_editor.games.three_hopes.editor', 'koei_editor.games.three_hopes.parser',
          True, 'THREE HOPES', True, 'Nintendo Switch', scalar_backend='koei_editor.games.three_hopes.parser'),
+    Game('dw8e_ps3', 'DYNASTY WARRIORS 8 EMPIRES', 'US · decrypted SYSTEM APP.BIN',
+         'Existing custom-horse Body Type; searchable appearance, stats and ability records.',
+         '', '.bin', '#526985', 'koei_editor.games.dw8e_ps3.editor', 'koei_editor.games.dw8e_ps3.parser',
+         True, 'VIII E PS3', True, 'PlayStation 3', scalar_backend='koei_editor.games.dw8e_ps3.parser'),
+
+    Game('wo3u_ps3', 'WARRIORS OROCHI 3 ULTIMATE', 'US · decrypted APP.BIN · NPUB31505',
+         'Manual unallocated growth points and gems; searchable officer, weapon and inventory inspection.',
+         '', '.bin', '#775c82', 'koei_editor.games.wo3u_ps3.editor', 'koei_editor.games.wo3u_ps3.parser',
+         True, 'WO3U PS3', True, 'PlayStation 3', scalar_backend='koei_editor.games.wo3u_ps3.parser'),
 
 )
 

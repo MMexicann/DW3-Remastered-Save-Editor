@@ -157,19 +157,25 @@ stride `0x18000`, gold and 196 storehouse ID/ownership/quantity entries; one
 shared save has modified quantity 150. Exact native identity/revision/integrity
 and record ownership semantics are required before exposing edits. Character
 EXP/proficiency, growth and abilities must be qualified together; patch targets
-alone are insufficient. No Strikeforce adapter is registered from these facts.
+alone are insufficient. No Strikeforce adapter is registered from these facts. The new
+[US record inspector](STRIKEFORCE_PS3.md) independently qualifies occupied player
+records and separates 42 persistent officers from selected-state copies. Its
+196-row material-ID array begins at `0x9B8`, eight bytes after Apollo's broad
+patch block start. It preserves empty/unknown IDs, raw flags and modified values
+without authorizing writes; native integrity/revision remains the exact blocker.
 
 Samurai Warriors 2 HD's correctly identified GameFAQs pages
 [723490](https://gamefaqs.gamespot.com/ps3/723490-sengoku-musou-2-with-moushouden-and-empires-hd/saves)
 and [737594](https://gamefaqs.gamespot.com/ps3/737594-sengoku-musou-2-with-moushouden-hd-version/saves)
 contained no public save downloads at the time checked. Its unregistered
-`research/sw2hd_ps3/inspection.py` diagnoses only the candidate money and
-checksum facts described above; it deliberately offers no game profile or
-write API. Two procedural tests verify checksum endianness, duplicated sums,
-bounded input rejection and the absence of editing operations. These are not
-genuine-file qualification.
+`research/sw2hd_ps3/inspection.py` diagnoses candidate money, partial checksums
+and three separately published EXP/weapon anchors; it deliberately offers no
+game profile or write API. Four procedural tests verify checksum endianness,
+duplicated sums, bounded immutable input, raw record preservation and checksum
+collisions/uncovered bytes that cannot qualify complete integrity. These are
+not genuine-file qualification. See the updated [exact-edition checklist](SW2HD_PS3.md).
 
-## Dynasty Warriors 8 Empires PS3 codec qualification
+## Dynasty Warriors 8 Empires PS3 codecs and SYSTEM custom horses
 
 The [US public GameFAQs export 30046](https://gamefaqs.gamespot.com/ps3/806920-dynasty-warriors-8-empires/saves/30046)
 contains both `NPUB31656-SYSTEM` and `NPUB31656-EMPIRE3` console files.
@@ -207,3 +213,30 @@ Three codec tests cover procedural profiles, corrupted SYSTEM checksum,
 wrong revision/platform/size, exact immutable snapshots, read-only records
 and optional genuine exports through `DW8E_PS3_SYSTEM_COPY` and
 `DW8E_PS3_EMPIRE_COPY`. They are distinct from game-load validation.
+
+
+The new separate [US SYSTEM adapter](DW8E_PS3.md) independently identifies the
+PS3 custom-horse table at decoded `0x39B94`, checks all 150 ordinal identities,
+and implements manual Body Type editing for qualified existing ordinary horses.
+It recomputes the existing game byte checksum and preserves type/model/stats,
+abilities and ownership. The original exact `NPUB31656-SYSTEM` metadata is
+mandatory beside source and destination. This narrow SYSTEM feature does not
+resolve campaign resource ownership/order. Genuine surgical and actual Tk
+backup/save/restore tests pass; console loading remains untested.
+
+## Warriors Orochi 3 Ultimate: US PS3 NPUB31505
+
+The separate [US Ultimate adapter](WO3U_PS3.md) edits only unallocated growth
+points and precious stones. Two genuine exports establish `NPUB31505-SAVEDATA`,
+native revision `0x140318F1`, plaintext length `0x2119CA`, and every PS3 officer
+and weapon marker. Original metadata is mandatory. Apollo's `NPUB50173` and
+`NPEB02052` patch identifiers are leads, not alternative accepted identities.
+
+A firsthand US PS3 direct-hex-edit report corroborates these two resources.
+Its incorrect numeric conversion is not implemented. The narrow writer changes
+only the selected little-endian DWORD and preserves all other bytes; arbitrary
+unknown-byte corruption cannot be authenticated by record checks. It makes no
+global native-checksum-absence claim. Officer progression, weapons/fusion,
+inventories, bonds, stages and collections are inspected or preserved rather
+than written. Genuine no-op/surgical and Tk backup/save/restore tests pass;
+external PFD reimport/resigning and our actual console load remain separate.
