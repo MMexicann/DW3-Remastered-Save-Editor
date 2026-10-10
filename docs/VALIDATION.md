@@ -1,5 +1,32 @@
 # Universal development validation
 
+## Licensed Musou expansion (2026-10-11)
+
+Linux Python 3.12 with a real Tk/Xvfb display completed **1,189 tests: 854
+passed, 335 skipped, zero failures/errors**. Skips concern absent unrelated
+private fixtures and platform-specific checks. The focused licensed Musou suite
+completed **41 tests, all passed, zero skips**, with all eight genuine PS3 copies
+explicitly selected. Three registered scalar contracts, malformed/foreign input,
+dependency/unknown-value preservation, native checksums where established,
+source safety, backup/restore and retained GUI sessions are covered.
+
+Gundam 1 passes four genuine unchanged roundtrips and 269 independent surgical
+skill-bit additions across 20 qualified pilot records. Ken's Rage 1 passes two
+genuine unchanged roundtrips and 16 surgical skill-point edits. Their genuine
+Tk editing/review/Undo/save/backup/restore workflows also pass. Ken's Rage 2
+passes two genuine unchanged roundtrips and genuine GUI preservation workflows;
+its unlock edits remain procedural because both genuine samples already have
+all mapped galleries unlocked. No actual edited game-load/re-save was performed.
+
+All 32 registered interfaces pass the startup smoke test. Three native
+copied-save CLI workflows pass unchanged input/backup/restore checks and report
+zero Max edits, as all new controls disable bulk Max. Gundam and Ken's Rage 2
+report established native integrity; Ken's Rage 1 explicitly reports external
+integrity and unverified native checksums. Inventory consistency, all six new
+qualified Windows build imports and **424 reviewed public source files** pass
+packaging/privacy verification. No Windows EXE/CNG run, version bump, tag or
+release was performed. See [exact scope and blockers](LICENSED_MUSOU.md).
+
 Run the complete public suite and all-interface startup check from the repository root:
 
 ```text

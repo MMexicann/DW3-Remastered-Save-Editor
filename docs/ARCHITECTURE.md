@@ -107,6 +107,11 @@ atomically to new destinations. Restore validates the same bounded bytes that
 will be written. No-edit serialization is byte-exact; edits change only declared
 fields and required integrity metadata, preserving unknown bytes and seeds.
 
+Console backends can require an identity companion. An optional
+`prepare_self_test_copy(document, destination)` hook prepares minimal identity
+metadata for copied-save CLI validation; full account and signing metadata is
+never copied. The ordinary registered reader then validates that working copy.
+
 Windows uses native CNG; non-Windows development optionally uses the crypto
 provider in `tools/requirements/dev.txt`. GUI tests need a display. Procedural
 tests, genuine copied-file qualification and actual game loading remain separate

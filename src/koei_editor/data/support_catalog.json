@@ -490,6 +490,33 @@
       "editing_verified": true,
       "evidence": "Six independently shared complete native SlotData exports qualify 143 top-level plus one nested own-body checksum. Manual gold reductions and qualified original owned/deployed character names update exact header/body mirrors; all other game systems remain byte-identical. Searchable named character and weapon inspection.",
       "needed": "Edited game loading; controlled growth/EXP/class/mastery, materials/acquisition, weapon forging/equipment, support and route/reward action pairs. Other revisions/Unicode name encoding require independent profiles."
+    },
+    {
+      "id": "kens_rage2_ps3",
+      "title": "Fist of the North Star: Ken's Rage 2",
+      "platform": "PlayStation 3",
+      "status": "EU decrypted-export collection editor",
+      "evidence": "Two genuine BLES01801 exports qualify the version-2 section layout and six CRC32 checks with byte-exact unchanged roundtrips. Manual locked-to-unlocked music/movie/event transitions and state preservation pass procedural and real Tk tests. Both genuine samples have all mapped galleries unlocked, so edited-field qualification remains procedural.",
+      "needed": "Incomplete genuine BLES01801 DATA.BIN with locked gallery entries, controlled growth/scroll/mission pairs, and actual console load after Apollo reimport/resign. Other regions/platforms need separate profiles.",
+      "editing_verified": false
+    },
+    {
+      "id": "gundam1_ps3",
+      "title": "Dynasty Warriors: Gundam",
+      "platform": "PlayStation 3",
+      "status": "US/EU decrypted-export pilot skill editor",
+      "evidence": "Four genuine US/EU complete exports qualify exact 0x89000-byte framing and all three native byte sums. Learned skill bits correlate with equipped native references. Manual learning on six individually mapped existing level-30 pilots preserves EXP, levels, equipment and all unknown mask bits; native unchanged and surgical file tests.",
+      "needed": "Actual edited console load after Apollo reimport/resign; EXP thresholds and derived stats, lower-level skill prerequisites, other pilot/mobile suit/part records, mission/reward and collection pairs. Gundam2/3/Reborn and other platforms require separate native profiles.",
+      "editing_verified": true
+    },
+    {
+      "id": "kens_rage1_ps3",
+      "title": "Fist of the North Star: Ken's Rage",
+      "platform": "PlayStation 3",
+      "status": "US/EU decrypted-export skill-point editor",
+      "evidence": "Two publicly shared genuine US/EU DATA.BIN copies qualify exact 0xC0000-byte 32-byte header profile. Independently implemented published low-u16 skill-point patches for eight base fighters with positive original balance and zero candidate-word high bytes; existing unusual/higher values preserved. No native gameplay checksum algorithm is established; published patches use direct writes and external PFD authentication.",
+      "needed": "Actual console edited load after Apollo reimport/resign; native serializer/integrity confirmation, fighter ownership and controlled skill-point spend/Meridian Chart, equipped skill, growth and mission/reward pairs. DLC and other platforms need separately qualified profiles.",
+      "editing_verified": false
     }
   ],
   "scope": "Windows application with explicitly selected game/platform parsers and separate backup identities.",

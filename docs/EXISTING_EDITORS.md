@@ -10,6 +10,11 @@ console editor does not establish a compatible native PC disk-save writer.
 
 ## Later expansion findings
 
+- The licensed Musou expansion independently implements qualified Gundam and
+  Ken's Rage PS3 export controls from public patches and genuine-file evidence.
+  See [exact profiles, dependencies and blockers](LICENSED_MUSOU.md). Console
+  reimport/signing and actual edited game-load tests remain external.
+
 - Native executable analysis and genuine files now support DW7 XL Definitive,
   WO3 Ultimate Definitive, SW4 DX, PW4, Orochi Z and All-Stars PC controls.
   DW9 Empires SYSTEMDATA quantity editing is native-source-backed; a genuine

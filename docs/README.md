@@ -54,6 +54,7 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Hyrule, Fire Emblem and Pirate follow-up](FAMILY_NEXT_RESEARCH.md)
 - [Dragon Quest Heroes II, Berserk and Attack on Titan PC follow-up](OTHER_KOEI_PC_RESEARCH.md)
 - [Additional editor survey](ADDITIONAL_EDITOR_SURVEY.md)
+- [Licensed Musou: Gundam and Ken's Rage](LICENSED_MUSOU.md)
 - [Atelier and other Gust follow-up](ATELIER_NEXT_RESEARCH.md)
 
 ## Mechanics and source research
