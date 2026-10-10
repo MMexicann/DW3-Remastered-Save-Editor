@@ -6,8 +6,19 @@ This review started at remote `codex/prepare-next-update`, commit
 `f7ca0121d4e98a7caf09f8545a5a7413a0b8dc3e`, on
 `codex/independent-validation`. Parallel audits reviewed all 28 registered
 adapters. Results below are from this review, not inherited qualification claims.
-The final complete-suite result and non-publishing Windows workflow status are
-recorded in the draft PR; the complete-suite run is still pending at this point.
+The final complete suite ran **1,136 tests in 356.160 seconds: 824 passed,
+312 skipped, no failures or errors**, using Python 3.12 and actual Tk on a virtual
+Xorg display. Qualified copied-native inputs were explicitly configured for all
+six new editors, Wii U Hyrule, Age of Calamity and Pirate Warriors 3.
+Skips require unavailable private fixtures, except one Windows filename-rule
+check; two fixture-dependent GUI skips also require Windows. There were no
+display-only skips. A prior full run had 1,123 tests, two stale GUI expectation
+failures and 328 skips; those expectations were corrected before the final run.
+
+The [non-publishing Windows run](https://github.com/MMexicann/Universal-Koei-Tecmo-Save-Editor/actions/runs/38094440495)
+was dispatched with `publish=false` at application/test commit `a969687`.
+It was still running when this report was finalized; the draft PR tracks its
+result. The following commit updates only this report and its manifest hash.
 
 ### Confirmed defects and narrow fixes
 
@@ -89,7 +100,8 @@ A non-editable wheel installed in an isolated environment outside the checkout
 loaded all 28 editor/parser/backend registrations and all 14 runtime JSON files.
 Its 191 entries contained no tests, tools, saves or binaries; runtime JSON bytes
 matched the wheel exactly. Module listing and actual-Tk all-interface/theme
-smoke startup passed. Source-manifest and generated-inventory checks passed.
+smoke startup passed. The source manifest verifies 401 public entries, and the
+generated-inventory check passed.
 The version remains 1.6. Linux checks do not validate Windows CNG or an EXE;
 native build status belongs to the explicitly non-publishing workflow run.
 
@@ -101,7 +113,7 @@ example, direct PW4 Max with pending `{'beli': -1}` becomes a maximum, and
 Registered/GUI Stage, limits and Max are guarded and have adversarial regressions;
 no corrupt output from the unknown-key case was established. The affected direct
 modules are DW7 XL, PW4, DW4 Hyper/PS2 XL, Sophie 2, WO3U, SW4 DX, DW9E, Orochi Z,
-Wii U Hyrule/AoC/Definitive/FE Warriors, DW7E PS3, DW7 PS3 and SW4 PS3.
+Wii U Hyrule, AoC, Hyrule Definitive, FE Warriors, DW7E PS3, DW7 PS3 and SW4 PS3.
 
 Coordination: this branch changes shared contracts/GUI, Origins and narrow
 DW5/DW8E/Legends/Wo Long edge cases. It adds no game registrations or mechanics.
