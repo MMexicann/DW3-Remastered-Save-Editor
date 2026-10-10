@@ -6,8 +6,8 @@ from unittest.mock import patch
 import unittest
 
 from tests.test_wo3u_format import procedural_raw
-from wo3u_editor import Editor
-import wo3u_parser as parser
+from koei_editor.games.wo3u.wo3u_editor import Editor
+import koei_editor.games.wo3u.wo3u_parser as parser
 
 
 class WO3GuiTests(unittest.TestCase):
@@ -25,10 +25,10 @@ class WO3GuiTests(unittest.TestCase):
         self.source.write_bytes(self.raw)
         self.editor = Editor(self.root)
         self.errors = []
-        error = patch('verified_gui.messagebox.showerror', side_effect=lambda *args: self.errors.append(args))
+        error = patch('koei_editor.shared.verified_gui.messagebox.showerror', side_effect=lambda *args: self.errors.append(args))
         error.start()
         self.addCleanup(error.stop)
-        with patch('verified_gui.filedialog.askopenfilename', return_value=str(self.source)):
+        with patch('koei_editor.shared.verified_gui.filedialog.askopenfilename', return_value=str(self.source)):
             self.editor.open()
         self.assertFalse(self.errors)
         self.assertEqual(self.editor.save_extension, '.bin')

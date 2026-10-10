@@ -10,10 +10,11 @@ import sys
 
 PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT))
-from application import Application
-import gui
-import origins_gui
-from models import Change
+from koei_editor.application import Application
+from koei_editor.game_registry import GAMES
+import koei_editor.games.dw3.gui as gui
+import koei_editor.games.origins.origins_gui as origins_gui
+from koei_editor.games.dw3.models import Change
 
 
 def widget_texts(widget, *, mapped_only=False):
@@ -69,12 +70,11 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_selector_initializes_both_games_with_isolated_sessions(self):
         self.assertIsNone(self.app.active_game)
-        self.assertEqual(set(self.app.game_buttons),
-                         {'dw3', 'dw8xl', 'pw3', 'dw4hyper', 'dw4xl_ps2', 'atelier_sophie2', 'origins', 'dw7xl', 'wo3u', 'samurai4dx', 'pw4'})
+        self.assertEqual(set(self.app.game_buttons), {game.id for game in GAMES})
         dw3 = self.app.select_game('dw3')
         origins = self.app.select_game('origins')
         self.assertIsInstance(dw3, gui.Editor)
-        from origins_game_editor import Editor as OriginsEditor
+        from koei_editor.games.origins.origins_game_editor import Editor as OriginsEditor
         self.assertIsInstance(origins, OriginsEditor)
         self.assertIsNot(dw3.changes, origins.changes)
         self.assertIsNone(dw3.document)
@@ -160,7 +160,7 @@ class UniversalGuiTests(unittest.TestCase):
             self.assertEqual(after.read_bytes(), raw[:-1] + bytes([raw[-1] ^ 1]))
 
     def test_failed_origins_open_preserves_previous_session(self):
-        import verified_gui
+        import koei_editor.shared.verified_gui as verified_gui
         editor = self.app.select_game('origins')
         original = object()
         editor.document = original
@@ -172,9 +172,9 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_native_origins_staging_max_undo_review_save_restore_and_user_rejection(self):
         from tests.test_origins_parser import fixture
-        import origins_codec
-        import origins_parser
-        import verified_gui
+        import koei_editor.games.origins.origins_codec as origins_codec
+        import koei_editor.games.origins.origins_parser as origins_parser
+        import koei_editor.shared.verified_gui as verified_gui
         editor = self.app.select_game('origins')
         area = PROJECT / '.test-runs'
         area.mkdir(exist_ok=True)
@@ -257,7 +257,7 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_native_origins_dynamic_groups_search_and_nonmaxable_training(self):
         from tests.test_origins_integration import mapped_fixture
-        import verified_gui
+        import koei_editor.shared.verified_gui as verified_gui
         editor = self.app.select_game('origins')
         raw = mapped_fixture(29)
         editor.document = editor.adapter.decode(raw)
@@ -346,8 +346,8 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_pc_scalar_editors_open_stage_undo_switch_review_and_save_as(self):
         from tests.test_verified_editors import synthetic_raw
-        import verified_editor as backend
-        import verified_gui
+        import koei_editor.shared.verified_editor as backend
+        import koei_editor.shared.verified_gui as verified_gui
         for game_id, key in (('dw8xl', 'gold'), ('pw3', 'character_0_attack')):
             editor = self.app.select_game(game_id)
             with tempfile.TemporaryDirectory() as folder:
@@ -392,8 +392,8 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_scalar_max_visible_is_one_undoable_batch_and_invalid_batch_is_atomic(self):
         from tests.test_verified_editors import synthetic_raw
-        import verified_editor as backend
-        import verified_gui
+        import koei_editor.shared.verified_editor as backend
+        import koei_editor.shared.verified_gui as verified_gui
         editor = self.app.select_game('pw3')
         editor.document = backend.decode(synthetic_raw('pw3'), 'pw3')
         editor.group.set('Characters')
@@ -411,7 +411,7 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_scalar_search_tokens_group_scope_max_visible_and_hidden_edits_survive_switch(self):
         from tests.test_verified_editors import synthetic_raw
-        import verified_editor
+        import koei_editor.shared.verified_editor as verified_editor
         editor = self.app.select_game('dw8xl')
         raw = synthetic_raw('dw8xl')
         editor.document = verified_editor.decode(raw, 'dw8xl')
@@ -446,8 +446,8 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_dw4_candidate_uses_own_backend_copy_workflow_and_retains_session(self):
         from tests.test_dw4hyper_format import procedural_raw
-        import dw4hyper_parser as candidate
-        import verified_gui
+        import koei_editor.games.dw4hyper.dw4hyper_parser as candidate
+        import koei_editor.shared.verified_gui as verified_gui
         editor = self.app.select_game('dw4hyper')
         self.assertIs(editor.backend, candidate)
         self.assertIn('dw4hyper', self.app.game_buttons)
@@ -497,7 +497,7 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_dw4_candidate_minimum_window_preserves_status_and_selected_field_hint(self):
         from tests.test_dw4hyper_format import procedural_raw
-        import dw4hyper_parser
+        import koei_editor.games.dw4hyper.dw4hyper_parser as dw4hyper_parser
         editor = self.app.select_game('dw4hyper')
         editor.document = dw4hyper_parser.decode(procedural_raw())
         editor.refresh()
@@ -514,8 +514,8 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_sophie2_shared_gui_copy_edits_max_undo_review_inspect_and_restore(self):
         from tests.test_atelier_sophie2_format import procedural_raw
-        import atelier_sophie2_parser as backend
-        import verified_gui
+        import koei_editor.games.sophie2.atelier_sophie2_parser as backend
+        import koei_editor.shared.verified_gui as verified_gui
         self.app.game_buttons['atelier_sophie2'].invoke()
         editor = self.app.sessions['atelier_sophie2'][1]
         self.assertIs(editor.backend, backend)
@@ -624,7 +624,7 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_candidate_self_test_reports_pending_qualification(self):
         from tests.test_dw4hyper_format import procedural_raw
-        from verified_self_test import run
+        from koei_editor.shared.verified_self_test import run
         with tempfile.TemporaryDirectory() as folder:
             source = Path(folder) / 'save.dat'
             raw = procedural_raw()
@@ -659,11 +659,11 @@ class UniversalGuiTests(unittest.TestCase):
     def test_ps2_xl_gui_copy_workflow_and_cross_platform_rejection(self):
         from tests.test_dw4xl_format import procedural_psu
         from tests.test_dw4hyper_format import procedural_raw
-        import dw4xl_parser
-        import verified_gui
-        from game_registry import get_game
-        from models import SaveError
-        from verified_self_test import run
+        import koei_editor.games.dw4xl.dw4xl_parser as dw4xl_parser
+        import koei_editor.shared.verified_gui as verified_gui
+        from koei_editor.game_registry import get_game
+        from koei_editor.games.dw3.models import SaveError
+        from koei_editor.shared.verified_self_test import run
         editor = self.app.select_game('dw4xl_ps2')
         self.assertEqual(self.app.platform_choice.get(), 'PlayStation 2')
         self.assertEqual(editor.save_extension, '.psu')
@@ -716,7 +716,7 @@ class UniversalGuiTests(unittest.TestCase):
         self.assertIsNone(self.app.active_game)
 
     def test_minimum_window_keeps_library_actions_accessible_on_both_platforms(self):
-        from game_registry import get_game
+        from koei_editor.game_registry import get_game
         self.root.deiconify()
         self.root.geometry('1080x820')
         for theme in ('Light', 'Dark'):
@@ -758,9 +758,9 @@ class UniversalGuiTests(unittest.TestCase):
     def test_future_library_rows_scroll_focus_reveal_and_invoke_real_buttons(self):
         from dataclasses import replace
         from types import SimpleNamespace
-        from adapter_contract import SESSION_ACTIONS
-        import game_registry
-        from game_registry import GAMES
+        from koei_editor.shared.adapter_contract import SESSION_ACTIONS
+        import koei_editor.game_registry as game_registry
+        from koei_editor.game_registry import GAMES
         def future_session(game, root, parent, theme, on_theme):
             # This test exercises library geometry, not a falsely registered
             # PW3 parser under an invented game identity.
@@ -771,7 +771,7 @@ class UniversalGuiTests(unittest.TestCase):
                                         title=f'FUTURE WARRIORS {index + 1}') for index in range(7))
         future_root = tk.Tk()
         try:
-            with patch('application.GAMES', expanded), \
+            with patch('koei_editor.application.GAMES', expanded), \
                     patch.object(game_registry, 'ALL_ADAPTERS', expanded + game_registry.RESEARCH_TOOLS), \
                     patch.object(game_registry.Game, 'create_editor', new=future_session):
                 app = Application(future_root, preferences_path=self.preferences_path)
@@ -815,7 +815,7 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_read_only_pc_progression_and_data_inspection_callbacks(self):
         from tests.test_verified_editors import synthetic_raw
-        import verified_editor as backend
+        import koei_editor.shared.verified_editor as backend
         editor = self.app.select_game('pw3')
         editor.document = backend.decode(synthetic_raw('pw3'),'pw3')
         editor.refresh()
@@ -879,7 +879,7 @@ class UniversalGuiTests(unittest.TestCase):
                                          self.root.winfo_rooty() + self.root.winfo_height())
 
     def test_dw3_cli_dispatch_normalizes_accepted_argument_order(self):
-        from application import main
+        from koei_editor.application import main
         args = ['application.py','--self-test','copy.sav','output','--game','dw3']
         observed = []
         with patch.object(sys, 'argv', args), patch.object(gui, 'main', side_effect=lambda: observed.extend(sys.argv)):
@@ -889,8 +889,8 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_hidden_pc_edits_can_cancel_close_and_failed_open_preserves_edits(self):
         from tests.test_verified_editors import synthetic_raw
-        import verified_editor as backend
-        import verified_gui
+        import koei_editor.shared.verified_editor as backend
+        import koei_editor.shared.verified_gui as verified_gui
         editor = self.app.select_game('pw3')
         editor.document = backend.decode(synthetic_raw('pw3'), 'pw3')
         editor.stage_values({'character_0_attack':123})
@@ -907,8 +907,8 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_dw3_synthetic_save_edit_undo_review_switch_and_save_as_workflow(self):
         from tests.test_elixirs_v11 import synthetic_reset_save
-        from save_parser import read_save
-        import progression_editor
+        from koei_editor.games.dw3.save_parser import read_save
+        import koei_editor.games.dw3.progression_editor as progression_editor
         editor = self.app.select_game('dw3')
         document = synthetic_reset_save()
         with tempfile.TemporaryDirectory() as folder:

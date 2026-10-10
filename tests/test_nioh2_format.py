@@ -9,8 +9,8 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import nioh2_parser as inspector
-from models import SaveError
+import koei_editor.research.nioh2.nioh2_parser as inspector
+from koei_editor.games.dw3.models import SaveError
 
 
 @lru_cache(maxsize=1)

@@ -14,11 +14,11 @@ import uuid
 PROJECT = Path(__file__).resolve().parents[1]
 WORKSPACE = PROJECT
 sys.path.insert(0, str(PROJECT))
-from models import Change, SaveError, fields
-from save_parser import read_save, parse_bytes
-from save_writer import serialize, write_save, restore_backup, UNIQUE_WEAPONS
-from save_codec import encrypt
-import officer_weapon_editor as weapon
+from koei_editor.games.dw3.models import Change, SaveError, fields
+from koei_editor.games.dw3.save_parser import read_save, parse_bytes
+from koei_editor.games.dw3.save_writer import serialize, write_save, restore_backup, UNIQUE_WEAPONS
+from koei_editor.games.dw3.save_codec import encrypt
+import koei_editor.games.dw3.officer_weapon_editor as weapon
 
 FIXTURE = WORKSPACE / 'work' / 'original-upload' / 'GameStatusData.sav'
 RUNS = PROJECT / 'tests' / '.weapon-roll-test-runs'

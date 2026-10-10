@@ -10,11 +10,11 @@ PROJECT = Path(__file__).resolve().parents[1]
 WORKSPACE = PROJECT
 sys.path.insert(0, str(PROJECT))
 sys.path.insert(0, str(PROJECT / 'tests'))
-import bodyguard_customization as customization
-import progression_editor as progression
-from models import Change, SaveError
-from save_parser import parse_bytes, read_save
-from save_writer import serialize
+import koei_editor.games.dw3.bodyguard_customization as customization
+import koei_editor.games.dw3.progression_editor as progression
+from koei_editor.games.dw3.models import Change, SaveError
+from koei_editor.games.dw3.save_parser import parse_bytes, read_save
+from koei_editor.games.dw3.save_writer import serialize
 from test_bodyguards import edited_fixture_bytes, tag_bytes
 
 ORIGINAL = WORKSPACE / 'work/original-upload/GameStatusData.sav'
@@ -35,11 +35,11 @@ class CustomizationMetadataTests(unittest.TestCase):
                          ['Normal', 'Blue', 'Red', 'Green', 'Purple', 'Yellow', 'White', 'Black', 'Pink'])
 
     def test_single_choice_and_family_helpers(self):
-        self.assertEqual(customization.customization_unlock_changes('appearance', 3),
+        self.assertEqual(customization.customization_unlock_changes('koei_editor.shared.appearance', 3),
                          [Change('guard_customization', 3, 'AppearanceUnlocked', True)])
         self.assertEqual(len(customization.customization_unlock_changes('outfit')), 4)
-        for kind, ident in [('appearance', 1), ('appearance', 4), ('outfit', 4),
-                            ('outfit', 9), ('appearance', True), ('outfit', 5.0),
+        for kind, ident in [('koei_editor.shared.appearance', 1), ('koei_editor.shared.appearance', 4), ('outfit', 4),
+                            ('outfit', 9), ('koei_editor.shared.appearance', True), ('outfit', 5.0),
                             (None, 2), ('unknown', None), ([], None), (False, None)]:
             with self.subTest(kind=kind, ident=ident), self.assertRaises(SaveError):
                 customization.customization_unlock_changes(kind, ident)
@@ -111,7 +111,7 @@ class CustomizationWriteTests(unittest.TestCase):
         document = self.zeroed_arrays()
         prop = document.properties[MODEL_ARRAYS[0]]
         owned = parse_bytes(edited_fixture_bytes(document, [(prop, struct.pack('<i', 2) + bytes([1, 0]))]))
-        result, _ = self.edited(customization.customization_unlock_changes('appearance'), owned)
+        result, _ = self.edited(customization.customization_unlock_changes('koei_editor.shared.appearance'), owned)
         self.assertEqual(result.properties[MODEL_ARRAYS[0]]['value']['values'], [1, 1])
         self.assertEqual(result.properties[MODEL_ARRAYS[1]]['value']['values'], [0, 1])
 
@@ -125,7 +125,7 @@ class CustomizationWriteTests(unittest.TestCase):
         document = self.zeroed_arrays()
         replacements = [(document.properties[name], struct.pack('<i', 0)) for name in ARRAYS]
         empty = parse_bytes(edited_fixture_bytes(document, replacements))
-        result, _ = self.edited(customization.customization_unlock_changes('appearance', 3), empty)
+        result, _ = self.edited(customization.customization_unlock_changes('koei_editor.shared.appearance', 3), empty)
         for name in MODEL_ARRAYS:
             self.assertEqual(result.properties[name]['value']['values'], [0, 1])
         for name in COLOR_ARRAYS:
@@ -148,7 +148,7 @@ class CustomizationWriteTests(unittest.TestCase):
 
     def test_pending_state_matches_written_state_without_mutating_the_document(self):
         document = self.zeroed_arrays()
-        changes = customization.customization_unlock_changes('appearance', 2)
+        changes = customization.customization_unlock_changes('koei_editor.shared.appearance', 2)
         before = deepcopy(document.parsed)
         preview = customization.customization_state(document, changes)
         result, _ = self.edited(changes, document)
@@ -169,7 +169,7 @@ class CustomizationWriteTests(unittest.TestCase):
                     [Change('guard_customization', 2, 'AppearanceUnlocked', False)],
                     [Change('guard_customization', 2, 'AppearanceUnlocked', 1)],
                     [Change('guard_customization', 2, 'Unknown', True)],
-                    customization.customization_unlock_changes('appearance', 2) * 2]
+                    customization.customization_unlock_changes('koei_editor.shared.appearance', 2) * 2]
         for changes in requests:
             with self.subTest(changes=changes), self.assertRaises(SaveError):
                 serialize(self.document, changes)
@@ -189,7 +189,7 @@ class CustomizationWriteTests(unittest.TestCase):
             self.assertTrue(state['outfits'][5]['editable'])
             with self.assertRaises(SaveError):
                 customization.plan_customization_changes(altered,
-                    customization.customization_unlock_changes('appearance'),
+                    customization.customization_unlock_changes('koei_editor.shared.appearance'),
                     lambda *args: None, lambda *args: None)
 
     def test_each_reported_variant_unlocks_without_changing_the_input_file(self):

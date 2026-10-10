@@ -6,8 +6,8 @@ import unittest
 from unittest.mock import patch
 
 from tests.test_samurai4dx_format import procedural_raw
-from samurai4dx_editor import Editor
-import samurai4dx_parser as parser
+from koei_editor.games.sw4dx.samurai4dx_editor import Editor
+import koei_editor.games.sw4dx.samurai4dx_parser as parser
 
 
 class Samurai4DXGuiTests(unittest.TestCase):
@@ -25,10 +25,10 @@ class Samurai4DXGuiTests(unittest.TestCase):
         self.source.write_bytes(self.raw)
         self.editor = Editor(self.root)
         self.errors = []
-        errors = patch('verified_gui.messagebox.showerror', side_effect=lambda *args: self.errors.append(args))
+        errors = patch('koei_editor.shared.verified_gui.messagebox.showerror', side_effect=lambda *args: self.errors.append(args))
         errors.start()
         self.addCleanup(errors.stop)
-        with patch('verified_gui.filedialog.askopenfilename', return_value=str(self.source)):
+        with patch('koei_editor.shared.verified_gui.filedialog.askopenfilename', return_value=str(self.source)):
             self.editor.open()
         self.assertFalse(self.errors)
 

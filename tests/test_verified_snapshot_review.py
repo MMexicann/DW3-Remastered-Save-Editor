@@ -9,9 +9,9 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
-import copy_storage
-from models import SaveError
-import verified_editor as backend
+import koei_editor.shared.copy_storage as copy_storage
+from koei_editor.games.dw3.models import SaveError
+import koei_editor.shared.verified_editor as backend
 from tests.test_verified_editors import synthetic_raw
 
 

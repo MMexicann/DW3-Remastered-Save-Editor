@@ -7,7 +7,7 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import origins_codec as codec
+import koei_editor.games.origins.origins_codec as codec
 
 
 @lru_cache(maxsize=2)
@@ -85,7 +85,7 @@ class NativeEnvelopeTests(unittest.TestCase):
 
     def test_related_game_three_step_stream_rejected(self):
         raw, plain = procedural_raw("user")
-        from koei_codec import word_cipher
+        from koei_editor.shared.koei_codec import word_cipher
         foreign = raw[:4] + word_cipher(plain, int.from_bytes(raw[2:4], "little"))
         with self.assertRaises(codec.SaveFormatError):
             codec.decode(foreign)

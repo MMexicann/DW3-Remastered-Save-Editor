@@ -3,8 +3,8 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-import officer_weapon_editor as w
-from models import SaveError
+import koei_editor.games.dw3.officer_weapon_editor as w
+from koei_editor.games.dw3.models import SaveError
 
 class WeaponRuleTests(unittest.TestCase):
     def info(self):

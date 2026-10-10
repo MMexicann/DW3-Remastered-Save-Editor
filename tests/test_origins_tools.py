@@ -9,11 +9,11 @@ import sys
 
 PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT))
-import origins_editor as origins
-import copy_storage
-from game_registry import get_game
-from models import SaveError, Change
-from save_safety import safe_path
+import koei_editor.games.origins.origins_editor as origins
+import koei_editor.shared.copy_storage as copy_storage
+from koei_editor.game_registry import get_game
+from koei_editor.games.dw3.models import SaveError, Change
+from koei_editor.shared.save_safety import safe_path
 
 
 class OriginsCopyTests(unittest.TestCase):
@@ -51,11 +51,11 @@ class OriginsCopyTests(unittest.TestCase):
         dw3.write_bytes(self.raw)
         with self.assertRaises(SaveError):
             origins.inspect_copy(dw3)
-        with patch('save_parser.read_save') as dw3_reader:
+        with patch('koei_editor.games.dw3.save_parser.read_save') as dw3_reader:
             with self.assertRaises(SaveError):
                 get_game('dw3').read_save(self.source)
             dw3_reader.assert_not_called()
-        with patch('origins_parser.read_save') as origins_reader:
+        with patch('koei_editor.games.origins.origins_parser.read_save') as origins_reader:
             with self.assertRaises(SaveError):
                 get_game('origins').read_save(dw3)
             origins_reader.assert_not_called()

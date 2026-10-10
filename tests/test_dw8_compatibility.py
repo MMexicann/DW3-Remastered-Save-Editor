@@ -7,9 +7,9 @@ import os
 from pathlib import Path
 import unittest
 
-import verified_editor as editor
-from models import SaveError
-from musou_presentations import DW8Presentation
+import koei_editor.shared.verified_editor as editor
+from koei_editor.games.dw3.models import SaveError
+from koei_editor.shared.musou_presentations import DW8Presentation
 from tests.test_verified_editors import synthetic_raw
 
 

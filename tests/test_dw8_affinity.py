@@ -7,8 +7,8 @@ import tkinter as tk
 import unittest
 from unittest.mock import patch
 
-import verified_editor as editor
-from models import SaveError
+import koei_editor.shared.verified_editor as editor
+from koei_editor.games.dw3.models import SaveError
 from tests.test_verified_editors import synthetic_raw
 
 
@@ -75,8 +75,8 @@ class DW8AffinityTests(unittest.TestCase):
 
     @unittest.skipUnless(os.name == 'nt' or os.environ.get('DISPLAY'), 'A graphical display is required.')
     def test_gui_search_stage_undo_review_backup_and_save_as(self):
-        import dw8xl_editor
-        import verified_gui
+        import koei_editor.games.dw8xl.dw8xl_editor as dw8xl_editor
+        import koei_editor.shared.verified_gui as verified_gui
         root = tk.Tk()
         root.withdraw()
         try:

@@ -12,7 +12,7 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import p5s_codec as codec
+import koei_editor.research.p5s.p5s_codec as codec
 
 
 def independent_transform(data, state):

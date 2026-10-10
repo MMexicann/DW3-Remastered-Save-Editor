@@ -8,11 +8,11 @@ from unittest.mock import patch
 
 PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT))
-import gui
-import collection_editor as collections
-import officer_weapon_editor as weapons
-from save_parser import read_save, parse_bytes
-from save_writer import serialize
+import koei_editor.games.dw3.gui as gui
+import koei_editor.games.dw3.collection_editor as collections
+import koei_editor.games.dw3.officer_weapon_editor as weapons
+from koei_editor.games.dw3.save_parser import read_save, parse_bytes
+from koei_editor.games.dw3.save_writer import serialize
 
 FIXTURE = PROJECT / 'work/original-upload/GameStatusData.sav'
 

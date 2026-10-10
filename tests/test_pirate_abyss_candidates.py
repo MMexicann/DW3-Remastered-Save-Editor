@@ -8,9 +8,9 @@ from pathlib import Path
 import struct
 import unittest
 
-import abyss_candidate_codec as abyss
-import pw4_candidate_codec as pw4
-from save_codec import CNG_AES
+import koei_editor.research.abyss.abyss_candidate_codec as abyss
+import koei_editor.games.pw4.pw4_candidate_codec as pw4
+from koei_editor.games.dw3.save_codec import CNG_AES
 
 
 def pw4_procedural(size=0x2804, *, region='WW', seed=0x1234):

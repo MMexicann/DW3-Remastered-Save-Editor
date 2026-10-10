@@ -7,11 +7,11 @@ import unittest
 
 PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT))
-from models import Change, SaveError
-from save_parser import parse_bytes, read_save
-from save_writer import serialize
-from save_codec import encrypt
-import collection_editor as collection
+from koei_editor.games.dw3.models import Change, SaveError
+from koei_editor.games.dw3.save_parser import parse_bytes, read_save
+from koei_editor.games.dw3.save_writer import serialize
+from koei_editor.games.dw3.save_codec import encrypt
+import koei_editor.games.dw3.collection_editor as collection
 
 FIXTURE = PROJECT / 'work' / 'original-upload' / 'GameStatusData.sav'
 

@@ -17,10 +17,10 @@ from unittest.mock import patch
 PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT))
 sys.path.insert(0, str(PROJECT / 'tests'))
-from models import Change, SaveError, fields
-from save_parser import read_save, parse_bytes
-from save_writer import serialize, UNIQUE_WEAPONS
-import officer_weapon_editor as weapon
+from koei_editor.games.dw3.models import Change, SaveError, fields
+from koei_editor.games.dw3.save_parser import read_save, parse_bytes
+from koei_editor.games.dw3.save_writer import serialize, UNIQUE_WEAPONS
+import koei_editor.games.dw3.officer_weapon_editor as weapon
 from test_weapon_rolls import edited_fixture_bytes, enum_bytes, record_bytes, tag_bytes, clone_skills
 
 FIXTURE = PROJECT / 'work' / 'original-upload' / 'GameStatusData.sav'
@@ -308,7 +308,7 @@ class WeaponAttributeGuiTests(unittest.TestCase):
 
     def setUp(self):
         import tkinter as tk
-        import gui
+        import koei_editor.games.dw3.gui as gui
         self.tk = tk
         self.gui = gui
         self.errors = []

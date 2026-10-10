@@ -9,8 +9,8 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import dw4xl_parser as editor
-from models import SaveError
+import koei_editor.games.dw4xl.dw4xl_parser as editor
+from koei_editor.games.dw3.models import SaveError
 
 
 def repair_inner(inner):

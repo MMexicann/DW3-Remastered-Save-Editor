@@ -1,112 +1,121 @@
-# Agent guide
+# Contributor and agent guide
 
-This repository builds the Universal Koei Tecmo Save Editor: one lightweight
-Windows executable, separate game/platform parsers, and a shared Tkinter library.
-Start with [CONTRIBUTING.md](CONTRIBUTING.md) for the mapping and contribution
-workflow. Use the current code and [VALIDATION.md](VALIDATION.md) when assessing
-what has actually been tested.
+Start with [CONTRIBUTING.md](CONTRIBUTING.md). This project is Mexican's
+Universal Koei Tecmo Save Editor: one lightweight Windows executable, an explicit
+game/platform library and a shared Tkinter interface. Preserve existing games,
+branding, themes, backups, Undo, Review Changes and safe saving.
 
-## Project map
+## Repository layout
 
-- `application.py` / `launch.pyw`: one Tk root, game/platform selection, retained
-  editing sessions, active-session shortcuts and close checks for hidden edits.
-- `game_registry.py`: explicit `GAMES` registrations, platform, extension and
-  adapter modules. Never probe another game's parser after a failure.
-- DW3: `gui.py`, `save_parser.py`, `save_writer.py`, `save_codec.py` and its
-  feature modules. Preserve the existing tagged schema and every DW3 feature;
-  use its `Change`/patch workflow rather than replacing it with a scalar editor.
-- DW8/PW3: `verified_editor.py`, `koei_codec.py`, `dw8xl_editor.py`,
-  `pw3_editor.py`. Frozen documents and explicit `Field`/`Format` definitions.
-- DW4 PC: `dw4hyper_parser.py` / `dw4hyper_editor.py`. DW4 PS2 USA PSU:
-  `dw4xl_parser.py` / `dw4xl_editor.py`. Their containers and identities differ.
-- Sophie 2 PC: `atelier_sophie2_codec.py`, `atelier_sophie2_parser.py` and
-  `atelier_sophie2_editor.py`. Adapted MIT codec, tagged record qualification and
-  dynamic fields for occupied items; do not manufacture empty records.
-- Origins PC: `origins_codec.py`, `origins_parser.py`, `origins_progression.py`,
-  `origins_weapons.py` and `origins_game_editor.py`. Native qualified revisions
-  16/17/29; preserve active story, derived proficiency and reward dependencies.
-- `preferences.py`: optional theme-only application configuration, separate
-  from save storage. GUI tests inject a temporary path; smoke tests never write it.
-- `katana_codec.py` / `nioh2_parser.py`: source-only PC research. Nioh-family and
-  SOP gameplay integrity is unmapped; do not enable writes by clearing flags.
-  A Wo Long dummy cipher vector is not a valid gameplay fixture.
-- `verified_gui.py`: injected-backend scalar editor, staged edits, batch Undo,
-  review, backups and Save As. `appearance.py` shares the existing themes.
-- `save_safety.py` / `copy_storage.py`: resolved-path restrictions, immutable
-  snapshots, game/hash identity and atomic writes to new destinations.
-- `build_windows.py`, `package_release.py`, `refresh_manifest.py`: standalone
-  build and manifest-whitelisted public packaging.
+- [src/koei_editor](src/koei_editor/): installable application package. The
+  launcher and registry live here; `python -m koei_editor` is the source entry.
+- [src/koei_editor/games](src/koei_editor/games/): one package per implemented
+  game/platform, with its codec, parser, editor and optional presentation.
+- [src/koei_editor/shared](src/koei_editor/shared/): scalar contracts/GUI,
+  cipher primitives, themes, preferences and copy/backup/path protections.
+- [src/koei_editor/research](src/koei_editor/research/): unregistered codecs and
+  inspection candidates. Research modules do not imply gameplay support.
+- [src/koei_editor/data](src/koei_editor/data/): reviewed runtime JSON metadata;
+  no saves, account identifiers or extracted game assets.
+- [docs](docs/README.md): architecture, formats, validation, coverage and research.
+- [tools](tools/): Windows build, packaging, source-manifest maintenance,
+  requirements and [adapter starter](tools/adapter_template/INSTRUCTIONS.md).
+- [tests](tests/README.md): format, contract, GUI and packaging checks.
+  Procedural generators are test data, not genuine player saves.
 
-## Editing conventions
+Use qualified package imports. Do not add flat root modules, compatibility shims,
+`sys.path` injection or alternate launchers to bypass the package structure.
+Read the narrower `AGENTS.md` in a folder before changing its files.
 
-Keep game logic out of the launcher and keep binary parsing out of Tk callbacks.
-Reuse working modules, the standard library and the existing backend interface:
-`read_save`, `fields_for`, `stage`, `review`, `serialize`, `save_as`, `backup`,
-`restore`. DW3 retains its own established API. Changes remain separate from the
-immutable original document; assigning the original value should unstage an edit.
+## Supported games are explicit
 
-Give each writable field a stable ID, offset, width/endianness, storage encoding,
-label/group and evidence-based bounds. Dynamic fields must come from validated
-existing records. Keep unknown IDs, bytes, bitfields, padding and unusual existing
-values intact. Bulk Max must not lower higher existing values or use an integer's
-storage ceiling as a gameplay maximum. Uncertain relationships belong in
-read-only inspection until mapped; do not invent offsets or character labels.
+[game_registry.py](src/koei_editor/game_registry.py) declares implemented adapters
+with exact game/platform, extension and qualified editor/backend modules.
+[supported_games.py](src/koei_editor/supported_games.py) is the canonical code
+inventory derived from that registry. [SUPPORTED_GAMES.md](docs/SUPPORTED_GAMES.md)
+and the README must agree with it.
 
-Validate title/platform/revision, size, structure and all applicable checksums
-before accepting a file. Re-encode from the original snapshot, preserve original
-seeds/container metadata, and reparse the result. A no-edit operation must be
-byte-exact. Recompute integrity only as part of a validated edit; do not silently
-repair corrupt input. PSU offsets depend on directory entries, not one example's
-absolute payload position.
+For every new adapter or support-scope change, update the registry, reviewed
+runtime metadata, canonical supported-game inventory, generated supported-game
+document, README and relevant tests together. Add qualified imports/data to the
+Windows build and public source manifest. Test the registered adapter and its
+documented game/platform before claiming support. A screenshot, console patch,
+runtime trainer, cipher vector or research candidate is insufficient.
+Never try another game's parser after the selected parser rejects input.
 
-Route file operations through the safety/storage helpers. Do not edit live game
-or Steam Cloud data, bypass resolved aliases, or overwrite existing destinations
-in the new scalar backends. Preserve automatic backups, source-change detection,
-Undo, Review Changes, Save As and game-specific restore checks. Retain Mexican's
-branding and shared Light/Dark behavior. Research-only work must not create
-unsupported library cards or return removed research screens to the user flow.
+Regenerate the code index and documents with
+`python -m tools.update_supported_games`, then verify them with
+`python -m tools.update_supported_games --check`.
 
-## Tests and evidence
+## Save-editing rules
+
+Keep parsing out of Tk callbacks and game logic out of the launcher. Reuse the
+scalar backend contract (`read_save`, `fields_for`, `stage`, `review`, `serialize`,
+`save_as`, `backup`, `restore`); DW3 retains its tagged schema and patch workflow.
+Changes remain separate from the immutable original snapshot. Assigning an
+opened value must unstage the edit, including unusual original values.
+
+Give writable fields stable IDs, storage width/encoding, validated bounds,
+record identity and source/revision evidence. Select dynamic fields from
+qualified existing records. Preserve unknown bytes/IDs/flags/padding, original
+seeds and higher or unusual values. Max must honor `maxable=False` and must not
+use a storage ceiling or published cheat target as a natural gameplay cap.
+Keep resources, history, ownership, equipped references and derived values
+distinct; preserve reward and prerequisite dependencies. Story completion stays
+separate from stats/resources and content unlocks.
+
+Validate game/platform/revision, size, structure and every applicable native
+checksum before exposing fields. Establish a byte-exact unchanged roundtrip.
+Recompute integrity only during a qualified edit and reparse the output; do not
+silently repair damaged input or normalize unknown data. PSU offsets come from
+container entries, not an example's absolute position.
+
+Use shared safety/storage helpers for file operations. Open separate save copies
+outside live game/Steam Cloud directories, reject resolved aliases, detect
+changed sources and write atomically to new destinations. Restore must validate
+the exact bounded bytes that will be written. Keep automatic backups, staged
+Undo, Review Changes and original-source protection intact.
+
+## Research and validation
+
+Do not execute supplied game binaries. Keep binaries, private static analysis,
+player saves, owner context, personal paths and external source copies outside
+the checkout and release assets. Respect source licences; independently verify
+facts rather than importing restricted code/catalogs. Document precise missing
+DLLs, assets, owner context, native fixtures or controlled action pairs.
+
+Install and run from the repository root:
 
 ```text
+python -m pip install -e .
 python -m unittest discover -s tests -v
-python -m unittest discover -s tests -p 'test_verified_editors.py' -v
-python application.py --smoke-test
+python -m koei_editor --smoke-test
 ```
 
-Run the focused suite for the changed format, then relevant regression/GUI and
-packaging checks. GUI tests and smoke tests need Tk and a display. Non-Windows
-DW3 development optionally uses `python -m pip install -r dev-requirements.txt`;
-a Linux build is not a Windows EXE/CNG test.
+Non-Windows development can install `tools/requirements/dev.txt`; Tk tests need
+a display. Run focused tests for changed formats and required integration,
+GUI/privacy/build checks. Cover corruption/foreign formats, boundaries and
+dependencies, surgical byte preservation, unchanged roundtrips, backups/restore
+and source safety. Report failures and skips honestly. Keep procedural evidence,
+genuine-file qualification and actual game-load/re-save validation separate.
 
-Useful test generators are `synthetic_raw()` in
-[tests/test_verified_editors.py](tests/test_verified_editors.py), `procedural_raw()`
-in [tests/test_dw4hyper_format.py](tests/test_dw4hyper_format.py), and
-`procedural_inner()` / `procedural_psu()` in
-[tests/test_dw4xl_format.py](tests/test_dw4xl_format.py). They construct test data;
-they are not independent save or in-game evidence. Include corruption, foreign
-format rejection, targeted-byte preservation, bounds/dependencies, no-op
-roundtrip, backups/restore and source preservation where relevant. Report passed,
-failed and skipped tests separately. Private fixture environment variables and
-copied-save self-tests are documented in [CONTRIBUTING.md](CONTRIBUTING.md).
+## Build and release
 
-## Build and packaging
+Build on 64-bit Windows; Linux checks do not produce or validate a Windows EXE.
+See [BUILDING.md](docs/BUILDING.md) and [VALIDATION.md](docs/VALIDATION.md).
 
-On 64-bit Windows:
-
-```powershell
-python -m pip install -r build-requirements.txt
-python package_release.py --verify-only
-python build_windows.py
-python package_release.py --verify-executable
+```text
+python -m pip install -e .
+python -m pip install -r tools/requirements/build.txt
+python -m tools.package_release --verify-only
+python -m tools.build_windows
+python -m tools.package_release --verify-executable
 ```
 
-Keep `VERSION` in `application.py` and `build_windows.py` consistent; the legacy
-DW3 module version is separate. Add registered adapter imports and required
-public metadata to the build inputs. Only reviewed paths belong in
-`SOURCE_MANIFEST.json`; refresh hashes after source edits and explicitly add new
-public files with `python refresh_manifest.py --add FILE...`. In shared work,
-coordinate the final refresh with the person owning packaging. Never add saves,
-game assets, account identifiers, private reports, external binaries or personal
-paths. Do not weaken archive/privacy checks to make a build pass. See
-[BUILDING.md](BUILDING.md) for executable smoke checks and local packaging.
+Keep application, build and package versions consistent. Public paths and hashes
+belong in [tools/SOURCE_MANIFEST.json](tools/SOURCE_MANIFEST.json); refresh only
+reviewed public files with `python -m tools.refresh_manifest`. Do not weaken
+dependency/archive/privacy checks to make a build pass. Coordinate manifest
+refreshes in shared work. Respect the repository workflow and branch protection,
+and verify the actual published version, descriptions and downloads before
+claiming a release is complete.

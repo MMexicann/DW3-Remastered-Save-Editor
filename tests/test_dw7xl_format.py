@@ -9,9 +9,9 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import dw7xl_codec as codec
-import dw7xl_parser as backend
-from models import SaveError
+import koei_editor.games.dw7xl.dw7xl_codec as codec
+import koei_editor.games.dw7xl.dw7xl_parser as backend
+from koei_editor.games.dw3.models import SaveError
 from tests.scalar_contract import ScalarContractTests
 
 

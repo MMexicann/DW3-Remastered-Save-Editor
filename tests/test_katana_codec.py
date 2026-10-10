@@ -10,7 +10,7 @@ from pathlib import Path
 import struct
 import unittest
 
-import katana_codec as codec
+import koei_editor.research.katana.katana_codec as codec
 
 
 _AES_SBOX = bytes.fromhex(

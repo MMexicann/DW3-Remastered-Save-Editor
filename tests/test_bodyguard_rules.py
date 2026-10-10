@@ -9,9 +9,9 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import bodyguard_growth as growth
-import bodyguard_editor as equipment
-from models import SaveError
+import koei_editor.games.dw3.bodyguard_growth as growth
+import koei_editor.games.dw3.bodyguard_editor as equipment
+from koei_editor.games.dw3.models import SaveError
 
 
 class BodyguardGrowthRules(unittest.TestCase):

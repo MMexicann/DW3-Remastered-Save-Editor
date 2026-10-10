@@ -7,10 +7,10 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from models import SaveError
-import origins_codec as codec
-import origins_parser as parser
-from game_registry import get_game
+from koei_editor.games.dw3.models import SaveError
+import koei_editor.games.origins.origins_codec as codec
+import koei_editor.games.origins.origins_parser as parser
+from koei_editor.game_registry import get_game
 from tests.test_origins_parser import fixture
 
 

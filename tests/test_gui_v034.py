@@ -8,12 +8,12 @@ from unittest.mock import patch
 PROJECT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(PROJECT))
 sys.path.insert(0,str(PROJECT/'tests'))
-import gui
-import save_writer
-import officer_weapon_editor as weapon
-from models import Change, fields
-from save_parser import read_save, parse_bytes
-from unreal import Reader, tags
+import koei_editor.games.dw3.gui as gui
+import koei_editor.games.dw3.save_writer as save_writer
+import koei_editor.games.dw3.officer_weapon_editor as weapon
+from koei_editor.games.dw3.models import Change, fields
+from koei_editor.games.dw3.save_parser import read_save, parse_bytes
+from koei_editor.games.dw3.unreal import Reader, tags
 from test_review_regressions import edited_fixture_bytes
 
 FIXTURE=PROJECT/'work/original-upload/GameStatusData.sav'

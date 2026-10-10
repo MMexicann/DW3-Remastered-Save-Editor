@@ -1,20 +1,21 @@
 # Tests
 
-From the repository root on Windows, run:
+From the repository root with Python/Tkinter, install the source package and run:
 
 ```text
+python -m pip install -e .
 python -m unittest discover -s tests -v
 ```
 
-Public rule and boundary tests run without a save. Private-fixture integration tests are skipped when the research copy is absent; no player save is distributed. See ../VALIDATION.md for the completed checks.
+Public rule and boundary tests run without a save. Private-fixture integration tests are skipped when the research copy is absent; no player save is distributed. See ../docs/VALIDATION.md for the completed checks.
 
 
 The universal application adds `test_universal_app.py`, `test_origins_tools.py`,
 `test_save_provider.py` and `test_universal_packaging.py`. Origins synthetic files
 exercise opaque copy operations only; they are not real gameplay fixtures.
 GUI tests need a display. The optional non-Windows crypto provider is in
-`dev-requirements.txt`. `python application.py --smoke-test` initializes the
-selector and all registered interfaces. See ../ORIGINS_FORMAT.md for Origins evidence.
+`tools/requirements/dev.txt` (relative to the repository root). `python -m koei_editor --smoke-test` initializes the
+selector and all registered interfaces. See ../docs/ORIGINS_FORMAT.md for Origins evidence.
 
 `test_verified_editors.py` adds independently generated PC fixtures, published
 cipher known answers, native checksums, corruption rejection, bounded scalar
@@ -29,11 +30,11 @@ python -m unittest discover -s tests -p 'test_verified_editors.py' -v
 ```
 
 These two sample tests skip when no path is supplied. They verify files, not
-game loading. See ../KOEI_FORMATS.md for public reference evidence and PC scope.
+game loading. See ../docs/KOEI_FORMATS.md for public reference evidence and PC scope.
 
 Game-mechanics tests cover the inferred/read-only PW3 progression model,
 bounded-limit behavior, higher-value preservation and read-only inspection.
-See ../GAME_MECHANICS.md for source evidence and unresolved gameplay dependencies.
+See ../docs/GAME_MECHANICS.md for source evidence and unresolved gameplay dependencies.
 
 `test_dw4hyper_format.py` uses procedural fixtures for the explicitly unqualified
 PC format. To run its genuine-file check, set `DW4HYPER_SAVE_COPY` to an

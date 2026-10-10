@@ -9,9 +9,9 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import dw4hyper_parser as editor
-from models import SaveError
-from save_safety import safe_path
+import koei_editor.games.dw4hyper.dw4hyper_parser as editor
+from koei_editor.games.dw3.models import SaveError
+from koei_editor.shared.save_safety import safe_path
 
 
 def repair_checksum(raw):

@@ -6,8 +6,8 @@ import unittest
 from unittest.mock import patch
 
 from tests.test_pw4_format import procedural_raw
-from pw4_editor import Editor
-import pw4_parser as parser
+from koei_editor.games.pw4.pw4_editor import Editor
+import koei_editor.games.pw4.pw4_parser as parser
 
 
 class PW4GuiTests(unittest.TestCase):
@@ -25,10 +25,10 @@ class PW4GuiTests(unittest.TestCase):
         self.source.write_bytes(self.raw)
         self.editor = Editor(self.root)
         self.errors = []
-        errors = patch('verified_gui.messagebox.showerror', side_effect=lambda *args: self.errors.append(args))
+        errors = patch('koei_editor.shared.verified_gui.messagebox.showerror', side_effect=lambda *args: self.errors.append(args))
         errors.start()
         self.addCleanup(errors.stop)
-        with patch('verified_gui.filedialog.askopenfilename', return_value=str(self.source)):
+        with patch('koei_editor.shared.verified_gui.filedialog.askopenfilename', return_value=str(self.source)):
             self.editor.open()
         self.assertFalse(self.errors)
 

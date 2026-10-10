@@ -7,10 +7,10 @@ import tkinter as tk
 import unittest
 from unittest.mock import patch
 
-from application import Application
-import gui
-from models import Change
-import preferences
+from koei_editor.application import Application
+import koei_editor.games.dw3.gui as gui
+from koei_editor.games.dw3.models import Change
+import koei_editor.shared.preferences as preferences
 
 
 AREA = Path(__file__).resolve().parents[1] / '.test-runs'
