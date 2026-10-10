@@ -67,6 +67,14 @@ and SW4 DX respectively; the file described as DW7 is an Orochi Z file.
 [Additional research](ADDITIONAL_EDITOR_SURVEY.md) and game notes distinguish
 real save editors, asset tools, runtime trainers and unsupported platform leads.
 
+The separate hunting/monster-development investigation acquired public PC save
+archives for [Toukiden Kiwami](TOUKIDEN_KIWAMI_RESEARCH.md) and
+[Toukiden 2](TOUKIDEN2_RESEARCH.md), but neither native codec/integrity nor
+writable mappings qualified. [Monster Rancher 1 & 2 DX](MONSTER_RANCHER_DX_RESEARCH.md)
+also remains blocked on complete native Windows files and serialization proof.
+These four titles add no library card or runtime support claim; each note records
+mechanic dependencies, source/licence boundaries and exact next inputs.
+
 Native shared player exports qualify unchanged roundtrips, targeted byte edits,
 checksums where present, malformed inputs, GUI workflows and backups. Procedural
 fixtures cover independent adversarial cases. No attached executable was run;

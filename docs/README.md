@@ -54,6 +54,9 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Hyrule, Fire Emblem and Pirate follow-up](FAMILY_NEXT_RESEARCH.md)
 - [Dragon Quest Heroes II, Berserk and Attack on Titan PC follow-up](OTHER_KOEI_PC_RESEARCH.md)
 - [Additional editor survey](ADDITIONAL_EDITOR_SURVEY.md)
+- [Toukiden Kiwami Windows qualification](TOUKIDEN_KIWAMI_RESEARCH.md)
+- [Toukiden 2 Windows qualification](TOUKIDEN2_RESEARCH.md)
+- [Monster Rancher 1 & 2 DX Windows qualification](MONSTER_RANCHER_DX_RESEARCH.md)
 - [Atelier and other Gust follow-up](ATELIER_NEXT_RESEARCH.md)
 
 ## Mechanics and source research
