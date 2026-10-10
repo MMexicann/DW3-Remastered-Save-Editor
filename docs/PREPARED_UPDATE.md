@@ -17,6 +17,8 @@ validation artifacts, not a new GitHub release.
 | Wo Long: Fallen Dynasty | Windows PC | Available Genuine Qi, copper, accolades, existing ordinary stack reductions and searchable inventory/equipment/companions/progression. |
 | Fire Emblem Warriors: Three Hopes | Nintendo Switch | Existing gold reductions and owned Shez/Byleth name customization with synchronized mirrors; named character and weapon inspection. |
 | Atelier Ayesha: The Alchemist of Dusk | PlayStation 3, US/Japanese decrypted exports | Cole and existing ordinary stack reductions; searchable inventory with float qualities, potentials/effects and distinct memory values. Apollo handles reimport/resigning. |
+| Nioh 3 | Windows PC, USER revisions 0x01030001 / 0x01040000 | Existing known common-item quantity reductions in native tagged pools; equipment current level, pre-forge level and reinforcement inspection. |
+| Ninja Gaiden II | Original Xbox 360 / Xenia, extracted revision-6 story | Manual Yellow Essence and existing unique ordinary consumable/ammunition reductions; searchable inventory and separate Karma inspection. CON/STFS signing remains external. |
 
 Each has its own parser and explicit identity/revision gates. Resource ceilings
 without natural-cap proof are manual editing limits and are excluded from Max.
@@ -66,6 +68,9 @@ and SW4 DX respectively; the file described as DW7 is an Orochi Z file.
 [The supplier table](REMAINING_INPUTS.md) lists exact remaining inputs.
 [Additional research](ADDITIONAL_EDITOR_SURVEY.md) and game notes distinguish
 real save editors, asset tools, runtime trainers and unsupported platform leads.
+The [Team Ninja coverage](TEAM_NINJA_RESEARCH.md) records native integrity and
+mechanic blockers for Nioh 1/2, Stranger of Paradise, Sigma/Sigma 2 and Black.
+Each edition/platform stays separate; active integrity flags are retained.
 
 Native shared player exports qualify unchanged roundtrips, targeted byte edits,
 checksums where present, malformed inputs, GUI workflows and backups. Procedural

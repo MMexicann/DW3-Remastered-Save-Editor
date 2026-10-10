@@ -97,117 +97,110 @@ bond increase or mission reward). Matching executable/module files can support
 static validation of natural bounds and callbacks. No account transfer is
 required for this adapter; original owner/header context is preserved.
 
-## Nioh and Nioh 2
+## Nioh / Nioh Complete Edition and Nioh 2 Complete Edition
 
-The existing Katana codec remains format inspection only for these titles.
-Two independently downloaded genuine Nioh PC USER files are 2,043,288 bytes,
-their SYSTEM companions are 9,824 bytes, and their decoded headers match
-`NIOHUSR`/`NIOHSYS`, revision `0x17091200` and the native 328-byte header/body
-length fields. Sources:
-[PC save with screenshots](https://www.savegameworld.com/pc-nioh-savegame/)
-and [second PC save](https://www.savegameworld.com/pc-nioh-savegame-2/).
-Outer format/decryption evidence does not establish the gameplay integrity
-algorithms.
+Native PC decoding is established on genuine files, but the active gameplay
+integrity rules remain unresolved. The Nioh Complete Edition inspector now
+requires exact USER size, title/revision/body framing and all seven observed
+flag shapes. Nioh 2 rejects mutable/forged snapshots and validates the exact
+bounded restore bytes. Both remain unregistered and reject every gameplay edit;
+the seven/four flags are retained exactly.
 
-The MIT [pawREP cipher tool](https://github.com/pawREP/Nioh-Savedata-Decryption-Tool/tree/1127f936ccc35b0f93f16b6d94e0e860f329942f)
-explicitly implements `-cs` by clearing seven runtime integrity flags. This
-project does not use that bypass. The Apache-licensed alfizari Nioh 2 editor also
-clears integrity flags instead of rebuilding verified gameplay integrity.
-The newer [sourcier Electron editor](https://github.com/sourcier/nioh-save-editor/tree/653412187484358f8a4796a89023cccd1e67a282)
-is actually a Nioh 2/3 editor despite its repository name; its Nioh 2 write path
-does not implement native gameplay integrity. No explicit source licence was
-found there, and its source was not copied into this project. PS4 Apollo patches
-are console-specific and include untested/patch-1.27-only claims; they cannot
-establish native PC offsets, legitimate caps or write readiness.
+The [integrity investigation and mechanic checklist](NIOH_INTEGRITY_RESEARCH.md)
+records the recovered genuine input, source checks and analytical candidates.
+Several public tools advertise a checksum fix but clear flags instead. More
+unlabelled saves alone do not prove the missing active routines. Required:
+native save-loader/integrity consumers or an independently verifiable algorithm,
+then intact one-action pairs for balances, growth/skills/proficiency, forging,
+familiarity, Guardian Spirits, Soul Cores/Scrolls and reward/progression state.
+Original PS4 Nioh, Complete Edition PC/PS4 and remastered profiles are separate;
+no console schema is transplanted into a PC writer.
 
-| Important mechanic | Exact blocker before gameplay writes |
-| --- | --- |
-| Gold, Amrita, stored resources | Matching native integrity-enabled before/after pairs and native integrity/update routines; current/lifetime/storage distinctions must be proved. |
-| Level, attributes, weapon/Ninjutsu/Onmyo proficiency, skills | Native PC width/revision and level/EXP/skill/reward dependencies; a cheat target is not a natural cap. |
-| Weapons, armor, accessories, reinforcement, familiarity | Current PC inventory boundaries, named/type catalog and native reinforcement/familiarity/integrity consumers; do not mirror pre-forge and current levels by assumption. |
-| Affixes, graces, Soul Cores, Scrolls, forge/remodel/refashion | Category-specific values, inheritance/locked/star effects, ownership/reference and integrity dependencies. |
-| Guardian Spirits, clans, companions, blacksmith patronage, prestige | Named native records, point/threshold/reward and native integrity routines. |
-| Missions, difficulties, Kodama, collections and story | Separate progression/reward controls and integrity-qualified native PC layout; no unconditional completion action. |
+## Nioh 3: implemented native USER editor
 
-Nioh-specific investigation includes Guardian Spirit growth, weapon familiarity,
-blacksmith patronage, prestige, Kodama and Abyss progression. Nioh 2 additionally
-has Soul Cores/Anima/Yokai Shift, Scrolls, expanded weapon categories and
-Underworld/Depths progression. These are distinct mechanics: console cheat
-targets for Spirit level, proficiency, effect magnitudes and equipment upgrades
-do not establish natural PC caps or reward dependencies. Their unknown integrity
-prevents even otherwise plausible resource offsets from becoming safe writers.
+The [registered PC adapter](../src/koei_editor/games/nioh3/parser.py) implements
+Amrita/Gold deductions and existing positive quantity reductions for seven known common item IDs in the
+item box and storehouse. The two genuine USER revisions `0x01030001` and
+`0x01040000` qualify the native cipher/body checksum and actual tagged arrays:
+2,500 equipment records, 1,500 item-box records and 400 storehouse records.
+Published fixed bases address the wrong bytes; native tags, both lengths and
+adjacent boundaries prove the supported profiles. Other revisions fail closed.
 
-The exact essential input is a matching native PC game executable and any
-save-loader modules, or a trustworthy independently licensed implementation of
-the runtime integrity algorithms, plus intact USER/BACKUP samples before and
-after controlled actions. More saves alone do not close the unknown checksum
-algorithms. Intentionally cleared integrity flags do not qualify an editor.
+Balances support `0..opened balance`; their eight-byte records have separately
+proved revision-specific tags and adjacent boundaries. These deductions do not
+perform purchases or level-ups. Only `1..opened quantity` is writable for stacks. Unknown/empty/nonordinary records and
+ambiguous duplicate known IDs do not grant writes. Increases, removal, Max,
+acquisition and cross-pool transfers need capacity/reference/reward proof.
+Equipment inspection keeps current level, pre-forge level and reinforcement
+separate. Original keys, seeds, header, tail and unknown bytes are preserved;
+integrity is rebuilt and the output reparsed. No integrity flags are cleared.
 
-## Nioh 3
+See [native format, validation and exact mechanic blockers](NIOH3_RESEARCH.md).
+Genuine encrypted/decoded edits and actual Tk Save As/backup/restore workflows
+are distinct from edited game-load/re-save validation, which is unperformed.
+Currency increases/purchase dependencies, level/EXP, skills/proficiency, equipment transformations, affixes,
+owned Scrolls, customization and mission/reward state remain separate blockers.
 
-See the detailed [native Nioh 3 research](NIOH3_RESEARCH.md): genuine encrypted and
-decrypted USER files already establish title/revision, whole-body checksum and
-unchanged reconstruction. Native gameplay arrays are still unqualified.
-The newly investigated sourcier implementation publishes equipment/resources
-at offsets different from alfizari's. **Neither published set qualifies the two
-acquired native revisions**: fixed offsets yield unrelated/unusual records and
-attribute values rather than validated inventories/resources. A relocated
-heuristic record scan is not proof of pool ownership, boundary or dependencies.
+## Stranger of Paradise: Final Fantasy Origin
 
-Current required inputs remain a matching native executable/serializer or
-controlled pairs with displayed currency/attributes and known existing
-equipment, usable/storage and owned-scroll actions. Preserve the distinction
-between current level and pre-forge level, equipment and scroll effect starts,
-displayed versus internal scroll level, and local effects versus network
-canonicalization. Source-contained game parameter tables from GPL/PolyForm
-projects are not bundled or relabelled as independent metadata.
+A live download on the corrected
+[SaveGamePro page](https://savegame.pro/pc-stranger-of-paradise-final-fantasy-origin-savegame/)
+provided genuine Epic PC USER/SYSTEM files. The earlier dead MediaFire comment
+link was not the current download button. These are launch revision
+`0x22020200`: USER is 6,216,976 bytes and SYSTEM is 17,568 bytes. The newer
+Katana cipher pair is SYSTEM revision `0x23013100`. Two independently shared
+Steam USER files and a SYSTEM file from
+[niemasd/Game-Saves](https://github.com/niemasd/Game-Saves/tree/08e8418187862dde9d70877c9fc367fa80304009/PC/Stranger%20of%20Paradise%20-%20Final%20Fantasy%20Origin)
+now separately qualify complete Steam framing at that revision. A dedicated [native framing inspector](../src/koei_editor/research/sopffo/sopffo_native.py)
+retains encrypted/decrypted representations and exact no-op bytes. No gameplay
+editor/card is enabled while native gameplay integrity remains unresolved.
 
-## Stranger of Paradise Final Fantasy Origin
+See [per-system evidence and blockers](SOPFFO_RESEARCH.md). Live-memory inventory
+source and PS4 job-EXP patches do not qualify PC serialized records. Launch Epic and the acquired Steam revision have separate observed profiles;
+unobserved builds and console profiles must be proved independently. Required:
+native integrity/update routines, then controlled currency/Anima/rat-tail/Dragon
+Treasure, job/EXP/limit-break, equipment/affinity/Chaos-effect/synthesis,
+companions, customization, rift/monster/labyrinth and mission/reward pairs.
+Ownership, derived stats and story completion remain separate.
 
-The existing explicit PC Katana profile implements AES-CBC and unchanged-only
-inspection. The upstream cipher source does not qualify native gameplay
-integrity, serialized job/EXP/point dependencies or equipment layouts. A freely
-shared [SaveGamePro page](https://savegame.pro/pc-stranger-of-paradise-final-fantasy-origin-savega/)
-links a MediaFire archive, but that archive currently returns HTTP 404. No native
-player file was acquired from that link. Existing PS4 Apollo job-EXP patches
-cannot qualify PC fields or legitimate job limits.
+## Ninja Gaiden: implemented original II and separate later formats
 
-Steam discussion of
-[save transfers](https://steamcommunity.com/app/1358700/discussions/0/3826411948442952727/)
-also reports account/platform context mismatches, and
-[preorder equipment](https://steamcommunity.com/app/1358700/discussions/0/3826411948444568185/)
-has game-load ownership/sanity restrictions. Such reports identify dependencies
-to investigate; they are not native code proof or approval to disable checks.
+The [original Ninja Gaiden II adapter](../src/koei_editor/games/ninja_gaiden_ii/parser.py)
+accepts 31,744-byte extracted Xbox 360/Xenia revision-6 stories, supported by
+22 genuine files plus matching native content in one CON package. It edits
+Yellow Essence manually and reduces existing unique ordinary consumable and
+ammunition stacks. Native big-endian word checksums are validated/rebuilt;
+unknown bytes, record variants, native markers and the opaque trailer survive.
+Karma, ownership, weapons, health/Ninpo, rewards and progression stay separate.
+CON/STFS input is rejected; extraction and signed reintegration remain external.
 
-Required: a freely shared separate native PC `SAVEDATA.BIN`/SYSTEM pair with
-matching build/loader modules, or controlled native plaintext/action pairs;
-then native body integrity, job unlock/limit-break/EXP, Anima shards/crystals,
-rat tails, Dragon Treasure, gear/affinity/Chaos effects/upgrade and synthesis,
-companions, DLC/rift/labyrinth/monster progression and mission rewards must each
-be qualified. Cipher vectors and console patches alone do not authorize writes.
+The public archive is titled “Black” but explicitly targets original Xbox 360
+Xenia title `544307D5`, independently corroborated by its container. It does not
+qualify the 2025 Black remake. Likewise `ng2stryd` is an STFS directory filename,
+not a native raw signature. Neither mislabel is used to invent a format.
 
-## Additional Team Ninja leads
+[Ninja Gaiden format/mechanic coverage](NINJA_GAIDEN_RESEARCH.md) keeps original
+II, Sigma, Sigma 2 and Black and each researched platform separate. Genuine
+corpora include seven Sigma Master Collection PC gameplay files, 31 Sigma 2
+Master Collection PC stories and 19 Black Steam files. Sigma's descriptive
+envelope does not establish native integrity. Sigma 2 and Black native payloads
+have two integrity fields; one recovered header CRC does not validate the other
+body check. Black's distinct Unreal GVAS wrapper also requires exact
+class/revision/property/array validation. The public Steam editor's existence
+alone does not authorize writes or brute-force unlocks. Dedicated read-only
+inspection candidates remain under `research`, without library cards.
 
-| Game / source | Discovery and exact qualification boundary |
-| --- | --- |
-| Ninja Gaiden II, original Xbox 360/Xenia | [ike9000e's GPL-3 checksum utility](https://github.com/ike9000e/ngii-save-update-util) supplies source for a big-endian 32-bit word sum over the 30,848-byte gameplay block, followed by the stored sum. Its documentation describes 128 four-byte item records and Dragon Sword level codes. A separate [browser editor](https://github.com/rnrmfdlapdlf/ninja-gaiden2-save-editor) lists essence, Karma, health/Ninpo and named consumables. Neither establishes a genuine raw fixture here or natural caps. No code is copied. Needed: a genuine original-game raw save with identity/header or correctly extracted STFS entry plus matching mid-chapter action pairs. Generic checksum-shaped Xenia bytes alone are insufficient identity. Xbox CON container integrity must also be rebuilt before container writes. |
-| Ninja Gaiden 2 Black, Windows PC | [real-guilty's purported save-editor repository](https://github.com/real-guilty/NG2B-Save-Editor/tree/fd7b25934e9cda24d47d9a59c7b7a3398ef22a0f) contains compiled PyInstaller artifacts, not reviewable application source, and has no explicit licence. Its README describes brute-force SYSTEM unlocks and mutually exclusive Tag Mission weapons. No artifact is executed, copied or represented as open-source field proof. Needed: genuine Steam SYSTEM/player files, title/revision/integrity qualification and safe unlock/reference dependencies. |
-| Ninja Gaiden Sigma / Sigma 2 / Razor's Edge | Freely shared PC and PS3 saves exist, but they are separate editions from original Xbox 360 Ninja Gaiden II and Ninja Gaiden 2 Black. A PC page titled “Ninja Gaiden 2” actually links a Sigma 2 archive and describes Sigma-only Tag Missions; it cannot qualify the original game's fields. Needed: edition-specific serializers/integrity and field/action evidence. |
-| Rise of the Ronin, Windows PC | The MIT Katana source documents unencrypted binary `RNNUSR`/`RNNSYS` data with a 256-byte header. Its fixture is explicitly a dummy. No native player fixture, internal integrity or gameplay map was qualified; matching native USER/SYSTEM files and serializer/action evidence are still needed. |
+## Additional unqualified Team Ninja formats
 
-The original Ninja Gaiden II fixture search also checked the public Xenia
-[compatibility discussion](https://github.com/xenia-canary/game-compatibility/issues/492).
-It links a [public Master Ninja save discussion](https://www.reddit.com/r/ninjagaiden/comments/170nejv/ninja_gaiden_ii_xenia_master_ninja_save_file/),
-but the Reddit page/API returns HTTP 403 here, so the linked player archive was
-not acquired or qualified. GameFAQs' original Xbox 360 save page returns HTTP
-400. The Tech Game's former download index now serves its sunset notice, not a
-save archive. Xenia issue attachments inspected as references are identified as
-logs; an emulator configuration folder is not treated as a player-save source.
-These unavailable leads do not justify substituting Sigma 2 or manufacturing a
-checksum-shaped test file as evidence of native original-game identity.
+Rise of the Ronin PC remains outside this assignment's implemented support.
+The MIT Katana source documents a 256-byte unencrypted native envelope but its
+fixture is a dummy; complete native USER/SYSTEM, integrity and gameplay maps
+are still required. No neighbouring Team Ninja schema is automatically selected
+when the chosen parser rejects a file.
 
-The optional [native corpus tests](../tests/test_teamninja_native.py) use
-`TEAM_NINJA_NATIVE_DIR` for the separately held four Nioh files and three Wo Long
-files. They preserve active Nioh integrity flags and confirm that decryption does
-not authorize Nioh gameplay edits, while Wo Long requires both real checksums.
-This corpus is private and excluded from source/bundles.
+The optional [older native corpus tests](../tests/test_teamninja_native.py) use
+`TEAM_NINJA_NATIVE_DIR` for privately held Nioh and Wo Long files. This branch
+leaves the Wo Long adapter unchanged. New format, independent audit and
+[GUI workflow tests](../tests/test_team_ninja_gui.py) exercise the separate
+registered Nioh 3 and original Ninja Gaiden II backends. Player files, source
+copies, binaries and owner identifiers remain outside the checkout and bundles.

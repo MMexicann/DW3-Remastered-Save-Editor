@@ -250,11 +250,11 @@
     },
     {
       "id": "nioh",
-      "title": "Nioh series (PC editions)",
+      "title": "Nioh: Complete Edition",
       "platform": "Windows PC",
-      "status": "Native PC codec evidence; gameplay checksums unresolved",
-      "evidence": "MIT Katana source supplies native PC decryption pairs. Nioh editor references disable unreversed gameplay checksum checks; no writable gameplay editor is registered.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "status": "Native PC decoding; active gameplay integrity unresolved",
+      "evidence": "Multiple genuine PC NIOHUSR revision 0x17091200 files retain seven active integrity flags and roundtrip exactly. Published tools clear those flags; this project preserves them and does not enable gameplay writes.",
+      "needed": "Native active integrity/update routines or trustworthy independent implementation, intact controlled-action pairs and current/lifetime/storage dependencies; actual edited game loading.",
       "editing_verified": false
     },
     {
@@ -285,17 +285,8 @@
       "editing_verified": false
     },
     {
-      "id": "ninjagaiden",
-      "title": "Ninja Gaiden series (PC editions)",
-      "platform": "Windows PC",
-      "status": "Candidate only",
-      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
-      "editing_verified": false
-    },
-    {
       "id": "rotk",
-      "title": "Romance of the Three Kingdoms / Nobunagaâ€™s Ambition",
+      "title": "Romance of the Three Kingdoms / Nobunaga\u00e2\u20ac\u2122s Ambition",
       "platform": "Windows PC",
       "status": "Candidate only",
       "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
@@ -387,10 +378,10 @@
       "id": "nioh3",
       "title": "Nioh 3",
       "platform": "Windows PC",
-      "status": "Native PC integrity qualified; gameplay maps blocked",
-      "evidence": "Two genuine native USER revisions and an encrypted partner qualify native body checksum and unchanged inspection. Source-only; no gameplay writer.",
-      "needed": "Revision-specific record identities/offsets and dependency pairs; published inventory offsets do not qualify these native files; edited game-load validation.",
-      "editing_verified": false
+      "status": "Native PC balance and existing-stack editor; two exact USER revisions",
+      "evidence": "Genuine USER revisions 0x01030001 and 0x01040000 qualify native encryption/body checksum, revision-specific eight-byte Amrita/Gold tags and structurally tagged equipment, item-box and storehouse arrays. Balances may decrease through zero; existing positive quantities of seven known common items may decrease. Equipment level, pre-forge level and reinforcement remain separate read-only values. No integrity flags are cleared.",
+      "needed": "Per-item carry/storage capacities and acquisition/transfer dependencies before increases; currency purchase/increase dependencies, native stat/proficiency/skill maps and controlled forging/equipment/scroll/reward pairs; actual edited game-load/re-save validation.",
+      "editing_verified": true
     },
     {
       "id": "hyrule_warriors",
@@ -490,6 +481,96 @@
       "editing_verified": true,
       "evidence": "Six independently shared complete native SlotData exports qualify 143 top-level plus one nested own-body checksum. Manual gold reductions and qualified original owned/deployed character names update exact header/body mirrors; all other game systems remain byte-identical. Searchable named character and weapon inspection.",
       "needed": "Edited game loading; controlled growth/EXP/class/mastery, materials/acquisition, weapon forging/equipment, support and route/reward action pairs. Other revisions/Unicode name encoding require independent profiles."
+    },
+    {
+      "id": "ninjagaiden2_x360",
+      "title": "Ninja Gaiden II (original Xbox 360 / Xenia)",
+      "platform": "Xbox 360 / Xenia",
+      "status": "Native extracted revision-6 story editor",
+      "evidence": "Twenty-two genuine 31,744-byte story files and a matching Xbox 360 title-ID container establish exact native revision-6 framing, Dragon Sword record identity, big-endian word checksum and item records. Yellow Essence and existing unique ordinary stack reductions are implemented; CON/STFS and other editions are rejected.",
+      "needed": "Edited original Xbox 360/Xenia game-load and re-save; signed container reintegration remains external. Controlled health/Ninpo, weapon/upgrade, ownership, Karma/reward and progression pairs before expanding writes.",
+      "editing_verified": true
+    },
+    {
+      "id": "nioh_ps4",
+      "title": "Nioh (original edition)",
+      "platform": "PlayStation 4",
+      "status": "Separate console edition; no adapter",
+      "evidence": "PC framing and flag offsets do not qualify original PS4 data.",
+      "needed": "Legally decrypted original-edition USER/SYSTEM exports with exact title ID/build, native integrity and record/dependency proof.",
+      "editing_verified": false
+    },
+    {
+      "id": "nioh_complete_ps4",
+      "title": "Nioh: Complete Edition",
+      "platform": "PlayStation 4",
+      "status": "Separate console edition; no adapter",
+      "evidence": "Original PS4, Complete Edition PC and remastered editions are not interchangeable profiles.",
+      "needed": "Complete Edition decrypted exports and exact title/build, native framing/integrity and controlled mechanics pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "sopffo_epic",
+      "title": "Stranger of Paradise: Final Fantasy Origin (Epic)",
+      "platform": "Windows PC",
+      "status": "Genuine launch-revision framing; gameplay integrity unresolved",
+      "evidence": "Genuine Epic USER/SYSTEM copies establish AES-CBC native framing at revision 0x22020200. They differ from the newer upstream 0x23013100 SYSTEM cipher fixture; no gameplay writer is qualified.",
+      "needed": "Native gameplay integrity/update routines and controlled resource, job/EXP, inventory/equipment, rift/reward pairs; actual edited game loading.",
+      "editing_verified": false
+    },
+    {
+      "id": "sopffo_steam",
+      "title": "Stranger of Paradise: Final Fantasy Origin (Steam)",
+      "platform": "Windows PC",
+      "status": "Genuine Steam USER/SYSTEM framing; gameplay integrity unresolved",
+      "evidence": "Two genuine Steam USER files and SYSTEM at revision 0x23013100 establish exact AES-CBC native framing. They are separate from Epic launch revision 0x22020200. Neither the source cipher nor console patches qualifies native gameplay integrity or writable records.",
+      "needed": "Native active gameplay integrity/update routines and controlled resource, job/EXP/limit-break, equipment/affinity/synthesis and rift/reward pairs; actual edited game loading.",
+      "editing_verified": false
+    },
+    {
+      "id": "ninja_gaiden_sigma_pc",
+      "title": "Ninja Gaiden Sigma (Master Collection)",
+      "platform": "Windows PC",
+      "status": "Genuine PC gameplay framing; native identity/integrity unresolved",
+      "evidence": "Seven genuine PC gameplay files establish exact 240976-byte descriptive framing. Their bounded read-only inspector preserves all native bytes. PS3 fixed offsets do not match PC; independent redistribution is byte-identical and is not a second player corpus.",
+      "needed": "Exact native PC revision/title/integrity qualification and controlled resource, weapon/Ninpo, inventory, hidden-scroll and reward dependencies; actual edited game loading.",
+      "editing_verified": false
+    },
+    {
+      "id": "ninja_gaiden_sigma_ps3",
+      "title": "Ninja Gaiden Sigma",
+      "platform": "PlayStation 3",
+      "status": "Separate console format; no adapter",
+      "evidence": "PC Master Collection files do not qualify PS3 exports or console signing.",
+      "needed": "Decrypted PS3 native exports with title ID/build, complete framing/integrity and controlled mechanic pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "ninja_gaiden_sigma2_pc",
+      "title": "Ninja Gaiden Sigma 2 (Master Collection)",
+      "platform": "Windows PC",
+      "status": "Genuine story corpus; second native integrity rule unresolved",
+      "evidence": "Thirty-one genuine PC stories and a public-domain record description establish separate little-endian profile, essence/items and one checksum; the second native checksum remains unresolved.",
+      "needed": "Second integrity algorithm and complete native profile qualification, equipment/upgrade/ownership dependencies and actual edited game loading.",
+      "editing_verified": false
+    },
+    {
+      "id": "ninja_gaiden_sigma2_ps3",
+      "title": "Ninja Gaiden Sigma 2",
+      "platform": "PlayStation 3",
+      "status": "Separate console format; no adapter",
+      "evidence": "The Master Collection little-endian PC profile does not qualify PS3 data or console signing.",
+      "needed": "Decrypted PS3 title/build-specific USER/SYSTEM exports, native identity/integrity and controlled mechanics pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "ninjagaiden2_black_pc",
+      "title": "Ninja Gaiden 2 Black (Steam)",
+      "platform": "Windows PC",
+      "status": "Genuine Unreal GVAS corpus; no qualified writer",
+      "evidence": "Nineteen genuine Steam GVAS files qualify exact class/revision/property/byte-array framing. Eighteen stories share the separate little-endian native block with Sigma 2 and one metadata CRC; the second body-integrity rule remains unresolved. A public editor alone does not qualify writes.",
+      "needed": "Second native story integrity algorithm, SYSTEM integrity qualification, controlled resource/equipment/ownership/action pairs and actual edited game loading.",
+      "editing_verified": false
     }
   ],
   "scope": "Windows application with explicitly selected game/platform parsers and separate backup identities.",
@@ -499,8 +580,8 @@
   "retry_reference": "docs/PC_RESEARCH_RETRY.md",
   "console_scope": "Separate PS2 PSU, Wii U APP.BIN, Switch svdt and decrypted PS3 APP.BIN/DATA.BIN adapters; PS3 signing remains external.",
   "pc_scope_exclusions": [
-    "Dynasty Warriors 1â€“3 original console editions and console-only expansions",
-    "Dynasty Warriors 4â€“7 Empires",
+    "Dynasty Warriors 1\u00e2\u20ac\u201c3 original console editions and console-only expansions",
+    "Dynasty Warriors 4\u00e2\u20ac\u201c7 Empires",
     "Dynasty Warriors: Gundam series",
     "One Piece: Pirate Warriors 1 and 2",
     "Berserk PS Vita",

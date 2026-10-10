@@ -201,8 +201,14 @@ Optional copied real saves are selected locally:
 | `SOPHIE2_SAVE_COPY` | Native Steam 1.08 Atelier Sophie 2 `data.dat` copy |
 | `ORIGINS_SAVE_COPIES` | Folder of copied native Steam `SLOT*.dat` Origins saves |
 | `NIOH2_SAVE_COPY` | PC Nioh 2 user `.bin` copy for read-only inspection |
-| `NIOH3_NATIVE_DIR` | Reviewed native Nioh 3 USER copies for codec qualification |
+| `NIOH_SAVE_COPY` | Native PC Nioh USER copy for strict read-only codec checks |
+| `NIOH3_NATIVE_DIR` | Reviewed native Nioh 3 USER copies for codec and surgical edit checks |
 | `NIOH3_ENCRYPTED_COPY` / `NIOH3_DECRYPTED_COPY` | Matching reviewed Nioh 3 native USER reference pair |
+| `NIOH3_SAVE_COPY` / `NGII_SAVE_COPY` | Native copies for real Tk editor save/backup/restore workflows |
+| `NGII_NATIVE_DIR` | Extracted original Xbox 360/Xenia Ninja Gaiden II revision-6 story copies |
+| `SIGMA_PC_NATIVE_DIR` / `SIGMA2_PC_NATIVE_DIR` | Separate Master Collection PC research-inspection copies |
+| `NG2_BLACK_STEAM_NATIVE_DIR` | Black Steam native GVAS copies for research inspection |
+| `SOPFFO_NATIVE_DIR` / `SOPFFO_STEAM_NATIVE_DIR` | Separate Epic launch / Steam native USER and SYSTEM research copies |
 | `DW6_SAVE` | Native original Windows DW6 `save.dat` copy |
 | `DW9EMP_SYSTEM_COPY` | Current native PC DW9 Empires SYSTEMDATA `SAVEDATA.BIN`; a missing genuine fixture skips |
 | `DW7_PS3_US_COPY` / `DW7_PS3_EU_COPY` | Copied decrypted PS3 DW7 US/EU `APP.BIN` exports |

@@ -13,6 +13,9 @@ Select the game and platform that match your save. Windows PC is selected by
 default. Console editors open extracted or decrypted save exports: `.psu` for
 PlayStation 2, `APP.BIN` for Wii U and DW7 PS3, `DATA.BIN` for SW4 PS3, and `svdt`
 for Age of Calamity. Export and reimport/resign PS3 saves with Apollo Save Tool.
+Ninja Gaiden II opens extracted Xbox 360/Xenia story `.dat` copies; CON/STFS
+packages require a separate extraction and reintegration workflow. Sigma 2 and
+Ninja Gaiden 2 Black use different formats.
 
 <!-- BEGIN SUPPORTED GAMES -->
 | Game / edition | Platform | Implemented scope |
@@ -46,6 +49,8 @@ for Age of Calamity. Export and reimport/resign PS3 saves with Apollo Save Tool.
 | ATELIER AYESHA — The Alchemist of Dusk · PS3 US/Japanese export | PlayStation 3 | Cole, existing stack reductions and searchable inventory quality, properties and effects. |
 | DYNASTY WARRIORS 5 SPECIAL — Shin Sangokumusou 4 Special · Windows PC | Windows PC | Existing ordinary item ranks, weapon attack/weight and attributes; named officer/bodyguard inspection. |
 | FIRE EMBLEM WARRIORS: THREE HOPES — Switch · extracted SlotData exports | Nintendo Switch | Gold reductions, owned Shez/Byleth name customization and searchable character/weapon records. |
+| NIOH 3 — Windows PC · USER revisions 0x01030001 / 0x01040000 | Windows PC | Amrita and Gold deductions, existing common-item quantity reductions; separate equipment level, pre-forge and reinforcement inspection. |
+| NINJA GAIDEN II — Original Xbox 360 / Xenia · extracted revision-6 story | Xbox 360 / Xenia | Yellow Essence, existing consumable and ammunition reductions; searchable inventory and separate Karma inspection. |
 <!-- END SUPPORTED GAMES -->
 
 ## Download and use

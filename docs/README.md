@@ -48,6 +48,9 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Sophie 2 tagged format](ATELIER_SOPHIE2_FORMAT.md) and
   [inventory coverage](SOPHIE2_COVERAGE.md)
 - [Nioh 3 native integrity research](NIOH3_RESEARCH.md)
+- [Nioh / Nioh 2 active integrity investigation](NIOH_INTEGRITY_RESEARCH.md)
+- [Ninja Gaiden editions, formats and mechanic coverage](NINJA_GAIDEN_RESEARCH.md)
+- [Stranger of Paradise native framing and remaining proof](SOPFFO_RESEARCH.md)
 - [Nioh, Wo Long and other Team Ninja formats](TEAM_NINJA_RESEARCH.md)
 - [Persona 5 Strikers native PC format](P5STRIKERS_PC_FORMAT.md)
 - [Atelier Ayesha PS3 exports](AYESHA_PS3_FORMAT.md)

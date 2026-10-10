@@ -205,6 +205,9 @@ def verified_sources(root=ROOT):
     if ('src/koei_editor/games/sophie2/atelier_sophie2_codec.py' in required
             or 'src/koei_editor/games/sophie2/atelier_sophie2_codec.py' in sources):
         required.add('licenses/atelier-sophie2-save-editor-MIT.txt')
+    if ('src/koei_editor/research/katana/katana_codec.py' in required
+            or 'src/koei_editor/research/katana/katana_codec.py' in sources):
+        required.add('licenses/katana-save-data-resigner-MIT.txt')
     missing = required - sources.keys()
     if missing:
         raise ValueError('Required public sources missing from manifest: ' + ', '.join(sorted(missing)))
@@ -239,6 +242,9 @@ def embedded_metadata(sources):
     expected.update({'LICENSE': sources['LICENSE'], 'THIRD_PARTY_NOTICES.md': sources['docs/THIRD_PARTY_NOTICES.md']})
     notice = 'licenses/atelier-sophie2-save-editor-MIT.txt'
     if 'src/koei_editor/games/sophie2/atelier_sophie2_codec.py' in sources:
+        expected[notice] = sources[notice]
+    if 'src/koei_editor/research/katana/katana_codec.py' in sources:
+        notice = 'licenses/katana-save-data-resigner-MIT.txt'
         expected[notice] = sources[notice]
     return expected
 

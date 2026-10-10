@@ -14,6 +14,7 @@ _SERIES = (
     ('FIRE EMBLEM', 'Fire Emblem Warriors'),
     ('ATELIER', 'Atelier'),
     ('NIOH', 'Nioh'),
+    ('NINJA GAIDEN', 'Ninja Gaiden'),
 )
 
 

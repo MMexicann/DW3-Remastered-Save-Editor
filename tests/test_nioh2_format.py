@@ -1,15 +1,18 @@
 """Nioh 2 source-only inspection; procedural data is not a valid game save."""
 from dataclasses import replace
 from functools import lru_cache
+import hashlib
 import json
 import os
 from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import koei_editor.research.nioh2.nioh2_parser as inspector
+from koei_editor.shared import copy_storage
 from koei_editor.games.dw3.models import SaveError
 
 
@@ -145,9 +148,35 @@ class Nioh2InspectionTests(unittest.TestCase):
         for document in (replace(self.document, payload=b'bad'),
                          replace(self.document, encrypted=True),
                          replace(self.document, format=replace(inspector.FORMAT, sample_verified=True)),
+                         replace(self.document, raw=bytearray(self.document.raw)),
+                         replace(self.document, payload=bytearray(self.document.payload)),
+                         replace(self.document, encrypted=0),
                          replace(self.document, raw=self.document.raw[:-1])):
             with self.assertRaises(SaveError):
                 inspector.serialize(document, {})
+
+    def test_restore_validates_exact_bytes_after_backup_changes(self):
+        snapshot = inspector.backup(self.document)
+        destination = self.folder / 'restored.bin'
+        damaged = bytearray(procedural_raw())
+        damaged[8] ^= 1
+        damaged = bytes(damaged)
+
+        def replace_before_read(*args, **kwargs):
+            # Model replacement after any earlier validation, together with a
+            # matching manifest: checksum/hash checks alone do not prove title.
+            snapshot.write_bytes(damaged)
+            metadata_path = snapshot.with_suffix('.json')
+            metadata = json.loads(metadata_path.read_text())
+            metadata['sha256'] = hashlib.sha256(damaged).hexdigest()
+            metadata_path.write_text(json.dumps(metadata))
+            return copy_storage.restore_snapshot(*args, **kwargs)
+
+        with patch.object(inspector, 'restore_snapshot', side_effect=replace_before_read):
+            with self.assertRaisesRegex(SaveError, 'title|revision'):
+                inspector.restore(snapshot, destination)
+        self.assertFalse(destination.exists())
+        self.assertEqual(self.source.read_bytes(), procedural_raw())
 
     def test_unchanged_copy_backup_and_restore_are_byte_exact(self):
         snapshot = inspector.backup(self.document)
@@ -188,6 +217,25 @@ class Nioh2InspectionTests(unittest.TestCase):
             inspector.save_as(self.document, {}, self.folder / 'copied.bin')
         self.assertFalse((self.folder / 'copied.bin').exists())
 
+    def test_source_changed_during_backup_is_rejected_before_copy(self):
+        destination = self.folder / 'copied.bin'
+        original_backup = inspector.backup
+
+        def replaced_during_backup(document):
+            result = original_backup(document)
+            replacement = bytearray(document.raw)
+            replacement[-1] ^= 1
+            self.source.write_bytes(replacement)
+            return result
+
+        with patch.object(inspector, 'backup', replaced_during_backup):
+            with self.assertRaisesRegex(SaveError, 'changed on disk'):
+                inspector.save_as(self.document, {}, destination)
+        self.assertFalse(destination.exists())
+        backups = tuple((self.folder / 'WarriorsEditorBackups').glob('*.bin'))
+        self.assertEqual(len(backups), 1)
+        self.assertEqual(backups[0].read_bytes(), self.document.raw)
+
     def test_suffix_live_and_resolved_alias_paths_rejected(self):
         wrong = self.folder / 'copy.dat'
         wrong.write_bytes(procedural_raw())
@@ -226,6 +274,23 @@ class ExplicitNioh2SampleInspectionTests(unittest.TestCase):
                 document.payload[field.offset:field.offset + field.size], 'little'))
         with self.assertRaisesRegex(SaveError, 'read only'):
             inspector.serialize(document, {'gold': 12345})
+
+    def test_native_unchanged_copy_backup_restore_preserves_retained_flags(self):
+        document = inspector.read_save(os.environ['NIOH2_SAVE_COPY'])
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            source = root / 'native-copy.bin'
+            source.write_bytes(document.raw)
+            working = inspector.read_save(source)
+            snapshot = inspector.backup(working)
+            copied = inspector.save_as(working, {}, root / 'copied.bin')
+            restored = inspector.restore(snapshot, root / 'restored.bin')
+            self.assertEqual(snapshot.read_bytes(), document.raw)
+            self.assertEqual(copied.raw, document.raw)
+            self.assertEqual(restored.read_bytes(), document.raw)
+            self.assertEqual(source.read_bytes(), document.raw)
+            self.assertEqual([copied.payload[o] for o in inspector.INTEGRITY_FLAG_OFFSETS],
+                             [document.payload[o] for o in inspector.INTEGRITY_FLAG_OFFSETS])
 
 
 if __name__ == '__main__':

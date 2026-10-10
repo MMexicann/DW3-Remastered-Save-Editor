@@ -40,6 +40,8 @@ from .game_registry import GAMES
 # ayesha_ps3: ATELIER AYESHA / The Alchemist of Dusk · PS3 US/Japanese export [PlayStation 3]
 # dw5special: DYNASTY WARRIORS 5 SPECIAL / Shin Sangokumusou 4 Special · Windows PC [Windows PC]
 # three_hopes: FIRE EMBLEM WARRIORS: THREE HOPES / Switch · extracted SlotData exports [Nintendo Switch]
+# nioh3: NIOH 3 / Windows PC · USER revisions 0x01030001 / 0x01040000 [Windows PC]
+# ninjagaiden2_x360: NINJA GAIDEN II / Original Xbox 360 / Xenia · extracted revision-6 story [Xbox 360 / Xenia]
 # END GENERATED SUPPORTED GAME INDEX
 
 

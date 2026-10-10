@@ -152,6 +152,9 @@ def read_save(path, game_id=GAME_ID):
 def validate_document(document):
     if not isinstance(document, Document) or document.format != FORMAT:
         raise SaveError('Unregistered Nioh 2 inspection document.')
+    if (type(document.raw) is not bytes or type(document.payload) is not bytes or
+            type(document.encrypted) is not bool or not isinstance(document.source, Path)):
+        raise SaveError('The opened Nioh 2 snapshot must retain immutable native bytes.')
     original = decode(document.raw, GAME_ID, document.source)
     if original.payload != document.payload or original.encrypted != document.encrypted:
         raise SaveError('The opened Nioh 2 snapshot was changed outside the copy workflow.')
@@ -242,6 +245,10 @@ def save_as(document, changes, destination):
     if current != document.raw:
         raise SaveError('The opened copy changed on disk. Reopen it before copying.')
     backup(document)
+    with _copy_path(document.source).open('rb') as stream:
+        current = stream.read(SAVE_SIZE + 1)
+    if current != document.raw:
+        raise SaveError('The opened copy changed on disk. Reopen it before copying.')
     atomic_new(document.raw, destination)
     return decode(document.raw, GAME_ID, destination)
 
@@ -250,5 +257,6 @@ def restore(backup_path, destination, game_id=GAME_ID):
     get_format(game_id)
     backup_path, destination = _copy_path(backup_path), _copy_path(destination)
     _copy_path(backup_path.with_suffix('.json'))
-    read_save(backup_path, game_id)
-    return restore_snapshot(backup_path, destination, GAME_ID, '.bin', SAVE_SIZE)
+    return restore_snapshot(
+        backup_path, destination, GAME_ID, '.bin', SAVE_SIZE,
+        validate_raw=lambda raw: decode(raw, game_id, backup_path))
