@@ -337,7 +337,12 @@ The older progressed native copy separately qualifies the growth controls via
 `tests/test_orochiz_growth.py`, selected with `OROCHIZ_GROWTH_SAVE`; five focused
 tests cover every legitimate progressed band, malformed EXP/levels, preserved
 dependencies, individual genuine surgery and genuine GUI/source-backup saving.
-Both are file and GUI validation, with no edited in-game load validation.
+A further independent `tests/test_orochiz_progression_review.py` audit passes
+five checks covering combined selection/EXP/weapon edits, invalid pending changes,
+unusual-layout preservation, genuine progressed combinations and final-level
+exclusion. Its reviewer also independently compared all 99 native EXP thresholds.
+The complete current Orochi Z native/adversarial/Tk suite passes 39 checks.
+All are file and GUI validation, with no edited in-game load validation.
 
 No matching DLL or save-owner secret is indicated by the qualified native save
 path. Further rich controls require the matching installed game's LINKDATA
