@@ -3,6 +3,7 @@
 Only independently mapped fields are writable. See ORIGINS_FORMAT.md for native
 revision lengths, serializer offsets, limits and the intentionally unknown data.
 """
+from collections.abc import Mapping
 from dataclasses import dataclass
 from functools import lru_cache
 import hashlib
@@ -155,9 +156,20 @@ def field_map(document):
     return MappingProxyType({field.id: field for field in fields_for(document)})
 
 
+def _validate_pending(document, fields, changes):
+    if not isinstance(changes, Mapping):
+        raise SaveError('Origins pending edits require a mapping of field names to values.')
+    for key, value in changes.items():
+        if type(key) is not str or key not in fields:
+            raise SaveError('The requested Origins field is not mapped.')
+        if type(value) is not int or value != fields[key].value(document.payload):
+            fields[key].validate(value)
+
+
 def stage(document, changes, key, value):
     fields = field_map(document)
-    if key not in fields:
+    _validate_pending(document, fields, changes)
+    if type(key) is not str or key not in fields:
         raise SaveError('The requested Origins field is not mapped.')
     result = dict(changes)
     if type(value) is int and value == fields[key].value(document.payload):
@@ -171,12 +183,15 @@ def stage(document, changes, key, value):
 def changed_payload(document, changes):
     validate_document(document)
     fields = field_map(document)
+    _validate_pending(document, fields, changes)
     validate_weapon_changes(document.payload, document.revision, changes)
     output = bytearray(document.payload)
     for key, value in changes.items():
         if key not in fields:
             raise SaveError('The requested Origins field is not mapped.')
         field = fields[key]
+        if type(value) is int and value == field.value(document.payload):
+            continue
         field.validate(value)
         output[field.offset:field.offset + field.size] = value.to_bytes(field.size, 'little')
     return bytes(output)
@@ -198,18 +213,20 @@ def serialize(document, changes):
 
 def limit_values(document, changes, keys):
     fields = field_map(document)
+    _validate_pending(document, fields, changes)
     result = {}
     for key in keys:
-        if key not in fields:
+        if type(key) is not str or key not in fields:
             raise SaveError('The requested Origins field is not mapped.')
         field = fields[key]
         current = changes.get(key, field.value(document.payload))
-        if field.maxable and type(current) is int and current <= field.maximum:
+        if field.maxable and type(current) is int and field.minimum <= current <= field.maximum:
             result[key] = field.maximum
     return result
 
 
 def maximums(document, changes, group=None):
+    _validate_pending(document, field_map(document), changes)
     result = dict(changes)
     keys = [field.id for field in fields_for(document) if group is None or field.group == group]
     for key, value in limit_values(document, changes, keys).items():

@@ -74,6 +74,17 @@ class IndependentSpecialSafety(unittest.TestCase):
             with self.assertRaises(SaveError):
                 operation(forged)
 
+    def test_malformed_requested_field_ids_raise_save_error_without_staging(self):
+        document = backend.decode(procedural_raw())
+        pending = {'item_0_rank': 19}
+        for key in ([], {}, None, True, 1):
+            with self.subTest(key=key), self.assertRaises(SaveError):
+                backend.stage(document, pending, key, 0)
+            with self.subTest(max_key=key), self.assertRaises(SaveError):
+                backend.limit_values(document, pending, [key])
+        self.assertEqual(pending, {'item_0_rank': 19})
+        self.assertEqual(document.raw, procedural_raw())
+
 
 class SpecialGuiWorkflow:
     fixture = staticmethod(procedural_raw)

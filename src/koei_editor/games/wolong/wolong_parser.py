@@ -328,7 +328,12 @@ def inspection_rows(document):
                                   f'martial-art field {item["weapon_skill_level"]}; '
                                   f'part {item["equipment_part"]}; equipment slot {item["equipment_slot"]}; '
                                   f'flags 0x{item["flag"]:X}'})
-    for index, wrapped in enumerate(player.get('fellow_character_info', ())):
+    companions = player.get('fellow_character_info')
+    # Optional, unmapped serializer values remain intact. Only a qualified
+    # array supplies companion inspection; null/scalar values cannot be walked.
+    if type(companions) is not list:
+        companions = ()
+    for index, wrapped in enumerate(companions):
         if type(wrapped) is dict and type(wrapped.get('FellowCharacterInfoData')) is dict:
             info = wrapped['FellowCharacterInfoData']
             if all(type(info.get(key)) is int for key in ('fellow_character_id', 'bond_level', 'bond_point', 'flag')):

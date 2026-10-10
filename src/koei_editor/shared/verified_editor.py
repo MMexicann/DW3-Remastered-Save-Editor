@@ -4,6 +4,7 @@ Only declared scalar fields can change. Unknown bytes and original cipher seeds
 are retained. No sample save or third-party implementation is distributed.
 """
 from dataclasses import dataclass
+from collections.abc import Mapping
 from functools import lru_cache
 import hashlib
 from pathlib import Path
@@ -228,6 +229,7 @@ def read_save(path, game_id):
 
 
 def field_map(document):
+    validate_document(document)
     return _field_index(document.format.id, document.payload)
 
 
@@ -239,8 +241,15 @@ def validate_document(document):
     layout = get_format(document.format.id)
     if document.format != layout:
         raise SaveError('Unregistered editing layout.')
-    original = decode(document.raw, layout.id, document.source)
-    if original.payload != document.payload or original.seed != document.seed:
+    _validate_snapshot(layout.id, document.raw, document.payload, document.seed)
+
+
+@lru_cache(maxsize=8)
+def _validate_snapshot(game_id, raw, payload, seed):
+    # Native qualification is reusable only for immutable byte snapshots. Bulk
+    # staging must not decrypt the complete file again for every field.
+    original = decode(raw, game_id)
+    if original.payload != payload or original.seed != seed:
         raise SaveError('The opened document was changed outside the edit workflow.')
 
 
@@ -336,14 +345,25 @@ def bodyguards(document):
     return tuple(rows)
 
 
-def changed_payload(document, changes):
+def _pending_fields(document, changes):
     fields = field_map(document)
-    result = bytearray(document.payload)
+    if not isinstance(changes, Mapping):
+        raise SaveError('Pending edits must be a mapping of verified fields and values.')
     for key, value in changes.items():
-        if key not in fields:
+        if type(key) is not str or key not in fields:
             raise SaveError('A requested field is not verified for this game.')
         field = fields[key]
+        if type(value) is int and value == field.value(document.payload):
+            continue  # Existing unusual values remain valid unchanged snapshots.
         field.validate(value)
+    return fields
+
+
+def changed_payload(document, changes):
+    fields = _pending_fields(document, changes)
+    result = bytearray(document.payload)
+    for key, value in changes.items():
+        field = fields[key]
         result[field.offset:field.offset + field.size] = value.to_bytes(field.size, 'little')
     return bytes(result)
 
@@ -365,8 +385,8 @@ def serialize(document, changes):
 
 
 def stage(document, changes, key, value):
-    fields = field_map(document)
-    if key not in fields:
+    fields = _pending_fields(document, changes)
+    if type(key) is not str or key not in fields:
         raise SaveError('A requested field is not verified for this game.')
     result = dict(changes)
     if type(value) is int and value == fields[key].value(document.payload):
@@ -379,10 +399,10 @@ def stage(document, changes, key, value):
 
 def limit_values(document, changes, keys):
     """Published limits never lower higher values already present in a copy."""
-    fields = field_map(document)
+    fields = _pending_fields(document, changes)
     result = {}
     for key in keys:
-        if key not in fields:
+        if type(key) is not str or key not in fields:
             raise SaveError('A requested field is not verified for this game.')
         field = fields[key]
         if not field.maxable:
@@ -397,10 +417,16 @@ def limit_values(document, changes, keys):
 
 
 def maximums(document, changes, group=None):
+    fields = _pending_fields(document, changes)
     result = dict(changes)
     keys = [field.id for field in fields_for(document) if group is None or field.group == group]
     for key, value in limit_values(document, changes, keys).items():
-        result = stage(document, result, key, value)
+        # The batch and targets are already validated. Preserve stage's unstage
+        # behavior without rescanning every pending entry for each Max target.
+        if value == fields[key].value(document.payload):
+            result.pop(key, None)
+        else:
+            result[key] = value
     return result
 
 

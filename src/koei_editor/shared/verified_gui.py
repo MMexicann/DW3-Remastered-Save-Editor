@@ -265,6 +265,7 @@ class Editor(Appearance):
                         view.move(identity, '', 'end')
                     else:
                         view.detach(identity)
+                sort_table(view)
             query.trace_add('write', filter_rows)
             return view
         for content in self.presentation.inspection_tables(document):

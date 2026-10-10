@@ -76,6 +76,28 @@ class IndependentLegendsAudit(unittest.TestCase):
                 with self.assertRaises(SaveError):
                     operation()
 
+    def test_pending_original_higher_values_preserve_bytes_and_allow_other_edits(self):
+        data = bytearray(self.raw)
+        data[p.RUPEES_OFFSET:p.RUPEES_OFFSET + 3] = (12_000_000).to_bytes(3, 'little')
+        stars = p.WEAPON_BASE + 0x14
+        data[stars:stars + 2] = (8).to_bytes(2, 'little')
+        document = p.decode(data)
+        pending = {'rupees': 12_000_000, 'weapon_1_stars': 8}
+        self.assertEqual(p.serialize(document, pending), bytes(data))
+        self.assertEqual(p.maximums(document, pending), pending)
+        self.assertEqual(p.stage(document, pending, 'rupees', 12_000_000), {'weapon_1_stars': 8})
+        self.assertEqual(p.stage(document, pending, 'weapon_1_stars', 8), {'rupees': 12_000_000})
+        changed = p.serialize(document, {**pending, 'fairy_1_name': 'Navi'})
+        name = p.FAIRY_BASE + p.FAIRY_NAME_DIFF
+        expected = bytearray(data)
+        expected[name:name + p.FAIRY_NAME_SIZE] = b'Navi' + bytes(4)
+        self.assertEqual(changed, bytes(expected))
+        self.assertEqual(document.raw, bytes(data))
+        for edits in ({'rupees': 12_000_001}, {'weapon_1_stars': 9},
+                      {'rupees': True}, {'weapon_1_stars': 8.0}):
+            with self.subTest(edits=edits), self.assertRaises(SaveError):
+                p.serialize(document, edits)
+
     def test_exact_native_size_and_canonical_format_cannot_be_spoofed(self):
         class PermissiveFormat:
             def __eq__(self, other):

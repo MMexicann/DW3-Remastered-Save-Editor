@@ -181,7 +181,7 @@ def changed_payload(document, changes):
     mapping = field_map(document)
     result = bytearray(document.payload)
     for key, value in changes.items():
-        if key not in mapping:
+        if type(key) is not str or key not in mapping:
             raise SaveError('Only qualified existing Special item and weapon fields are writable.')
         field = mapping[key]
         if type(value) is int and value == field.value(document.payload):
@@ -203,7 +203,7 @@ def serialize(document, changes):
 def stage(document, changes, key, value):
     changed_payload(document, changes)
     mapping = field_map(document)
-    if key not in mapping:
+    if type(key) is not str or key not in mapping:
         raise SaveError('The requested Special field is not editable.')
     field = mapping[key]
     result = dict(changes)
@@ -219,7 +219,7 @@ def limit_values(document, changes, keys):
     mapping = field_map(document)
     changed_payload(document, changes)
     for key in keys:
-        if key not in mapping:
+        if type(key) is not str or key not in mapping:
             raise SaveError('The requested Special field is not editable.')
     return {}  # Manual edits only; natural progression and reward dependencies are not bulk actions.
 
