@@ -176,7 +176,8 @@ class OrochiZFormatTests(unittest.TestCase):
         self.assertEqual(snapshot.read_bytes(), self.document.raw)
         destination = self.folder / 'edited.dat'
         updated = backend.save_as(self.document, {'stock_exp': 1000}, destination)
-        self.assertEqual(updated.source, destination)
+        # Windows may expand an 8.3 temporary-folder spelling when resolving it.
+        self.assertEqual(updated.source, destination.resolve())
         self.assertEqual(backend.field_map(updated)['stock_exp'].value(updated.payload), 1000)
         self.assertEqual(self.source.read_bytes(), self.document.raw)
         restored = backend.restore(snapshot, self.folder / 'restored.dat')

@@ -238,8 +238,8 @@
     },
     {
       "path": "docs/VALIDATION.md",
-      "bytes": 17985,
-      "sha256": "cbdf2ca1fe7b62f5426df8e8a8eb94ff18d48beadfed9479dc7eb3eb8e2b1209"
+      "bytes": 18416,
+      "sha256": "74378de63c495a2866bb36457004ce555542f612d81736576566ddf90ae792ec"
     },
     {
       "path": "docs/WEAPON_ATTRIBUTES_FIX.md",
@@ -1378,8 +1378,8 @@
     },
     {
       "path": "tests/test_orochiz_format.py",
-      "bytes": 14947,
-      "sha256": "b0058aa1f284344386b88bd415bcf65f10d8631cb5710bb1e3d09c1f50356b76"
+      "bytes": 15038,
+      "sha256": "df629267c4db6695dd221fc7654611b7309598ce5cd512fd8fb01ba9458e0e7d"
     },
     {
       "path": "tests/test_orochiz_gui.py",

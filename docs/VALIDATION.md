@@ -288,3 +288,10 @@ startup, executable privacy/metadata verification and release-archive hashes
 before publishing. Linux checks do not substitute for those Windows checks.
 Release preparation respects protected merges and checks the exact tested
 commit before dispatching publication.
+
+The first native Windows run executed 958 public tests and found one test-only
+path comparison: a temporary `RUNNER~1` folder resolved to its long Windows
+name. The test now compares canonical destination paths while retaining exact
+source, output and backup-byte checks. The unchanged runtime and corrected test
+passed 24 focused genuine-file/GUI/integrity checks locally; native verification
+must pass again before publication.
