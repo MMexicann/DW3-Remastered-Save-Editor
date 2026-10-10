@@ -8,11 +8,11 @@ import unittest
 PROJECT=Path(__file__).resolve().parents[1]
 WORKSPACE=PROJECT
 sys.path.insert(0,str(PROJECT))
-from models import Change, SaveError, fields
-from save_parser import read_save, parse_bytes
-from save_writer import serialize
-import officer_weapon_editor as weapon
-import weapon_collection as collection
+from koei_editor.games.dw3.models import Change, SaveError, fields
+from koei_editor.games.dw3.save_parser import read_save, parse_bytes
+from koei_editor.games.dw3.save_writer import serialize
+import koei_editor.games.dw3.officer_weapon_editor as weapon
+import koei_editor.games.dw3.weapon_collection as collection
 from test_weapon_rolls import edited_fixture_bytes, enum_bytes, record_bytes, tag_bytes
 
 FIXTURE=WORKSPACE/'work/original-upload/GameStatusData.sav'
@@ -130,8 +130,8 @@ class WeaponCollectionTests(unittest.TestCase):
         self.assert_other_tags(new,{'CollectedWeaponDataArray','GuardWeaponDataArray'})
 
     def test_invalid_collection_actions_and_wrong_identity_refuse(self):
-        for change in [Change('weapon_collection',0,'CollectAll',False),Change('weapon_collection',1,'CollectAll',True),
-                       Change('weapon_collection',0,'Unknown',True),Change('unique_weapon',193,'Owned',True)]:
+        for change in [Change('koei_editor.games.dw3.weapon_collection',0,'CollectAll',False),Change('koei_editor.games.dw3.weapon_collection',1,'CollectAll',True),
+                       Change('koei_editor.games.dw3.weapon_collection',0,'Unknown',True),Change('unique_weapon',193,'Owned',True)]:
             with self.subTest(change=change),self.assertRaises(SaveError):serialize(self.document,[change])
         f=fields(self.document.records('UniqueWeaponDataArray')[0])
         old=parse_bytes(edited_fixture_bytes(self.document,[(f['WeaponID'],enum_bytes('EWeaponID::WeaponID_132'))]))

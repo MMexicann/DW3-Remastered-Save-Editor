@@ -12,11 +12,11 @@ from unittest.mock import patch
 PROJECT=Path(__file__).resolve().parents[1]
 WORKSPACE=PROJECT
 sys.path.insert(0,str(PROJECT))
-import save_writer
-from models import Change, SaveError, fields
-from save_parser import read_save, parse_bytes, safe_path
-from save_writer import CAPS, ITEM_CAPS, ITEMS, UNIQUE_WEAPONS, serialize, write_save, backup_save, restore_backup
-from save_codec import CNG_AES, encrypt
+import koei_editor.games.dw3.save_writer as save_writer
+from koei_editor.games.dw3.models import Change, SaveError, fields
+from koei_editor.games.dw3.save_parser import read_save, parse_bytes, safe_path
+from koei_editor.games.dw3.save_writer import CAPS, ITEM_CAPS, ITEMS, UNIQUE_WEAPONS, serialize, write_save, backup_save, restore_backup
+from koei_editor.games.dw3.save_codec import CNG_AES, encrypt
 
 FIXTURE=WORKSPACE/'work/original-upload/GameStatusData.sav'
 RUNS=PROJECT/'tests/.test-runs'

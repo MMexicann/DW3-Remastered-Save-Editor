@@ -9,11 +9,11 @@ PROJECT = Path(__file__).resolve().parents[1]
 WORKSPACE = PROJECT
 sys.path.insert(0, str(PROJECT))
 sys.path.insert(0, str(PROJECT / 'tests'))
-from models import Change, SaveError
-import progression_editor as progression
-from save_codec import encrypt
-from save_parser import parse_bytes, read_save
-from save_writer import plan_changes, serialize
+from koei_editor.games.dw3.models import Change, SaveError
+import koei_editor.games.dw3.progression_editor as progression
+from koei_editor.games.dw3.save_codec import encrypt
+from koei_editor.games.dw3.save_parser import parse_bytes, read_save
+from koei_editor.games.dw3.save_writer import plan_changes, serialize
 from test_bodyguards import edited_fixture_bytes, tag_bytes
 
 ORIGINAL = WORKSPACE / 'work/original-upload/GameStatusData.sav'

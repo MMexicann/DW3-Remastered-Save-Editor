@@ -13,12 +13,12 @@ import uuid
 PROJECT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(PROJECT))
 sys.path.insert(0,str(PROJECT/'tests'))
-import gui
-import bodyguard_customization as customization
-import progression_editor as progression
-from save_parser import read_save
-from save_parser import parse_bytes
-from save_writer import serialize
+import koei_editor.games.dw3.gui as gui
+import koei_editor.games.dw3.bodyguard_customization as customization
+import koei_editor.games.dw3.progression_editor as progression
+from koei_editor.games.dw3.save_parser import read_save
+from koei_editor.games.dw3.save_parser import parse_bytes
+from koei_editor.games.dw3.save_writer import serialize
 from test_elixirs_v08 import replace_top_tag
 
 FIXTURE=PROJECT/'work/original-upload/GameStatusData.sav'

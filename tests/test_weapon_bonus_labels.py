@@ -7,8 +7,8 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import gui
-from models import Change
+import koei_editor.games.dw3.gui as gui
+from koei_editor.games.dw3.models import Change
 
 
 class WeaponBonusLabelTests(unittest.TestCase):

@@ -8,12 +8,12 @@ import unittest
 PROJECT=Path(__file__).resolve().parents[1]
 WORKSPACE=PROJECT
 sys.path.insert(0,str(PROJECT))
-from models import Change,SaveError,fields
-from save_parser import read_save,parse_bytes
-from save_writer import serialize
+from koei_editor.games.dw3.models import Change, SaveError, fields
+from koei_editor.games.dw3.save_parser import read_save, parse_bytes
+from koei_editor.games.dw3.save_writer import serialize
 from test_weapon_rolls import edited_fixture_bytes,enum_bytes,tag_bytes,record_bytes
-import officer_weapon_editor as officer
-import bodyguard_editor as guard
+import koei_editor.games.dw3.officer_weapon_editor as officer
+import koei_editor.games.dw3.bodyguard_editor as guard
 
 FIXTURE=WORKSPACE/'work/original-upload/GameStatusData.sav'
 REPORTED=WORKSPACE/'work/received-v034/report-2-dd54eb37ba5d.sav'

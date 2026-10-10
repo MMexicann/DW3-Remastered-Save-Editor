@@ -8,10 +8,10 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from models import Change, SaveError, fields
-from save_codec import decrypt, encrypt
-from save_parser import parse_bytes, read_save
-from save_writer import serialize
+from koei_editor.games.dw3.models import Change, SaveError, fields
+from koei_editor.games.dw3.save_codec import decrypt, encrypt
+from koei_editor.games.dw3.save_parser import parse_bytes, read_save
+from koei_editor.games.dw3.save_writer import serialize
 from test_weapon_rolls import edited_fixture_bytes
 
 FIXTURE = ROOT / "work/original-upload/GameStatusData.sav"

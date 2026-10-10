@@ -40,8 +40,8 @@ class NewGameGuiTests(unittest.TestCase):
     def test_dw7_registered_edit_switch_theme_review_backup_and_save(self):
         import tkinter as tk
         from tkinter import ttk
-        from application import Application
-        import dw7xl_parser as backend
+        from koei_editor.application import Application
+        import koei_editor.games.dw7xl.dw7xl_parser as backend
         root = tk.Tk()
         root.withdraw()
         try:
@@ -52,7 +52,7 @@ class NewGameGuiTests(unittest.TestCase):
                 source.write_bytes(raw)
                 app = Application(root, preferences_path=folder / 'preferences.json')
                 editor = app.select_game('dw7xl')
-                with patch('verified_gui.filedialog.askopenfilename', return_value=str(source)):
+                with patch('koei_editor.shared.verified_gui.filedialog.askopenfilename', return_value=str(source)):
                     editor.open()
                 editor.search.set('Gold')
                 self.assertEqual(editor.fields.get_children(), ('gold',))
@@ -78,8 +78,8 @@ class NewGameGuiTests(unittest.TestCase):
                 self.assertEqual(int(tree.item(tree.get_children()[0], 'values')[2]), 12345)
                 review.destroy()
                 target = folder / 'edited.dat'
-                with patch('verified_gui.filedialog.asksaveasfilename', return_value=str(target)), \
-                     patch('verified_gui.messagebox.showinfo'):
+                with patch('koei_editor.shared.verified_gui.filedialog.asksaveasfilename', return_value=str(target)), \
+                     patch('koei_editor.shared.verified_gui.messagebox.showinfo'):
                     editor.save_as()
                 result = backend.read_save(target)
                 self.assertEqual(backend.field_map(result)['gold'].value(result.payload), 12345)

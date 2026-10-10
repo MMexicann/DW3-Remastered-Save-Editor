@@ -5,8 +5,8 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from models import SaveError
-import wo3u_parser as parser
+from koei_editor.games.dw3.models import SaveError
+import koei_editor.games.wo3u.wo3u_parser as parser
 
 
 def procedural_raw():

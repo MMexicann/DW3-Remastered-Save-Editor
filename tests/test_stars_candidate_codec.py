@@ -5,8 +5,8 @@ from pathlib import Path
 import struct
 import unittest
 
-from save_codec import CNG_AES
-import stars_candidate_codec as codec
+from koei_editor.games.dw3.save_codec import CNG_AES
+import koei_editor.research.stars.stars_candidate_codec as codec
 
 
 def procedural_raw():
@@ -19,7 +19,7 @@ def procedural_raw():
             padding = bytes([0xA0 + index]) * ((-size) % 16)
             value = (index + 1) * 0.5 / 10.0
             for _ in range(10):
-                value = (1.0 - value) * (value * 4.0)
+                value = (1.0 - value) * (value * 3.66)
             state = struct.unpack('<I', struct.pack('<d', value)[:4])[0]
             key = bytearray()
             for _ in range(16):
@@ -113,10 +113,11 @@ class StarsCandidateTests(unittest.TestCase):
             codec.reencode_unchanged(self.raw)
 
     def test_distinct_slot_keys_do_not_qualify_global_revision(self):
-        self.assertEqual(codec.key_for_block(0).hex(), 'ed6d2ee6594ed8c6bf1485255d470682')
-        self.assertEqual(codec.key_for_block(8).hex(), '5c7255e06aa425c3480d263eb9f8ea8a')
-        self.assertEqual(codec.key_for_block(4), codec.key_for_block(9))
-        self.assertEqual(len(set(codec.key_for_block(i) for i in range(10))), 9)
+        self.assertEqual(codec.key_for_block(0).hex(), '830284a809ce8f8865cc668dd3cf29bd')
+        self.assertEqual(codec.key_for_block(8).hex(), 'f3a06c0e5210e4f2c546bb96b6d11542')
+        self.assertEqual(codec.key_for_block(9).hex(), '685e72a485f9b2fe4dbe386a94b2a921')
+        self.assertNotEqual(codec.key_for_block(4), codec.key_for_block(9))
+        self.assertEqual(len(set(codec.key_for_block(i) for i in range(10))), 10)
 
 
 class OptionalNativeStarsTests(unittest.TestCase):

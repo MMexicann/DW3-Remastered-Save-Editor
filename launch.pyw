@@ -1,3 +1,3 @@
-from application import main
+from koei_editor.application import main
 
 main()

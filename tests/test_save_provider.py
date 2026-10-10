@@ -4,7 +4,7 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from save_codec import CNG_AES, encrypt, decrypt
+from koei_editor.games.dw3.save_codec import CNG_AES, encrypt, decrypt
 
 
 class AesProviderTests(unittest.TestCase):

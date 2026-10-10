@@ -11,9 +11,9 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import atelier_sophie2_codec as codec
-import atelier_sophie2_parser as editor
-from models import SaveError
+import koei_editor.games.sophie2.atelier_sophie2_codec as codec
+import koei_editor.games.sophie2.atelier_sophie2_parser as editor
+from koei_editor.games.dw3.models import SaveError
 
 
 REFERENCE_PAYLOAD = bytes.fromhex('4174656c69657220536f706869652032207265666572656e636500017f80ff21')

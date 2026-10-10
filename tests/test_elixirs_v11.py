@@ -5,11 +5,11 @@ import sys
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from models import Change, SaveError, fields
-from save_codec import encrypt
-from save_parser import ARRAY_LAYOUTS, parse_bytes
-from save_writer import serialize
-import progression_editor as progression
+from koei_editor.games.dw3.models import Change, SaveError, fields
+from koei_editor.games.dw3.save_codec import encrypt
+from koei_editor.games.dw3.save_parser import ARRAY_LAYOUTS, parse_bytes
+from koei_editor.games.dw3.save_writer import serialize
+import koei_editor.games.dw3.progression_editor as progression
 
 
 def string(value):

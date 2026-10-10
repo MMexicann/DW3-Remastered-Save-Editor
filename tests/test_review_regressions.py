@@ -12,13 +12,13 @@ from unittest.mock import patch
 
 PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT))
-from models import Change, SaveError, fields
-from save_parser import safe_path, read_save, parse_bytes
-import save_writer as writer
-import save_codec
-import unreal
-import officer_weapon_editor as weapon
-import bodyguard_editor as guard
+from koei_editor.games.dw3.models import Change, SaveError, fields
+from koei_editor.games.dw3.save_parser import safe_path, read_save, parse_bytes
+import koei_editor.games.dw3.save_writer as writer
+import koei_editor.games.dw3.save_codec as save_codec
+import koei_editor.games.dw3.unreal as unreal
+import koei_editor.games.dw3.officer_weapon_editor as weapon
+import koei_editor.games.dw3.bodyguard_editor as guard
 from test_weapon_rolls import edited_fixture_bytes, enum_bytes
 
 FIXTURE = PROJECT / 'work/original-upload/GameStatusData.sav'
@@ -230,7 +230,7 @@ class ReviewGuiTests(CopyTestCase):
     def setUp(self):
         super().setUp()
         import tkinter as tk
-        import gui
+        import koei_editor.games.dw3.gui as gui
         self.gui = gui
         self.root = tk.Tk()
         self.root.withdraw()

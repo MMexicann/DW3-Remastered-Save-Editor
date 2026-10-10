@@ -2,8 +2,8 @@
 from dataclasses import replace
 import unittest
 
-from models import SaveError
-import orochiz_candidate_codec as codec
+from koei_editor.games.dw3.models import SaveError
+import koei_editor.research.orochiz.orochiz_candidate_codec as codec
 
 
 def procedural_raw():

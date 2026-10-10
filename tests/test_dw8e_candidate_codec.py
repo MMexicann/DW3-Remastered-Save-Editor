@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import dw8e_candidate_codec as candidate
+import koei_editor.research.dw8e.dw8e_candidate_codec as candidate
 
 
 def reference_byte_cipher(payload):
@@ -52,8 +52,8 @@ def synthetic(kind, size=63, seed=0x6D87):
 
 class DW8EmpiresCandidateTests(unittest.TestCase):
     def test_candidate_does_not_claim_native_pc_verification_or_registration(self):
-        from game_registry import GAMES
-        from verified_editor import FORMATS
+        from koei_editor.game_registry import GAMES
+        from koei_editor.shared.verified_editor import FORMATS
         self.assertFalse(candidate.PC_SAMPLE_VERIFIED)
         self.assertFalse(candidate.NATIVE_IDENTITY_VERIFIED)
         self.assertNotIn('dw8e', GAMES)

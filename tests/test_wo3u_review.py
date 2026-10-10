@@ -7,9 +7,9 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from models import SaveError
-import wo3u_parser as parser
-import copy_storage
+from koei_editor.games.dw3.models import SaveError
+import koei_editor.games.wo3u.wo3u_parser as parser
+import koei_editor.shared.copy_storage as copy_storage
 from tests.test_wo3u_format import procedural_raw
 
 

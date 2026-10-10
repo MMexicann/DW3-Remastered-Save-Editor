@@ -5,9 +5,9 @@ from pathlib import Path
 import struct
 import unittest
 
-import dw8e_codec as codec
-import dw8e_candidate_codec as candidate
-from koei_codec import byte_cipher, word_cipher, word_sum
+import koei_editor.research.dw8e.dw8e_codec as codec
+import koei_editor.research.dw8e.dw8e_candidate_codec as candidate
+from koei_editor.shared.koei_codec import byte_cipher, word_cipher, word_sum
 
 
 def generated(kind):

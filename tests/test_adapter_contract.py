@@ -7,9 +7,9 @@ import unittest
 from unittest.mock import Mock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from adapter_contract import BoundScalarAdapter, SESSION_ACTIONS, validate_session
-from game_registry import get_game
-from models import SaveError
+from koei_editor.shared.adapter_contract import BoundScalarAdapter, SESSION_ACTIONS, validate_session
+from koei_editor.game_registry import get_game
+from koei_editor.games.dw3.models import SaveError
 from tests.scalar_contract import ScalarContractTests
 from tests.test_verified_editors import synthetic_raw
 from tests.test_dw4hyper_format import procedural_raw as hyper_raw
@@ -73,9 +73,9 @@ class AdapterDispatchTests(unittest.TestCase):
                 BoundScalarAdapter('dw8xl', '.dat', adapter.backend)
 
     def test_new_scalar_registration_dispatches_self_test_without_game_branch(self):
-        import game_registry
-        import verified_self_test
-        import dw4hyper_parser
+        import koei_editor.game_registry as game_registry
+        import koei_editor.shared.verified_self_test as verified_self_test
+        import koei_editor.games.dw4hyper.dw4hyper_parser as dw4hyper_parser
         new = replace(get_game('dw4hyper'), id='contributor_example')
         layout = replace(dw4hyper_parser.FORMAT, id=new.id)
         with patch.object(game_registry, 'ALL_ADAPTERS', game_registry.ALL_ADAPTERS + (new,)), \
@@ -90,7 +90,7 @@ class AdapterDispatchTests(unittest.TestCase):
     def test_registered_editor_mismatch_rejected_before_constructor(self):
         game = get_game('pw3')
         constructor = Mock(game_id='dw8xl')
-        with patch('game_registry.import_module', return_value=SimpleNamespace(Editor=constructor)):
+        with patch('koei_editor.game_registry.import_module', return_value=SimpleNamespace(Editor=constructor)):
             with self.assertRaises(SaveError):
                 game.create_editor(None, None)
         constructor.assert_not_called()
@@ -101,27 +101,27 @@ class AdapterDispatchTests(unittest.TestCase):
         for declared_backend, extension in ((object(), '.dat'), (backend, '.psu')):
             constructor = Mock(game_id=game.id, backend=declared_backend, save_extension=extension)
             editor_module = SimpleNamespace(Editor=constructor)
-            with patch('game_registry.import_module', side_effect=lambda name: editor_module if name == game.editor_module else backend):
+            with patch('koei_editor.game_registry.import_module', side_effect=lambda name: editor_module if name == game.editor_module else backend):
                 with self.assertRaises(SaveError):
                     game.create_editor(None, None)
             constructor.assert_not_called()
 
     def test_cli_uses_declared_scalar_capability_for_new_registration(self):
-        import application
-        import game_registry
+        import koei_editor.application as application
+        import koei_editor.game_registry as game_registry
         new = replace(get_game('dw4hyper'), id='contributor_cli')
         report = {'format_sample_verified': False, 'fields_checked': 3}
         arguments = ['application.py', '--game', new.id, '--self-test', 'copy.dat', 'output']
         with patch.object(game_registry, 'ALL_ADAPTERS', game_registry.ALL_ADAPTERS + (new,)), \
                 patch.object(application, 'ALL_ADAPTERS', application.ALL_ADAPTERS + (new,)), \
-                patch.object(sys, 'argv', arguments), patch('verified_self_test.run', return_value=report) as run, \
+                patch.object(sys, 'argv', arguments), patch('koei_editor.shared.verified_self_test.run', return_value=report) as run, \
                 patch.object(application.tk, 'Tk') as tk_root, patch('builtins.print'):
             application.main()
         run.assert_called_once_with(new.id, 'copy.dat', 'output')
         tk_root.assert_not_called()
 
     def test_session_validation_and_active_only_dispatch_hidden_close_cancel(self):
-        from application import Application
+        from koei_editor.application import Application
         def session(game_id):
             values = {name: Mock(return_value=True) for name in SESSION_ACTIONS}
             return SimpleNamespace(game_id=game_id, document=None, changes={}, theme_name=Mock(), **values)

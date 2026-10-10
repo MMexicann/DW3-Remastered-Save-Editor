@@ -7,45 +7,71 @@ executable with dedicated game logic and a shared Tkinter interface.
 
 ## Run and understand the project
 
-On Windows with Python and Tkinter:
+From the repository root with Python 3.10 or newer and Tkinter:
 
 ```powershell
-python application.py
+python -m pip install -e .
+python -m koei_editor
 python -m unittest discover -s tests -v
-python application.py --smoke-test
+python -m koei_editor --smoke-test
 ```
 
 Windows uses native CNG for DW3 encryption and needs no third-party runtime
-package. Non-Windows development may install `dev-requirements.txt`; GUI work
+package. Non-Windows development may install `tools/requirements/dev.txt`; GUI work
 requires a display. Read the parser and tests for the format you change.
-[ARCHITECTURE.md](ARCHITECTURE.md), [SAVE_FORMAT.md](SAVE_FORMAT.md),
-[KOEI_FORMATS.md](KOEI_FORMATS.md) and
-[DW4_PLATFORM_FORMATS.md](DW4_PLATFORM_FORMATS.md) provide background;
-[VALIDATION.md](VALIDATION.md) records evidence and remaining checks.
+The [documentation index](docs/README.md) groups architecture, format and coverage
+notes. Application code belongs in `src/koei_editor`, game adapters in
+`src/koei_editor/games/<game>`, shared behavior in `src/koei_editor/shared`,
+unregistered candidates in `src/koei_editor/research`, runtime JSON in
+`src/koei_editor/data`, and build/development helpers in `tools`.
+[ARCHITECTURE.md](docs/ARCHITECTURE.md), [SAVE_FORMAT.md](docs/SAVE_FORMAT.md),
+[KOEI_FORMATS.md](docs/KOEI_FORMATS.md) and
+[DW4_PLATFORM_FORMATS.md](docs/DW4_PLATFORM_FORMATS.md) provide background;
+[VALIDATION.md](docs/VALIDATION.md) records evidence and remaining checks.
 
-`application.py` owns the library and sessions, while `game_registry.py` declares
-explicit adapters. `verified_gui.py` delegates scalar editing to an injected
-backend. DW8/PW3 share `verified_editor.py`; DW4 Hyper and PS2 XL have separate
+`src/koei_editor/application.py` owns the library and sessions, while `src/koei_editor/game_registry.py` declares
+explicit adapters. `src/koei_editor/shared/verified_gui.py` delegates scalar editing to an injected
+backend. DW8/PW3 share `src/koei_editor/shared/verified_editor.py`; DW4 Hyper and PS2 XL have separate
 parsers. DW3 keeps its existing schema, feature modules and patch writer.
 
 ## Add a scalar adapter
 
-Start with [adapter_template/INSTRUCTIONS.md](adapter_template/INSTRUCTIONS.md).
+Start with [adapter_template/INSTRUCTIONS.md](tools/adapter_template/INSTRUCTIONS.md).
 Its parser/editor/test scaffolds stay unregistered and reject unmapped files.
-[adapter_contract.py](adapter_contract.py) defines `ScalarField`, `ScalarFormat`,
+[adapter_contract.py](src/koei_editor/shared/adapter_contract.py) defines `ScalarField`, `ScalarFormat`,
 `ScalarDocument`, `ScalarBackend` and the common launcher `EditorSession` contract.
 Existing game writers keep their own codec/container logic. The bound adapter
 checks the selected game/platform and extension before delegating; it never tries
 another backend after rejection. DW3 implements the launcher session contract
 while retaining its tagged document and established patch workflow.
 
-A scalar `Game` registration declares `scalar_backend='your_parser_module'`.
+A scalar `Game` registration declares a qualified backend such as
+`scalar_backend='koei_editor.games.your_game.parser'`.
 That enables the shared copied-save self-test and binds the backend to the exact
 game/platform. The shared GUI's core operations use the same contract, preserving
 staging, batch Undo, review, automatic backups, source-change checks and atomic
 Save As to a new destination. Save As returns a freshly validated frozen document;
 assigning an opened value unstages it. `SaveError` rejects invalid formats/values;
 `FileExistsError` rejects an existing destination.
+
+Every new adapter or support-scope change must update the registry, runtime
+metadata, canonical [supported-game code](src/koei_editor/supported_games.py),
+generated [supported-game document](docs/SUPPORTED_GAMES.md), README and relevant
+tests together. The code inventory derives from registered adapters; research
+notes and screenshots do not add supported games. Verify the registered game,
+platform, module paths and documented features before claiming support.
+Use qualified package imports; do not add flat root modules or import-path shims.
+
+After updating the adapter and metadata, run:
+
+```powershell
+python -m tools.update_supported_games
+python -m tools.update_supported_games --check
+```
+
+This regenerates the readable code index, supported-game document and README
+table from the registry. A passing consistency check does not substitute for
+format qualification or the adapter's required tests.
 
 Use `maxable=False` for fields that permit deliberate individual edits but should
 be excluded from bulk Max, such as historical counters or dependency-sensitive
@@ -54,7 +80,7 @@ preserve higher existing values and use validated original records to select fie
 
 Optional backend `record_label`, `field_hint` and `inspection_rows` hooks supply
 data for the standard inspector. Richer read-only views subclass
-`ScalarPresentation` in [scalar_presentation.py](scalar_presentation.py), returning
+`ScalarPresentation` in [scalar_presentation.py](src/koei_editor/shared/scalar_presentation.py), returning
 `InspectionTable` objects and field guidance. The game's editor declares its
 `presentation_type`, summary and subtitle. Keep game-specific presentation in
 adapter modules; adding a game should require no shared GUI or CLI ID branches.
@@ -71,7 +97,7 @@ dependency checks and record copied-native/in-game evidence honestly.
 ```powershell
 python -m unittest tests.test_adapter_contract -v
 python -m unittest tests.test_universal_app -v
-python application.py --smoke-test
+python -m koei_editor --smoke-test
 ```
 
 ## Map a save format
@@ -116,7 +142,7 @@ memory, then writes through its guarded Save As workflow:
 
 ```python
 from pathlib import Path
-import verified_editor as backend
+from koei_editor.shared import verified_editor as backend
 
 original = backend.read_save(Path(r'D:\SaveCopies\dw8-copy.dat'), 'dw8xl')
 assert backend.serialize(original, {}) == original.raw
@@ -129,10 +155,10 @@ backend.save_as(original, changes, Path(r'D:\SaveCopies\dw8-edited.dat'))
 
 The destination must be new. `save_as()` checks the opened source, preserves a
 backup and uses atomic storage. Avoid direct `write_bytes()` on player data.
-Reuse `verified_self_test.py` rather than building an alternate file-write path:
+Reuse `src/koei_editor/shared/verified_self_test.py` rather than building an alternate file-write path:
 
 ```powershell
-python application.py --game dw8xl --self-test "D:\SaveCopies\dw8-copy.dat" "D:\SaveCopies\DW8Test"
+python -m koei_editor --game dw8xl --self-test "D:\SaveCopies\dw8-copy.dat" "D:\SaveCopies\DW8Test"
 ```
 
 Use a new/empty output directory. Require exit 0, `success: true`, input-hash
@@ -140,7 +166,7 @@ preservation and the reported backup/roundtrip checks. `--game pw3`,
 `--game dw4hyper`, `--game dw4xl_ps2`, `--game atelier_sophie2` and `--game origins`
 select their own registered scalar backends and extensions. Origins accepts
 native slot copies; `USER.dat` system data is excluded.
-DW3 uses `python application.py --self-test INPUT OUTPUT`. These reports do not
+DW3 uses `python -m koei_editor --self-test INPUT OUTPUT`. These reports do not
 establish in-game loading or turn a procedural input into genuine-file evidence.
 
 ## Fixtures and focused tests
@@ -158,12 +184,30 @@ Optional copied real saves are selected locally:
 | Environment variable | Copied input |
 | --- | --- |
 | `DW8XL_SAVE_COPY` | Native PC DW8 XL `.dat` |
+| `DW7XL_SAVE_COPY` | Native PC DW7 XL Definitive gameplay `.dat` copy |
+| `WO3U_SAVE_COPY` | Native PC WO3 Ultimate Definitive `SAVEDATA.BIN` copy |
+| `SW4DX_SAVE_COPY` | Current-revision SW4 DX gameplay `.dat` copy |
 | `PW3_SAVE_COPY` | Native PC Pirate Warriors 3 `.dat` |
+| `PW4_SAVE_COPY` | Native revision-15 one-step-region PW4 gameplay `.dat` copy |
 | `DW4HYPER_SAVE_COPY` | Native PC Hyper `save.dat` copy |
 | `DW4XL_PSU_COPY` | USA PS2 XL `.psu` export |
 | `SOPHIE2_SAVE_COPY` | Native Steam 1.08 Atelier Sophie 2 `data.dat` copy |
 | `ORIGINS_SAVE_COPIES` | Folder of copied native Steam `SLOT*.dat` Origins saves |
 | `NIOH2_SAVE_COPY` | PC Nioh 2 user `.bin` copy for read-only inspection |
+| `NIOH3_NATIVE_DIR` | Reviewed native Nioh 3 USER copies for codec qualification |
+| `NIOH3_ENCRYPTED_COPY` / `NIOH3_DECRYPTED_COPY` | Matching reviewed Nioh 3 native USER reference pair |
+| `DW6_SAVE` | Native original Windows DW6 `save.dat` copy |
+| `DW9EMP_SYSTEM_COPY` | Current native PC DW9 Empires SYSTEMDATA `SAVEDATA.BIN`; a missing genuine fixture skips |
+| `DW7_PS3_US_COPY` / `DW7_PS3_EU_COPY` | Copied decrypted PS3 DW7 US/EU `APP.BIN` exports |
+| `SW4_PS3_US_COPY` | Copied decrypted PS3 SW4 US `DATA.BIN` export |
+| `DW7E_PS3_SYSTEM_COPY` | Copied decrypted US PS3 DW7 Empires SYSTEM `DATA.BIN` |
+| `HYRULE_SAVE_COPY` / `CALAMITY_SAVE_COPY` | Independently shared Wii U Hyrule `APP.BIN` / Switch AoC `svdt` exports |
+| `HYRULE_DE_COPY` | Copied native Switch Definitive Edition `zmha.bin` |
+| `FE_WARRIORS_SAVE_COPY` | Copied native Switch FE Warriors `scenario0`/`scenario1`/`scenario2`; modified reference state is labelled |
+| `HYRULE_SOURCE_REFERENCE` / `CALAMITY_SOURCE_REFERENCE` | Private upstream reference examples; distinct from independent player-save evidence |
+| `STARS_SAVE_COPY` | Native All-Stars complete PC container for AES-envelope, gold-edit and GUI checks |
+| `OROCHIZ_NATIVE_SAVE` | Native Orochi Z revision2 `save.dat` for unchanged/surgical field and GUI checks |
+| `DW8E_SAVE_FOLDER` | Reviewed native DW8 Empires system/campaign/quick copies for codec checks |
 | `KATANA_GOLDEN_DIR` | Locally reviewed upstream encrypted/decrypted reference-pair directory |
 | `DW3_TEST_REPORTED_SAVE` | Explicit DW3 regression copy used by `test_save_variants.py` |
 
@@ -177,8 +221,8 @@ python -m unittest discover -s tests -p 'test_verified_editors.py' -v
 Tests requiring a missing fixture skip. Count skips honestly. A real-file
 roundtrip is stronger than a generator test, but still does not prove that the
 edited file loads in-game. Do not commit fixture contents or private source URLs.
-See [EXISTING_EDITORS.md](EXISTING_EDITORS.md) for source/licence checks and
-[ATELIER_SOPHIE2_FORMAT.md](ATELIER_SOPHIE2_FORMAT.md) for the new tagged adapter.
+See [EXISTING_EDITORS.md](docs/EXISTING_EDITORS.md) for source/licence checks and
+[ATELIER_SOPHIE2_FORMAT.md](docs/ATELIER_SOPHIE2_FORMAT.md) for the new tagged adapter.
 
 ## Submit code and build artifacts
 
@@ -194,23 +238,24 @@ identity, integrity or dependencies over tests that merely repeat a constant.
 Keep parsers independent from GUI callbacks and route user operations through
 backups, staged changes, Undo, review and new-destination Save As.
 
-Build on 64-bit Windows using [BUILDING.md](BUILDING.md). The key checks are:
+Build on 64-bit Windows using [BUILDING.md](docs/BUILDING.md). The key checks are:
 
 ```powershell
-python -m pip install -r build-requirements.txt
-python package_release.py --verify-only
-python build_windows.py
-python package_release.py --verify-executable
+python -m pip install -e .
+python -m pip install -r tools/requirements/build.txt
+python -m tools.package_release --verify-only
+python -m tools.build_windows
+python -m tools.package_release --verify-executable
 ```
 
 PyInstaller produces one standalone Windows EXE. A Linux validation bundle does
 not test Windows CNG or constitute a Windows release. Add new public metadata to
-`build_windows.DATA` and explicit adapter imports through the registry as needed.
+`tools.build_windows.DATA` and explicit adapter imports through the registry as needed.
 
 Packaging uses an explicit source whitelist, not every file in the checkout.
 After reviewing public changes, refresh existing hashes with
-`python refresh_manifest.py`; include new public paths explicitly with
-`python refresh_manifest.py --add FILE...`, then run the verifier. Preserve the
+`python -m tools.refresh_manifest`; include new public paths explicitly with
+`python -m tools.refresh_manifest --add FILE...`, then run the verifier. Preserve the
 matching application/build/manifest version. Exclude game files, saves, account
 identifiers, personal paths and third-party binaries; document dependency licenses
 instead of weakening the packager. Build/package integrity and privacy checks

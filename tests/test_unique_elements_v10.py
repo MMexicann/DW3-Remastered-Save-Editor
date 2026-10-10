@@ -7,11 +7,11 @@ import unittest
 
 PROJECT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(PROJECT))
-from models import Change,SaveDocument,SaveError,fields
-from save_parser import parse_bytes,read_save
-from save_writer import serialize
+from koei_editor.games.dw3.models import Change, SaveDocument, SaveError, fields
+from koei_editor.games.dw3.save_parser import parse_bytes, read_save
+from koei_editor.games.dw3.save_writer import serialize
 from test_weapon_rolls import edited_fixture_bytes,enum_bytes,record_bytes,tag_bytes
-import officer_weapon_editor as weapon
+import koei_editor.games.dw3.officer_weapon_editor as weapon
 
 FIXTURE=PROJECT/'work/original-upload/GameStatusData.sav'
 

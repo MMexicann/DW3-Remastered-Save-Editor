@@ -7,10 +7,10 @@ import struct
 import tempfile
 import unittest
 
-from koei_codec import word_sum
-from models import SaveError
-import pw4_candidate_codec as cipher
-import pw4_parser as editor
+from koei_editor.shared.koei_codec import word_sum
+from koei_editor.games.dw3.models import SaveError
+import koei_editor.games.pw4.pw4_candidate_codec as cipher
+import koei_editor.games.pw4.pw4_parser as editor
 
 
 def encoded(payload, seed=0x2345):

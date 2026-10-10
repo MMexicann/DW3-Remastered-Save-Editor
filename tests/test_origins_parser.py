@@ -9,10 +9,10 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from tests.scalar_contract import ScalarContractTests
-import origins_codec as codec
-import origins_parser as parser
-from models import SaveError
-from save_safety import safe_path
+import koei_editor.games.origins.origins_codec as codec
+import koei_editor.games.origins.origins_parser as parser
+from koei_editor.games.dw3.models import SaveError
+from koei_editor.shared.save_safety import safe_path
 
 
 @lru_cache(maxsize=6)

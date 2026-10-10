@@ -7,8 +7,8 @@ payload_integrity_offsets only when the native checksum lives inside payload.
 from pathlib import Path
 import tempfile
 
-from game_registry import get_game
-from models import SaveError
+from koei_editor.game_registry import get_game
+from koei_editor.games.dw3.models import SaveError
 
 
 class ScalarContractTests:

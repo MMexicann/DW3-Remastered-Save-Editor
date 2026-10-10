@@ -7,15 +7,15 @@ from unittest.mock import patch
 
 PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT))
-import gui
-import bodyguard_customization as customization
-import officer_weapon_editor as weapons
-import bodyguard_editor as guards
-import collection_editor as collections
-import musou_slots
-from models import Change, fields
-from save_parser import read_save, parse_bytes
-from save_writer import serialize
+import koei_editor.games.dw3.gui as gui
+import koei_editor.games.dw3.bodyguard_customization as customization
+import koei_editor.games.dw3.officer_weapon_editor as weapons
+import koei_editor.games.dw3.bodyguard_editor as guards
+import koei_editor.games.dw3.collection_editor as collections
+import koei_editor.games.dw3.musou_slots as musou_slots
+from koei_editor.games.dw3.models import Change, fields
+from koei_editor.games.dw3.save_parser import read_save, parse_bytes
+from koei_editor.games.dw3.save_writer import serialize
 
 WORKSPACE = PROJECT
 FIXTURE = WORKSPACE / 'work/original-upload/GameStatusData.sav'

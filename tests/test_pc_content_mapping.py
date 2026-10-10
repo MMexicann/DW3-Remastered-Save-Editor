@@ -2,10 +2,10 @@
 import struct
 import unittest
 from pathlib import Path
-from koei_codec import byte_cipher, mix_word, word_cipher, word_sum
-from models import SaveError
-import verified_editor as backend
-from game_content import record_label
+from koei_editor.shared.koei_codec import byte_cipher, mix_word, word_cipher, word_sum
+from koei_editor.games.dw3.models import SaveError
+import koei_editor.shared.verified_editor as backend
+from koei_editor.games.dw3.game_content import record_label
 from test_verified_editors import synthetic_raw
 
 

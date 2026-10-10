@@ -10,11 +10,11 @@ import struct
 import tempfile
 import unittest
 
-from models import SaveError
-from koei_codec import word_sum
-from origins_codec import word_cipher
-import samurai4dx_codec as codec
-import samurai4dx_parser as parser
+from koei_editor.games.dw3.models import SaveError
+from koei_editor.shared.koei_codec import word_sum
+from koei_editor.games.origins.origins_codec import word_cipher
+import koei_editor.games.sw4dx.samurai4dx_codec as codec
+import koei_editor.games.sw4dx.samurai4dx_parser as parser
 
 
 def seal(payload, seed=34277, header=None):

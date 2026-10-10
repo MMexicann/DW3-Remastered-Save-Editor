@@ -7,8 +7,8 @@ import struct
 import unittest
 from unittest.mock import patch
 
-from models import SaveError
-import nioh3_native as native
+from koei_editor.games.dw3.models import SaveError
+import koei_editor.research.nioh3.nioh3_native as native
 
 
 def procedural_raw():

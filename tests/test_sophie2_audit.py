@@ -9,10 +9,10 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-import atelier_sophie2_codec as codec
-import atelier_sophie2_parser as backend
-import copy_storage
-from models import SaveError
+import koei_editor.games.sophie2.atelier_sophie2_codec as codec
+import koei_editor.games.sophie2.atelier_sophie2_parser as backend
+import koei_editor.shared.copy_storage as copy_storage
+from koei_editor.games.dw3.models import SaveError
 from tests.test_atelier_sophie2_format import procedural_payload
 from tests.test_sophie2_inventory import inventory_raw
 
@@ -123,7 +123,7 @@ class InspectorFilterAuditTests(unittest.TestCase):
     def test_each_tab_filters_all_cells_independently_and_restores_order(self):
         import tkinter as tk
         from tkinter import ttk
-        from atelier_sophie2_editor import Editor
+        from koei_editor.games.sophie2.atelier_sophie2_editor import Editor
 
         def descendants(widget):
             for child in widget.winfo_children():
@@ -137,7 +137,7 @@ class InspectorFilterAuditTests(unittest.TestCase):
             root.withdraw()
             try:
                 editor = Editor(root)
-                with patch('verified_gui.filedialog.askopenfilename', return_value=str(source)):
+                with patch('koei_editor.shared.verified_gui.filedialog.askopenfilename', return_value=str(source)):
                     editor.open()
                 editor.show_inspector()
                 dialog = next(w for w in root.winfo_children() if isinstance(w, tk.Toplevel))

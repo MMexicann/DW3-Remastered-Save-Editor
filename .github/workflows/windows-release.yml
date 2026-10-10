@@ -2,9 +2,24 @@ name: Windows build and release
 
 on:
   workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish after native checks; main only.'
+        required: false
+        default: false
+        type: boolean
+      expected_sha:
+        description: 'Prepared main commit; required when publish is true.'
+        required: false
+        default: ''
+        type: string
+  pull_request:
+    branches:
+      - main
   push:
     branches:
       - main
+      - 'codex/release-v*'
     tags:
       - 'v*'
 
@@ -17,7 +32,7 @@ concurrency:
 
 jobs:
   build:
-    if: github.event_name == 'workflow_dispatch' || github.ref_type == 'tag' || contains(github.event.head_commit.message, '[release]')
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' || github.ref_type == 'tag' || contains(github.event.head_commit.message, '[release]')
     runs-on: windows-latest
     timeout-minutes: 30
     defaults:
@@ -33,34 +48,55 @@ jobs:
         with:
           python-version: '3.14'
           architecture: x64
+      - name: Install the source package
+        run: |
+          python -m pip install -e .
+          if ($LASTEXITCODE -ne 0) { throw 'Source package installation failed.' }
       - name: Verify version, sources and interfaces
         env:
           RELEASE_REF_TYPE: ${{ github.ref_type }}
           RELEASE_REF_NAME: ${{ github.ref_name }}
+          RELEASE_EVENT: ${{ github.event_name }}
+          RELEASE_PUBLISH: ${{ github.event.inputs.publish || 'false' }}
+          RELEASE_EXPECTED_SHA: ${{ github.event.inputs.expected_sha || '' }}
+          RELEASE_COMMIT_SHA: ${{ github.sha }}
         run: |
-          $version = python package_release.py --version
+          $version = python -m tools.package_release --version
           if ($LASTEXITCODE -ne 0) { throw 'Release version validation failed.' }
           if ($env:RELEASE_REF_TYPE -eq 'tag' -and $env:RELEASE_REF_NAME -ne "v$version") {
             throw 'Release tag must match the application version.'
           }
-          python package_release.py --verify-only
+          python -m tools.update_supported_games --check
+          if ($LASTEXITCODE -ne 0) { throw 'Supported game inventory is stale.' }
+          if ($env:RELEASE_EVENT -eq 'push' -and $env:RELEASE_REF_NAME.StartsWith('codex/release-v') -and $env:RELEASE_REF_NAME -ne "codex/release-v$version") {
+            throw 'Release preparation branch must exactly match the application version.'
+          }
+          if ($env:RELEASE_EVENT -eq 'workflow_dispatch' -and $env:RELEASE_PUBLISH -eq 'true') {
+            if ($env:RELEASE_REF_TYPE -ne 'branch' -or $env:RELEASE_REF_NAME -ne 'main') {
+              throw 'Dispatched publication requires the main branch.'
+            }
+            if ($env:RELEASE_EXPECTED_SHA -ne $env:RELEASE_COMMIT_SHA) {
+              throw 'Prepared main SHA must match the dispatched commit.'
+            }
+          }
+          python -m tools.package_release --verify-only
           if ($LASTEXITCODE -ne 0) { throw 'Source manifest validation failed.' }
           python -m unittest discover -s tests -v
           if ($LASTEXITCODE -ne 0) { throw 'Public tests failed.' }
-          python application.py --smoke-test
+          python -m koei_editor --smoke-test
           if ($LASTEXITCODE -ne 0) { throw 'Universal GUI startup failed.' }
       - name: Build and verify the standalone Windows executable
         run: |
-          python -m pip install -r build-requirements.txt
+          python -m pip install -r tools/requirements/build.txt
           if ($LASTEXITCODE -ne 0) { throw 'Build dependency installation failed.' }
-          python build_windows.py
+          python -m tools.build_windows
           if ($LASTEXITCODE -ne 0) { throw 'Windows build failed.' }
-          $version = python package_release.py --version
+          $version = python -m tools.package_release --version
           $smoke = Start-Process -FilePath "dist/UniversalKoeiTecmoSaveEditor-v$version.exe" -ArgumentList '--smoke-test' -WindowStyle Hidden -Wait -PassThru
           if ($smoke.ExitCode -ne 0) { throw 'Packaged GUI startup failed.' }
-          python package_release.py --verify-executable
+          python -m tools.package_release --verify-executable
           if ($LASTEXITCODE -ne 0) { throw 'Bundle privacy or metadata validation failed.' }
-          python package_release.py
+          python -m tools.package_release
           if ($LASTEXITCODE -ne 0) { throw 'Local packaging failed.' }
       - uses: actions/upload-artifact@v4
         with:
@@ -68,8 +104,46 @@ jobs:
           path: release/*
           if-no-files-found: error
 
+  prepare_release:
+    if: github.event_name == 'push' && startsWith(github.ref_name, 'codex/release-v') && contains(github.event.head_commit.message, '[release]')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Open and merge the reviewed release through repository rules
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          version=$(python -m tools.package_release --version)
+          test "$GITHUB_REF_TYPE" = branch
+          test "$GITHUB_REF_NAME" = "codex/release-v$version"
+          pr_number=$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$GITHUB_REF_NAME" --base main --state open --json number --jq '.[0].number // empty')
+          if [ -z "$pr_number" ]; then
+            gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$GITHUB_REF_NAME" \
+              --title "Release v$version" --body-file docs/RELEASE_NOTES.md
+            pr_number=$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$GITHUB_REF_NAME" --base main --state open --json number --jq '.[0].number // empty')
+          fi
+          test -n "$pr_number"
+          gh pr merge "$pr_number" --repo "$GITHUB_REPOSITORY" --squash \
+            --match-head-commit "$GITHUB_SHA" --subject "[release] Universal Koei Tecmo Save Editor v$version"
+          merged_sha=$(gh pr view "$pr_number" --repo "$GITHUB_REPOSITORY" --json state,mergeCommit --jq 'if .state == "MERGED" then .mergeCommit.oid else empty end')
+          test -n "$merged_sha"
+          main_sha=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')
+          test "$main_sha" = "$merged_sha"
+          # GITHUB_TOKEN-created merges do not trigger ordinary push workflows.
+          # Dispatch the protected main commit for a fresh native build instead.
+          gh workflow run windows-release.yml --repo "$GITHUB_REPOSITORY" --ref main \
+            -f publish=true -f "expected_sha=$merged_sha"
+
   release:
-    if: github.event_name == 'push' && (github.ref_type == 'tag' || (github.ref_name == 'main' && contains(github.event.head_commit.message, '[release]')))
+    if: (github.event_name == 'push' && (github.ref_type == 'tag' || (github.ref_name == 'main' && contains(github.event.head_commit.message, '[release]')))) || (github.event_name == 'workflow_dispatch' && github.ref_type == 'branch' && github.ref_name == 'main' && inputs.publish)
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -90,15 +164,16 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          version=$(python package_release.py --version)
+          version=$(python -m tools.package_release --version)
           release_tag="v$version"
           if [ "$GITHUB_REF_TYPE" = tag ]; then
             test "$GITHUB_REF_NAME" = "$release_tag"
           else
+            test "$GITHUB_REF_TYPE" = branch
             test "$GITHUB_REF_NAME" = main
             # A release-marked main commit creates one new tag at the exact
             # tested SHA. Existing tags are never moved or overwritten.
             gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" \
               -f "ref=refs/tags/$release_tag" -f "sha=$GITHUB_SHA"
           fi
-          gh release create "$release_tag" --verify-tag --title "Universal Koei Tecmo Save Editor v$version" --notes-file RELEASE_NOTES.md release/*.exe release/*.zip release/SHA256SUMS.txt
+          gh release create "$release_tag" --verify-tag --title "Universal Koei Tecmo Save Editor v$version" --notes-file docs/RELEASE_NOTES.md release/*.exe release/*.zip release/SHA256SUMS.txt

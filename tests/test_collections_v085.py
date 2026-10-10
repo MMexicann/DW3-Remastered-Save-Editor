@@ -9,10 +9,10 @@ PROJECT = Path(__file__).resolve().parents[1]
 WORKSPACE = PROJECT
 sys.path.insert(0, str(PROJECT))
 
-from models import Change, SaveError
-from save_parser import parse_bytes, read_save
-from save_writer import serialize
-import collection_editor as collection
+from koei_editor.games.dw3.models import Change, SaveError
+from koei_editor.games.dw3.save_parser import parse_bytes, read_save
+from koei_editor.games.dw3.save_writer import serialize
+import koei_editor.games.dw3.collection_editor as collection
 
 FIXTURE = WORKSPACE / 'work' / 'original-upload' / 'GameStatusData.sav'
 
@@ -65,7 +65,7 @@ class CollectionUnlockTests(unittest.TestCase):
                 serialize(self.document, [Change('collection', invalid, 'Movie', True)])
 
     def test_missing_movie_array_is_inserted_with_native_false_defaults(self):
-        from save_codec import encrypt
+        from koei_editor.games.dw3.save_codec import encrypt
         edit = next(p for p in self.document.properties['OptionData']['value'] if p['name'] == 'Edit')
         movie = next(p for p in edit['value'] if p['name'] == 'bPlayMovie')
         start = movie['tag_offset']
@@ -91,7 +91,7 @@ class CollectionUnlockTests(unittest.TestCase):
         prop = next(p for p in edit['value'] if p['name'] == 'bPlayMovie')
         damaged = bytearray(self.document.plaintext)
         struct.pack_into('<i', damaged, prop['data_offset'], 99)
-        from save_codec import encrypt
+        from koei_editor.games.dw3.save_codec import encrypt
         invalid = parse_bytes(encrypt(bytes(damaged)))
         state = collection.collection_state(invalid)
         self.assertFalse(state['movies']['editable'])

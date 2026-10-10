@@ -6,10 +6,10 @@ import unittest
 from unittest.mock import patch
 import os
 
-import atelier_sophie2_codec as codec
-import atelier_sophie2_parser as backend
-from atelier_sophie2_presentation import Sophie2Presentation
-from models import SaveError
+import koei_editor.games.sophie2.atelier_sophie2_codec as codec
+import koei_editor.games.sophie2.atelier_sophie2_parser as backend
+from koei_editor.games.sophie2.atelier_sophie2_presentation import Sophie2Presentation
+from koei_editor.games.dw3.models import SaveError
 from tests.test_atelier_sophie2_format import procedural_payload
 
 
@@ -85,7 +85,7 @@ class Sophie2InventoryTests(unittest.TestCase):
 class Sophie2InventoryGuiTests(unittest.TestCase):
     def test_search_refill_undo_review_and_copy_save(self):
         import tkinter as tk
-        from atelier_sophie2_editor import Editor
+        from koei_editor.games.sophie2.atelier_sophie2_editor import Editor
         with tempfile.TemporaryDirectory() as folder:
             source = Path(folder) / 'copy.dat'
             source.write_bytes(inventory_raw())
@@ -93,7 +93,7 @@ class Sophie2InventoryGuiTests(unittest.TestCase):
             root.withdraw()
             try:
                 editor = Editor(root)
-                with patch('verified_gui.filedialog.askopenfilename', return_value=str(source)):
+                with patch('koei_editor.shared.verified_gui.filedialog.askopenfilename', return_value=str(source)):
                     editor.open()
                 editor.group.set('Consumable container')
                 editor.search.set('Remaining uses')
@@ -127,8 +127,8 @@ class Sophie2InventoryGuiTests(unittest.TestCase):
                 self.assertEqual(editor.changes, {'expendable_0_uses': 7})
                 dialog.destroy()
                 output = Path(folder) / 'edited.dat'
-                with patch('verified_gui.filedialog.asksaveasfilename', return_value=str(output)), \
-                     patch('verified_gui.messagebox.showinfo'):
+                with patch('koei_editor.shared.verified_gui.filedialog.asksaveasfilename', return_value=str(output)), \
+                     patch('koei_editor.shared.verified_gui.messagebox.showinfo'):
                     editor.save_as()
                 saved = backend.read_save(output)
                 self.assertEqual(backend.field_map(saved)['expendable_0_uses'].value(saved.payload), 7)

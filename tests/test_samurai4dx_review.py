@@ -8,9 +8,9 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-import samurai4dx_codec as codec
-import samurai4dx_parser as backend
-from models import SaveError
+import koei_editor.games.sw4dx.samurai4dx_codec as codec
+import koei_editor.games.sw4dx.samurai4dx_parser as backend
+from koei_editor.games.dw3.models import SaveError
 from tests.scalar_contract import ScalarContractTests
 from tests.test_samurai4dx_format import procedural_raw, seal
 

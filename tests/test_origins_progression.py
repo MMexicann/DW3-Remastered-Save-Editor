@@ -1,7 +1,7 @@
 """Bounds and existing-record qualification for native progression fields."""
 import unittest
 
-import origins_progression as progression
+import koei_editor.games.origins.origins_progression as progression
 
 
 class ProgressionTests(unittest.TestCase):
@@ -43,8 +43,8 @@ class ProgressionTests(unittest.TestCase):
                 self.assertEqual(bytes(payload), before)
 
     def test_native_history_setter_does_not_allow_reset_of_original_clear(self):
-        from origins_parser import Field
-        from models import SaveError
+        from koei_editor.games.origins.origins_parser import Field
+        from koei_editor.games.dw3.models import SaveError
         payload = bytearray(0x271660)
         payload[progression.HISTORY_BASES[29]] = 1
         history = next(q for q in progression.progression_specs(payload, 29)

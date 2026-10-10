@@ -1,7 +1,7 @@
 import unittest
 
-from models import SaveError
-import origins_weapons as weapons
+from koei_editor.games.dw3.models import SaveError
+import koei_editor.games.origins.origins_weapons as weapons
 
 
 def inventory(revision):

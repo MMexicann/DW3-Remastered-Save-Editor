@@ -12,11 +12,11 @@ import tkinter as tk
 import unittest
 from unittest.mock import patch
 
-import copy_storage
-from models import SaveError
-import pw4_parser as parser
+import koei_editor.shared.copy_storage as copy_storage
+from koei_editor.games.dw3.models import SaveError
+import koei_editor.games.pw4.pw4_parser as parser
 from tests.test_pw4_format import encoded, native_integrity, procedural_raw
-from pw4_editor import Editor
+from koei_editor.games.pw4.pw4_editor import Editor
 
 
 class PW4ReviewTests(unittest.TestCase):
@@ -110,11 +110,11 @@ class PW4GuiReviewTests(unittest.TestCase):
         self.source.write_bytes(PW4ReviewTests.raw)
         self.editor = Editor(self.root)
         self.errors = []
-        mocked_error = patch('verified_gui.messagebox.showerror',
+        mocked_error = patch('koei_editor.shared.verified_gui.messagebox.showerror',
                              side_effect=lambda *args: self.errors.append(args))
         mocked_error.start()
         self.addCleanup(mocked_error.stop)
-        with patch('verified_gui.filedialog.askopenfilename', return_value=str(self.source)):
+        with patch('koei_editor.shared.verified_gui.filedialog.askopenfilename', return_value=str(self.source)):
             self.editor.open()
         self.assertFalse(self.errors)
 

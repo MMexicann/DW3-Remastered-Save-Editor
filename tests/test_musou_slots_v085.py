@@ -7,11 +7,11 @@ import unittest
 PROJECT = Path(__file__).resolve().parents[1]
 WORKSPACE = PROJECT
 sys.path.insert(0, str(PROJECT))
-from models import Change, SaveError, fields
-from save_parser import read_save, parse_bytes
-from save_writer import serialize
+from koei_editor.games.dw3.models import Change, SaveError, fields
+from koei_editor.games.dw3.save_parser import read_save, parse_bytes
+from koei_editor.games.dw3.save_writer import serialize
 from test_weapon_rolls import edited_fixture_bytes, enum_bytes, tag_bytes
-import musou_slots as musou
+import koei_editor.games.dw3.musou_slots as musou
 
 FIXTURES = [
     WORKSPACE / 'work/original-upload/GameStatusData.sav',
@@ -99,7 +99,7 @@ class MusouSlotTests(unittest.TestCase):
         start, end = prop['tag_offset'] + 4, prop['tag_offset'] + 4 + len('PCColor')
         payload[start:end] = b'PCColox'
         payload.extend(bytes((-len(payload)) % 16))
-        from save_codec import encrypt
+        from koei_editor.games.dw3.save_codec import encrypt
         modified = parse_bytes(encrypt(bytes(payload)))
         row = musou.slot_state(modified)['slots'][0]
         self.assertFalse(row['editable'])

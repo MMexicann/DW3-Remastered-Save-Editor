@@ -9,10 +9,10 @@ from unittest.mock import patch
 PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT))
 sys.path.insert(0, str(PROJECT / 'tests'))
-import gui
-import progression_editor as progression
-import save_writer
-from save_parser import read_save, parse_bytes
+import koei_editor.games.dw3.gui as gui
+import koei_editor.games.dw3.progression_editor as progression
+import koei_editor.games.dw3.save_writer as save_writer
+from koei_editor.games.dw3.save_parser import read_save, parse_bytes
 from test_bodyguards import edited_fixture_bytes
 
 FIXTURE = PROJECT / 'work/original-upload/GameStatusData.sav'
