@@ -1,5 +1,6 @@
 """Shared GUI workflow checks with generated WO3 data, never player saves."""
 from pathlib import Path
+import os
 import tempfile
 import tkinter as tk
 from unittest.mock import patch
@@ -73,3 +74,54 @@ class WO3GuiTests(unittest.TestCase):
         self.assertTrue(any('Verity' in str(row) for row in tables[1].rows))
         editor.apply_theme('Dark')
         editor.apply_theme('Light')
+
+
+@unittest.skipUnless(os.environ.get('WO3U_SAVE_COPY'), 'Private native WO3 copy unavailable')
+class NativeWO3ExpansionGuiTests(unittest.TestCase):
+    def test_native_rank_reinforcement_review_undo_and_surgical_saved_copy(self):
+        try:
+            root = tk.Tk()
+        except tk.TclError as error:
+            self.skipTest(f'Tk display unavailable: {error}')
+        self.addCleanup(root.destroy)
+        root.withdraw()
+        original = Path(os.environ['WO3U_SAVE_COPY'])
+        raw = original.read_bytes()
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'copy.bin'
+            source.write_bytes(raw)
+            editor = Editor(root)
+            errors = []
+            with patch('koei_editor.shared.verified_gui.messagebox.showerror',
+                       side_effect=lambda *args: errors.append(args)):
+                with patch('koei_editor.shared.verified_gui.filedialog.askopenfilename', return_value=str(source)):
+                    editor.open()
+                field = next(field for field in parser.fields_for(editor.document)
+                             if field.id.endswith('_reinforcement'))
+                value = field.value(raw) - 1
+                editor.group.set('Weapons')
+                editor.search.set(field.id)
+                editor.refresh()
+                self.assertEqual(editor.fields.get_children(), (field.id,))
+                editor.fields.selection_set(field.id)
+                editor.value.set(str(value))
+                editor.apply_selected()
+                self.assertEqual(editor.changes, {field.id: value})
+                editor.max_visible()
+                self.assertEqual(editor.changes, {field.id: value})
+                editor.review()
+                editor.undo()
+                self.assertEqual(editor.changes, {})
+                rank = next(field for field in parser.fields_for(editor.document)
+                            if '_rank_' in field.id and 'Attribute ID' in field.label)
+                rank_value = max(1, min(rank.value(raw) - 1, 10))
+                editor.stage_values({field.id: value, rank.id: rank_value})
+                expected = parser.serialize(editor.document, editor.changes)
+                destination = Path(folder) / 'edited.bin'
+                editor.save_to(destination)
+                self.assertEqual(parser.read_save(destination).raw, expected)
+                self.assertEqual(source.read_bytes(), raw)
+                self.assertEqual(editor.backup.read_bytes(), raw)
+                editor.show_inspector()
+            self.assertEqual(errors, [])
+        self.assertEqual(original.read_bytes(), raw)

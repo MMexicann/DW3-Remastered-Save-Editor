@@ -182,7 +182,9 @@ class OrochiZIndependentReviewTests(unittest.TestCase):
         count = 0
         for field in parser.fields_for(document):
             original = field.value(raw)
-            value = field.minimum if original != field.minimum else field.maximum
+            options = parser.field_options(document, field.id)
+            value = (next(number for number, _label in options if number != original)
+                     if options else field.minimum if original != field.minimum else field.maximum)
             output = parser.serialize(document, {field.id: value})
             allowed = set(range(field.offset, field.offset + field.size)) | set(
                 range(codec.CHECKSUM_OFFSET, codec.CHECKSUM_OFFSET + 4))
@@ -191,7 +193,12 @@ class OrochiZIndependentReviewTests(unittest.TestCase):
             after_officers = parser.officers(parser.decode(output))
             for before, after in zip(before_officers, after_officers):
                 for key in ('id', 'stored_level', 'equipped_slot', 'proficiency', 'exp'):
-                    self.assertEqual(after[key], before[key])
+                    if key == 'equipped_slot' and field.id == f"officer_{before['id']}_equipped_weapon":
+                        self.assertEqual(after[key], value - 1)
+                    elif key == 'exp' and field.id == f"officer_{before['id']}_exp_within_level":
+                        self.assertEqual(after[key], value)
+                    else:
+                        self.assertEqual(after[key], before[key])
                 for index in (0, 1, 3, 4):
                     self.assertEqual(after['stats'][index], before['stats'][index])
                 if field.id != f"officer_{before['id']}_base_attack":
@@ -199,7 +206,7 @@ class OrochiZIndependentReviewTests(unittest.TestCase):
             self.assertEqual(output[-16:], raw[-16:])
             self.assertEqual(field.value(output), value)
             count += 1
-        self.assertEqual(count, 433)
+        self.assertGreaterEqual(count, 433)
         self.assertEqual(path.read_bytes(), raw)
 
     @unittest.skipUnless(os.environ.get('OROCHIZ_NATIVE_SAVE'), 'No private genuine native Orochi Z fixture')

@@ -8,6 +8,7 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 
 - [Architecture and package boundaries](ARCHITECTURE.md)
 - [Supported games and platforms](SUPPORTED_GAMES.md)
+- [Prepared unreleased update](PREPARED_UPDATE.md)
 - [Windows build and packaging](BUILDING.md)
 - [Validation and evidence boundaries](VALIDATION.md)
 - [Current release notes](RELEASE_NOTES.md), [v1.5 release notes](releases/v1.5.md)
@@ -29,9 +30,12 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
   [DW8 weapon compatibility and affinity](DW8_COMPATIBILITY.md) and
   [PW3 coverage](PW3_COVERAGE.md)
 - [DW6 original PC coverage](DW6_RESEARCH.md)
+- [DW5 Special native Windows format](DW5_SPECIAL.md)
+- [DW8 Empires PC custom horses](DW8E_CUSTOM_HORSES.md)
 - [DW7 XL, DW8 Empires and DW9 Empires research](DYNASTY_RESEARCH.md)
 - [DW7/SW4 PS3 exported saves and other console leads](PS3_EXPANSION.md)
 - [Hyrule Warriors Wii U and Age of Calamity Switch formats](HYRULE_FORMATS.md)
+- [Hyrule Warriors Legends 3DS format](HYRULE_LEGENDS_FORMAT.md)
 - [Hyrule Warriors Definitive Edition Switch coverage](SWITCH_WARRIORS_RESEARCH.md)
 - [Fire Emblem Warriors Switch format](FIRE_EMBLEM_WARRIORS_FORMAT.md)
 - [Origins native format and progression](ORIGINS_FORMAT.md)
@@ -43,6 +47,11 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Sophie 2 tagged format](ATELIER_SOPHIE2_FORMAT.md) and
   [inventory coverage](SOPHIE2_COVERAGE.md)
 - [Nioh 3 native integrity research](NIOH3_RESEARCH.md)
+- [Nioh, Wo Long and other Team Ninja formats](TEAM_NINJA_RESEARCH.md)
+- [Persona 5 Strikers native PC format](P5STRIKERS_PC_FORMAT.md)
+- [Atelier Ayesha PS3 exports](AYESHA_PS3_FORMAT.md)
+- [Hyrule, Fire Emblem and Pirate follow-up](FAMILY_NEXT_RESEARCH.md)
+- [Additional editor survey](ADDITIONAL_EDITOR_SURVEY.md)
 
 ## Mechanics and source research
 

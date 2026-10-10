@@ -21,6 +21,8 @@ Officer identity names are not inferred from an unverified roster order.
 The GUI retains Undo, Review Changes, copied-source backups, immutable source
 snapshots and new-destination saving. Active weapon is a choice excluded from
 Max; selecting an empty, unsupported or unowned referenced record is rejected.
+Named choices identify the first/second equipped weapon and its inventory slot,
+without inferring an asset-backed weapon name or granting a new reference.
 Max preserves higher existing numbers. Unknown payload bytes and unusual
 opened values roundtrip unchanged. Native NPC slots 66–92 remain untouched.
 Searchable inspection tables show equipment/guardian references, purchased
@@ -131,8 +133,8 @@ fixture uses `DW7XL_SAVE_COPY`. No edited save was loaded in the game.
 `src/koei_editor/research/dw8e/dw8e_codec.py` now qualifies a strict native-PC codec independently of the
 broader arithmetic-only `src/koei_editor/research/dw8e/dw8e_candidate_codec.py`. It requires an explicit
 SystemSave or BattleSave profile, exact native sizes, both relevant checksums
-and decoded title revision `0x140828F1`. It offers no GUI, file writer or
-guessed gameplay fields. Unknown envelope metadata and original seed are
+and decoded title revision `0x140828F1`. The research codec remains separate
+from the newly implemented SystemSave adapter described below. Unknown envelope metadata and original seed are
 preserved; metadata preceding checksum byte `0x408` is not checksum protected.
 
 The outer header/body boundary is `0x40C`; checksum/seed are `0x408/0x40A`.
@@ -145,6 +147,17 @@ all satisfy the applicable checksum(s), share the title revision, and roundtrip
 unchanged. They are five files from a single public save bundle, not five
 independent players. Private tests use `DW8E_SAVE_FOLDER`. Raw-byte surgical
 serialization tests establish codec behavior only, without gameplay claims.
+
+The development SystemSave adapter adds one carefully qualified field per
+already occupied custom horse: Body Type, manually 0–4. The table begins at
+decoded `0x38104`, contains 150 records of `0x4C` bytes, and each fixed
+record identifier at `+0x44` must equal `30 + slot`. Body Type is `+0x10`;
+all six other appearance positions, actual model identity, movement speed,
+power, abilities, ownership and names remain unchanged. Max does not alter
+this category. Searchable inspection shows all 150 records. See
+[custom-horse proof, tests and limitations](DW8E_CUSTOM_HORSES.md).
+The genuine system sample roundtrips unchanged and qualified body edits are
+surgical; this does not establish an edited game-load test.
 
 Published numerical cipher observations originated in
 [DW8E modding research](https://www.tapatalk.com/groups/koeiwarriors/dw8e-modding-efforts-t17446-s10.html)
@@ -162,7 +175,9 @@ No runtime pointer from a Cheat Engine table is used as a file offset.
 | Empire gold, materials and troops | Plausible 40-record stride observed; published order conflicts; native serializer/controlled before-after saves required |
 | Officer merit, level, health, attack, defense, leadership | Plausible 0x5C-stride records observed; starting identity and field limits not independently proved |
 | Weapon aptitude and stratagem slots | Repeated byte arrays resemble runtime layouts; precise enum semantics, prerequisites and ownership remain unproven |
-| Weapons, items, mounts and reinforcement | Need native inventory schemas, named records, limits, ownership and equipment dependencies |
+| Existing custom horse Body Type | Registered development SystemSave editor: occupied, known original 0–4 only; manual 0–4, no Max or new horses |
+| Other horse sliders, models, speed, power and abilities | Read-only inspection; natural bounds and effect/ownership dependencies remain unqualified |
+| Weapons, items and reinforcement | Need native inventory schemas, named records, limits, ownership and equipment dependencies |
 | Relationships, marriage, children and recruitment | Need campaign record identities and relationship/offspring dependencies |
 | Custom officers, units, scenarios, flags and bases | Separate custom officer files observed; serialization and legitimate bounds not recovered |
 | Campaign choices, fame, territory and completion | Need native campaign enums, ownership and clear/reward dependencies |

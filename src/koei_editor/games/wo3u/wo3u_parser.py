@@ -24,6 +24,11 @@ WEAPON_BASE, WEAPON_STRIDE, WEAPON_COUNT = 0xC8010, 0x1C, 145 * 16
 # annotated native sample. Unmapped IDs remain read only.
 ATTRIBUTE_NAMES = {5: 'Agility', 6: 'Reach', 7: 'Multi', 8: 'Brawn',
                    9: 'Air', 10: 'Frenzy', 11: 'Cavalier', 31: 'Verity'}
+# Native factories and the fusion selector distinguish these binary effects
+# from ranked effects. Untranslated native identities retain numeric labels.
+ATTRIBUTE_COUNT = 58
+BINARY_ATTRIBUTE_IDS = frozenset(range(26, 32)) | frozenset(range(46, 58))
+RANKED_ATTRIBUTE_IDS = frozenset(range(ATTRIBUTE_COUNT)) - BINARY_ATTRIBUTE_IDS
 MATERIAL_SPANS = ((0xE9A8, 16), (0xE9C8, 16), (0xE9E8, 16),
                   (0xEA08, 34), (0xEA3A, 34), (0xEA6C, 34), (0xEAA8, 145))
 
@@ -88,7 +93,7 @@ FORMAT = Format(GAME_ID, 'Warriors Orochi 3 Ultimate Definitive Edition (Steam P
                 SAVE_SIZE, tuple(_static),
                 'Native copied-file validation; edited game loading remains untested. '
                 'Stats, growth points, gems, attribute orbs, crafting materials and '
-                'existing weapon slots/ranked attributes. Story, unlocks and promotions '
+                'existing weapon slots/ranked attributes and reinforcement reduction. Story, unlocks and promotions '
                 'remain unchanged. Five internal officer records are read only.')
 
 
@@ -171,6 +176,14 @@ def _fields(payload):
         slots = payload[offset + 2]
         if slots > 8:
             continue
+        reinforcement = payload[offset + 3]
+        # Native total attack adds this separate byte. Decreasing an ordinary
+        # existing value cannot exceed a grade-specific reinforcement ceiling.
+        if 1 <= reinforcement <= 99:
+            result.append(Field(f'weapon_{index}_reinforcement',
+                                f'Weapon {index + 1} (ID {identity}): Reinforcement (decrease only)',
+                                offset + 3, 1, reinforcement, 'Weapons', index + 1,
+                                maxable=False))
         if slots <= 8:
             result.append(Field(f'weapon_{index}_slots',
                                 f'Weapon {index + 1} (ID {identity}): Attribute slots',
@@ -179,12 +192,13 @@ def _fields(payload):
                                                 payload[offset + 4 + slots:offset + 12])))
         for attribute_slot in range(8):
             identity = payload[offset + 4 + attribute_slot]
-            if (identity not in ATTRIBUTE_NAMES or attribute_slot >= slots
+            if (identity not in RANKED_ATTRIBUTE_IDS and identity != 31
+                    or attribute_slot >= slots
                     or payload[offset + 12 + attribute_slot] == 0):
                 continue
             cap = 1 if identity == 31 else 10
             result.append(Field(f'weapon_{index}_rank_{attribute_slot}',
-                                f'Weapon {index + 1}: {ATTRIBUTE_NAMES[identity]} rank',
+                                f'Weapon {index + 1}: {ATTRIBUTE_NAMES.get(identity, f"Attribute ID {identity}")} rank',
                                 offset + 12 + attribute_slot, 1, cap,
                                 'Weapons', index + 1, minimum=1))
     return tuple(result)
@@ -344,7 +358,8 @@ def inspection_rows(document):
                           if identity != 255)
         rows.append({'group': 'Weapons', 'label': record_label(index + 1, 'Weapons'),
                      'value': f'Weapon ID {identity}; slots {document.payload[offset + 2]}; '
-                              f'attributes: {attrs or "none"}; compatibility/reinforcement read only'})
+                              f'reinforcement {document.payload[offset + 3]}; '
+                              f'attributes: {attrs or "none"}; compatibility read only'})
     return tuple(rows)
 
 
@@ -359,12 +374,17 @@ def field_hint(document, field):
                 'and story are preserved. Stat growth may later change this value. '
                 'Max preserves higher existing values.')
     if mapped[key].group == 'Weapons':
+        if key.endswith('_reinforcement'):
+            return ('Decrease an existing ordinary reinforcement bonus, 0 through its opened value. '
+                    'Weapon grade, compatibility, identity, fusion costs and equipment are preserved. '
+                    'This control is excluded from Max; grade-specific increases remain unavailable.')
         return ('Existing records only. Attribute identities, unknown attributes, weapon ID '
                 'and equipped references are preserved. Verity is binary (rank 1); '
-                'mapped standard attributes use ranks 1..10. Slots cannot hide or activate dormant attributes.')
+                'native ranked effects use ranks 1..10; effects without a proved name retain numeric IDs. '
+                'Slots cannot hide or activate dormant attributes.')
     return ('This resource uses a published edit limit, not a proven natural cap, and is excluded from bulk Max. Only this balance changes. Names for numbered crafting/orb records '
             'are not yet mapped. Max preserves higher existing values; it grants no '
             'character, story, recipe or collection unlocks.')
 
 # Integrity validated by this backend, separately from sample qualification.
-INTEGRITY_KIND = 'checksum'
+INTEGRITY_KIND = 'none'

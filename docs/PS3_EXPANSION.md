@@ -49,7 +49,7 @@ without these variables, genuine qualification is explicitly skipped.
 | SW4 gold and eight gem quantities | Manual editing, gold up to 999,999 and gems up to 99 | PS3 native cap evidence for Max; exact ordered gem-name table. |
 | SW4 weapon proficiency | Read-only levels and four stored EXP values for 55 qualified standard officers | Exact level/EXP threshold and growth dependencies are unqualified; published level-only patches are insufficient. No proficiency writes are exposed. |
 | SW4 character stats, levels/EXP, unlocks | No writes | Published EXP and 50-gauge cheat targets alone do not prove legitimate level/stat/gauge dependencies; native PS3 generation/reward routines or controlled saves required. |
-| SW4 weapons, skills, rarity, reinforcement/fusion | No writes | Published weapon patches fabricate a first weapon and contain placeholder IDs. Existing record ownership, skill ceiling/activation/rank reward dependencies need qualification. |
+| SW4 weapons, skills, rarity, reinforcement/fusion | Searchable read-only 60 × 8 weapon records with eight named skills, stored ceiling/rank and raw flags | Published first-weapon patches contain placeholder IDs. Existing owner/type aliases and PS3 activation/rank reward dependencies still need native routines or controlled action pairs before writes. |
 | SW4 mounts, bonds/bodyguards, Chronicle/story, exploration, stages, movies/music | No writes | Per-system stored identities and dependencies; completion remains separate from resources. |
 | SW4 Japanese profiles | Checksum research only; US adapter rejects them | JP gold layout differs by regional serialized sections; qualify exact scalar offsets separately before registering JP editing. |
 
@@ -101,6 +101,22 @@ copied decrypted NPJB00439 export (with optional `PARAM.SFO` for identity) or
 native PS3 serialization routines is needed before exposing writes; bounds and
 prerequisites for its character growth, weapons/attributes, skills, guards,
 horses, Survival, story/stages and collections remain unqualified.
+
+The two corresponding GameFAQs PS3 save pages (compilation 723490 and standalone
+737594) were revisited and contain no downloadable save entries. Original PS2,
+Xbox, Xbox 360, Vita and HD PS3 files are separate profiles; their offsets and
+product identifiers are not transplanted. The current money/checksum candidate
+does not justify a standalone PS3 writer without native identity/layout evidence.
+
+The SW4 US weapon inspector independently walks the source-documented block at
+`0x3882`: 60 pools × eight `0x22`-byte records end exactly before gold at `0x7842`.
+The public PS3 patch's per-pool stride is `0x110` and its eight-byte arrays locate
+ceilings at `+2`, skill IDs at `+0xA`, ranks at `+0x12`, and raw flags at `+0x1A`.
+The genuine US sample has 180 nonempty records with 1,440 attached skills;
+empty identity 180, unknown IDs/ceilings/ranks/flags are preserved. Named skill
+inspection does not interpret raw flags as qualified PS3 activation controls.
+Nine resource fields remain writable, with existing section checksums and
+decrypted-export/reimport/resign requirements unchanged.
 
 ## Dynasty Warriors 7 Empires: US PS3 system profile
 

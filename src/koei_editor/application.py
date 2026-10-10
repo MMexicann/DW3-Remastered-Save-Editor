@@ -6,6 +6,7 @@ from tkinter import ttk
 from koei_editor.shared.appearance import Appearance, THEMES
 from koei_editor.game_registry import GAMES, ALL_ADAPTERS, get_game
 from koei_editor.supported_games import SUPPORTED_GAMES
+from koei_editor.shared.library_catalog import ALL_PLATFORMS, ALL_SERIES, matching_games, series_for
 import koei_editor.shared.preferences as preferences
 
 VERSION = '1.6'
@@ -45,15 +46,35 @@ class Application(Appearance):
         self.library.pack(fill='both', expand=True)
         ttk.Label(self.library, text='KOEI TECMO', font=(self.font_family, 27, 'bold')).pack(anchor='w', pady=(8, 0))
         ttk.Label(self.library, text='SAVE EDITOR', font=(self.font_family, 17), style='Muted.TLabel').pack(anchor='w')
-        platforms = tuple(dict.fromkeys(game.platform for game in GAMES))
+        self.library_games = tuple(GAMES)
+        platforms = tuple(dict.fromkeys(game.platform for game in self.library_games))
         platform_bar = ttk.Frame(self.library)
         platform_bar.pack(fill='x', pady=(12, 12))
         ttk.Label(platform_bar, text='Choose your platform', font=(self.font_family, 12)).pack(side='left', padx=(0, 12))
         self.platform_choice = tk.StringVar(root, value='Windows PC')
         self.platform_selector = ttk.Combobox(platform_bar, textvariable=self.platform_choice,
-                                             values=platforms, state='readonly', width=20)
+                                             values=(ALL_PLATFORMS,) + platforms, state='readonly', width=20)
         self.platform_selector.pack(side='left')
         self.platform_selector.bind('<<ComboboxSelected>>', self.show_platform)
+        ttk.Label(platform_bar, text='Series', style='Muted.TLabel').pack(side='left', padx=(20, 8))
+        self.series_choice = tk.StringVar(root, value=ALL_SERIES)
+        self.series_selector = ttk.Combobox(platform_bar, textvariable=self.series_choice,
+                                             values=(ALL_SERIES,) + tuple(sorted({series_for(game) for game in self.library_games})),
+                                             state='readonly', width=24)
+        self.series_selector.pack(side='left')
+        self.series_selector.bind('<<ComboboxSelected>>', self.show_platform)
+        search_bar = ttk.Frame(self.library)
+        search_bar.pack(fill='x', pady=(0, 10))
+        ttk.Label(search_bar, text='Find a game', style='Muted.TLabel').pack(side='left', padx=(0, 12))
+        self.library_search = tk.StringVar(root)
+        self.library_search_entry = ttk.Entry(search_bar, textvariable=self.library_search)
+        self.library_search_entry.pack(side='left', fill='x', expand=True)
+        self.library_search_entry.bind('<Return>', self.open_library_match)
+        self.library_search_entry.bind('<Escape>', self.clear_library_filters)
+        ttk.Button(search_bar, text='Clear filters', command=self.clear_library_filters).pack(side='left', padx=10)
+        self.compact_library = tk.BooleanVar(root, value=True)
+        ttk.Checkbutton(search_bar, text='Compact cards', variable=self.compact_library,
+                        command=self.update_library_density).pack(side='left')
         self.library_hint = tk.StringVar(root)
         ttk.Label(self.library, textvariable=self.library_hint,
                   style='Muted.TLabel', wraplength=1000).pack(anchor='w', pady=(0, 18))
@@ -69,7 +90,7 @@ class Application(Appearance):
         self.contact_button.pack(side='left')
         cards = ttk.Frame(self.library)
         cards.pack(fill='both', expand=True)
-        self.platform_frames = {platform: ttk.Frame(cards) for platform in platforms}
+        self.platform_frames = {platform: ttk.Frame(cards) for platform in (ALL_PLATFORMS,) + platforms}
         self.platform_canvases = {}
         self._library_contents = {}
         self._library_windows = {}
@@ -80,7 +101,7 @@ class Application(Appearance):
                                background=THEMES[self.theme_name.get()]['background'])
             canvas.grid(row=0, column=0, sticky='nsew')
             scrollbar = ttk.Scrollbar(frame, orient='vertical', command=canvas.yview)
-            if sum(game.platform == platform for game in GAMES) > 4:
+            if platform == ALL_PLATFORMS or sum(game.platform == platform for game in self.library_games) > 4:
                 scrollbar.grid(row=0, column=1, sticky='ns', padx=(8, 0))
             canvas.configure(yscrollcommand=scrollbar.set)
             content = ttk.Frame(canvas)
@@ -90,13 +111,42 @@ class Application(Appearance):
             canvas.bind('<Configure>', lambda _event, name=platform: self.resize_library_cards(name))
             content.bind('<Configure>', lambda _event, name=platform: self.resize_library_cards(name))
         self.game_buttons = {}
-        for game in GAMES:
-            platform_games = [entry for entry in GAMES if entry.platform == game.platform]
+        self.library_cards = {}
+        self.library_buttons = {}
+        self.library_banners = {}
+        self.library_matches = ()
+        self._library_filter_key = None
+        self.library_empty = {scope: ttk.Label(content, text='No games match. Try another name or clear the filters.',
+                                               style='Muted.TLabel')
+                              for scope, content in self._library_contents.items()}
+        for platform in platforms:
+            self.create_library_cards(platform)
+        self.library_search.trace_add('write', lambda *_args: self.show_platform())
+        root.bind('<Control-f>', self.focus_library_search, add='+')
+        self.show_platform()
+        root.bind('<MouseWheel>', self.scroll_library, add='+')
+        root.bind('<Button-4>', lambda event: self.scroll_library(event, -1), add='+')
+        root.bind('<Button-5>', lambda event: self.scroll_library(event, 1), add='+')
+        for shortcut, method in (('<Control-o>', 'open'), ('<Control-s>', 'save_changes'),
+                                 ('<Control-Shift-S>', 'save_as'), ('<Control-z>', 'undo'), ('<Control-r>', 'review')):
+            root.bind(shortcut, lambda _event, name=method: self.dispatch(name))
+        root.protocol('WM_DELETE_WINDOW', self.close)
+
+    def create_library_cards(self, scope):
+        if scope in self.library_cards:
+            return
+        self.library_cards[scope] = {}
+        self.library_buttons[scope] = {}
+        self.library_banners[scope] = {}
+        games = tuple(game for game in self.library_games
+                      if scope == ALL_PLATFORMS or game.platform == scope)
+        for game in games:
+            platform_games = games
             index = platform_games.index(game)
             compact = len(platform_games) > 3
             columns = 3 if len(platform_games) > 4 else len(platform_games)
             row, column = divmod(index, columns)
-            platform_frame = self._library_contents[game.platform]
+            platform_frame = self._library_contents[scope]
             platform_frame.columnconfigure(column, weight=1, uniform='cards')
             platform_frame.rowconfigure(row, weight=1, uniform='cards')
             card = ttk.Frame(platform_frame, padding=16 if compact else 20, relief='solid')
@@ -107,11 +157,16 @@ class Application(Appearance):
             button = ttk.Button(card, text='Open Editor',
                                 style='Primary.TButton', command=lambda game_id=game.id: self.select_game(game_id))
             button.pack(anchor='w', side='bottom')
-            self.game_buttons[game.id] = button
-            button.bind('<FocusIn>', lambda _event, game_id=game.id: self.reveal_game_button(game_id))
+            self.library_cards[scope][game.id] = card
+            self.library_buttons[scope][game.id] = button
+            if scope != ALL_PLATFORMS:
+                self.game_buttons[game.id] = button
+            button.bind('<FocusIn>', lambda _event, game_id=game.id, name=scope: self.reveal_game_button(game_id, name))
             banner = tk.Canvas(card, width=240, height=100 if compact else 140, background='#202a37', highlightthickness=0)
             banner._decorative = True
-            banner.pack(fill='x', pady=(0, 16))
+            self.library_banners[scope][game.id] = banner
+            if not self.compact_library.get():
+                banner.pack(fill='x', pady=(0, 16))
             # Original vector decoration; no copyrighted game images bundled.
             def paint(_event=None, canvas=banner, entry=game):
                 canvas.delete('all')
@@ -128,7 +183,7 @@ class Application(Appearance):
             # Prevent global canvas appearance from erasing the decorative background.
             banner.configure(background='#202a37')
             labels = [ttk.Label(card, text=game.title, font=(self.font_family, 13 if compact else 14, 'bold'), wraplength=265),
-                      ttk.Label(card, text=game.subtitle, style='Muted.TLabel', wraplength=265),
+                      ttk.Label(card, text=(game.platform + ' · ' if scope == ALL_PLATFORMS and game.platform.casefold() not in game.subtitle.casefold() else '') + game.subtitle, style='Muted.TLabel', wraplength=265),
                       ttk.Label(card, text=game.description, wraplength=265, justify='left')]
             for label, padding in zip(labels, ((0, 0), (5, 10), (0, 0))):
                 label.pack(anchor='w', pady=padding)
@@ -137,14 +192,6 @@ class Application(Appearance):
                 for index, widget in enumerate(widgets):
                     widget.configure(wraplength=min(265, width) if index == 0 else width)
             card.bind('<Configure>', wrap_labels)
-        self.show_platform()
-        root.bind('<MouseWheel>', self.scroll_library, add='+')
-        root.bind('<Button-4>', lambda event: self.scroll_library(event, -1), add='+')
-        root.bind('<Button-5>', lambda event: self.scroll_library(event, 1), add='+')
-        for shortcut, method in (('<Control-o>', 'open'), ('<Control-s>', 'save_changes'),
-                                 ('<Control-Shift-S>', 'save_as'), ('<Control-z>', 'undo'), ('<Control-r>', 'review')):
-            root.bind(shortcut, lambda _event, name=method: self.dispatch(name))
-        root.protocol('WM_DELETE_WINDOW', self.close)
 
     def apply_theme(self, name):
         super().apply_theme(name)
@@ -178,15 +225,15 @@ class Application(Appearance):
         canvas.yview_scroll(units, 'units')
         return 'break'
 
-    def reveal_game_button(self, game_id):
+    def reveal_game_button(self, game_id, scope=None):
         if self.active_game is not None or not self.library.winfo_ismapped():
             return
-        platform = get_game(game_id).platform
+        platform = scope or get_game(game_id).platform
         canvas = self.platform_canvases[platform]
         if not canvas.winfo_ismapped():
             return
         canvas.update_idletasks()
-        button = self.game_buttons[game_id]
+        button = self.library_buttons[platform][game_id]
         content = self._library_contents[platform]
         top = button.winfo_rooty() - content.winfo_rooty()
         bottom = top + button.winfo_height()
@@ -226,18 +273,77 @@ class Application(Appearance):
         self.library.pack(fill='both', expand=True)
         self.active_game = None
         self.breadcrumb.set('Choose your game')
+        self.show_platform()
 
     def show_platform(self, _event=None):
         for frame in self.platform_frames.values():
             frame.pack_forget()
-        platform = self.platform_choice.get()
-        if platform in self.platform_frames:
-            self.platform_frames[platform].pack(fill='both', expand=True)
-        if platform == 'Windows PC':
-            hint = 'Choose a game to edit a Windows PC save copy.'
-        else:
-            hint = f'Choose a game to edit a {platform} save export.'
-        self.library_hint.set(hint)
+        scope = self.platform_choice.get()
+        if scope not in self.platform_frames:
+            return
+        self.create_library_cards(scope)
+        self.platform_frames[scope].pack(fill='both', expand=True)
+        self.library_matches = matching_games(self.library_games, self.library_search.get(),
+                                              scope, self.series_choice.get())
+        content = self._library_contents[scope]
+        for card in self.library_cards[scope].values():
+            card.grid_remove()
+        for row in range(len(self.library_games)):
+            content.rowconfigure(row, weight=0, uniform='')
+        columns = min(3, max(1, len(self.library_matches)))
+        for column in range(3):
+            content.columnconfigure(column, weight=1 if column < columns else 0,
+                                    uniform='cards' if column < columns else '')
+        self.library_empty[scope].grid_remove()
+        if not self.library_matches:
+            self.library_empty[scope].grid(row=0, column=0, sticky='w', pady=20)
+        for index, game in enumerate(self.library_matches):
+            row, column = divmod(index, columns)
+            card = self.library_cards[scope][game.id]
+            card.grid(row=row, column=column, sticky='nsew',
+                      padx=(0, 14) if column < columns - 1 else (0, 0), pady=(0, 14))
+            self.library_buttons[scope][game.id].configure(
+                text='Resume Editor' if game.id in self.sessions else 'Open Editor')
+        count = len(self.library_matches)
+        noun = 'editor' if count == 1 else 'editors'
+        self.library_hint.set(f'{count} {noun} · {scope}. Search by game, edition, platform or feature. '
+                              'Enter opens a single match; Ctrl+F searches across platforms.')
+        filter_key = (scope, self.library_search.get(), self.series_choice.get(), self.compact_library.get())
+        if filter_key != self._library_filter_key:
+            self.platform_canvases[scope].yview_moveto(0)
+        self._library_filter_key = filter_key
+        self.resize_library_cards(scope)
+
+    def update_library_density(self):
+        for scope, banners in self.library_banners.items():
+            for game_id, banner in banners.items():
+                banner.pack_forget()
+                if not self.compact_library.get():
+                    card = self.library_cards[scope][game_id]
+                    labels = [child for child in card.winfo_children() if isinstance(child, ttk.Label)]
+                    banner.pack(fill='x', pady=(0, 16), before=labels[0])
+        self.show_platform()
+
+    def clear_library_filters(self, _event=None):
+        self.series_choice.set(ALL_SERIES)
+        self.library_search.set('')
+        self.show_platform()
+        self.library_search_entry.focus_set()
+        return 'break'
+
+    def focus_library_search(self, _event=None):
+        if self.active_game is not None:
+            return
+        self.platform_choice.set(ALL_PLATFORMS)
+        self.show_platform()
+        self.library_search_entry.focus_set()
+        self.library_search_entry.selection_range(0, 'end')
+        return 'break'
+
+    def open_library_match(self, _event=None):
+        if len(self.library_matches) == 1:
+            self.select_game(self.library_matches[0].id)
+        return 'break'
 
     def dispatch(self, method):
         if self.active_game is not None:

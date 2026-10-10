@@ -85,6 +85,13 @@ data for the standard inspector. Richer read-only views subclass
 `presentation_type`, summary and subtitle. Keep game-specific presentation in
 adapter modules; adding a game should require no shared GUI or CLI ID branches.
 
+For independently proved enumerations, an optional `field_options(document,
+field_id)` hook returns `(native_integer, display_name)` choices. Backend
+validation remains authoritative; choices are excluded from Max unless a
+meaningful natural maximum exists. Proven fixed-width names may declare
+`kind='text'`, with byte/encoding validation in the game backend and
+`maxable=False`. The shared GUI keeps mixed text/numeric bulk edits separate.
+
 Subclass [tests/scalar_contract.py](tests/scalar_contract.py)'s
 `ScalarContractTests` alongside `unittest.TestCase`, providing `game_id` and
 `fixture_bytes()`. Its shared checks exercise no-op round trips, immutable staged

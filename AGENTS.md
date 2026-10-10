@@ -47,6 +47,11 @@ Regenerate the code index and documents with
 `python -m tools.update_supported_games`, then verify them with
 `python -m tools.update_supported_games --check`.
 
+Unreleased preparation must keep the existing version and latest-release links
+accurate. Label the README inventory as development source when it adds support
+beyond the published binary. Keep per-game mechanic checklists and exact input
+blockers current; do not expose private research files in the source manifest.
+
 ## Save-editing rules
 
 Keep parsing out of Tk callbacks and game logic out of the launcher. Reuse the

@@ -82,18 +82,18 @@
       "title": "Dynasty Warriors 6",
       "platform": "Windows PC (legacy edition)",
       "status": "Native PC editor",
-      "evidence": "Genuine 212248-byte native PC save with all 41 officer identities; original one-way officer unlocks and four qualified existing horse combat stats, with read-only named weapons/officers/horses. Byte-exact and surgical tests plus real Tk workflow.",
+      "evidence": "Genuine 212248-byte native PC save with all 41 officer identities; original one-way officer unlocks and four qualified existing horse combat stats, with read-only named weapons/officers/horses. Byte-exact and surgical tests plus real Tk workflow. Existing weapon element choices are independently mapped and surgically verified on genuine records.",
       "needed": "Edited game-load validation and controlled progression, equipment, horse growth/skills and dependency pairs.",
       "editing_verified": true
     },
     {
-      "id": "dw8_empires",
-      "title": "Dynasty Warriors 8: Empires",
+      "id": "dw8e",
+      "title": "Dynasty Warriors 8 Empires",
       "platform": "Windows PC",
-      "status": "Native PC codec qualified; gameplay maps blocked",
-      "evidence": "Five genuine native SystemSave/EmpireSave/QuickSave files qualify exact sizes, title revision 0x140828F1, checksum/cipher profiles and unchanged roundtrips. No gameplay writer is registered.",
-      "needed": "Proven native gameplay field identities, legitimate bounds and dependency maps; console and runtime fields do not establish a fixed disk shift.",
-      "editing_verified": false
+      "status": "Native-file editor implemented",
+      "evidence": "Complete genuine SystemSave files qualify both cipher and checksum. Existing occupied custom-horse body type is independently mapped; six other appearance sliders, stats and abilities remain inspected.",
+      "needed": "Controlled appearance-slider ranges, custom identity/name encoding, campaign resource-owner mappings and edited game reload.",
+      "editing_verified": true
     },
     {
       "id": "dw9_original",
@@ -261,10 +261,10 @@
       "id": "wolong",
       "title": "Wo Long: Fallen Dynasty",
       "platform": "Windows PC",
-      "status": "PC cipher vector; supplied fixture integrity invalid",
-      "evidence": "MIT Katana source provides PC cipher and complete checksum algorithms. Published dummy pair demonstrates encryption but decrypted JSON and data checksum are invalid; no gameplay editor is registered.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
-      "editing_verified": false
+      "status": "Native-file editor implemented",
+      "evidence": "Complete genuine USERDATA qualifies both native checksums. Three available currencies and qualified existing ordinary stack reductions use lexical JSON token edits, preserving owner/header, unknown keys and padding. Named game item catalogs are not yet qualified.",
+      "needed": "Edited game loading; native item-name catalogs and controlled skill, equipment, Virtue/level, flag and reward pairs.",
+      "editing_verified": true
     },
     {
       "id": "stranger",
@@ -305,29 +305,29 @@
     {
       "id": "dw4hyper",
       "title": "Dynasty Warriors 4 Hyper",
-      "platform": "Windows PC (legacy edition)",
-      "status": "Available PC editor; sample check pending",
-      "evidence": "Published native PC editor independently implemented: 331 bounded fields, named officers, semantic items and surgical copy serialization. Main PC library entry; procedural tests pass, independent genuine-file and in-game checks pending.",
-      "needed": "Unchanged native PC save.dat (69,568 bytes), build/region, displayed values and controlled in-game reload.",
-      "editing_verified": false
+      "platform": "Windows PC",
+      "status": "Native-file editor implemented",
+      "evidence": "Independent genuine native file qualifies all 435 available fields and checksum. Owned harness/orb assignments and guarded existing custom cosmetics supplement stats/items/bodyguards. Custom progression writes require already matching original mirrors.",
+      "needed": "Edited game loading; controlled custom progression/mirror, story and reward pairs.",
+      "editing_verified": true
     },
     {
-      "id": "dw5_special",
-      "title": "Dynasty Warriors 5 Special (Asian PC release)",
-      "platform": "Windows PC (legacy edition)",
-      "status": "Candidate only",
-      "evidence": "Native Windows edition requires its own save layout; no applicable PC adapter verified.",
-      "needed": "Edition/region-labelled PC save copies, controlled value pairs and checksum verification.",
-      "editing_verified": false
+      "id": "dw5special",
+      "title": "Dynasty Warriors 5 Special / Shin Sangokumusou 4 Special",
+      "platform": "Windows PC",
+      "status": "Native-file editor implemented",
+      "evidence": "Independent static native save-guide/editor I/O facts and genuine revision3 player file qualify plaintext byte-sum integrity. Manual existing ordinary item ranks and own-family weapon attack adjustment, weight choices and existing attribute ranks preserve acquisition, growth, story and Shura dependencies.",
+      "needed": "Unmodified native control, matching catalogs and one item/weapon/equip/growth/bodyguard/Shura action pair; edited game loading. Other editions/platforms need their own native profile.",
+      "editing_verified": true
     },
     {
-      "id": "p5s",
+      "id": "p5strikers_pc",
       "title": "Persona 5 Strikers",
       "platform": "Windows PC",
-      "status": "PC stream vector verified; integrity pending",
-      "evidence": "Independent byte-stream recovery reproduces a published 32-byte PC vector without an account ID. Read-only structural inspection implemented; no complete sample/checksum/gameplay writer verified.",
-      "needed": "Copied native PC SAVEDATA.BIN with build and displayed slot values; incoming integrity rules and controlled gameplay pairs.",
-      "editing_verified": false
+      "status": "Native-file editor implemented",
+      "evidence": "Two independent full native encrypted PC saves qualify original-stream preservation and plaintext checksum. Occupied slots expose three resource balances and existing named ordinary consumable/cooking stacks.",
+      "needed": "Edited game loading; controlled BOND purchase, growth, Persona, acquisition and quest/reward dependency pairs.",
+      "editing_verified": true
     },
     {
       "id": "dqh1",
@@ -360,10 +360,10 @@
       "id": "dw4xl_ps2",
       "title": "Dynasty Warriors 4: Xtreme Legends (SLUS-20812)",
       "platform": "PlayStation 2",
-      "status": "Available published-format editor; sample check pending",
-      "evidence": "Dedicated USA PS2 PSU parser and surgical payload checksum updates based on the supplied published editor. Separate from PC Hyper; exported memory-card container and metadata preserved. Independent genuine-file validation pending.",
-      "needed": "Unchanged SLUS-20812 .psu export, displayed values and controlled game reload; other wrappers/regions unsupported.",
-      "editing_verified": false
+      "status": "Native-file editor implemented",
+      "evidence": "Two independently shared genuine USA exports qualify payload integrity, 382 surgical fields and Tk save/backup/restore. Owned harness/orb assignments supplement stats/items/bodyguards. Other regions are rejected.",
+      "needed": "Edited game loading; other regions require separate profiles and dependencies.",
+      "editing_verified": true
     },
     {
       "id": "atelier_sophie2",
@@ -434,7 +434,7 @@
       "platform": "Nintendo Switch",
       "status": "Native export resource editor",
       "editing_verified": true,
-      "evidence": "Publicly shared complete modified native export qualifies exact size, marker and stored size. Independently implemented rupees/existing named materials; searchable read-only character and fairy-food records, unchanged and surgical/GUI checks.",
+      "evidence": "Publicly shared complete modified native export qualifies exact size, marker and stored size. Independently implemented rupees/existing named materials; searchable read-only character and fairy-food records, unchanged and surgical/GUI checks. Existing qualified generic weapon stars and ordinary seal KO reductions now surgically tested on a genuine export.",
       "needed": "Edited game loading; natural Max caps, progression/stat coupling, discovery flags and weapon/fairy/story dependencies."
     },
     {
@@ -461,8 +461,26 @@
       "platform": "Windows PC",
       "status": "Native PC weapon-fusion and stock-EXP editor",
       "editing_verified": true,
-      "evidence": "Genuine native revision-2 save qualifies exact layout and byte-sum integrity. Stock EXP, 96 independently bounded officer base-attack fields, existing weapon attack bonus, capacity and already-owned normal attribute ranks are mapped from native setters. Unknown attributes, alchemy, acquisition, level/EXP, proficiency and story are preserved.",
-      "needed": "Edited game loading; matching officer/weapon name assets and controlled officer EXP, proficiency, alchemy, treasure and campaign dependency pairs."
+      "evidence": "Genuine native revision-2 save qualifies exact layout and byte-sum integrity. Stock EXP, 96 independently bounded officer base-attack fields, existing weapon attack bonus, capacity and already-owned normal attribute ranks are mapped from native setters. Unknown attributes, alchemy, acquisition, level/EXP, proficiency and story are preserved. Existing own-pool equipped references and coherent progressed within-level EXP now have guarded manual writers.",
+      "needed": "Edited game loading; matching named catalogs and controlled level/stat RNG, proficiency, alchemy, treasure and campaign dependencies."
+    },
+    {
+      "id": "hyrule_legends",
+      "title": "Hyrule Warriors Legends",
+      "platform": "Nintendo 3DS",
+      "status": "Native-file editor implemented",
+      "editing_verified": true,
+      "evidence": "Genuine public modified native export qualifies size/header. Original implementation edits rupees, existing materials/map cards, generic weapon stars, ordinary seal decreases and owned printable ASCII My Fairy names.",
+      "needed": "Edited game loading; unmodified controls, growth, discovery, fusion, fairy skill/food, DLC map and stage/reward dependencies."
+    },
+    {
+      "id": "ayesha_ps3",
+      "title": "Atelier Ayesha: The Alchemist of Dusk",
+      "platform": "PlayStation 3",
+      "status": "Native decrypted-export editor implemented",
+      "editing_verified": true,
+      "evidence": "Three genuine US/Japanese decrypted exports qualify exact framing/capacity markers; two independently advertised Japanese Cole values corroborate the money field. Manual Cole and conservative existing stack reductions preserve float qualities/properties/effects and distinct memory words.",
+      "needed": "Apollo PFD reimport/resigning and actual game loading; controlled synthesis, use, memory purchase and calendar/event pairs. Other platforms/regions need separate profiles."
     }
   ],
   "scope": "Windows application with explicitly selected game/platform parsers and separate backup identities.",

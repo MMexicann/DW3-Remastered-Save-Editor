@@ -1,4 +1,4 @@
-"""Candidate PC DW4 Hyper tests; procedural fixtures do not qualify real saves."""
+"""PC DW4 Hyper tests; procedural fixtures are distinct from real-save evidence."""
 from dataclasses import replace
 from functools import lru_cache
 import json
@@ -61,10 +61,10 @@ class DW4HyperCandidateTests(unittest.TestCase):
     def tearDown(self):
         self.temporary.cleanup()
 
-    def test_candidate_never_claims_real_sample_qualification(self):
-        self.assertFalse(editor.FORMAT.sample_verified)
-        self.assertIn('genuine PC save sample', editor.FORMAT.note)
-        self.assertEqual(len(editor.fields_for(self.document)), 331)
+    def test_registered_native_sample_status_and_field_scope(self):
+        self.assertTrue(editor.FORMAT.sample_verified)
+        self.assertIn('native PC', editor.FORMAT.note)
+        self.assertEqual(len(editor.fields_for(self.document)), 415)
         self.assertEqual(editor.OFFICER_NAMES[0], 'Zhao Yun')
         self.assertEqual(editor.OFFICER_NAMES[-1], 'Yue Ying')
         self.assertEqual(editor.record_label(1, 'Officers'), 'Zhao Yun')
@@ -95,9 +95,9 @@ class DW4HyperCandidateTests(unittest.TestCase):
                 output = editor.decode(editor.serialize(self.document, {key: value}))
                 self.assertEqual(field.value(output.payload), value)
                 self.assertEqual(output.payload[field.offset], stored)
-        owned = editor.decode(editor.serialize(self.document, {'item_19': 1}))
-        locked = editor.decode(editor.serialize(owned, {'item_19': 0}))
-        self.assertEqual(locked.payload[0x7F6 + 19], 0xFF)
+        owned = editor.decode(editor.serialize(self.document, {'item_31': 1}))
+        locked = editor.decode(editor.serialize(owned, {'item_31': 0}))
+        self.assertEqual(locked.payload[0x7F6 + 31], 0xFF)
 
     def test_all_declared_maxima_preserve_custom_equipment_battle_and_rankings(self):
         changes = editor.maximums(self.document, {})
@@ -231,11 +231,11 @@ class DW4HyperCandidateTests(unittest.TestCase):
 
     def test_read_only_names_equipment_and_progression_do_not_map_writes(self):
         rows = editor.inspection_rows(self.document)
-        self.assertEqual(len(rows), 83)
+        self.assertEqual(len(rows), 126)
         self.assertIn('Red Hare Harness', rows[1]['value'])
         self.assertIn('Lightning Orb', rows[1]['value'])
         self.assertEqual([row['value'] for row in rows if row['label'] == 'Team 1'], ['T1M0'])
-        self.assertIn('Custom1', rows[-4]['value'])
+        self.assertIn('Custom1', next(row['value'] for row in rows if row['label'] == 'Custom slot 1'))
         progress = editor.progression(self.document, 1)
         self.assertIsNone(progress['level'])
         self.assertEqual(progress['experience'], 1200)

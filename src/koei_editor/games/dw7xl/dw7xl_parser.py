@@ -134,7 +134,7 @@ def read_save(path, game_id=GAME_ID):
 
 
 def validate_document(document):
-    if (type(document) is not Document or document.format != FORMAT
+    if (type(document) is not Document or document.format is not FORMAT
             or type(document.raw) is not bytes or type(document.payload) is not bytes):
         raise SaveError('A frozen native PC DW7 XL document is required.')
     payload, seed = _decode_snapshot(document.raw)
@@ -322,6 +322,30 @@ def field_hint(document, field):
     return ('Native PC reader bounds: health 0..1,000; attack/defense 1..1,400; '
             'power/speed 0..100. Max preserves higher existing values. '
             'Weapon seals, titles, historical totals and story clears remain unchanged.')
+
+
+def field_options(document, field):
+    """Existing equipped choices, with the same ownership guard as staging."""
+    validate_document(document)
+    key = field.id if isinstance(field, Field) else field
+    if type(key) is not str:
+        raise SaveError('Choose a mapped DW7 XL field name.')
+    if key not in FIELD_MAP:
+        raise SaveError('The requested field is not mapped for DW7 XL PC.')
+    if not key.endswith('_active_weapon'):
+        return ()
+    mapped = FIELD_MAP[key]
+    start = OFFICER_BASE + (mapped.slot - 1) * OFFICER_STRIDE
+    options = []
+    for value, name in ((0, 'First equipped weapon'), (1, 'Second equipped weapon')):
+        try:
+            _validate_active_weapon(document, mapped, value)
+        except SaveError:
+            continue
+        reference = int.from_bytes(document.payload[start + 18 + value * 2:
+                                                    start + 20 + value * 2], 'little')
+        options.append((value, f'{name} · inventory slot {reference + 1}'))
+    return tuple(options)
 
 # Integrity validated by this backend, separately from sample qualification.
 INTEGRITY_KIND = 'checksum'

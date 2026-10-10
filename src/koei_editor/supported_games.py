@@ -33,6 +33,12 @@ from .game_registry import GAMES
 # dw7_ps3: DYNASTY WARRIORS 7 / US/EU · decrypted APP.BIN [PlayStation 3]
 # dw7e_ps3: DYNASTY WARRIORS 7 EMPIRES / US · decrypted SYSTEM DATA.BIN [PlayStation 3]
 # sw4_ps3: SAMURAI WARRIORS 4 / US · decrypted DATA.BIN [PlayStation 3]
+# dw8e: DYNASTY WARRIORS 8 EMPIRES / Windows PC · SystemSave.dat [Windows PC]
+# wolong: WO LONG: FALLEN DYNASTY / Windows PC · USERDATA [Windows PC]
+# p5strikers_pc: PERSONA 5 STRIKERS / Windows PC · SAVEDATA.BIN [Windows PC]
+# hyrule_legends: HYRULE WARRIORS LEGENDS / Nintendo 3DS · zmha.bin [Nintendo 3DS]
+# ayesha_ps3: ATELIER AYESHA / The Alchemist of Dusk · PS3 US/Japanese export [PlayStation 3]
+# dw5special: DYNASTY WARRIORS 5 SPECIAL / Shin Sangokumusou 4 Special · Windows PC [Windows PC]
 # END GENERATED SUPPORTED GAME INDEX
 
 

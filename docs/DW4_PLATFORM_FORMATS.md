@@ -1,9 +1,10 @@
 # Dynasty Warriors 4: PC and PS2 formats
 
 DW4 Hyper and DW4 Xtreme Legends use separate editors and platform selections.
-Both implementations follow published format research. **Independent validation
-against genuine saves and edited game load/re-save checks remains pending.**
-“Published format” does not mean “independently verified editing.”
+Both implementations follow independently reimplemented published format facts.
+A public native Hyper save and two independently shared USA XL saves qualify
+identity, integrity and surgical edits. **Edited game load/re-save checks remain
+unperformed.** Native file qualification and game acceptance are separate.
 
 ## Provenance
 
@@ -17,7 +18,8 @@ The supplied references were inspected at these commits:
   memory-card exports and author-reported controlled difficulty/stat/item edits.
 
 These are source-backed observations, not official format specifications. Neither
-repository supplied a complete genuine fixture for independent local validation.
+repository supplied a complete genuine fixture. Public samples were acquired
+separately, rather than treating an editor's procedural example as a player save.
 The Python implementations are independently authored; external implementation
 code, screenshots, icons and game saves are not shipped with the application.
 
@@ -57,16 +59,34 @@ Shared published structures include 42 standard officer records at `0xB8` with
 and four bodyguard team records at `0x508` with 96-byte stride. Shared locations
 do not imply shared validation rules.
 
-The Hyper adapter exposes 331 bounded integer fields: standard officer playable
+The Hyper adapter exposes 415 base bounded integer fields: standard officer playable
 flags, Life/Musou/Attack/Defense, character EXP, weapon EXP, 32 semantic items,
-four bodyguard point values and difficulty. Equipped item references, bodyguard
-names and custom character presence are inspected; custom records, equipment,
-challenge rankings and suspended battle data are preserved.
+four bodyguard point values, difficulty and 84 harness/orb assignments. Existing
+identified custom appearances expose up to five cosmetic fields each: color,
+head, chest, arms/legs and hip. Named choices distinguish gender-specific clothing.
+Creation, gender, moveset, weapon model, names and unknown metadata stay unchanged.
+Unknown cosmetic enums remain read only. The genuine sample exposes 435 fields.
 
-The XL adapter's scope is 298 bounded integer fields: 42 officers' four stats,
+An existing custom's five manual stat/EXP controls are additionally offered only
+when its 24-byte appearance/roster originals already match, its model copies are
+known and equal, and its duplicate Attack/Defense values agree. These writes
+synchronize only the mapped value across all corresponding copies. The supplied
+public Hyper reference has four differing appearance templates and grown roster
+records: its stat/EXP controls are therefore excluded, while its cosmetics remain
+editable. No edit repairs or reconciles different templates. Up to 455 fields can
+appear on a fully matching layout; those matching-record tests are procedural.
+Custom stat 255 and EXP 65,535 are manual storage bounds, excluded from Max.
+
+Equipment, bodyguard names, custom identities, challenge top-10 tables and the
+suspended timer are searchable inspections. Challenge scores distinguish points
+from Time Attack's frames at 60 fps. Suspended phase bytes can change within a
+battle and are not story-clear flags. General equipment slots and live battle
+entities remain unchanged.
+
+The XL adapter's scope is 382 bounded integer fields: 42 officers' four stats,
 character points and weapon EXP, 41 semantic items, four bodyguard point values
-and difficulty. It preserves equipment references and bodyguard names for
-inspection. The officer record's first byte is published as a constant marker;
+and difficulty, plus 84 owned harness/orb assignments. General equipment
+references and bodyguard names remain read only. The officer record's first byte is published as a constant marker;
 it is not treated as Hyper's playable/unlocked flag.
 
 | Value | Published meaning and editing bound |
@@ -82,7 +102,13 @@ it is not treated as Hyper's playable/unlocked flag.
 Weapon levels are reported as EXP-derived by the supplied research. Bodyguard
 stats and guard availability are reported as point-derived. Equipment-slot
 availability grows with weapon progression; granting items must preserve existing
-equipment references. These relationships still require independent game checks.
+equipment references. Harness slot 0 permits owned IDs 19–23 and orb slot 1
+permits owned IDs 13–18; each platform retains its own empty sentinel. Pending
+item grants can precede equipment assignments. Locking an owned item is rejected
+while an officer still equips it. Granting a rare item does not clear its stage.
+General-slot availability thresholds and their weapon-progression dependency
+remain unqualified, so slots 2–7 are not writable. These relationships still
+require independent game-load checks.
 
 Bulk Max uses the published weapon/item limits and preserves higher existing
 weapon EXP. Uncertain stat/character-point/bodyguard-point bounds and difficulty
@@ -101,13 +127,44 @@ the selected export or live save.
 
 ## Samples needed for independent qualification
 
+Public qualification sources, kept private and never included in the project:
+
+- [SaveGame.Pro native Hyper save](https://savegame.pro/pc-dynasty-warriors-4-hyper-savegame/),
+  described as 100% completed with all items, weapons and characters unlocked.
+  The save qualifies exact size, standard identities, trailer and checksum.
+- [GameFAQs USA XL archives](https://gamefaqs.gamespot.com/ps2/915429-dynasty-warriors-4-xtreme-legends/saves),
+  entries 11988 (CodeBreaker) and 6829 (MAX Drive), independently shared completed
+  states. Both contain the exact 34,064-byte `BASLUS-20812` gameplay file.
+  Japanese entry 4640 and European entry 5256 were independently extracted and
+  correctly rejected by the USA adapter.
+
+Archive conversion was performed privately using Ross Ridge's public-domain
+[mymc archive facts](https://github.com/ps2dev/mymc/blob/master/ps2save.py),
+its LZARI codec and MIT/public-domain
+[mymc-py directory packing](https://github.com/G4brym/mymc-py). CodeBreaker RC4
+and zlib and MAX Drive LZARI are archive compression/encryption, distinct from
+the plaintext native XL gameplay format. Conversion preserves native file bytes;
+MAX archives do not supply original memory-card timestamps, so generated PSU
+metadata is not claimed to be an original console-produced PSU export. No
+converter, external implementation or sample is shipped. Neither gameplay
+reference repository declares a licence; its factual offsets and names informed
+independent Python implementations rather than a source-code import.
+
+Focused checks include per-field genuine surgical edits (435 Hyper fields and
+382 XL fields), unchanged roundtrips, exact source preservation, integrity,
+unknown bytes/container files/padding, copied-file Tk named equipment/custom
+controls, Review, Undo, Max exclusion, backup and same-bytes validated restore.
+Fixtures are opt-in through `DW4HYPER_SAVE_COPY` and `DW4XL_PSU_COPY`; unavailable
+fixtures or displays produce skips. No game binary is executed.
+
 Provide original, unchanged copies privately and identify edition, region and
 game build:
 
-- Hyper: native 69,568-byte `save.dat`; displayed officer/item/weapon values;
-  normal-save and suspended-save examples if both are to be qualified.
-- XL: a complete USA `SLUS-20812` `.psu` export retaining directory entries,
-  metadata, icon files and padding. Include the exact 34,064-byte game entry.
+- Hyper: additional normal/suspended native copies with displayed values; an
+  in-game-created custom and a controlled growth pair to distinguish template
+  stats from grown roster stats before editing mismatched records.
+- XL: an original USA `SLUS-20812` `.psu` export retaining directory entries,
+  metadata, icons and padding, to complement converted genuine archive evidence.
 - For each platform: an unchanged control pair and separate before/after pairs
   changing one stat, one character EXP/point value, one weapon EXP/special weapon,
   one item, one bodyguard point value or difficulty through the game.
@@ -117,3 +174,17 @@ game build:
 Other PS2 regions, original DW4, Xbox editions and modified formats are separate
 verification targets. No save sample, console key or account data belongs in a
 source or release package.
+
+## Mechanics coverage and remaining boundaries
+
+| System | Implemented scope / specific remaining blocker |
+| --- | --- |
+| Standard stats and character EXP/points | Bounded manual edits; natural stat caps and EXP/stat growth thresholds are not qualified for automatic Max. |
+| Weapons | Published EXP-derived progression and each platform's special weapon values; general-slot thresholds need controlled progression/equipment pairs. No XL Lv.11 value is offered in Hyper. |
+| Items and equipped harness/orb | Named levels/ownership and category-checked owned assignments; general slots require their availability rules. No stage/rare-item reward completion is bundled in grants. |
+| Bodyguards | Team points edit; names inspected. Natural thresholds, count/type/growth effects and safe name encoding writes need action pairs. |
+| Hyper custom characters | Existing identified cosmetics and matching-record manual stat/EXP edits; differing template/grown roster data preserved. Creation, deletion, gender/moveset/model changes need full coupled initialization and stat-generation qualification. |
+| Hyper challenge rankings | Sorted record order, officer IDs and points/frame scores inspected. Editing needs legitimate score bounds and safe insertion/sort/reward dependencies. |
+| Hyper suspended battle | Timer snapshot inspected. Linked alive/dead state, leader HP, aggregate guard life/count, morale, guard availability and variable squad identities need controlled suspend/resume pairs; isolated trainer targets are insufficient. |
+| Campaigns, stages, movies/music and history | Unknown completion and reward flags retained; content dictionaries and prerequisite relationships remain unqualified. |
+| Other PS2 regions, base DW4, legacy SW2/XL/Xbox | Distinct product, serialization and platform profiles required; no region substitution or console-to-PC offset fallback. |

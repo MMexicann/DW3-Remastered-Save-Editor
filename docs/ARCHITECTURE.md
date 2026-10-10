@@ -39,6 +39,12 @@ The library filters by platform and scrolls when needed. Theme preferences store
 only the Light/Dark choice, separately from saves; smoke/self-test flows do not
 write application preferences.
 
+Pure `shared/library_catalog.py` filtering searches names, editions, short IDs,
+platforms and features without probing saves or selecting parsers. Series and
+platform filters combine, with a lazily created All-platform view. Compact cards
+and retained-session buttons keep large inventories usable. Ctrl+F searches all
+platforms; Enter opens only a single result.
+
 Run `python -m tools.update_supported_games` when support changes. Its generated
 code index, [supported-game document](SUPPORTED_GAMES.md) and README table must
 agree with the registry, runtime metadata and tested behavior.
@@ -61,8 +67,11 @@ Visible applies only to filtered rows without dropping hidden pending edits.
 [scalar_presentation.py](../src/koei_editor/shared/scalar_presentation.py)
 defines data-only inspection tables, hints and filename guidance. A game can
 provide a presentation class or optional backend hooks without introducing
-game-ID branches into the shared GUI. Inspectors search all columns and preserve
-original record order.
+game-ID branches into the shared GUI. Inspectors search all columns. Table sorting changes only display order and
+preserves native row IDs/selection; sorting persists when scalar rows refresh.
+Selected displayed rows can be copied with headers using Ctrl+C or the inspector
+button. Named-choice and text hooks remain optional and backend-validated;
+all game encodings and prerequisites stay in the dedicated backend.
 
 [verified_editor.py](../src/koei_editor/shared/verified_editor.py) contains the
 existing shared native DW8 XL/PW3 layouts. Other scalar games retain their own

@@ -229,7 +229,9 @@ class OrochiZFormatTests(unittest.TestCase):
         count = 0
         for field in backend.fields_for(doc):
             original = field.value(raw)
-            value = field.minimum if original != field.minimum else field.maximum
+            options = backend.field_options(doc, field.id)
+            value = (next(number for number, _label in options if number != original)
+                     if options else field.minimum if original != field.minimum else field.maximum)
             result = backend.serialize(doc, {field.id: value})
             self.assertEqual(field.value(backend.decode(result).payload), value)
             allowed = set(range(field.offset, field.offset + field.size)) | set(

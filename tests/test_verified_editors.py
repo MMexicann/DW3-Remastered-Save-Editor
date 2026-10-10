@@ -283,6 +283,8 @@ class VerifiedEditorTests(unittest.TestCase):
                      r'C:\Users\Player\Documents\KoeiTecmo\Dynasty Warriors 9 for Steam\save.dat',
                      r'C:\Users\Player\Documents\KoeiTecmo\Dynasty Warriors 9 Empires\save.dat',
                      'Steam/userdata/123/456/remote/save.dat',
+                     'AppData/Roaming/SEGA/Steam/P5S/example/SAVEDATA.BIN',
+                     'Documents/KOEI/Shin Sangokumusou 4 Special/Savedata/save.dat',
                      'KoeiTecmo/BERSERK and the Band of the Hawk/SAVEDATA/save.dat'):
             with self.assertRaises(SaveError):
                 safe_path(self.folder/name)
@@ -310,7 +312,7 @@ class SupportGateTests(unittest.TestCase):
     def test_catalog_cannot_add_an_unverified_editor(self):
         entries = load_catalog()
         self.assertGreater(len(entries), 30)
-        self.assertTrue(all(entry['platform'].startswith('Windows PC') or entry['platform'] in {'PlayStation 2', 'PlayStation 3', 'Wii U', 'Nintendo Switch'} for entry in entries))
+        self.assertTrue(all(entry['platform'].startswith('Windows PC') or entry['platform'] in {'PlayStation 2', 'PlayStation 3', 'Wii U', 'Nintendo Switch', 'Nintendo 3DS'} for entry in entries))
         self.assertEqual({entry['id'] for entry in entries if entry['editing_verified']}, {game.id for game in GAMES if game.editing_verified})
         catalog = {entry['id']:entry for entry in entries}
         self.assertEqual(catalog['sw5']['status'], 'Static PC cipher candidate; native qualification blocked')

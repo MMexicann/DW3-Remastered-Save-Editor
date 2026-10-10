@@ -47,9 +47,10 @@ class DefinitiveFormatTests(unittest.TestCase):
 
     def test_existing_named_ordinary_records_only_and_no_bulk_max(self):
         document = p.decode(procedural_raw())
-        self.assertEqual(set(p.field_map(document)), {'rupees', 'material_1afe'})
-        self.assertEqual(p.maximums(document, {}), {})
-        self.assertEqual(p.maximums(document, {'material_1afe': 50}), {'material_1afe': 50})
+        self.assertEqual(set(p.field_map(document)), {'rupees', 'material_1afe', 'weapon_1_stars', 'weapon_1_skill_1_kos'})
+        self.assertEqual(p.maximums(document, {}, 'Material inventory'), {})
+        self.assertEqual(p.maximums(document, {}, 'Resources'), {})
+        self.assertEqual(p.maximums(document, {'material_1afe': 50}, 'Material inventory'), {'material_1afe': 50})
         for key in ('material_1b00', 'material_1b02', 'food_2620', 'character_0_level'):
             with self.assertRaises(SaveError):
                 p.stage(document, {}, key, 1)
@@ -77,7 +78,7 @@ class DefinitiveFormatTests(unittest.TestCase):
         unusual = bytearray(procedural_raw())
         unusual[p.RUPEES_OFFSET:p.RUPEES_OFFSET + 4] = (20_000_000).to_bytes(4, 'little')
         doc = p.decode(unusual)
-        self.assertEqual(p.maximums(doc, {}), {})
+        self.assertEqual(p.maximums(doc, {}, 'Resources'), {})
         self.assertEqual(p.stage(doc, {'rupees': 1}, 'rupees', 20_000_000), {})
 
     def test_readonly_characters_and_food_preserved(self):
@@ -87,7 +88,7 @@ class DefinitiveFormatTests(unittest.TestCase):
         self.assertEqual(sum(row['group'] == 'Fairy food' for row in rows), 129)
         self.assertEqual(p.serialize(document, {'rupees': 1})[0x3307A:], document.raw[0x3307A:])
 
-    def test_weapon_inspector_includes_yuga_unknown_and_no_weapon_writer(self):
+    def test_weapon_inspector_includes_yuga_unknown_and_targeted_star_writer(self):
         document = p.decode(procedural_raw())
         rows = p.weapons(document)
         self.assertEqual(len(rows), 1)
@@ -95,8 +96,8 @@ class DefinitiveFormatTests(unittest.TestCase):
         self.assertEqual(rows[0]['skills'][0], (5, 1000))
         self.assertEqual(rows[0]['stars'], 4)
         self.assertEqual(p.WEAPON_BASE + p.WEAPON_STRIDE * p.WEAPON_COUNT, p.SAVE_SIZE)
-        with self.assertRaises(SaveError):
-            p.stage(document, {}, 'weapon_1_stars', 5)
+        edited = p.serialize(document, p.stage(document, {}, 'weapon_1_stars', 5))
+        self.assertEqual(edited[p.WEAPON_BASE + 0x14:p.WEAPON_BASE + 0x16], b'\x05\x00')
         unknown = bytearray(document.raw)
         unknown[p.WEAPON_BASE + 0x10:p.WEAPON_BASE + 0x12] = (65534).to_bytes(2, 'little')
         row = p.weapons(p.decode(unknown))[0]

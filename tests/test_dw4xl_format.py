@@ -83,12 +83,12 @@ class DW4XLPS2Tests(unittest.TestCase):
     def tearDown(self):
         self.temporary.cleanup()
 
-    def test_platform_identity_and_pending_real_sample_status(self):
+    def test_platform_identity_and_qualified_real_sample_status(self):
         self.assertEqual(editor.GAME_ID, 'dw4xl_ps2')
-        self.assertFalse(editor.FORMAT.sample_verified)
+        self.assertTrue(editor.FORMAT.sample_verified)
         self.assertEqual(editor.FORMAT.inner_size, 34064)
         self.assertEqual(editor.FORMAT.size, 8 * 1024 * 1024)
-        self.assertEqual(len(editor.fields_for(self.document)), 298)
+        self.assertEqual(len(editor.fields_for(self.document)), 382)
         self.assertEqual(editor.record_label(1), 'Zhao Yun')
         self.assertEqual(editor.record_label(42, 'Weapons'), 'Yue Ying')
 
@@ -288,7 +288,7 @@ class DW4XLPS2Tests(unittest.TestCase):
     def test_forged_snapshot_offset_entries_payload_and_layout_rejected(self):
         for document in (replace(self.document, payload=b'bad'), replace(self.document, payload_offset=0),
                          replace(self.document, entries=()), replace(self.document, seed=1),
-                         replace(self.document, format=replace(editor.FORMAT, sample_verified=True))):
+                         replace(self.document, format=replace(editor.FORMAT, sample_verified=False))):
             with self.assertRaises(SaveError):
                 editor.serialize(document, {})
         with self.assertRaises(TypeError):

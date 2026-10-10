@@ -1,4 +1,4 @@
-"""Named DW6 PC unlocks, horse stats and searchable read-only inventories."""
+"""Named DW6 PC unlocks, horse stats and existing weapon element choices."""
 from tkinter import ttk
 
 from koei_editor.games.dw6 import dw6_parser
@@ -10,7 +10,7 @@ class DW6Presentation(ScalarPresentation):
     def inspection_tables(self, document):
         rows = self.backend.inspection_rows(document)
         notes = {'Officers': 'Level, EXP, title, outfit, kills and skill-tree dependencies remain read only.',
-                 'Weapons': 'Search by officer, weapon name or ID. Identity, damage bonuses, elements and skill masks remain read only.',
+                 'Weapons': 'Search by officer, weapon name or ID. Choose the element of an existing known weapon; identity, damage bonus and skill mask stay unchanged.',
                  'Horses': 'Only qualified existing combat stats are writable. EXP, type, elements, skills and descriptors remain read only.'}
         return tuple(InspectionTable(group, ('Record', 'Opened data'),
                                      tuple((row['label'], row['value']) for row in rows if row['group'] == group),
@@ -23,7 +23,7 @@ class Editor(ScalarEditor):
     backend = dw6_parser
     presentation_type = DW6Presentation
     subtitle = 'Windows PC save editor'
-    summary = 'Playable officer unlocks, existing horse combat stats and searchable officer / weapon inspection.'
+    summary = 'Playable officer unlocks, existing horse combat stats, named weapon element choices and searchable records.'
 
     def __init__(self, root, parent=None, theme='Light', on_theme=None):
         super().__init__(root, parent, theme, on_theme)

@@ -36,15 +36,17 @@ Game-mechanics tests cover the inferred/read-only PW3 progression model,
 bounded-limit behavior, higher-value preservation and read-only inspection.
 See ../docs/GAME_MECHANICS.md for source evidence and unresolved gameplay dependencies.
 
-`test_dw4hyper_format.py` uses procedural fixtures for the explicitly unqualified
-PC format. To run its genuine-file check, set `DW4HYPER_SAVE_COPY` to an
+`test_dw4hyper_format.py` uses procedural fixtures alongside independent genuine-file qualification of
+the native PC profile. To run its genuine-file check, set `DW4HYPER_SAVE_COPY` to an
 unchanged copied native Hyper `save.dat` outside live save folders. The real-file
 case skips without that path; procedural tests never imply genuine sample validation.
 
 `test_p5s_codec.py` reproduces the attributed 32-byte PC stream vector and checks
-read-only candidate spans; full-file integrity remains unverified.
+read-only candidate spans; its research-only partial vector is distinct from complete native PC
+qualification in `test_p5strikers_pc.py` and the independent review tests.
 `test_dw8e_candidate_codec.py` exercises independent procedural envelope/checksum
-arithmetic; no Empires gameplay schema or native sample is assumed.
+arithmetic; the newer registered custom-horse editor and genuine
+SystemSave checks live in `test_dw8e_horses.py`.
 
 `test_dw4xl_format.py` covers the separate USA PS2 PSU parser with procedural
 containers, directory-order/padding preservation and native inner checksum
@@ -53,3 +55,13 @@ explicit copied export. Console metadata and PC Hyper saves are rejected.
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for the mapping and copied-save workflow
 and [AGENTS.md](../AGENTS.md) for project conventions.
+
+
+Unreleased expansion tests cover DW5 Special, DW8 Empires custom horses, Hyrule
+Warriors Legends, native PC Persona 5 Strikers, Wo Long and decrypted PS3 Ayesha
+separately. Optional fixture environment variables are documented in their game
+notes; private native bytes never enter the source tree. Independent audit tests
+exercise field eligibility, malformed staging, all-field surgical edits and
+preserved integrity/dependencies. Library search, named choices, text controls,
+column sorting, Ctrl+C and existing editor sessions have real Tk regression
+checks. Native-file tests are not actual edited game-load tests.

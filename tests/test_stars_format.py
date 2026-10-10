@@ -233,7 +233,7 @@ class StarsFormatTests(unittest.TestCase):
 
     def test_history_inspection_keeps_available_and_earned_distinct(self):
         rows = backend.inspection_rows(self.document)
-        self.assertEqual(len(rows), 15)
+        self.assertEqual(len([row for row in rows if row['group'] != 'Hero cards']), 15)
         self.assertTrue(any(row['label'] == 'Lifetime earned gold' and '213,456' in row['value']
                             for row in rows))
         self.assertTrue(any('current campaign slot 4' in row['value'] for row in rows))

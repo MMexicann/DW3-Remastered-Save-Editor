@@ -148,6 +148,13 @@ An optional `SW4DX_SAVE_COPY` environment variable points to a private genuine
 copy for the native qualification test. Without it, that test is skipped.
 GUI tests skip when Tk cannot create a display.
 
+An additional supplied current-revision `SAVEDATA0000.dat` qualifies all
+integrity layers and 55 officer identities, with 1,834 dynamic writable fields
+in its particular occupied-record state. Its unchanged roundtrip and the
+existing native field/GUI regressions pass. The unreleased follow-up also
+rejects negative, non-integer and unknown pending edits before Max can transform
+them; Max cannot hide an invalid staged change. No game-load check is claimed.
+
 ### Per-mechanic coverage checklist
 
 | Mechanic | Status / precise remaining blocker |
@@ -197,9 +204,21 @@ save classes. It confirms multiple systems rather than a single money block.
 A [Steam report of profile-locked saves](https://steamcommunity.com/app/1591530/discussions/0/592900638661202756/)
 corroborates the owner-dependent native key path.
 
+Two independently described public saves were subsequently acquired from
+[SaveGame.Pro](https://savegame.pro/pc-samurai-warriors-5-savegame/): a completed
+state and a rare-weapon state. Each archive contains an actual 4,493,236-byte
+`SAVEDATA00.BIN`; their ciphertext differs. They contain no matching owner
+context or configuration. Acquisition removes the missing-file blocker but
+does not establish the correct owner key, plaintext gameplay schema or safe
+editing. The native CBC framing, tail IV seed, key/IV byte generators and
+16-byte fingerprint were independently checked. All five native legacy
+selector keys were tested against both ciphertexts; none matched the native
+fingerprint. Their normal owner-derived keys remain unavailable. The game
+executables remain unexecuted.
+
 | Important SW5 mechanic | Specific blocker |
 | --- | --- |
-| Native decode/encode and integrity | No genuine qualified native save with its correct save-owner context was obtained. Header offsets/seed transformation variants, ciphertext framing and gameplay integrity need independent save confirmation before writes |
+| Native decode/encode and integrity | Two genuine encrypted native slots and native CBC framing are qualified, but all five legacy fallback keys fail both samples. Matching numeric save-owner context is needed for the normal key path; decrypted title/revision identity and gameplay integrity must then be independently proved before writes |
 | Money and castle materials / facility upgrades | Common/residence/stable/shop classes found; persistent field maps, caps and facility cost/reward dependencies not qualified in a decoded genuine save |
 | Officers, levels/EXP/stats, unlocks | Officer save class found; serialized record count/layout and derived level/stat/reward dependencies remain unqualified |
 | Weapon-type mastery / proficiency | Distinct from weapon levels and officer levels; stored-vs-derived values and thresholds unqualified |
