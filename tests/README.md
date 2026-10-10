@@ -53,3 +53,11 @@ explicit copied export. Console metadata and PC Hyper saves are rejected.
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for the mapping and copied-save workflow
 and [AGENTS.md](../AGENTS.md) for project conventions.
+
+`test_rotk13_format.py` covers original PC XIII revision-14 additive encoding,
+preview integrity, tagged campaign identity, city quantities, storage boundaries,
+unknown-reference preservation, shared scalar contracts and safe copy/restore.
+`test_rotk13_gui.py` exercises the actual shared Tk workflow. Set
+`ROTK13_SAVE_COPIES` to a private directory of complete reviewed `.s13` campaign
+copies to enable genuine-file and genuine-GUI checks. These tests do not establish
+an edited game load. See [the format evidence](../docs/ROTK13_FORMAT.md).

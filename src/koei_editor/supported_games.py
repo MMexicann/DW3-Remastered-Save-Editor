@@ -33,6 +33,7 @@ from .game_registry import GAMES
 # dw7_ps3: DYNASTY WARRIORS 7 / US/EU · decrypted APP.BIN [PlayStation 3]
 # dw7e_ps3: DYNASTY WARRIORS 7 EMPIRES / US · decrypted SYSTEM DATA.BIN [PlayStation 3]
 # sw4_ps3: SAMURAI WARRIORS 4 / US · decrypted DATA.BIN [PlayStation 3]
+# rotk13_pc: ROMANCE OF THE THREE KINGDOMS XIII / Original PC · revision 14 · TC [Windows PC]
 # END GENERATED SUPPORTED GAME INDEX
 
 

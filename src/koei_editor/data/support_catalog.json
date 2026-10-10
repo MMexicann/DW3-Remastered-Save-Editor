@@ -463,6 +463,15 @@
       "editing_verified": true,
       "evidence": "Genuine native revision-2 save qualifies exact layout and byte-sum integrity. Stock EXP, 96 independently bounded officer base-attack fields, existing weapon attack bonus, capacity and already-owned normal attribute ranks are mapped from native setters. Unknown attributes, alchemy, acquisition, level/EXP, proficiency and story are preserved.",
       "needed": "Edited game loading; matching officer/weapon name assets and controlled officer EXP, proficiency, alchemy, treasure and campaign dependency pairs."
+    },
+    {
+      "id": "rotk13_pc",
+      "title": "Romance of the Three Kingdoms XIII",
+      "platform": "Windows PC",
+      "status": "Original revision-14 city-resource and development editor",
+      "editing_verified": true,
+      "evidence": "Seven public native TC original PC campaign copies independently decoded with matching preview checksums and native tagged city records. Original native serialization and field getters qualify city money, supplies, separate population components, wounded troops, fealty, commerce/farming/culture and spear/horse/bow proficiency. Surgical edits preserve district/force references, preview and unrelated bytes; no invented gameplay Max.",
+      "needed": "Edited in-game load/re-save; exact executable build provenance, independent additional regional fixtures, Power Up Kit profiles, officer attribute serialization, relationships/equipment and other dependencies."
     }
   ],
   "scope": "Windows application with explicitly selected game/platform parsers and separate backup identities.",

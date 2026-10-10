@@ -43,6 +43,8 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Sophie 2 tagged format](ATELIER_SOPHIE2_FORMAT.md) and
   [inventory coverage](SOPHIE2_COVERAGE.md)
 - [Nioh 3 native integrity research](NIOH3_RESEARCH.md)
+- [Romance of the Three Kingdoms XIII original PC format](ROTK13_FORMAT.md)
+- [Strategy-game candidates and remaining inputs](STRATEGY_EXPANSION.md)
 
 ## Mechanics and source research
 

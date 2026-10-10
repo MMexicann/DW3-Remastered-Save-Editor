@@ -64,6 +64,16 @@ also requires its original source and an explicit compatible licence or maintain
 permission. A binary-only download or commercial product screenshot supplies
 neither that permission nor a tested native save mapping.
 
+## Strategy-game profiles
+
+Original PC XIII revision-14 city quantities are implemented. Additional regions,
+exact executable build/DLC provenance, officer serialization and dependencies,
+and edited game load/re-save remain unqualified. XIV requires a verified `LWC`
+decoder/encoder plus integrity and record mappings. Sphere of Influence and
+Taishi require accessible complete native campaigns and edition-specific disk
+codec/field evidence. See [the candidate review](STRATEGY_EXPANSION.md) for exact
+download, format and mechanics blockers; system/unlock files do not fill those gaps.
+
 ## Other researched PC formats
 
 | Game | Exact next input |

@@ -16,6 +16,9 @@ def reserved_windows_path(path):
 
 def _check(path):
     text = str(path).replace('\\', '/').lower()
+    # XIII's regional save folders and Steam Cloud patterns share this root.
+    if re.search(r'/koeitecmo/san13(?:/|$)', text):
+        raise SaveError('Use a separate copy outside the live XIII save folder.')
     if re.search(r'/koeitecmo/(?:dw3ce_re/saved|dynasty warriors origins/savedata)(?:/|$)', text):
         raise SaveError('Use a separate copy outside the live game save folder.')
     # These PC editions save in the game root, not only in a Savedata child.
