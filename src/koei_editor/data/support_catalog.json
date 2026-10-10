@@ -295,7 +295,7 @@
     },
     {
       "id": "rotk",
-      "title": "Romance of the Three Kingdoms / Nobunagaâ€™s Ambition",
+      "title": "Romance of the Three Kingdoms / Nobunaga\u00e2\u20ac\u2122s Ambition",
       "platform": "Windows PC",
       "status": "Candidate only",
       "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
@@ -490,6 +490,159 @@
       "editing_verified": true,
       "evidence": "Six independently shared complete native SlotData exports qualify 143 top-level plus one nested own-body checksum. Manual gold reductions and qualified original owned/deployed character names update exact header/body mirrors; all other game systems remain byte-identical. Searchable named character and weapon inspection.",
       "needed": "Edited game loading; controlled growth/EXP/class/mastery, materials/acquisition, weapon forging/equipment, support and route/reward action pairs. Other revisions/Unicode name encoding require independent profiles."
+    },
+    {
+      "id": "atelier_sophie",
+      "title": "Atelier Sophie: The Alchemist of the Mysterious Book",
+      "platform": "Windows PC",
+      "status": "Original native PC gameplay editor",
+      "evidence": "31 gameplay snapshots from one independently shared player archive qualify the complete original Steam plaintext tagged profile. Cole, Tess tickets and existing integral basket/container quality are surgically editable; numeric inventory and alchemy level/EXP are inspected. Equipment, potentials/effects, recipes and other progression remain preserved. Community original-PC sources report no internal checksum; native loader analysis remains separate. DX is rejected.",
+      "needed": "Edited in-game load/re-save; independent loader/integrity confirmation; controlled item applicability, synthesis, recipes, growth, friendship, exploration and collection pairs; DX codec/revision qualification.",
+      "editing_verified": true
+    },
+    {
+      "id": "fatal_frame2_remake",
+      "title": "Fatal Frame II: Crimson Butterfly Remake",
+      "platform": "Windows PC",
+      "status": "Native Steam system Photo Point editor and gameplay inspection",
+      "evidence": "Independently shared complete system and gameplay saves qualify revision 0x24121300, both native checksum layers and title-specific schema. Shared system Photo Point reductions preserve JSON token widths, unknown fields and binary photo suffixes; gameplay inventory, Camera Obscura and collections are read only. Katana dummy examples are excluded from genuine evidence.",
+      "needed": "Edited in-game load/re-save; natural Photo Point cap/increase rules, named film/consumable/bead/charm catalog and controlled acquisition/quantity/equip pairs; enhancement and collection dependencies.",
+      "editing_verified": true
+    },
+    {
+      "id": "atelier_ryza2",
+      "title": "Atelier Ryza 2: Lost Legends & the Secret Fairy",
+      "platform": "Windows PC",
+      "status": "Original native PC bounded quality editor",
+      "evidence": "A distinct independently shared native original Ryza 2 gameplay autosave passes XOR/additive integrity, complete title-specific tagged framing, 100-byte item records and owned Party equipment. Existing ordinary quality is edited surgically from 1\u2013100; important/empty records, adjacent words, identities, original seeds and unknown state are preserved. Several other files in the advertised Ryza 2 archive are byte-identical Ryza 1 files and excluded.",
+      "needed": "Edited game load/re-save, further build-labelled saves, higher quality-cap skill dependencies, currency and growth limits, item names/applicability, synthesis/traits/effects, recipes, exploration/collections and controlled acquisition/equip pairs. Original Ryza 1 and Ryza 3 are not registered.",
+      "editing_verified": true
+    },
+    {
+      "id": "atelier_totori_dx",
+      "title": "Atelier Totori DX",
+      "platform": "Windows PC / PlayStation 4",
+      "status": "Title-qualified PS4 lead; no writer",
+      "evidence": "PS4 CUSA14014 native title preview corroborates Cole 189067 at LE32 offset 0xB3FC in a distinct 22-chunk layout. Advertised PC archives contain only system data; app936160 Rorona is excluded.",
+      "needed": "Native PS4 internal integrity/loader evidence and a controlled currency pair; actual app936180 PC gameplay plus companion system/build control. See ARLAND_DX_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_rorona_dx",
+      "title": "Atelier Rorona DX",
+      "platform": "Windows PC",
+      "status": "Read-only native chunk candidate",
+      "evidence": "27 gameplay snapshots qualify exact unchanged chunk/trailer inspection. Published Rorona PLUS early fields partially match, but late fields differ.",
+      "needed": "Native PC integrity/loader evidence and controlled currency, item, synthesis, growth and event pairs. See ARLAND_DX_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_meruru_dx",
+      "title": "Atelier Meruru DX",
+      "platform": "Windows PC",
+      "status": "Read-only native chunk candidate",
+      "evidence": "17 gameplay copies from two public sources qualify exact unchanged chunk/trailer inspection. Calendar-transfer source reports broken timer/event dependencies.",
+      "needed": "Native internal integrity and named resource/item records; controlled growth/synthesis pairs and complete timer dependencies before calendar changes. See ARLAND_DX_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_ryza",
+      "title": "Atelier Ryza: Ever Darkness & the Secret Hideout",
+      "platform": "Windows PC",
+      "status": "Checksum-valid incomplete native tail; unregistered",
+      "evidence": "Two PC archive slots pass envelope checks but omit a declared final plant array. Complete independently shared Switch profiles do not qualify the PC revision.",
+      "needed": "Independent complete original Steam gameplay or native serializer/loader proof for the exact omitted tail. See RYZA_FORMATS.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_ryza3",
+      "title": "Atelier Ryza 3: Alchemist of the End & the Secret Key",
+      "platform": "Windows PC",
+      "status": "Gameplay fixture missing",
+      "evidence": "Public system files and runtime/asset tooling do not establish gameplay records.",
+      "needed": "Complete original Steam gameplay, native integrity/title/revision and controlled resource, item, synthesis and growth pairs. See RYZA_FORMATS.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_sophie_dx",
+      "title": "Atelier Sophie DX",
+      "platform": "Windows PC",
+      "status": "Native gameplay acquired; codec unqualified",
+      "evidence": "A genuine 177040-byte DX gameplay file differs from original Sophie and has an opaque body after 0x800.",
+      "needed": "Title-specific decoder/integrity/schema and controlled mechanic pairs. See SOPHIE_PC_FORMAT.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_firis",
+      "title": "Atelier Firis: The Alchemist and the Mysterious Journey",
+      "platform": "Windows PC",
+      "status": "Native gameplay acquired; integrity unqualified",
+      "evidence": "Original 1228800-byte gameplay has distinct revision-3 and 52-byte item records, not Sophie records.",
+      "needed": "Firis-specific loader/integrity proof, field semantics and controlled pairs. See SOPHIE_PC_FORMAT.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_firis_dx",
+      "title": "Atelier Firis DX",
+      "platform": "Windows PC",
+      "status": "Native gameplay acquired; codec unqualified",
+      "evidence": "A genuine 200608-byte DX gameplay file has an opaque body after 0x400.",
+      "needed": "Native DX codec/integrity/schema and controlled mechanic pairs. See SOPHIE_PC_FORMAT.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_ayesha_dx",
+      "title": "Atelier Ayesha DX",
+      "platform": "Windows PC",
+      "status": "Native gameplay acquired; no writer",
+      "evidence": "813056-byte little-endian gameplay differs from the implemented big-endian PS3 adapter. The PS3 adapter is unchanged.",
+      "needed": "Native PC loader/integrity and named field maps; controlled resource/item/synthesis/memory pairs. See DUSK_DX_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_escha_logy_dx",
+      "title": "Atelier Escha & Logy DX",
+      "platform": "Windows PC",
+      "status": "Native gameplay acquired; codec unqualified",
+      "evidence": "Sixteen gameplay slots have a plaintext 0x100 prefix and opaque body; the existing Gust decoder rejects them.",
+      "needed": "Title-specific native codec/checksums and resource/item/growth/assignment dependencies. See DUSK_DX_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_shallie_dx",
+      "title": "Atelier Shallie DX",
+      "platform": "Windows PC",
+      "status": "System-only evidence",
+      "evidence": "Acquired system data is not a gameplay fixture.",
+      "needed": "Complete gameplay plus title-specific codec/integrity and Life Task, synthesis and growth dependencies. See DUSK_DX_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "nelke",
+      "title": "Nelke & the Legendary Alchemists",
+      "platform": "Windows PC",
+      "status": "Native title-qualified gameplay; codec unqualified",
+      "evidence": "A public Proton reproducer has a native title/version summary but its gameplay body remains opaque.",
+      "needed": "Native codec/integrity/schema; controlled money, production, facility, research and relationship pairs. See DUSK_DX_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "blue_reflection",
+      "title": "Blue Reflection",
+      "platform": "Windows PC",
+      "status": "Native gameplay acquired; no writer",
+      "evidence": "Original tagged native gameplay snapshots are available; first word is a serializer date, not an inferred checksum.",
+      "needed": "Title-specific native integrity and controlled item/growth pairs. See BLUE_REFLECTION_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "blue_reflection_second_light",
+      "title": "Blue Reflection: Second Light",
+      "platform": "Windows PC",
+      "status": "Genuine envelope qualified; semantics blocked",
+      "evidence": "Two gameplay files pass both native checksum layers and exact envelope re-encoding. Inherited money is not established as currency; crafted Coin and linked TP progression are distinct.",
+      "needed": "Native final Guide-node omission proof, ordinary item eligibility and controlled quantity/TP/fragment/facility pairs. See BLUE_REFLECTION_RESEARCH.md.",
+      "editing_verified": false
     }
   ],
   "scope": "Windows application with explicitly selected game/platform parsers and separate backup identities.",
@@ -499,8 +652,8 @@
   "retry_reference": "docs/PC_RESEARCH_RETRY.md",
   "console_scope": "Separate PS2 PSU, Wii U APP.BIN, Switch svdt and decrypted PS3 APP.BIN/DATA.BIN adapters; PS3 signing remains external.",
   "pc_scope_exclusions": [
-    "Dynasty Warriors 1â€“3 original console editions and console-only expansions",
-    "Dynasty Warriors 4â€“7 Empires",
+    "Dynasty Warriors 1\u00e2\u20ac\u201c3 original console editions and console-only expansions",
+    "Dynasty Warriors 4\u00e2\u20ac\u201c7 Empires",
     "Dynasty Warriors: Gundam series",
     "One Piece: Pirate Warriors 1 and 2",
     "Berserk PS Vita",

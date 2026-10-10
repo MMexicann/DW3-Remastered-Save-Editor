@@ -17,6 +17,9 @@ validation artifacts, not a new GitHub release.
 | Wo Long: Fallen Dynasty | Windows PC | Available Genuine Qi, copper, accolades, existing ordinary stack reductions and searchable inventory/equipment/companions/progression. |
 | Fire Emblem Warriors: Three Hopes | Nintendo Switch | Existing gold reductions and owned Shez/Byleth name customization with synchronized mirrors; named character and weapon inspection. |
 | Atelier Ayesha: The Alchemist of Dusk | PlayStation 3, US/Japanese decrypted exports | Cole and existing ordinary stack reductions; searchable inventory with float qualities, potentials/effects and distinct memory values. Apollo handles reimport/resigning. |
+| Atelier Sophie: The Alchemist of the Mysterious Book | Original Steam PC | Cole, Tess exchange tickets and existing integral basket/container quality; numeric inventory and alchemy level/EXP inspection. DX is a separate unqualified format. |
+| Atelier Ryza 2: Lost Legends & the Secret Fairy | Original Steam PC | Existing ordinary inventory/equipment quality 1–100 with native checksum preservation. Higher skill caps are not mapped; Max is disabled. |
+| Fatal Frame II: Crimson Butterfly Remake | Steam PC | Shared system Photo Point reductions; gameplay inventory, camera and collection inspection. Native checksums, lexical JSON and binary photos are preserved. |
 
 Each has its own parser and explicit identity/revision gates. Resource ceilings
 without natural-cap proof are manual editing limits and are excluded from Max.

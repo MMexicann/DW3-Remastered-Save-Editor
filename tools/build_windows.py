@@ -11,7 +11,8 @@ ROOT = Path(__file__).resolve().parents[1]
 VERSION = '1.6'
 DATA = [(f'src/koei_editor/data/{name}', 'koei_editor/data') for name in RUNTIME_DATA] + [
     ('LICENSE', '.'), ('docs/THIRD_PARTY_NOTICES.md', '.'),
-    ('licenses/atelier-sophie2-save-editor-MIT.txt', 'licenses')]
+    ('licenses/atelier-sophie2-save-editor-MIT.txt', 'licenses'),
+    ('licenses/katana-save-data-resigner-MIT.txt', 'licenses')]
 
 
 def build_args(root=ROOT):

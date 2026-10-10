@@ -91,6 +91,21 @@ edit does not simulate a purchase, fusion, promotion or stage reward.
 
 ## Other investigated game leads
 
+The Gust expansion adds three separately qualified editors: original Sophie
+resources/occupied quality, original Ryza 2 quality within its base cap, and
+Fatal Frame II Remake shared system Photo Point reductions. See
+[Sophie](SOPHIE_PC_FORMAT.md), [Ryza](RYZA_FORMATS.md) and
+[Fatal Frame II](FATAL_FRAME2_REMAKE_FORMAT.md) for field evidence, mechanics and
+test distinctions. Genuine-file GUI edit/Undo/Review/Save As/backup/restore checks
+passed for all three; actual edited game loading remains untested.
+
+[Arland](ARLAND_DX_RESEARCH.md), [Dusk/Nelke](DUSK_DX_RESEARCH.md) and
+[Blue Reflection](BLUE_REFLECTION_RESEARCH.md) now have genuine gameplay leads
+and precise remaining codec, integrity or semantic blockers. Rorona/Meruru have
+unregistered read-only layout inspectors. Totori DX PS4 title/Cole evidence does
+not establish Totori PC support or safe internal integrity handling. Ayesha PS3
+and Sophie 2 adapters are unchanged by this Gust expansion.
+
 | Game | Result and exact remaining input |
 | --- | --- |
 | Legacy Xbox360 DW5 Empires/DW6 Empires/DW7; SW2/XL and WO1/WO2 | No registered Xbox360 adapter. Need extracted native files with title/edition/region/build, qualified STFS/container and game integrity, record ownership and controlled growth/equipment/campaign pairs. Legacy binary downloads do not supply a reusable licensed implementation. [Supplier checklist](REMAINING_INPUTS.md) |

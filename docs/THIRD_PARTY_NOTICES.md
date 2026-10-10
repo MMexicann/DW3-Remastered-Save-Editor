@@ -38,11 +38,14 @@ is retained in `licenses/atelier-sophie2-save-editor-MIT.txt` and embedded in th
 standalone EXE. Changes add bounded parsing and preserve opaque footer and
 decoded trailing-zero data. Its GUI and player saves are not bundled.
 
-Source-only `src/koei_editor/research/katana/katana_codec.py` adapts algorithms from
+`src/koei_editor/research/katana/katana_codec.py` adapts algorithms from
 [mi5hmash/KatanaSaveDataResigner](https://github.com/mi5hmash/KatanaSaveDataResigner/tree/4c90a2b388438cb27a9752e6eab7333257de215f),
 copyright 2026 Michał Gębicki, MIT. See
 `licenses/katana-save-data-resigner-MIT.txt`. Native encrypted/decrypted pairs
-stay outside public packages. Nioh and SOP gameplay writes are disabled here;
+stay outside public packages. The registered Fatal Frame II Remake adapter reuses
+these attributed cipher/checksum primitives and embeds the exact MIT notice.
+Its gameplay schema and surgical writer are independently authored; upstream
+dummy files are not native evidence. Nioh and SOP gameplay writes are disabled here;
 no native checksum-bypass behavior is copied into the application.
 
 Source-only Nioh 2 inspection references the published Apache-2.0 scalar map in
@@ -61,3 +64,9 @@ where noted. No GPL, noncommercial or no-derivatives implementation, external
 editor, game executable, extracted game data or player save is incorporated.
 New Sophie 2 refill/presentation logic follows the published MIT ItemRecord;
 its existing full MIT notice remains included.
+
+The Ryza 2 adapter reuses the existing attributed Sophie 2 envelope codec after
+independent native checksum qualification. Its title-specific records and quality
+writer are independently authored. Original Sophie and the read-only Arland
+inspectors derive format facts from public references and genuine native copies;
+no external editor implementation, restricted catalog or player data is bundled.

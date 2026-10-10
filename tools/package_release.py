@@ -37,6 +37,10 @@ WINDOWS_DOCS = ('README.md', 'LICENSE', 'docs/CHANGELOG.md', 'docs/THIRD_PARTY_N
                 'docs/FIRE_EMBLEM_WARRIORS_FORMAT.md')
 PERSONAL_PATH = re.compile(r'''(?i)(?:[a-z]:[\\/]+Users[\\/]+(?!Player(?:[\\/]|\b))[^\\/\s"']+|/(?:home|Users)/[^/\s"']+)''')
 MODULE_NAME = re.compile(r'koei_editor(?:\.[A-Za-z_]\w*)*\Z')
+CODEC_LICENSES = {
+    'src/koei_editor/games/sophie2/atelier_sophie2_codec.py': 'licenses/atelier-sophie2-save-editor-MIT.txt',
+    'src/koei_editor/research/katana/katana_codec.py': 'licenses/katana-save-data-resigner-MIT.txt',
+}
 
 
 def _repo_path(root, name):
@@ -202,9 +206,9 @@ def verified_sources(root=ROOT):
         required.add('.gitattributes')
     if (root / 'tools/adapter_template').exists():
         required.update(ADAPTER_TEMPLATE_FILES | {'tests/scalar_contract.py'})
-    if ('src/koei_editor/games/sophie2/atelier_sophie2_codec.py' in required
-            or 'src/koei_editor/games/sophie2/atelier_sophie2_codec.py' in sources):
-        required.add('licenses/atelier-sophie2-save-editor-MIT.txt')
+    for codec, notice in CODEC_LICENSES.items():
+        if codec in required or codec in sources:
+            required.add(notice)
     missing = required - sources.keys()
     if missing:
         raise ValueError('Required public sources missing from manifest: ' + ', '.join(sorted(missing)))
@@ -237,9 +241,9 @@ def embedded_metadata(sources):
     expected = {name.removeprefix('src/'): data for name, data in sources.items()
                 if name.startswith(PACKAGE_ROOT + '/data/') and name.endswith('.json')}
     expected.update({'LICENSE': sources['LICENSE'], 'THIRD_PARTY_NOTICES.md': sources['docs/THIRD_PARTY_NOTICES.md']})
-    notice = 'licenses/atelier-sophie2-save-editor-MIT.txt'
-    if 'src/koei_editor/games/sophie2/atelier_sophie2_codec.py' in sources:
-        expected[notice] = sources[notice]
+    for codec, notice in CODEC_LICENSES.items():
+        if codec in sources:
+            expected[notice] = sources[notice]
     return expected
 
 

@@ -7,6 +7,12 @@ games while keeping each editing session open.
 **Development branch:** additions below are prepared in source. The latest
 Windows download remains v1.6 until the next release.
 
+New Gust work adds original Sophie resources/item quality, Ryza 2 item quality
+within the base cap, and Fatal Frame II Remake system Photo Point reductions.
+Each uses the existing copy-only saving, backups, Undo and Review Changes.
+See [format evidence and remaining inputs](docs/README.md); edited game loading
+has not been tested.
+
 ## Supported games
 
 Select the game and platform that match your save. Windows PC is selected by
@@ -24,6 +30,9 @@ for Age of Calamity. Export and reimport/resign PS3 saves with Apollo Save Tool.
 | ONE PIECE: PIRATE WARRIORS 4 — Windows PC · WW/JP/EA revision 15 | Windows PC | Beli, existing obtained coin quantities and searchable resource history. |
 | DYNASTY WARRIORS 4 HYPER — Native Windows PC edition | Windows PC | Character stats, weapon levels, items, owned harness/orb assignments and bodyguard growth. |
 | ATELIER SOPHIE 2 — The Alchemist of the Mysterious Dream · PC | Windows PC | Item quality, battle-item refills, inventory inspection and alchemy EXP. |
+| ATELIER SOPHIE — Original Steam PC · GAMEDATA slots | Windows PC | Cole, Tess tickets and existing basket/container quality; searchable inventory and alchemy progression. |
+| ATELIER RYZA 2 — Lost Legends & the Secret Fairy · original Steam PC | Windows PC | Existing ordinary item and equipment quality from 1–100; searchable inventory and equipment. |
+| FATAL FRAME II — Crimson Butterfly REMAKE · Steam PC | Windows PC | Shared system Photo Point reductions; per-slot inventory, camera and collection inspection. |
 | DYNASTY WARRIORS 4 — Xtreme Legends · SLUS-20812 | PlayStation 2 | Character stats, weapon levels, items, owned harness/orb assignments and bodyguard growth. |
 | DYNASTY WARRIORS: ORIGINS — Steam PC · slot saves | Windows PC | Gold, Skill Points, bonds, provincial peace, weapon upgrades and battle history. |
 | WARRIORS OROCHI 3 ULTIMATE — Definitive Edition · PC | Windows PC | Officer stats, growth points, gems, crafting, existing ranked attributes and reinforcement reductions. |
