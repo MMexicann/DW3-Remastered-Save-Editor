@@ -21,7 +21,9 @@ def _check(path):
     # These PC editions save in the game root, not only in a Savedata child.
     if re.search(r'/koeitecmo/(?:dynasty warriors 9 for steam|dynasty warriors 9 empires)(?:/|$)', text):
         raise SaveError('Use a separate copy outside the live Koei Tecmo save folder.')
-    if re.search(r'/koeitecmo/(?:atelier sophie 2|nioh[123]?|wolong|wo long|'
+    if re.search(r'/koeitecmo/(?:atelier sophie 2|atelier sophie dx|a17|'
+                 r'atelier ryza(?: [23])?|blue reflection|fatalframeii|'
+                 r'nioh[123]?|wolong|wo long|'
                  r'stranger of paradise[^/]*)(?:/|$)', text):
         raise SaveError('Use a separate copy outside the live Koei Tecmo save folder.')
     if re.search(r'/(?:koeitecmo/)?(?:dynasty warriors[^/]*|dynastywarriors[^/]*|'

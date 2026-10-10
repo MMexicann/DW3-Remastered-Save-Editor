@@ -90,3 +90,21 @@ when those inputs are absent. `test_sw4ii_gui.py` uses the genuine copy when
 provided, otherwise a procedural fixture, and requires Tk with a display.
 See [SW4-II](../docs/SW4II_FORMAT.md) and
 [Sanada](../docs/SANADA_PC_RESEARCH.md) for exact qualifications and blockers.
+
+The Gust expansion adds format, scalar-contract, independent-audit and GUI tests
+for original PC Sophie, original PC Ryza 2 and PC Fatal Frame II Remake. The GUI
+checks use the registered editors and cover editing, Undo, Review Changes,
+themes, Save As, backup and Restore. Optional genuine-file checks use copied
+inputs outside live save folders:
+
+| Environment variable | Copied input |
+| --- | --- |
+| `SOPHIE_SAVE_COPIES` | Folder of original Sophie extensionless `GAMEDATA*` snapshots |
+| `SOPHIE_SAVE_COPY` | One original Sophie gameplay copy for the GUI check |
+| `RYZA2_SAVE_COPY` | Original Ryza 2 PC gameplay `.dat` copy |
+| `FF2_REMAKE_SYSTEM_COPY` / `FF2_REMAKE_GAMEPLAY_COPY` | Native Fatal Frame II Remake system/gameplay `.bin` copies |
+| `FATAL_FRAME2_SYSTEM_COPY` | Native Fatal Frame II Remake system copy with positive Photo Points for the GUI check |
+| `RORONA_DX_CANDIDATE_DIR` / `MERURU_DX_CANDIDATE_DIR` | Folders of native PC gameplay copies for read-only structural checks |
+
+The Arland checks qualify layout and byte preservation, not integrity or writable
+support. Procedural checks do not establish genuine-file or actual game loading.

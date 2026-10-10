@@ -103,6 +103,21 @@ edit does not simulate a purchase, fusion, promotion or stage reward.
 | Dynasty Warriors 8 original-only Windows editions | No distinct original-only Windows product/native format qualified. The acquired XL converter fixture passes the existing XL integrity and unchanged roundtrip; it does not justify another adapter. Reopen with an identifiable official original-only Windows product/build and a genuine native save. Microsoft Store DX is an XL edition requiring separate compatibility evidence. [Edition matrix](DW8_ORIGINAL_PC_SCOPE.md) |
 | Bladestorm: Nightmare, optional Windows candidate | Genuine personal/campaign files acquired, but no strong PC identity/integrity/field source; the additional-game implementation gate is unmet. No adapter or support claim. Need native PC serializer research and labelled untouched files with controlled actions. [Evidence gate and mechanics](BLADESTORM_PC_RESEARCH.md) |
 
+The Gust expansion adds three separately qualified editors: original Sophie
+resources/occupied quality, original Ryza 2 quality within its base cap, and
+Fatal Frame II Remake shared system Photo Point reductions. See
+[Sophie](SOPHIE_PC_FORMAT.md), [Ryza](RYZA_FORMATS.md) and
+[Fatal Frame II](FATAL_FRAME2_REMAKE_FORMAT.md) for field evidence, mechanics and
+test distinctions. Genuine-file GUI edit/Undo/Review/Save As/backup/restore checks
+passed for all three; actual edited game loading remains untested.
+
+[Arland](ARLAND_DX_RESEARCH.md), [Dusk/Nelke](DUSK_DX_RESEARCH.md) and
+[Blue Reflection](BLUE_REFLECTION_RESEARCH.md) now have genuine gameplay leads
+and precise remaining codec, integrity or semantic blockers. Rorona/Meruru have
+unregistered read-only layout inspectors. Totori DX PS4 title/Cole evidence does
+not establish Totori PC support or safe internal integrity handling. Ayesha PS3
+and Sophie 2 adapters are unchanged by this Gust expansion.
+
 | Game | Result and exact remaining input |
 | --- | --- |
 | Dynasty Warriors 5 Empires, Xbox 360 | No registered writer. No genuine extracted native profile, reusable source or complete integrity; turn/Delegate and shop dependencies remain unqualified. External STFS rebuilding/resigning would remain necessary. [Exact inputs](XBOX360_EXPANSION.md) |

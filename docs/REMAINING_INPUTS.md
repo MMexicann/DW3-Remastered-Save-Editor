@@ -99,6 +99,21 @@ neither that permission nor a tested native save mapping.
 | --- | --- |
 | DW8 Empires PC | Existing occupied custom-horse body type is implemented in qualified `SystemSave.dat`. Supply controlled examples for the other six appearance sliders, names, stats/abilities and campaign resource ownership; `EmpireSave*.dat`/`QuickSave*.dat` remain separate. |
 | Sophie 2 PC | Genuine Steam1.08 `data.dat`, unchanged control and one quality/use/refill, alchemy EXP, trait/effect, equipment or recipe/action pair. Native item applicability and derived progression need separate proof. |
+
+The additional Gust profiles now distinguish acquired gameplay evidence from
+missing proof. Original Sophie is implemented; its remaining native loader and
+controlled synthesis/growth inputs are listed in [Sophie PC](SOPHIE_PC_FORMAT.md).
+Ryza 2 is implemented within the base quality cap; [Ryza](RYZA_FORMATS.md) records
+the exact incomplete Ryza 1 PC tail, absent Ryza 3 gameplay and higher-cap skill
+dependencies. [Arland DX](ARLAND_DX_RESEARCH.md) records 27 Rorona and 17 Meruru
+gameplay files plus a title-qualified Totori PS4 export, all still lacking a
+qualified internal integrity model before writes. [Dusk DX](DUSK_DX_RESEARCH.md)
+records acquired Ayesha DX, Escha & Logy DX and Nelke gameplay; Shallie DX has
+only system data. [Blue Reflection](BLUE_REFLECTION_RESEARCH.md) records acquired
+BR1/Second Light gameplay and specific integrity/semantic gaps.
+[Fatal Frame II Remake](FATAL_FRAME2_REMAKE_FORMAT.md) is implemented for shared
+system Photo Point reductions; named item eligibility and enhancement/collection
+dependencies need controlled native pairs. No private save is requested for Git.
 | Nioh3 PC | Complete native `USER` files with exact build, equipped/owned inventory examples, labelled level/stat/skill or equipment/forge/scroll pairs. Fixed published pool bases do not match every qualified revision. |
 | Nioh / Nioh2 PC | Genuine files are available and decode; the missing piece is the native active checksum algorithm, then controlled growth/equipment/dependency pairs. Integrity flags must not be erased. |
 | Wo Long PC | Three currencies and existing ordinary stack reductions are implemented. Need matching item-name catalogs and controlled Virtue/level/skill, forging/equipment, acquisition and quest/reward pairs. |
