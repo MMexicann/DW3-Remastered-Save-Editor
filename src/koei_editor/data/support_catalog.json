@@ -99,9 +99,9 @@
       "id": "dw9_original",
       "title": "Dynasty Warriors 9",
       "platform": "Windows PC",
-      "status": "PC save link; download blocked",
-      "evidence": "Steam users confirm a public PC save and describe unlock/story coverage; savegame.pro blocked here. PC gem guide maps runtime taxonomy, not serialized fields.",
-      "needed": "Copied gameplay files from Dynasty Warriors 9 for Steam, full/trial/build/DLC labels, gem/resource/story pairs; actual gameplay basename remains unknown.",
+      "status": "Genuine PC bundle acquired; native integrity unqualified",
+      "evidence": "One public bundle provides PLAYERDATA and thirteen STORYDATA SAVEDATA.BIN files. Their distinct sizes and header observations are documented; no qualified native serializer, checksum model, record ownership or gameplay writer. Original DW9 remains separate from Empires.",
+      "needed": "Exact matching original Windows executable or public native serializer/integrity research; build/full-versus-trial/region/DLC-labelled native controls and single-action resource, growth, gem/equipment, horse, relationship, exploration and reward pairs.",
       "editing_verified": false
     },
     {
@@ -144,10 +144,10 @@
       "id": "sw4ii",
       "title": "Samurai Warriors 4-II",
       "platform": "Windows PC",
-      "status": "Sample link blocked; platform check pending",
-      "evidence": "Steam PC discussion links a Dropbox save; download blocked and uploaded filename still needs platform verification. PC runtime maps weapons, mounts and strategy tomes without proving disk offsets.",
-      "needed": "Copied native Windows save, edition/build labels, integrity checks and weapon/tome/progression pairs.",
-      "editing_verified": false
+      "status": "Native PC revision0x31A4 editor",
+      "evidence": "Two independent genuine PC saves and static English v1.0 native-editor inspection qualify the three-step envelope, exact six checksum spans, four polynomial checksums and record ownership. Manual current gold, five held strategy-tome resources, existing standard-officer stored base stats, qualified existing own-pool weapon selection and attached attribute magnitudes, and occupied-mount stored combat stats are implemented. Unknown bytes and original seeds are preserved; growth, skill purchases, acquisition and rewards remain separate.",
+      "needed": "Build/language/DLC-labelled controlled resource/stat pairs and natural limits; growth/skill-count dependencies, weapon growth/fusion/acquisition, mount training/abilities/equipment, customization, friendship, collections and reward prerequisites; actual edited game loading.",
+      "editing_verified": true
     },
     {
       "id": "samurai4dx",
@@ -162,9 +162,9 @@
       "id": "sw_sanada",
       "title": "Samurai Warriors: Spirit of Sanada",
       "platform": "Windows PC",
-      "status": "PC path identified; no codec",
-      "evidence": "Published PC backup manifest identifies the Windows save location and Steam edition. No native PC decoder or gameplay edit was verified.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "status": "Genuine PC copies; read-only outer framing",
+      "evidence": "Two gameplay copies and one system companion from one public PC bundle qualify distinct native lengths, original-seed three-step DWORD framing, outer word sum and byte-exact unchanged reconstruction. Shared prefix does not authenticate title/build or inner gameplay integrity. No gameplay writer or library card.",
+      "needed": "Matching SWSanada.exe native serializer or equivalent public PC format research; exact build/region/DLC, inner integrity, existing-record identities and controlled gold/clan EXP, level, weapon/equipment, materials, mount, relationship, exploration and reward pairs.",
       "editing_verified": false
     },
     {

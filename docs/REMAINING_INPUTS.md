@@ -1,5 +1,20 @@
 # Remaining inputs by game and platform
 
+## Additional Musou PC inputs
+
+| Game | Exact remaining input |
+| --- | --- |
+| Samurai Warriors 4-II | Native `SAVEDATA0000.dat`–`SAVEDATA0004.dat` copies with exact Windows build/language/DLC, unchanged control and displayed before/after values. Revision `0x31A4` exact native checksums support manual resources/base stats, existing own-pool weapon selection/attached attribute magnitudes and occupied-mount combat stats. Need natural limits and controlled skill purchase/growth, weapon fusion/acquisition, mount training/abilities/equip, customization, friendship, collection and reward pairs. Actual edited game loading remains untested. [Details](SW4II_FORMAT.md) |
+| Spirit of Sanada | `SAVEDATA0000.dat`/`SAVEDATA0001.dat` and `SYSDATA.dat` are acquired; outer framing is tested. Need matching `SWSanada.exe` for static analysis or reliable PC serializer research, build/region/DLC labels, native title/inner integrity/record ownership, and separate Clan EXP, training, weapon skill, inventory, mount, friendship, exploration and reward pairs. [Details](SANADA_PC_RESEARCH.md) |
+| Original Dynasty Warriors 9 | `PLAYERDATA/SAVEDATA.BIN` and thirteen `STORYDATA*/SAVEDATA.BIN` copies are acquired; preserve their different parent classes. Need matching original PC native serializer/integrity evidence, full-versus-trial/build/region/DLC-labelled controls and resource, officer allocation, gem/equipment, horse, relationship, discovery and claim-reward pairs. Empires input does not address this lane. [Details](DW9_ORIGINAL_PC_RESEARCH.md) |
+| DW8 original-only PC edition | First establish an identifiable official original-only Windows product/build plus untouched native save. Existing Steam XL fixtures and shortened regional names do not qualify another native format. Actual Microsoft Store DX input would address a separate XL compatibility question. [Edition matrix](DW8_ORIGINAL_PC_SCOPE.md) |
+
+The optional [Bladestorm PC candidate](BLADESTORM_PC_RESEARCH.md) has genuine
+files but lacks the strong PC format source needed to satisfy the additional-game
+gate; no adapter is registered.
+
+## Supplier workflow
+
 This is a supplier checklist for further development. **Current implementation**
 means the unreleased development source; published support is the inventory accompanying the
 installed GitHub release. The [supported-game list](SUPPORTED_GAMES.md) identifies

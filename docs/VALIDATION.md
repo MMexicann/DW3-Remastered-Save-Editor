@@ -489,3 +489,44 @@ adapters, but a native Windows EXE was not built or tested in this pass.
 PFD reimport/resigning and Xbox360 STFS reimport/hash/signing remain external.
 No player saves, game/editor binaries, account identifiers or private analysis
 are included in Git or the reviewed public package.
+
+## Additional Musou PC branch
+
+The `codex/additional-musou-pc` work started at preparation commit `f7ca012`
+and integrated the subsequent `bdb3833` preparation changes without replacing
+other game lanes. On Linux/Python 3.12 with Tk/Xvfb and the optional development
+crypto provider, **34 focused tests passed with no skips**: SW4-II format,
+scalar contract, independent adversarial review and real Tk workflow; Sanada
+read-only framing; generated inventory and explicit support gates.
+
+The full integrated suite completed **1,174 tests: 839 passed, 335 skipped, no
+failures or errors**. Skips require other private fixtures or platform-specific
+checks; both genuine SW4-II copies and all three Sanada files were supplied.
+The generated inventory checks 30 registered adapters. Source packaging verifies
+423 explicitly reviewed public files at unchanged version **1.6**; no player
+files, downloaded binaries or private analysis enter the manifest.
+
+Two independently shared genuine SW4-II copies passed unchanged roundtrips and
+targeted all-field preservation checks. The Tk workflow used a genuine copy
+for named equipment selection, officer/weapon/mount edits, Review, Undo,
+themes, Save As, manual/automatic backups and Restore Backup dialogs. Native
+integrity, original headers/seeds, custom/unknown records and unusual values
+are preserved. Procedural cases additionally populate all six exact checksum
+sections, reject outer-repaired native corruption and protect existing-record
+ownership and dependencies. Three genuine Sanada files passed byte-exact outer
+framing reconstruction; this does not qualify inner integrity or gameplay edits.
+
+The registered SW4-II genuine copied-save CLI self-test passed, checking 817
+fields, native integrity, unchanged bytes, protected input and backup restoration.
+Its Max phase changed zero fields because natural limits are unqualified; actual
+targeted edits are covered by the genuine-file and Tk tests above. All registered
+interfaces initialized and switched successfully. Windows build configuration
+includes the new registered backend/editor automatically. No Windows EXE was
+built here, and no edited save was loaded or re-saved in an actual game.
+
+Original DW9 and optional Bladestorm files were acquired and inspected privately,
+but native identity/integrity and field ownership remain unqualified. Archive
+extraction is not a native roundtrip test. The original-only DW8 Windows lane
+has no separately established product/format; the acquired XL converter fixture
+checks the existing XL format only. Exact remaining inputs are recorded in each
+game note and [the supplier checklist](REMAINING_INPUTS.md).

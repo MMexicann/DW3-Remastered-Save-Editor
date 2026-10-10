@@ -29,6 +29,8 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [DW8 XL/PW3 native formats](KOEI_FORMATS.md),
   [DW8 weapon compatibility and affinity](DW8_COMPATIBILITY.md) and
   [PW3 coverage](PW3_COVERAGE.md)
+- [DW8 original-edition PC scope qualification](DW8_ORIGINAL_PC_SCOPE.md)
+- [Original DW9 PC evidence and remaining inputs](DW9_ORIGINAL_PC_RESEARCH.md)
 - [DW6 original PC coverage](DW6_RESEARCH.md)
 - [DW5 Special native Windows format](DW5_SPECIAL.md)
 - [DW8 Empires PC custom horses](DW8E_CUSTOM_HORSES.md)
@@ -47,6 +49,8 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Origins native format and progression](ORIGINS_FORMAT.md)
 - [WO3 Ultimate and Orochi Z coverage](OROCHI_RESEARCH.md)
 - [Samurai Warriors 4 DX and 5 coverage](SAMURAI_RESEARCH.md)
+- [Samurai Warriors 4-II native PC format](SW4II_FORMAT.md)
+- [Spirit of Sanada PC framing and mechanic blockers](SANADA_PC_RESEARCH.md)
 - [Pirate Warriors 4 and Abyss coverage](PIRATE_ABYSS_RESEARCH.md)
 - [All-Stars and WO4/Ultimate research](STARS_WO4_RESEARCH.md)
 - [Totori DX PC research and remaining inputs](TOTORI_PC_RESEARCH.md)
@@ -59,6 +63,7 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Hyrule, Fire Emblem and Pirate follow-up](FAMILY_NEXT_RESEARCH.md)
 - [Dragon Quest Heroes II, Berserk and Attack on Titan PC follow-up](OTHER_KOEI_PC_RESEARCH.md)
 - [Additional editor survey](ADDITIONAL_EDITOR_SURVEY.md)
+- [Bladestorm: Nightmare PC candidate and evidence gate](BLADESTORM_PC_RESEARCH.md)
 - [Atelier and other Gust follow-up](ATELIER_NEXT_RESEARCH.md)
 
 ## Mechanics and source research

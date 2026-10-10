@@ -61,3 +61,13 @@ where noted. No GPL, noncommercial or no-derivatives implementation, external
 editor, game executable, extracted game data or player save is incorporated.
 New Sophie 2 refill/presentation logic follows the published MIT ItemRecord;
 its existing full MIT notice remains included.
+
+The additional SW4-II PC adapter and Sanada read-only framing investigation are
+independently written using the existing project cipher primitive and facts
+checked against genuine copies. Public memory research, checksum arithmetic,
+manuals and save-editor discussions informed the investigations; no Van editor,
+trainer implementation, restricted catalog, player file or downloaded binary is
+included. Sources and the independent SW4-II qualification proof are documented
+in [SW4II_FORMAT.md](SW4II_FORMAT.md) and [SANADA_PC_RESEARCH.md](SANADA_PC_RESEARCH.md).
+The original DW9, DW8 edition-scope and optional Bladestorm notes likewise
+introduce factual documentation, not external project implementations.

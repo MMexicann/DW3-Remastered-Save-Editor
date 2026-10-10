@@ -93,6 +93,16 @@ edit does not simulate a purchase, fusion, promotion or stage reward.
 
 ## Other investigated game leads
 
+### Additional Musou PC lane
+
+| Game | Delivered scope and exact remaining inputs |
+| --- | --- |
+| Samurai Warriors 4-II, Windows PC | Registered native revision `0x31A4` editor; manual current gold, five held strategy-tome resources, existing standard-officer stored base stats, qualified existing own-pool weapon selection and attached attribute magnitudes, and occupied-mount combat stats. Two independent genuine saves and static native-editor inspection qualify exact checksum spans and record ownership. Unknown populated regions are preserved. Need natural limits, growth/skill dependencies, weapon fusion/acquisition, mount training/equipment, customization, friendship, collections and reward maps, plus edited game loading. [Format and full checklist](SW4II_FORMAT.md) |
+| Samurai Warriors: Spirit of Sanada, Windows PC | Two genuine gameplay copies and a system companion qualify distinct lengths, original-seed outer cipher/word sum and byte-exact unchanged reconstruction. Unregistered read-only codec rejects modified envelopes. Need matching `SWSanada.exe` serializer or equivalent PC format research, title/build and inner integrity, existing-record ownership and controlled growth, weapon, inventory, friendship, exploration and reward pairs. [Full checklist](SANADA_PC_RESEARCH.md) |
+| Dynasty Warriors 9 original, Windows PC | One genuine bundle acquired with distinct PLAYERDATA and thirteen STORYDATA files; native integrity and record ownership remain unqualified, so no adapter or gameplay writer. Need matching original-game serializer/integrity research, full/trial/build/region/DLC controls and one-action resource, growth, equipment, horse, relationship, exploration and reward pairs. This is separate from 9 Empires. [Full checklist](DW9_ORIGINAL_PC_RESEARCH.md) |
+| Dynasty Warriors 8 original-only Windows editions | No distinct original-only Windows product/native format qualified. The acquired XL converter fixture passes the existing XL integrity and unchanged roundtrip; it does not justify another adapter. Reopen with an identifiable official original-only Windows product/build and a genuine native save. Microsoft Store DX is an XL edition requiring separate compatibility evidence. [Edition matrix](DW8_ORIGINAL_PC_SCOPE.md) |
+| Bladestorm: Nightmare, optional Windows candidate | Genuine personal/campaign files acquired, but no strong PC identity/integrity/field source; the additional-game implementation gate is unmet. No adapter or support claim. Need native PC serializer research and labelled untouched files with controlled actions. [Evidence gate and mechanics](BLADESTORM_PC_RESEARCH.md) |
+
 | Game | Result and exact remaining input |
 | --- | --- |
 | Dynasty Warriors 5 Empires, Xbox 360 | No registered writer. No genuine extracted native profile, reusable source or complete integrity; turn/Delegate and shop dependencies remain unqualified. External STFS rebuilding/resigning would remain necessary. [Exact inputs](XBOX360_EXPANSION.md) |
