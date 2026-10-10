@@ -1,5 +1,42 @@
 # Universal development validation
 
+## Hunting/monster Windows investigation, 2026-10-11
+
+The branch based on preparation commit `bdb3833` adds qualification notes for
+[Toukiden Kiwami](TOUKIDEN_KIWAMI_RESEARCH.md),
+[Toukiden 2](TOUKIDEN2_RESEARCH.md) and
+[Monster Rancher 1 & 2 DX](MONSTER_RANCHER_DX_RESEARCH.md). **No editor or writable
+mapping qualified for these four titles.** The existing 29-game registry,
+runtime metadata, supported inventory and version 1.6 remain unchanged.
+
+Python 3.12/Linux with Tk under Xvfb completed these existing-game checks:
+
+| Check | Exact result |
+| --- | --- |
+| `python -m unittest discover -s tests -v` | 1,148 tests in 423.657 seconds: 813 passed, 335 skipped, no failures or errors. |
+| Focused GUI/integration/library/choice/packaging/dependency suite | 71 tests in 29.838 seconds: all passed, no skips, failures or errors. Modules: `test_universal_app`, `test_new_game_integration`, `test_library_search`, `test_named_field_choices`, `test_universal_packaging`, `test_package_dependency_review`. |
+| `python -m koei_editor --smoke-test` | All 29 registered interfaces, themes and switching initialized successfully. |
+| `python -m tools.update_supported_games --check` | 29 supported game/platform adapters; consistency passed. |
+| `python -m tools.package_release --verify-only` | All 411 reviewed public source files verified; no private saves, source copies, identifiers or game assets added. |
+| Documentation links / whitespace | 124 local links resolved in the eight investigation/coverage documents; `git diff --check` passed. |
+
+The full suite's skips cover unavailable optional fixtures and platform-specific
+requirements. No target-game fixture was treated as an existing adapter input.
+An initial run was interrupted after a virtual-display connection problem; the
+completed run above used the corrected display. No native Windows executable
+build or edited game-load/re-save was performed.
+
+Kiwami acquisition yielded five candidate files from two public archives;
+Toukiden 2 yielded thirteen files from one public archive. These remained
+private analytical inputs, without native codec/integrity or revision proof.
+Monster Rancher DX yielded no complete native Windows fixture. For **each** of
+the four target games: procedural adapter tests **0**, qualified genuine-file
+unchanged roundtrips **0**, surgical edit/checksum/dependency tests **0**,
+backup/Undo/Review/GUI editor workflows **0**, actual edited game-load/re-save
+validation **0**. Existing-game regressions do not qualify these candidates.
+The linked notes and [input checklist](REMAINING_INPUTS.md) record the precise
+serializer, native-file and controlled-action evidence still needed.
+
 Run the complete public suite and all-interface startup check from the repository root:
 
 ```text

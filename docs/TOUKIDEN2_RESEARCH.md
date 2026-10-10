@@ -60,12 +60,10 @@ The archive has twelve gameplay files:
 folder, not universal accepted lengths or proven save-role semantics.
 
 Four apparently uninitialized `safe`/`btle` files are byte-identical and have
-low byte entropy. Their first twelve bytes are
-`00 23 01 17 03 00 00 00 0A 00 00 00`. The byte-identical uninitialized
-`user`/`chkp` variants and populated files have near-eight-bit entropy. The
-first twelve encrypted bytes of an uninitialized variant are
-`87 28 3F 0F 2A CC 3B 55 B5 82 9B 95`. These prefixes are observations;
-their title/revision/control interpretation is not established.
+low byte entropy. The byte-identical uninitialized `user`/`chkp` variants and
+populated files have near-eight-bit entropy. Candidate prefixes were compared
+privately; their title/revision/control interpretation is not established and
+no unqualified player-file byte vector is distributed.
 
 Assuming the plain and encrypted uninitialized variants encode the same state
 produces an XOR mask and a plausible populated candidate. This remains a
