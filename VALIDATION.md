@@ -197,3 +197,51 @@ with isolated preference files, including actual appearance selector callbacks,
 corrupt settings, failed atomic writes and no-write smoke mode. DW3 weapon label
 tests verify stat names in selectors and review while item tabs, numeric IDs and
 the opened save remain unchanged.
+
+## v1.5 PC expansion
+
+Linux Python 3.12/Tk 9 with a real Xvfb display ran the full public regression
+suite: **777 discovered, 497 passed, 280 skipped, zero failures**. The skipped
+cases require private DW3/native fixtures or platform-specific inputs; generated
+fixtures remain procedural evidence. An inspector-search test initially expected
+one match despite its token appearing in several columns; its assertion was
+corrected and the full run repeated successfully.
+
+A separate **113-test run passed with zero skips**, using privately held genuine
+public DW7 XL, WO3 Ultimate, SW4 DX, PW4 and DW8 XL saves, five DW8 Empires files,
+and two Nioh 3 native revisions plus an encrypted partner. It includes unchanged
+roundtrips, surgical resource/stat/equipment/coin edits, native integrity,
+malformed inputs, dependencies, high/unknown-value preservation, shared adapter
+contracts and actual Tk workflows. DW8 Empires and Nioh 3 qualify source-only
+codecs; their checks do not establish gameplay editing.
+
+The final DW8/PW3 snapshot/restore hardening then passed **50 focused tests with
+zero skips**, including five new adversarial cases, both genuine PC samples,
+compatibility/affinity edits and GUI backup/Undo/Review/Save As. Sophie 2's new
+refill/inventory and independent boundary/layout/filter tests pass using generated
+and published differential data; its independent genuine save is still missing.
+Additional source-only Orochi Z, All-Stars and Abyss tests use procedural data.
+
+A further shared Max guard preserves PW3 bar/skill-slot values below their
+qualified minimum. Its new regression, snapshot/restore checks and existing Max
+regressions passed nine focused tests after that final change.
+
+The universal startup smoke test passes with all eleven registered editors,
+platform selection, retained sessions and both themes. The reviewed source
+manifest verifies 210 public entries. The source and Windows archives exclude
+player saves, attached binaries, private static-analysis outputs and owner data.
+The Windows ZIP includes the coverage checklists; source-only modules remain
+outside the writable game library.
+
+Native Windows publication is gated by the existing Windows workflow: full
+public tests, source GUI startup, Windows PyInstaller build, standalone EXE
+startup, bundled metadata/privacy validation, archive generation and SHA-256
+verification. Workflow logs provide the platform-specific test/skip counts.
+Linux checks are not a substitute for those Windows checks.
+
+**No edited file was loaded and re-saved by an actual game in this expansion.**
+File-level qualification, procedural GUI checks and packaged application startup
+are separate evidence. See [EXPANSION_COVERAGE.md](EXPANSION_COVERAGE.md) and its
+per-game checklists for exact revisions, editable mechanics, legitimate bounds,
+dependencies and remaining input blockers. In particular, SW4 manual base-stat
+storage bounds and WO3 resource edit bounds are excluded from Max.

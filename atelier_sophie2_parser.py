@@ -69,7 +69,8 @@ FORMAT = Format(
     GAME_ID, 'Atelier Sophie 2: The Alchemist of the Mysterious Dream (Steam PC)',
     MAX_FILE_SIZE, (),
     'Published Steam PC 1.08 layout; independent genuine-file and in-game checks pending. '
-    'Edit existing inventory/equipment quality (0–999) and Sophie/Plachta alchemy EXP. '
+    'Edit existing inventory/equipment quality (0–999), qualified battle-item uses, '
+    'and Sophie/Plachta alchemy EXP. '
     'EXP uses the published storage bound and is excluded from Max. '
     'Item identities, traits/effects, raw levels, m_mixGem and story data remain unchanged.'
 )
@@ -232,6 +233,10 @@ def read_save(path, game_id=GAME_ID):
 def validate_document(document):
     if not isinstance(document, Document) or document.format != FORMAT:
         raise SaveError('Unregistered Atelier Sophie 2 document.')
+    if (any(type(getattr(document, name)) is not bytes
+            for name in ('raw', 'payload', 'header', 'trailer', 'footer'))
+            or type(document.seed) is not int):
+        raise SaveError('The opened Sophie 2 snapshot must contain immutable native bytes.')
     original = decode(document.raw, GAME_ID, document.source)
     if (document.payload, document.seed, document.header, document.trailer, document.footer) != (
             original.payload, original.seed, original.header, original.trailer, original.footer):
@@ -251,6 +256,8 @@ def _field_index(payload):
             if item_id >= 0:
                 fields.append(Field(f'{key}_{index}_quality', f'Quality (item ID {item_id})',
                                     offset + 6, 2, 999, label, index + 1))
+                if key == 'expendable':
+                    _usage_field(fields, payload, offset, f'{key}_{index}', label, index + 1)
     for identity, start in equipment:
         for index, slot in enumerate(EQUIPMENT_SLOTS):
             offset = start + index * RECORD_SIZE
@@ -259,7 +266,46 @@ def _field_index(payload):
                 fields.append(Field(f'character_{identity}_{index}_quality',
                                     f'{slot}: Quality (item ID {item_id})', offset + 6, 2, 999,
                                     CHARACTER_NAMES[identity] + ' equipment', index + 1))
+                if index >= 4:
+                    _usage_field(fields, payload, offset, f'character_{identity}_{index}',
+                                 CHARACTER_NAMES[identity] + ' equipment', index + 1, slot)
     return MappingProxyType({field.id: field for field in fields})
+
+
+def _usage_field(fields, payload, offset, key, group, slot, label='Battle item'):
+    # Published ItemRecord: current uses at +0x24, saved capacity at +0x25.
+    # Capacity belongs to this existing item, not a guessed universal maximum.
+    # Unusual/inconsistent records stay visible in inspection without writes.
+    current, capacity = payload[offset + 0x24:offset + 0x26]
+    if 0 < capacity and current <= capacity:
+        fields.append(Field(key + '_uses', f'{label}: Remaining uses (capacity {capacity})',
+                            offset + 0x24, 1, capacity, group, slot))
+
+
+def item_records(document):
+    """Inspect occupied records without interpreting unknown IDs as item names."""
+    validate_document(document)
+    groups, equipment, _, _, _ = _structure(document.payload)
+    regions = [(label, index + 1, start + index * RECORD_SIZE, '')
+               for _, label, start, count in groups for index in range(count)]
+    regions.extend((CHARACTER_NAMES[identity] + ' equipment', index + 1,
+                    start + index * RECORD_SIZE, slot)
+                   for identity, start in equipment for index, slot in enumerate(EQUIPMENT_SLOTS))
+    records = []
+    for group, slot, offset, label in regions:
+        item_id = struct.unpack_from('<h', document.payload, offset + 4)[0]
+        if item_id < 0:
+            continue
+        records.append({
+            'group': group, 'slot': slot, 'label': label or f'Slot {slot}',
+            'item_id': item_id, 'instance_id': struct.unpack_from('<H', document.payload, offset)[0],
+            'quality': struct.unpack_from('<H', document.payload, offset + 6)[0],
+            'traits': struct.unpack_from('<hhh', document.payload, offset + 0x0A),
+            'effects': struct.unpack_from('<hhhh', document.payload, offset + 0x10),
+            'uses': document.payload[offset + 0x24], 'capacity': document.payload[offset + 0x25],
+            'stat_bytes': tuple(document.payload[offset + 0x27:offset + 0x2C]),
+        })
+    return tuple(records)
 
 
 def field_map(document):
@@ -369,8 +415,8 @@ def save_as(document, changes, destination):
 def restore(backup_path, destination, game_id=GAME_ID):
     get_format(game_id)
     backup_path, destination = _copy_path(backup_path), _copy_path(destination)
-    read_save(backup_path, game_id)
-    return restore_snapshot(backup_path, destination, GAME_ID, '.dat', MAX_FILE_SIZE)
+    return restore_snapshot(backup_path, destination, GAME_ID, '.dat', MAX_FILE_SIZE,
+                            validate_raw=lambda raw: decode(raw, game_id))
 
 
 def inspection_rows(document):
@@ -403,5 +449,9 @@ def field_hint(document, key):
     if field.group == 'Alchemy':
         return ('Alchemy EXP. 2,147,483,647 is a storage bound; '
                 'use a known EXP value. Excluded from Max.')
+    if key.endswith('_uses'):
+        return ('Remaining uses of this existing battle item. Max refills to its opened '
+                'saved capacity; capacity, identity, traits and effects stay unchanged. '
+                'Inconsistent or zero-capacity records are inspection only.')
     return ('Existing item quality, edit limit 999. Higher existing values survive Max. '
             'Item/instance IDs, ownership, traits/effects and every other item byte are preserved.')

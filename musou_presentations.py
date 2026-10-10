@@ -4,12 +4,25 @@ from scalar_presentation import InspectionTable, ScalarPresentation
 
 
 class DW8Presentation(ScalarPresentation):
-    extra_groups = ('Weapon attributes',)
+    extra_groups = ('Weapon attributes', 'Weapon affinity')
 
     def record_name(self, field):
+        if field.group == 'Weapon affinity':
+            return f'Weapon slot {field.slot:04}'
         return record_label(self.game_id, field.slot, field.group) if field.slot else field.group
 
     def field_hint(self, document, field):
+        if field.group == 'Weapon affinity':
+            record = self.backend.weapon(document, field.slot)
+            return (f"Weapon slot {field.slot}: ID {record['id']}; choose affinity ID 0, 1 or 2. "
+                    'The IDs for Heaven/Earth/Man remain unnamed pending independent corroboration. '
+                    'Affinity is a choice, so Max excludes it. Weapon identity, attack, attributes '
+                    'and equipped references remain unchanged.')
+        if field.group == 'Weapon compatibility':
+            return ('Stored aptitude: 25 = one star, 50 = two, 75 = three, 100 = four. '
+                    'Choose one of those four values. This affects the named weapon action; '
+                    'it does not change weapon attributes, officer EXP, skills or story progress. '
+                    'Max preserves higher existing values. Edited in-game loading remains untested.')
         if field.group == 'Officers' and field.slot:
             progress = self.backend.progression(document, field.slot)
             model = (f"Observed health curve: {progress['observed_health']:,}. "
@@ -21,7 +34,7 @@ class DW8Presentation(ScalarPresentation):
         if field.group == 'Weapon attributes':
             record = self.backend.weapon(document, field.slot)
             return (f"Weapon slot {field.slot}: ID {record['id']}; stored attack {record['attack']}. "
-                    'Only supported existing attribute ranks change. Identity, affinity and attack stay intact.')
+                    'Attribute edits change only supported existing ranks. Identity, affinity and attack stay intact.')
         return super().field_hint(document, field)
 
     def inspection_tables(self, document):
@@ -32,8 +45,18 @@ class DW8Presentation(ScalarPresentation):
         weapons = tuple((row['slot'], row['id'], row['affinity'], row['attack'],
                          ', '.join(f'{identity}:{rank}' for identity, rank in row['attributes'] if identity != 255))
                         for row in self.backend.weapons(document))
+        compatibility = tuple((record_label(self.game_id, slot, 'Officers'), *row)
+                              for slot, row in enumerate(self.backend.compatibilities(document), 1))
+        allies = tuple((row['slot'], row['skill_level'], row['skill_experience'],
+                        ', '.join(str(identity) for identity in row['support_skill_ids']),
+                        row['male_bond'], row['female_bond'])
+                       for row in self.backend.bodyguards(document))
         return (InspectionTable('Progression', ('Record', 'Level', 'XP', 'Leadership', 'Leadership XP', 'Weapon slots'), progression),
-                InspectionTable('Existing weapons', ('Slot', 'Weapon ID', 'Affinity ID', 'Stored attack', 'Attribute ID:rank'), weapons))
+                InspectionTable('Weapon compatibility', ('Record', 'Dash', 'Dive', 'Shadow Sprint', 'Whirlwind'),
+                                compatibility, 'Stored units: 25/50/75/100 = one/two/three/four stars; unusual values are preserved.'),
+                InspectionTable('Existing weapons', ('Slot', 'Weapon ID', 'Affinity ID', 'Stored attack', 'Attribute ID:rank'), weapons),
+                InspectionTable('Ally progression', ('Physical slot', 'Skill level', 'Skill XP', 'Support skill IDs', 'Male bond', 'Female bond'),
+                                allies, 'Read only. Records do not prove recruitment or ownership. Names, max skill levels and reward dependencies remain unmapped.'))
 
 
 class PW3Presentation(ScalarPresentation):

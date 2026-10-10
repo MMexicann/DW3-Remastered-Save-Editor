@@ -14,7 +14,11 @@ SOURCE_SUFFIXES={'.py','.pyw','.json','.md','.txt'}
 ADAPTER_TEMPLATE_FILES={'adapter_template/new_game_parser.py', 'adapter_template/new_game_editor.py',
                         'adapter_template/contract_test.py', 'adapter_template/INSTRUCTIONS.md'}
 PUBLIC_TEST_HELPERS={'tests/scalar_contract.py'}
-WINDOWS_DOCS=('README.md','CHANGELOG.md','LICENSE','THIRD_PARTY_NOTICES.md')
+WINDOWS_DOCS=('README.md','CHANGELOG.md','LICENSE','THIRD_PARTY_NOTICES.md',
+              'BUILDING.md','ARCHITECTURE.md','VALIDATION.md','SAVE_FORMAT.md','EXPANSION_COVERAGE.md',
+              'DYNASTY_RESEARCH.md','OROCHI_RESEARCH.md','SAMURAI_RESEARCH.md',
+              'PIRATE_ABYSS_RESEARCH.md','STARS_WO4_RESEARCH.md','NIOH3_RESEARCH.md',
+              'DW8_COMPATIBILITY.md','SOPHIE2_COVERAGE.md','PW3_COVERAGE.md')
 PERSONAL_PATH=re.compile(r'(?i)(?:[a-z]:[\\/]+Users[\\/]+(?!Player(?:[\\/]|\b))[^\\/\s"\']+|/(?:home|Users)/[^/\s"\']+)')
 
 
@@ -98,6 +102,47 @@ def verified_sources(root=ROOT):
                          'origins_editor.py','origins_evidence.json','save_safety.py','copy_storage.py',
                          'ORIGINS_FORMAT.md','launch.pyw','adapter_contract.py',
                          'scalar_presentation.py','musou_presentations.py','preferences.py'})
+        # Include each registered adapter and its local codec/presentation
+        # imports in the reviewed source whitelist.
+        registry_tree = ast.parse(sources.get('game_registry.py', b''))
+        pending = []
+        for node in ast.walk(registry_tree):
+            if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                    and node.func.id == 'Game'):
+                continue
+            modules = list(node.args[7:9])
+            modules.extend(keyword.value for keyword in node.keywords
+                           if keyword.arg in ('editor_module', 'parser_module', 'scalar_backend'))
+            pending.extend(value.value for value in modules
+                           if isinstance(value, ast.Constant) and isinstance(value.value, str))
+        visited = set()
+        while pending:
+            module = pending.pop()
+            if module in visited:
+                continue
+            if '.' in module:
+                raise ValueError('Registered adapter packages require a reviewed public path policy: ' + module)
+            if (root / module).is_dir():
+                raise ValueError('Registered adapter packages require a reviewed public path policy: ' + module)
+            visited.add(module)
+            name = module + '.py'
+            required.add(name)
+            tree = ast.parse(sources.get(name, b''))
+            for node in ast.walk(tree):
+                imports = ([node.module] if isinstance(node, ast.ImportFrom) and node.level == 0
+                           else [alias.name for alias in node.names] if isinstance(node, ast.Import)
+                           else [])
+                for item in imports:
+                    if not item:
+                        continue
+                    if '.' in item:
+                        local = root.joinpath(*item.split('.'))
+                        if local.with_suffix('.py').is_file() or local.is_dir():
+                            raise ValueError('Local package dependencies require a reviewed public path policy: ' + item)
+                    elif (root / (item + '.py')).is_file():
+                        pending.append(item)
+                    elif (root / item).is_dir():
+                        raise ValueError('Local package dependencies require a reviewed public path policy: ' + item)
         if b'origins_parser' in sources.get('game_registry.py', b''):
             required.update({'origins_game_editor.py', 'origins_parser.py', 'origins_codec.py'})
             native_tree = ast.parse(sources.get('origins_parser.py', b''))

@@ -97,7 +97,7 @@ Segoe UI is used on Windows, with a portable Helvetica fallback for GUI tests.
 DW3 retains `gui.Editor` and all existing parsing/editing modules. Its constructor
 accepts an optional container for embedding; default construction still supports
 the existing tests. Its module version remains 1.1 while the universal application's
-release version is 1.4. DW3's tagged Unreal schema, AES envelope, metadata,
+release version is 1.5. DW3's tagged Unreal schema, AES envelope, metadata,
 edit limits, atomic save writer and audit reports remain game specific. Explicit
 DW3 self-test and compatibility-test command lines continue to work.
 
@@ -139,3 +139,22 @@ Manual workflow runs produce build artifacts. A matching version tag publishes
 a new release; a `[release]` main commit can create the version tag at its tested
 commit. Both paths require native Windows tests, executable startup, bundle privacy
 checks and artifact hash validation. Existing releases are not overwritten.
+
+
+## v1.5 native adapters and inspection
+
+DW7 XL, WO3 Ultimate, Samurai Warriors 4 DX and Pirate Warriors 4 each have
+separate immutable parsers and scalar editors. DW7 and SW4/PW4 use independently
+qualified native envelope/checksum profiles; WO3 uses its native plaintext
+serialized title/layout qualification. Equipment dependencies are evaluated on
+existing records. Content unlocks and progression stay separate from stat/resource
+Max actions; unknown and unusual values remain intact.
+
+Inspector tables support independent token searches across all columns and keep
+the original record order. Sophie 2 supplies occupied-inventory presentation;
+DW8 supplies compatibility, affinity and read-only ally records. Restore adapters
+qualify the exact bounded snapshot bytes passed to atomic_new.
+
+Source-only research codecs do not register library cards. Packaging traverses
+registered flat-module dependencies, including keyword registrations, and rejects
+local packages until their paths have an explicit reviewed whitelist policy.

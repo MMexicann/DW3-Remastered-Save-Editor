@@ -183,24 +183,43 @@ class Editor(Appearance):
                   padding=12, wraplength=960).pack(anchor='w')
         notebook = ttk.Notebook(dialog)
         notebook.pack(fill='both', expand=True, padx=12, pady=8)
-        def table(title, columns):
+        def table(title, columns, rows, note):
             frame = ttk.Frame(notebook)
             notebook.add(frame, text=title)
-            view = ttk.Treeview(frame, columns=columns, show='headings')
+            tools = ttk.Frame(frame, padding=(6, 6))
+            tools.pack(fill='x')
+            ttk.Label(tools, text='Find records').pack(side='left', padx=(0, 8))
+            query = tk.StringVar(dialog)
+            ttk.Entry(tools, textvariable=query).pack(side='left', fill='x', expand=True)
+            if note:
+                ttk.Label(frame, text=note, padding=8, wraplength=950).pack(side='bottom', anchor='w')
+            body = ttk.Frame(frame)
+            body.pack(fill='both', expand=True)
+            view = ttk.Treeview(body, columns=columns, show='headings')
             for column in columns:
                 view.heading(column, text=column)
                 view.column(column, width=180)
-            view.pack(side='left', fill='both', expand=True)
-            scroll = ttk.Scrollbar(frame, orient='vertical', command=view.yview)
-            scroll.pack(side='right', fill='y')
-            view.configure(yscrollcommand=scroll.set)
+            view.grid(row=0, column=0, sticky='nsew')
+            body.rowconfigure(0, weight=1)
+            body.columnconfigure(0, weight=1)
+            scroll = ttk.Scrollbar(body, orient='vertical', command=view.yview)
+            scroll.grid(row=0, column=1, sticky='ns')
+            horizontal = ttk.Scrollbar(body, orient='horizontal', command=view.xview)
+            horizontal.grid(row=1, column=0, sticky='ew')
+            view.configure(yscrollcommand=scroll.set, xscrollcommand=horizontal.set)
+            records = tuple((view.insert('', 'end', values=row),
+                             ' '.join(str(value) for value in row).casefold()) for row in rows)
+            def filter_rows(*_args):
+                tokens = query.get().casefold().split()
+                for identity, text in records:
+                    if all(token in text for token in tokens):
+                        view.move(identity, '', 'end')
+                    else:
+                        view.detach(identity)
+            query.trace_add('write', filter_rows)
             return view
         for content in self.presentation.inspection_tables(document):
-            view = table(content.title, content.columns)
-            for row in content.rows:
-                view.insert('', 'end', values=row)
-            if content.note:
-                ttk.Label(dialog, text=content.note, padding=8).pack(anchor='w')
+            table(content.title, content.columns, content.rows, content.note)
         ttk.Button(dialog, text='Close', command=dialog.destroy).pack(pady=10)
         self.apply_theme(self.theme_name.get())
 

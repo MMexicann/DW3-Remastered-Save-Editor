@@ -6,7 +6,7 @@ from pathlib import Path
 from game_registry import ALL_ADAPTERS
 
 ROOT = Path(__file__).resolve().parent
-VERSION = '1.4'
+VERSION = '1.5'
 DATA = ['officer_names.json', 'game_metadata.json', 'unique_weapons.json',
         'verified_limits.json', 'item_limits.json', 'native_enums.json',
         'bodyguard_growth.json', 'bodyguard_items.json', 'bodyguard_weapons.json',
