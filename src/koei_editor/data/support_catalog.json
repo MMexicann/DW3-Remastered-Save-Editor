@@ -64,8 +64,8 @@
       "title": "Berserk and the Band of the Hawk",
       "platform": "Windows PC",
       "status": "Native PC ciphertext qualified; gameplay map missing",
-      "evidence": "Genuine public BKSAVEDATA0000.dat qualifies three-advance Koei word decryption, native u16 checksum, unchanged ciphertext roundtrip and body-corruption rejection. Character/accessory/Eclipse mechanics remain unmapped; no gameplay adapter.",
-      "needed": "Matching PC serializer or controlled character/resource/accessory/Eclipse pairs; revision/build labels and any inner integrity still need qualification.",
+      "evidence": "Reproducible read-only diagnostics qualify the genuine public BKSAVEDATA0000.dat outer three-advance cipher/u16 sum and exact unchanged reconstruction. Literal title text is observed; gameplay revision, records and full integrity remain unqualified. Official manual distinguishes persistent growth, accessory enhancement/amalgamation and Eclipse checkpoints/rewards. No gameplay adapter.",
+      "needed": "Matching Windows serializer/getters or source-backed Windows save editor and labelled unchanged/action pairs for funds, materials, existing accessories, growth and separate Eclipse rewards; exact revision/build and additional integrity proof. Vita editors/runtime trainers do not qualify Windows offsets.",
       "editing_verified": false
     },
     {
@@ -217,8 +217,8 @@
       "title": "Attack on Titan: Wings of Freedom",
       "platform": "Windows PC",
       "status": "Native PC ciphertext qualified; gameplay map missing",
-      "evidence": "Genuine public atwin0000.dat qualifies three-advance Koei word cipher, native u16 checksum, exact roundtrip and body-corruption rejection. Runtime or asset pointers are not serialized equipment/progression proof; no gameplay adapter.",
-      "needed": "Matching original PC serializer or controlled funds/materials/equipment/growth/mission pairs; exact revision/region and additional integrity qualification.",
+      "evidence": "Reproducible read-only diagnostics qualify the genuine public atwin0000.dat outer three-advance cipher/u16 sum and exact unchanged reconstruction. Decimal-text metadata does not qualify title/revision. Official first-game mechanics distinguish funds/materials, owned gear/fortification, horses and Regiment/Soldier Skills. Vita patches and LINKDATA modding tools provide no Windows save map; no gameplay adapter.",
+      "needed": "Matching original Windows serializer/getters or source-backed Windows editor; labelled unchanged/action pairs for funds/materials, existing gear develop/upgrade/fortify/equip, horses, growth/skills and separate mission rewards; native title/revision/region and all integrity qualification.",
       "editing_verified": false
     },
     {
@@ -226,8 +226,8 @@
       "title": "Attack on Titan 2 / Final Battle",
       "platform": "Windows PC",
       "status": "Native PC PK ciphertext qualified; gameplay map missing",
-      "evidence": "Genuine public PK-profile file qualifies one-advance Koei word cipher, native u16 checksum, exact roundtrip and body-corruption rejection. LINKDATA equipment editors target game assets and do not qualify player inventory; no gameplay adapter.",
-      "needed": "Matching PK serializer or controlled equipment/materials/custom-character/camaraderie/reward pairs; exact expansion/build and other inner integrity remain unqualified.",
+      "evidence": "Reproducible read-only diagnostics qualify the genuine public PK-profile file outer one-advance cipher/u16 sum and exact unchanged reconstruction. PK naming/decimal-text metadata do not prove native revision, Final Battle entitlement or full integrity. LINKDATA equipment and Katsuki/Gokon tools edit assets rather than player records. Customization, camaraderie and Territory Recovery remain distinct unqualified save systems; no gameplay adapter.",
+      "needed": "Matching base/Final Battle Windows serializer/getters or source-backed Windows save editor; exact build/region/DLC and labelled unchanged/action pairs for resources, owned equipment/reinforcement, customization, camaraderie/rewards and Territory Recovery; native identity and every integrity layer.",
       "editing_verified": false
     },
     {

@@ -73,3 +73,9 @@ fixtures cover independent adversarial cases. No attached executable was run;
 no edited save was loaded/re-saved in a game. Native Windows build checks and
 full regression totals are recorded after integration. No player files,
 account identifiers, attached binaries or personal paths are included in Git.
+
+The Berserk/AoT follow-up adds reproducible **read-only outer-envelope research**
+and detailed mechanic/input checklists. All three genuine Windows contributor
+copies pass unchanged cipher/checksum diagnostics; their gameplay records,
+revision gates and remaining integrity are still unqualified. They add no game
+cards or writable features. [Evidence and tests](OTHER_KOEI_PC_RESEARCH.md).

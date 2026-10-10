@@ -65,3 +65,11 @@ exercise field eligibility, malformed staging, all-field surgical edits and
 preserved integrity/dependencies. Library search, named choices, text controls,
 column sorting, Ctrl+C and existing editor sessions have real Tk regression
 checks. Native-file tests are not actual edited game-load tests.
+
+`test_berserk_aot_envelopes.py` checks unregistered read-only outer-envelope
+diagnostics for Windows Berserk, AoT1 and the observed AoT2 PK sample. Its
+procedural/adversarial cases include checksum collisions, wrong-family inputs,
+immutable snapshots, exact byte preservation and absence of gameplay/file-write
+APIs. Optional genuine tests use `BERSERK_SAVE_COPY`, `AOT1_SAVE_COPY` and
+`AOT2_PK_SAVE_COPY`; missing inputs skip. These prove no gameplay mappings or
+edited game loads. See [the evidence note](../docs/OTHER_KOEI_PC_RESEARCH.md).

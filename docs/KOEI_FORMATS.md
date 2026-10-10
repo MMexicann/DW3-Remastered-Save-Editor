@@ -151,12 +151,14 @@ Origins: see [ORIGINS_FORMAT.md](ORIGINS_FORMAT.md). The one genuine Steam sampl
 does not establish save encryption or a gameplay schema. Earlier asset-cipher
 and word-cipher trials did not produce a verified Origins payload.
 
-Berserk and the Band of the Hawk: a public Vita save was inspected, but no native
-PC sample, PC field mapping or integrity algorithm was established. Pirate
-Warriors 4 and DW9 have public PS4 samples, but those do not establish PC editing
-support. DW8 Empires has published PC cipher notes but needs a corresponding
-native PC sample. Samurai Warriors 4 has a public console checksum tool; it does
-not establish the Windows DX layout. These titles remain outside `GAMES`.
+Berserk and the Band of the Hawk: the later genuine Windows contribution
+qualifies the observed outer three-advance cipher and u16 sum, with reproducible
+read-only [diagnostics](OTHER_KOEI_PC_RESEARCH.md). Its body records, native
+revision and any inner integrity remain unqualified; the Vita editor is a
+different platform. Berserk and both AoT games remain outside `GAMES`.
+The later PW4, DW8 Empires and Samurai Warriors 4 DX native adapters have their
+own [coverage](EXPANSION_COVERAGE.md); earlier console-only leads did not qualify
+those PC editions. DW9 original still has no native gameplay adapter.
 
 For any candidate, needed samples are explicit copies of the **native PC file**,
 labelled with game version, edition, language/region and DLC. Provide an unchanged

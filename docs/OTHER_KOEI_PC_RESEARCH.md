@@ -31,6 +31,46 @@ identifier, semantic save schema or proof that no additional gameplay integrity
 exists. No deliberate edited save was imported, loaded or re-saved. Downloads
 include boilerplate shortcut/link files; they remain private and were not run.
 
+## Reproducible Berserk/AoT envelope diagnostics
+
+The unregistered [research module](../src/koei_editor/research/berserk_aot/envelope.py)
+now reproduces these outer envelopes in memory. `inspect(raw, profile=...)`
+requires an explicit `berserk`, `aot1` or `aot2_pk` sample hypothesis and its
+observed exact size. It checks the stored u16 sum over the entire decoded body;
+`reencode_unchanged(document)` revalidates the frozen snapshot and rebuilds the
+original ciphertext with its original seed. Raw/player bytes are hidden from
+the snapshot's representation. No field selection, staging, modified encoding
+or disk-writing API is exposed.
+
+A caller-selected hypothesis is **not** a native identity gate. An unrelated
+same-size buffer with a matching additive checksum can pass this diagnostic;
+two compensating word changes can retain the same checksum. Tests explicitly
+demonstrate that collision and keep title identity, revision, complete integrity
+and writability false. No other cipher family is tried after rejection.
+
+The independent procedural generator and optional genuine-copy tests are in
+[test_berserk_aot_envelopes.py](../tests/test_berserk_aot_envelopes.py). Locally set
+`BERSERK_SAVE_COPY`, `AOT1_SAVE_COPY` and `AOT2_PK_SAVE_COPY` to copied native files
+outside live/cloud directories, then run:
+
+```text
+python -m unittest tests.test_berserk_aot_envelopes -v
+```
+
+Without those inputs the three native tests skip. The expansion run with all
+three privately reacquired contributor copies passes the native outer-envelope
+and procedural/adversarial cases; exact totals are in
+[validation](VALIDATION.md#berserk-and-attack-on-titan-windows-follow-up).
+These are unchanged-file and diagnostic checks, not surgical gameplay editing,
+backup/Undo/Review Changes workflows or actual edited game-load validation.
+
+The matching original serializer/getters or source-backed Windows editor and
+controlled display-correlated native pairs remain the immediate enabling inputs.
+Detailed mechanics, source/licence distinctions and per-record prerequisites are
+in [Berserk](BERSERK_PC_RESEARCH.md), [AoT1](AOT1_PC_RESEARCH.md) and
+[AoT2](AOT2_PC_RESEARCH.md). These titles stay outside the supported-game registry;
+the supported inventory is unchanged.
+
 ## Source distinction
 
 - [iccugs/BERSERK_trainer](https://github.com/iccugs/BERSERK_trainer), commit
