@@ -63,9 +63,9 @@
       "id": "berserk",
       "title": "Berserk and the Band of the Hawk",
       "platform": "Windows PC",
-      "status": "PC mechanics evidence; sample missing",
-      "evidence": "PC tutorials/guides distinguish character progression, accessory enhancement +9, skill rank and per-character/global Eclipse rewards. No native PC save or disk codec verified.",
-      "needed": "Copied native PC save, build labels, checksums and controlled character/accessory/Eclipse pairs.",
+      "status": "Native PC ciphertext qualified; gameplay map missing",
+      "evidence": "Genuine public BKSAVEDATA0000.dat qualifies three-advance Koei word decryption, native u16 checksum, unchanged ciphertext roundtrip and body-corruption rejection. Character/accessory/Eclipse mechanics remain unmapped; no gameplay adapter.",
+      "needed": "Matching PC serializer or controlled character/resource/accessory/Eclipse pairs; revision/build labels and any inner integrity still need qualification.",
       "editing_verified": false
     },
     {
@@ -199,7 +199,7 @@
       "title": "Warriors All-Stars",
       "platform": "Windows PC",
       "status": "Native PC campaign-gold editor",
-      "evidence": "Independent native revision F4 AES reconstruction and genuine ten-block save qualification. Nine existing active campaign balances use the native 9,999,999 bound; existing positive quantities in 45 material IDs use manual 1..9,999 controls. Lifetime earnings, acquisition and story remain unchanged. Encrypted fingerprints are structural sentinels, not a payload checksum.",
+      "evidence": "Independent native revision F4 AES reconstruction and genuine ten-block save qualification. Nine existing active campaign balances use the native 9,999,999 bound; existing positive quantities in 45 material IDs use manual 1..9,999 controls. Lifetime earnings, acquisition and story remain unchanged. Encrypted fingerprints are structural sentinels, not a payload checksum. Existing valid ordinary Hero Card selectors now switch only between occupied cards in the original hero-owned twenty-record pool; all eligible choices have surgical genuine-file tests and independent native/GUI review.",
       "needed": "Edited game-load checks and controlled hero EXP, cards, regard, requests, routes, rewards and currency-spend pairs.",
       "editing_verified": true
     },
@@ -216,18 +216,18 @@
       "id": "aot1",
       "title": "Attack on Titan: Wings of Freedom",
       "platform": "Windows PC",
-      "status": "Candidate only",
-      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "status": "Native PC ciphertext qualified; gameplay map missing",
+      "evidence": "Genuine public atwin0000.dat qualifies three-advance Koei word cipher, native u16 checksum, exact roundtrip and body-corruption rejection. Runtime or asset pointers are not serialized equipment/progression proof; no gameplay adapter.",
+      "needed": "Matching original PC serializer or controlled funds/materials/equipment/growth/mission pairs; exact revision/region and additional integrity qualification.",
       "editing_verified": false
     },
     {
       "id": "aot2",
       "title": "Attack on Titan 2 / Final Battle",
       "platform": "Windows PC",
-      "status": "Candidate only",
-      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "status": "Native PC PK ciphertext qualified; gameplay map missing",
+      "evidence": "Genuine public PK-profile file qualifies one-advance Koei word cipher, native u16 checksum, exact roundtrip and body-corruption rejection. LINKDATA equipment editors target game assets and do not qualify player inventory; no gameplay adapter.",
+      "needed": "Matching PK serializer or controlled equipment/materials/custom-character/camaraderie/reward pairs; exact expansion/build and other inner integrity remain unqualified.",
       "editing_verified": false
     },
     {
@@ -342,9 +342,9 @@
       "id": "dqh2",
       "title": "Dragon Quest Heroes II",
       "platform": "Windows PC",
-      "status": "PC path identified; no codec",
-      "evidence": "Native PC backup path identified; no usable sample, disk codec or editable schema verified.",
-      "needed": "Copied native sequel save, build labels and independent integrity/field evidence.",
+      "status": "Genuine PC save acquired; integrity/map missing",
+      "evidence": "Public complete SAVEDATA.BIN has observed plaintext-looking framing and progressed Teresa/Lazarel slots. Header semantics, native integrity, slot boundaries and safe field mappings are unqualified; no gameplay adapter.",
+      "needed": "Matching PC serializer or controlled resources/vocation/EXP/skills/proficiency/equipment/reward pairs, with exact build/region labels and native integrity evidence.",
       "editing_verified": false
     },
     {
@@ -435,7 +435,7 @@
       "status": "Native export resource editor",
       "editing_verified": true,
       "evidence": "Publicly shared complete modified native export qualifies exact size, marker and stored size. Independently implemented rupees/existing named materials; searchable read-only character and fairy-food records, unchanged and surgical/GUI checks. Existing qualified generic weapon stars and ordinary seal KO reductions now surgically tested on a genuine export.",
-      "needed": "Edited game loading; natural Max caps, progression/stat coupling, discovery flags and weapon/fairy/story dependencies."
+      "needed": "Edited game loading; natural resource Max caps, progression/stat coupling, discovery flags and weapon/fairy/story dependencies."
     },
     {
       "id": "dw7e_ps3",
@@ -481,6 +481,15 @@
       "editing_verified": true,
       "evidence": "Three genuine US/Japanese decrypted exports qualify exact framing/capacity markers; two independently advertised Japanese Cole values corroborate the money field. Manual Cole and conservative existing stack reductions preserve float qualities/properties/effects and distinct memory words.",
       "needed": "Apollo PFD reimport/resigning and actual game loading; controlled synthesis, use, memory purchase and calendar/event pairs. Other platforms/regions need separate profiles."
+    },
+    {
+      "id": "three_hopes",
+      "title": "Fire Emblem Warriors: Three Hopes",
+      "platform": "Nintendo Switch",
+      "status": "Native export editor implemented",
+      "editing_verified": true,
+      "evidence": "Six independently shared complete native SlotData exports qualify 143 top-level plus one nested own-body checksum. Manual gold reductions and qualified original owned/deployed character names update exact header/body mirrors; all other game systems remain byte-identical. Searchable named character and weapon inspection.",
+      "needed": "Edited game loading; controlled growth/EXP/class/mastery, materials/acquisition, weapon forging/equipment, support and route/reward action pairs. Other revisions/Unicode name encoding require independent profiles."
     }
   ],
   "scope": "Windows application with explicitly selected game/platform parsers and separate backup identities.",

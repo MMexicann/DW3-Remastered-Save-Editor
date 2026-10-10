@@ -52,6 +52,19 @@ class AdapterDispatchTests(unittest.TestCase):
                     adapter.read_save(path, identity)
             read.assert_not_called()
 
+    def test_snapshot_profile_identity_rejects_equal_and_permissive_metadata(self):
+        adapter = get_game('dw8xl').get_scalar_adapter()
+        document = adapter.decode(synthetic_raw('dw8xl'))
+        class PermissiveProfile:
+            id = 'dw8xl'
+            def __eq__(self, _other): return True
+        for layout in (replace(document.format), PermissiveProfile()):
+            with self.subTest(profile=type(layout).__name__), \
+                    patch.object(adapter.backend, 'fields_for') as fields:
+                with self.assertRaises(SaveError):
+                    adapter.fields_for(replace(document, format=layout))
+                fields.assert_not_called()
+
     def test_bulk_staging_keeps_snapshot_and_does_not_repeat_native_cipher(self):
         adapter = get_game('dw8xl').get_scalar_adapter()
         document = adapter.decode(synthetic_raw('dw8xl'))

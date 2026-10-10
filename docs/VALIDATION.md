@@ -6,7 +6,7 @@ This review started at remote `codex/prepare-next-update`, commit
 `f7ca0121d4e98a7caf09f8545a5a7413a0b8dc3e`, on
 `codex/independent-validation`. Parallel audits reviewed all 28 registered
 adapters. Results below are from this review, not inherited qualification claims.
-The final complete suite ran **1,136 tests in 356.160 seconds: 824 passed,
+The complete suite for that 28-adapter snapshot ran **1,136 tests in 356.160 seconds: 824 passed,
 312 skipped, no failures or errors**, using Python 3.12 and actual Tk on a virtual
 Xorg display. Qualified copied-native inputs were explicitly configured for all
 six new editors, Wii U Hyrule, Age of Calamity and Pirate Warriors 3.
@@ -17,8 +17,10 @@ failures and 328 skips; those expectations were corrected before the final run.
 
 The [non-publishing Windows run](https://github.com/MMexicann/Universal-Koei-Tecmo-Save-Editor/actions/runs/38094440495)
 was dispatched with `publish=false` at application/test commit `a969687`.
-It was still running when this report was finalized; the draft PR tracks its
-result. The following commit updates only this report and its manifest hash.
+It completed successfully: source checks, standalone EXE build and executable
+verification passed; both release jobs were skipped. This is native Windows
+evidence for the 28-adapter application/test snapshot, not the subsequent
+29-adapter integration below.
 
 ### Confirmed defects and narrow fixes
 
@@ -42,8 +44,9 @@ result. The following commit updates only this report and its manifest hash.
 
 The new adversarial regressions failed before these fixes. Two existing GUI
 tests also had stale expectations: DW7 Undo restores the opened input, and
-All-Stars has three supported inspector groups. Corrected tests retain their
-original save/backup and byte-preservation assertions.
+All-Stars then had three supported inspector groups. The later upstream update
+adds Hero cards, and the four-group expectation was restored. Corrected tests
+retain their original save/backup and byte-preservation assertions.
 
 ### Procedural and GUI checks
 
@@ -75,6 +78,32 @@ native Ayesha; subsequent actual-Tk copied-native checks covered those workflows
 The complete suite uses actual Tk on a virtual Xorg display with qualified native
 copies for all six new editors, Wii U Hyrule, Age of Calamity and Pirate Warriors 3.
 
+### Updated development branch integration
+
+The development branch advanced to `bdb3833` while this review was finishing.
+That update was integrated without replacing validation work: it adds the
+29th registered adapter, Three Hopes, and All-Stars owned-card equipment.
+The upstream stricter format-object identity check and this branch's pending-edit
+guards both remain. The overlapping DW7 Undo assertion has equivalent semantics;
+the All-Stars inspector expectation now includes the newly implemented Hero cards.
+
+Affected shared-contract, pending-edit, GUI/session, registry, packaging and
+inventory suites passed **102/102 tests, no skips, in 35.196 seconds** with actual
+Tk. Three Hopes and All-Stars equipment suites ran **28 tests in 8.829 seconds:
+21 passed, seven skipped for unavailable genuine copies**. Independent procedural
+probes checked Three Hopes' 143 native-stored sections/nested checksums, mirrored
+fields, surgical edits, unsupported targets and 25 corruptions; All-Stars probes
+checked owned-pool equipment boundaries, campaign/hero boundaries, invalid
+references, unstage and unchanged unrelated encrypted blocks. Those probes passed
+and are synthetic evidence only. No independently verified genuine Three Hopes or
+All-Stars file, or game loading, is claimed by this review.
+
+The entire 1,136-test suite was not repeated after this integration. Its result
+above applies to the original 28-adapter snapshot; these affected-area checks,
+29-interface source and installed-wheel startup checks, and fresh manifest and
+inventory checks apply to the integrated branch. The Windows run also predates
+this integration.
+
 ### Genuine-file verification
 
 All downloaded/exported saves, private hashes and provenance remain outside Git.
@@ -97,10 +126,10 @@ files provide genuine-file evidence, not pristine gameplay or game-load evidence
 ### Installed package, packaging and remaining limits
 
 A non-editable wheel installed in an isolated environment outside the checkout
-loaded all 28 editor/parser/backend registrations and all 14 runtime JSON files.
-Its 191 entries contained no tests, tools, saves or binaries; runtime JSON bytes
+loaded all 29 editor/parser/backend registrations and all 14 runtime JSON files.
+Its 195 entries contained no tests, tools, saves or binaries; runtime JSON bytes
 matched the wheel exactly. Module listing and actual-Tk all-interface/theme
-smoke startup passed. The source manifest verifies 401 public entries, and the
+smoke startup passed. The source manifest verifies 411 public entries, and the
 generated-inventory check passed.
 The version remains 1.6. Linux checks do not validate Windows CNG or an EXE;
 native build status belongs to the explicitly non-publishing workflow run.
@@ -115,8 +144,9 @@ no corrupt output from the unknown-key case was established. The affected direct
 modules are DW7 XL, PW4, DW4 Hyper/PS2 XL, Sophie 2, WO3U, SW4 DX, DW9E, Orochi Z,
 Wii U Hyrule, AoC, Hyrule Definitive, FE Warriors, DW7E PS3, DW7 PS3 and SW4 PS3.
 
-Coordination: this branch changes shared contracts/GUI, Origins and narrow
-DW5/DW8E/Legends/Wo Long edge cases. It adds no game registrations or mechanics.
+Coordination: the validation changes affect shared contracts/GUI, Origins and
+narrow DW5/DW8E/Legends/Wo Long edge cases. No registrations or game mechanics
+were authored by this review; the new registration/equipment come from upstream.
 Concurrent implementation branches should preserve these regressions and refresh
 the reviewed source manifest after integrating overlapping edits.
 

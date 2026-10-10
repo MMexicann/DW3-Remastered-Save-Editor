@@ -11,7 +11,7 @@ class StarsPresentation(ScalarPresentation):
                                      tuple((row['label'], row['value']) for row in rows
                                            if row['group'] == group),
                                      'Balance edits preserve lifetime earnings, rewards and story.')
-                     for group in ('Campaign gold', 'Materials', 'System history'))
+                     for group in ('Campaign gold', 'Materials', 'System history', 'Hero cards'))
 
 
 class Editor(ScalarEditor):
@@ -19,9 +19,9 @@ class Editor(ScalarEditor):
     save_extension = '.bin'
     backend = stars_parser
     presentation_type = StarsPresentation
-    subtitle = 'Windows PC campaign gold editor'
+    subtitle = 'Windows PC campaigns and existing Hero Cards'
     summary = ('Available campaign gold and existing material quantities by ID; '
-               'inspect lifetime earned gold separately.')
+               'select existing own-pool Hero Cards and inspect their stored properties.')
 
 
 def read_save(path):

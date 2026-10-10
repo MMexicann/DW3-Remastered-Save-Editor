@@ -110,7 +110,7 @@ GAMES = (
          '', '.dat', '#775c82', 'koei_editor.games.orochiz.orochiz_editor', 'koei_editor.games.orochiz.orochiz_parser',
          True, 'OROCHI Z', True, scalar_backend='koei_editor.games.orochiz.orochiz_parser'),
     Game('stars', 'WARRIORS ALL-STARS', 'Windows PC · revision F4',
-         'Available gold and existing material quantities in campaign slots; separate lifetime-gold inspection.',
+         'Gold, existing materials, owned Hero Card selection and searchable card records; separate lifetime earnings.',
          '', '.bin', '#827050', 'koei_editor.games.stars.stars_editor', 'koei_editor.games.stars.stars_parser',
          True, 'ALL-STARS', True, scalar_backend='koei_editor.games.stars.stars_parser'),
     Game('hyrule_warriors', 'HYRULE WARRIORS', 'Wii U · APP.BIN',
@@ -168,6 +168,11 @@ GAMES = (
          'Existing ordinary item ranks, weapon attack/weight and attributes; named officer/bodyguard inspection.',
          '', '.dat', '#526985', 'koei_editor.games.dw5special.dw5special_editor', 'koei_editor.games.dw5special.dw5special_parser',
          True, 'V SPECIAL', True, scalar_backend='koei_editor.games.dw5special.dw5special_parser'),
+
+    Game('three_hopes', 'FIRE EMBLEM WARRIORS: THREE HOPES', 'Switch · extracted SlotData exports',
+         'Gold reductions, owned Shez/Byleth name customization and searchable character/weapon records.',
+         '', '', '#657b43', 'koei_editor.games.three_hopes.editor', 'koei_editor.games.three_hopes.parser',
+         True, 'THREE HOPES', True, 'Nintendo Switch', scalar_backend='koei_editor.games.three_hopes.parser'),
 
 )
 

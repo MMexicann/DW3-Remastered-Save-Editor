@@ -124,6 +124,45 @@ guide, but its alphabetical ordering is not proof of native IDs. The editor
 therefore shows honest numeric material IDs and preserves all ownership/history
 bytes. No game catalog was extracted or bundled.
 
+### Existing ordinary Hero Card selection (unreleased expansion)
+
+The native campaign serializer `0x44A670` writes 100 hero records through
+`0x466410`, then 2,200 card records through `0x464810`. Their packed sizes are
+`0x48D` and `0x53` respectively; these differ from runtime strides `0x498` and
+`0x58`. Relative to each campaign payload, the hero array starts at `0x3F6E`
+and the card array at `0x20682`. The equipped-card DWORD is at hero packed
+`+0x20E` (runtime `+0x214`). Setter `0x466080` changes that DWORD alone. The live
+hero embeds its saved component at `+0x34`; gameplay path `0x46514D` reads the
+corresponding reference at `+0x248`, resolves the actual card, and applies its
+effects. This is an equipment reference, distinct from the hero's ordinal ID.
+
+Native ownership predicate `0x464220` restricts an ordinary hero's pool to
+physical card records `20*heroID .. 20*(heroID+1)-1`; friendship-gift records
+2,000–2,199 follow a separate path. Occupied-card check `0x464310` requires a
+valid physical index and signed stored card identity 0–1,999. The editor exposes
+selection only when the original already resolves to an occupied ordinary card
+in the same hero pool and that pool has at least two qualified cards. It offers
+only other occupied cards from that pool, rejects empty/unknown/cross-hero/gift
+references in stage, review and serialization, and excludes equipment from Max.
+No card, acquisition, growth, regard, story or reward bytes change.
+
+The genuine public PC export contains 144 eligible hero selectors with 1,539
+qualified pool choices across its nine campaigns. Every choice is tested for a
+surgical four-byte plaintext edit and preservation of the remaining native
+cipher blocks, seeds and padding. The searchable card inspector displays its
+2,655 occupied records with numeric card identity, stored attack, element and
+trait IDs; these properties remain read only. Numeric labels avoid asserting an
+unproved name or item catalog.
+
+Card growth is deliberately separate: load helper `0x463D70` derives runtime
+level through external `GrowthExpData` lookup `0x483250`, then recomputes stored
+rarity and attack through `0x4877F0`/`0x487B20`. The matching installed `LINKDATA.BIN` and `LINKDATA.IDX` assets (both names
+appear in the executable), including their growth tables, card descriptors and
+name/localization catalogs, plus controlled customization pairs
+are required before modifying card EXP, level, attack, rarity, traits, element,
+affinity or fusion state. Choosing an existing card requires none of those
+properties to be rebuilt.
+
 ### All-Stars coverage checklist
 
 These are mechanically documented systems to map, not invented writable fields.
@@ -137,7 +176,7 @@ neither the complete file nor a working cipher alone establishes those fields.
 | Gold/training purchases | **Implemented:** available balances in qualified existing campaigns, native cap 9,999,999; lifetime earnings read only. Purchase-specific quest/history and training-level dependencies remain blocked by controlled training/purchase comparisons. |
 | Character levels, EXP, actions, stats | Actions unlock with levels (guide reports all actions at level 20); map EXP versus derived level/stats and action flags. Bravery is battle-local and must not be presented as permanent character level. |
 | Characters and route rosters | Initial factions and recruited roster differ; Opoona has ending dependencies. Distinguish permanent availability from current campaign recruitment; preserve selected protagonist and faction. |
-| Hero cards/equipment | Cards replace a conventional weapon-growth editor here: map owner, rarity, attack, affinity/current and maximum, element, Friendship Gift, traits, occupied trait slots and equipped references. Do not label card affinity as regard. |
+| Hero cards/equipment | **Implemented:** select existing ordinary cards inside each hero’s native twenty-record pool when the original reference is valid; no Max, creation or transfer. Search occupied cards by numeric identity and inspect stored attack/element/trait IDs. Friendship Gifts, growth, rarity, attack, affinity, element/trait edits and occupied trait capacity require matching card descriptors/growth tables and controlled customization pairs. Card affinity is distinct from regard. |
 | Card customization and materials | **Implemented:** existing ordinary quantities for 45 material IDs, manual 1–9,999 without acquiring empty stacks; bulk Max excludes them. Names-to-native-ID catalog, card traits/capacity, recipe checks, consumption and quest/reward dependencies remain blocked by native catalog or controlled named-material/customization comparisons. |
 | Elements | Five reported card elements: Fire, Ice, Lightning, Darkness, Love, plus no element. Frenzy is a combat effect, not a discovered sixth card element. IDs/ranks remain unmapped. |
 | Regard/bonds and Hero Skills | Regard rewards and paired Hero Combo/Combo Skills require distinct character-pair records. Map asymmetric/symmetric structure, thresholds and prerequisites before bulk changes. |
@@ -175,8 +214,10 @@ platform-specific; no PS4 offsets were promoted to PC mappings.
 
 ### WO4/Ultimate coverage checklist
 
-All writable rows require the matching gameplay DLL, an identified native PC
-save and controlled mappings. The supplied launcher cannot establish any of them.
+All writable rows require the matching gameplay DLL, a same-build native PC
+save and controlled mappings. Public player-save archives have now been acquired,
+but their encrypted contents and revision have not been qualified. The supplied
+launcher cannot establish the codec or gameplay mappings.
 
 | Mechanic | Distinctions and exact remaining proof |
 | --- | --- |
@@ -213,10 +254,10 @@ Re-reading the actual native constant and complete routine established 3.66;
 with that correction, all ten encrypted sentinels and a byte-exact unchanged
 roundtrip pass on the genuine file. This corrects the unregistered research
 codec's false key fact. Subsequent complete native serializer/update-path
-inspection qualifies the separate current-F4 gold/material copy editor described
+inspection qualifies the separate current-F4 gold/material/card-selection copy editor described
 above. The native header rule is independently recovered, and the genuine
 plaintext begins with `0x170302F4`. WO4 discussions inspected
-so far supplied save troubleshooting rather than an acquired native fixture.
+initially supplied save troubleshooting; renewed SaveGamePro downloads now supplied encrypted player exports described below.
 Some later guide requests returned HTTP 429; those are rate limits, not evidence
 that a feature or sample does not exist. No access control was bypassed.
 
@@ -227,14 +268,16 @@ native copy. Tests cover exact no-edit ciphertext, ten-block boundaries, altered
 snapshot rejection, invalid parameters, truncation/foreign input, damaged
 sentinels and the sentinel's inability to detect unrelated CBC corruption.
 
-All-Stars genuine outer-envelope roundtrip and targeted gold/material output
-reconstruction are verified. Eleven format tests and one GUI workflow test
-pass, including the genuine-file case; eight separate candidate checks also
-pass. Tests cover exact plaintext preservation outside each targeted scalar,
+All-Stars genuine outer-envelope roundtrip and targeted gold/material/card-selection
+output reconstruction are verified. The expanded registered-editor suite passes
+28 checks under Xvfb with zero skips: eleven format, one original GUI, six new
+card-equipment (including genuine surgical and GUI), six prior independent
+audit and four new independent card-equipment review checks. Eight separate
+unchanged candidate-codec checks also passed previously. Tests cover exact plaintext preservation outside each targeted scalar,
 unchanged encrypted blocks, original seeds/nonzero padding, malformed input and
 unsupported revisions, empty campaign/material exclusion, higher values, safe
 backups/restore, changed-source rejection, live-folder aliases, search, Undo,
-Review Changes, themes and safe saving. The procedural GUI fixture is synthetic.
+Review Changes, themes and safe saving. The original procedural GUI fixture is synthetic; the new card-selector GUI workflow opens a separate copy of the genuine public native export.
 **No edited All-Stars save was loaded in the game.** WO4 has no qualified
 native fixture or editor. Follow-up native fixtures remain private and should be
 selected by environment variable; never add them to the source manifest.
@@ -255,3 +298,35 @@ Its CC BY-NC-ND 4.0 implementation remains outside this repository and release.
 No third-party unpacker code was copied into the public candidate module, which
 implements the game's independently observed save arithmetic using the
 project's existing CNG AES provider.
+
+A renewed GitHub repository search for `Warriors Orochi save editor`,
+`Warriors Orochi 4 save`, `WO4U.dll` and `Warriors Orochi 3 save editor` found no
+repository match. Earlier code search found only mod-loader references to the
+DLL. Search absence does not establish that a sample or editor does not exist;
+no matching native WO4 gameplay DLL has yet been acquired; new public encrypted player-save archives still require codec/revision qualification.
+
+### Renewed WO4 public player-export acquisition
+
+Normal public download links on [the WO4 page](https://savegame.pro/pc-warriors-orochi-4-savegame/)
+and [Ultimate page](https://savegame.pro/pc-warriors-orochi-4-ultimate-savegame/)
+now supplied 7z archives. They were inspected and extracted privately without
+executing any binaries or included shortcuts. The base-labelled page contains
+`SAVEDATAU.BIN`, 927,576 bytes; the Ultimate-labelled page contains both
+`SAVEDATA.BIN` and `SAVEDATAU.BIN`, each 927,576 bytes. Both include separate
+135-byte input maps. The filenames and page descriptions do not prove their
+revision, edition or loadability. Neither the common word/byte stream cipher
+hypotheses nor unencrypted parsing qualified their headers; no speculative
+codec or gameplay adapter was added. The missing matching `WO4.dll`/`WO4U.dll`
+remains the exact executable-code input for integrity/serialization recovery,
+with a user save from that same installed build for definitive corroboration.
+
+Legacy console/source leads were rechecked. `PythWare/Warriors-Orochi-2-Editors`
+is an asset-editing lead without an explicit source licence, not a qualified
+Xbox disk-save codec. `JustGillin/omni360` is an Xbox game installer/download
+project, not a Warriors save editor; `SHODAN-HORAI/SHODAN-Stat-Editor` concerns
+another title. Apollo's public PS3 save collection currently has no Orochi entry
+in its title index. Existing PS3 patch definitions and original community
+Xbox editors still require an exact decrypted gameplay export, matching title
+revision, native integrity proof and safely identified dependencies; console
+patch offsets are not used as PC offsets. No restricted code or game assets were
+copied into this project.

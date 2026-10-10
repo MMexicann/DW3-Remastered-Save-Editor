@@ -123,7 +123,7 @@ class BoundScalarAdapter:
 
     def _document_identity(self, document):
         layout = getattr(document, 'format', None)
-        if getattr(layout, 'id', None) != self.game_id or layout != self.get_format():
+        if getattr(layout, 'id', None) != self.game_id or layout is not self.get_format():
             raise SaveError('This document belongs to a different game/platform adapter.')
 
     def validate_document(self, document):

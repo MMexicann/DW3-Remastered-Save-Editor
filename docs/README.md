@@ -38,6 +38,7 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Hyrule Warriors Legends 3DS format](HYRULE_LEGENDS_FORMAT.md)
 - [Hyrule Warriors Definitive Edition Switch coverage](SWITCH_WARRIORS_RESEARCH.md)
 - [Fire Emblem Warriors Switch format](FIRE_EMBLEM_WARRIORS_FORMAT.md)
+- [Fire Emblem Warriors: Three Hopes](THREE_HOPES_FORMAT.md)
 - [Origins native format and progression](ORIGINS_FORMAT.md)
 - [WO3 Ultimate and Orochi Z coverage](OROCHI_RESEARCH.md)
 - [Samurai Warriors 4 DX and 5 coverage](SAMURAI_RESEARCH.md)
@@ -51,7 +52,9 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Persona 5 Strikers native PC format](P5STRIKERS_PC_FORMAT.md)
 - [Atelier Ayesha PS3 exports](AYESHA_PS3_FORMAT.md)
 - [Hyrule, Fire Emblem and Pirate follow-up](FAMILY_NEXT_RESEARCH.md)
+- [Dragon Quest Heroes II, Berserk and Attack on Titan PC follow-up](OTHER_KOEI_PC_RESEARCH.md)
 - [Additional editor survey](ADDITIONAL_EDITOR_SURVEY.md)
+- [Atelier and other Gust follow-up](ATELIER_NEXT_RESEARCH.md)
 
 ## Mechanics and source research
 

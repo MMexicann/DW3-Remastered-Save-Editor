@@ -53,7 +53,7 @@ class StarsGuiTests(unittest.TestCase):
         self.assertEqual(editor.changes, {'slot_3_gold': 9_999_999})
         editor.show_inspector()
         tables = editor.presentation.inspection_tables(editor.document)
-        self.assertEqual(tuple(table.title for table in tables), ('Campaign gold', 'Materials', 'System history'))
+        self.assertEqual(tuple(table.title for table in tables), ('Campaign gold', 'Materials', 'System history', 'Hero cards'))
         self.assertTrue(any('Lifetime earned gold' in row[0] for row in tables[2].rows))
         editor.group.set('Materials')
         editor.search.set('slot_0_material_0')
