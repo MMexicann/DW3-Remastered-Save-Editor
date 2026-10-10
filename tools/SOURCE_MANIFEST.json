@@ -313,8 +313,8 @@
     },
     {
       "path": "docs/VALIDATION.md",
-      "bytes": 18416,
-      "sha256": "74378de63c495a2866bb36457004ce555542f612d81736576566ddf90ae792ec"
+      "bytes": 21913,
+      "sha256": "ce379f75f0427beb0ceb79bb5de0c53fe38aefa84ee0f53f6d6f742f8732f26f"
     },
     {
       "path": "docs/WEAPON_ATTRIBUTES_FIX.md",
@@ -2068,8 +2068,8 @@
     },
     {
       "path": "tests/test_verified_editors.py",
-      "bytes": 20590,
-      "sha256": "c5f0c9b51d8b2df0c7bdbe0243f4b85ecb1d618de50eb84fbbeb225162ea8227"
+      "bytes": 20627,
+      "sha256": "76db238efaf84afc3bd0ea0a3bf5277a8b0524e8c52b44479bc1647d90a8a04e"
     },
     {
       "path": "tests/test_verified_snapshot_review.py",
