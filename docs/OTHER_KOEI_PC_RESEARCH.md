@@ -6,10 +6,16 @@ is guessed from repeated values, runtime pointers or a different platform.
 Game binaries, trainers, shortcuts and downloaded editors were not executed.
 No save, decrypted player data, account identifier or private path is distributed.
 
+The follow-up [DQH I/II and Fate/Samurai Remnant Windows status](LICENSED_ACTION_RPG_STATUS.md)
+records newly acquired DQH1 compression evidence, reacquired DQH2 evidence,
+source/licence exclusions, distinct growth and workshop mechanics, and exact
+enabling inputs. None of those three titles clears the native editing gates.
+
 ## Public files acquired and cryptographic qualification
 
 | Game | Genuine public native sample | Qualification completed |
 | --- | --- | --- |
+| Dragon Quest Heroes: Slime Edition, PC | [3DM contribution](https://dl.3dmgame.com/patch/114595.html), complete 102,400-byte `SAVEDATA.BIN`. | Independently decoded `LZP2` stream: observed wrapper word `1`, 61,648 compressed bytes and 642,716 decoded bytes. This establishes compression framing, not game revision, integrity, native serialization roundtrip or gameplay semantics. |
 | Dragon Quest Heroes II, PC | [SaveGame.Pro contribution](https://savegame.pro/pc-dragon-quest-heroes-ii-savegame/), archive contains complete `SAVEDATA.BIN`, 1,575,744 bytes (`0x180B40`), plus `inputmap.dat`. | Native plaintext-looking complete file with observed prefix `031028160800000003000000`; header semantics and integrity remain unqualified. Contributor describes distinct progressed Teresa/Lazarel slots, classes, skills, proficiency, items and multiplayer progress. These are uploader claims, not game-load validation or natural-cap proof. |
 | Berserk and the Band of the Hawk, PC | [SaveGame.Pro contribution](https://savegame.pro/pc-berserk-and-the-band-of-the-hawk-savegame/), `BKSAVEDATA0000.dat`, 1,268,512 bytes (`0x135B20`). | Stored u16 checksum/seed and known Koei three-advance word cipher exactly qualify the actual ciphertext. Decrypted prefix explicitly names `BERSERK and the Band of the Hawk`; own body semantics/other integrity are unqualified. |
 | Attack on Titan / A.O.T. Wings of Freedom, PC | [SaveGame.Pro contribution](https://savegame.pro/pc-attack-on-titan-savegame/), `atwin0000.dat`, 769,568 bytes (`0xBBE20`). | Three-advance Koei word cipher and decrypted u16 checksum match. Decimal-text metadata in the decrypted prefix is not used as an invented universal title identifier or region/build label. |

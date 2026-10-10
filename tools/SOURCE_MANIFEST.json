@@ -133,8 +133,8 @@
     },
     {
       "path": "docs/EXPANSION_COVERAGE.md",
-      "bytes": 30533,
-      "sha256": "63ac09ccdb8dabb4c51b7bdbdadf6c7b894f6f97b59b3d15ca1189350675c1b9"
+      "bytes": 31218,
+      "sha256": "d2ada9e7843f5366b01c93bf9de40e3e3119b6952f9f1e9d267f7de9d9d6e356"
     },
     {
       "path": "docs/FAMILY_NEXT_RESEARCH.md",
@@ -167,6 +167,11 @@
       "sha256": "3d278398d6bdb8bee16fc11eef0207e688676dbc183fc2166c608d05b45e44e6"
     },
     {
+      "path": "docs/LICENSED_ACTION_RPG_STATUS.md",
+      "bytes": 14441,
+      "sha256": "6ccc36a8c019addd6df9438c7b2174c49dce7d584f1d23f230eaaabf9593983d"
+    },
+    {
       "path": "docs/NIOH3_RESEARCH.md",
       "bytes": 6689,
       "sha256": "fdda98297a4b08d10f7b79e45d861e2308a9d67823f0b24aebff48ef64e7adfc"
@@ -183,8 +188,8 @@
     },
     {
       "path": "docs/OTHER_KOEI_PC_RESEARCH.md",
-      "bytes": 8681,
-      "sha256": "664664cca14f38ec90c27e21674c2719ddd40bd796d9514267009cf2dc759609"
+      "bytes": 9392,
+      "sha256": "2254fd55d536c869a0da051a0f4abed7021e4caf7dd741a78e74453ad219a04e"
     },
     {
       "path": "docs/P5STRIKERS_PC_FORMAT.md",
@@ -223,8 +228,8 @@
     },
     {
       "path": "docs/README.md",
-      "bytes": 3556,
-      "sha256": "9a6c4ec9b771d7fe3b93f9561c07ff5cbbdf97fa33a93688e4de939337d5c996"
+      "bytes": 3658,
+      "sha256": "2b2f4e416aa758e9bac1842211d70934fa3bce9a0fe6649ab14e5b8d65558d6c"
     },
     {
       "path": "docs/RELEASE_NOTES.md",
@@ -233,8 +238,8 @@
     },
     {
       "path": "docs/REMAINING_INPUTS.md",
-      "bytes": 16474,
-      "sha256": "0993b907fa239f2d260314929f957dc831b9a074f5aff9f34cbc7fed5338ea3d"
+      "bytes": 18136,
+      "sha256": "2509b9ae4347f1c9094e27396897d4f53a0d51c153b03941767d4b81e343ab9b"
     },
     {
       "path": "docs/REPOSITORY_METADATA.md",
@@ -298,8 +303,8 @@
     },
     {
       "path": "docs/VALIDATION.md",
-      "bytes": 18416,
-      "sha256": "74378de63c495a2866bb36457004ce555542f612d81736576566ddf90ae792ec"
+      "bytes": 20565,
+      "sha256": "568d03f6fe43b7bed1b22e0f9a96707d9fb65da6ce53ae06d697c9cc3b15cb16"
     },
     {
       "path": "docs/WEAPON_ATTRIBUTES_FIX.md",
@@ -443,8 +448,8 @@
     },
     {
       "path": "src/koei_editor/data/support_catalog.json",
-      "bytes": 32777,
-      "sha256": "dbf9621479196fd1d93a78addcda95d85753e0fbd2de85b166da7f08d1b70571"
+      "bytes": 33656,
+      "sha256": "25901e75c41f7fa6bf5d9ba5deecddc2d855e72fcacbbe8f62e8aefc6e1a696b"
     },
     {
       "path": "src/koei_editor/data/unique_weapons.json",
