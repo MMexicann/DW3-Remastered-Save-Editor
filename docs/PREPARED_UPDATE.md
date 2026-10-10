@@ -10,6 +10,7 @@ validation artifacts, not a new GitHub release.
 
 | Game | Platform | Implemented controls |
 | --- | --- | --- |
+| Samurai Warriors 4-II | Windows PC, revision `0x31A4` | Manual current gold, five held strategy-tome resources, five stored base stats on qualified existing standard officers, existing own-pool weapon selection and attached attribute magnitudes, and occupied-mount combat stats. Exact native checksum spans are qualified. Growth, skill trees, acquisition and story/reward transitions remain separate. |
 | Dynasty Warriors 5 Special / Shin Sangokumusou 4 Special | Windows PC | Existing ordinary item ranks; existing own-family weapon attack, named weight choices and existing attribute ranks; searchable named officers, weapons, items, bodyguards and separate Shura resources. |
 | Dynasty Warriors 8 Empires | Windows PC | Existing custom-horse body type; searchable appearance, stats and ability records in SystemSave.dat. Campaign files remain separate. |
 | Hyrule Warriors Legends | Nintendo 3DS | Rupees, existing named materials and base-map cards, generic weapon stars, ordinary seal KO reductions and existing ASCII My Fairy names; named character/food/fairy inspection. |

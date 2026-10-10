@@ -1,5 +1,11 @@
 # Samurai Warriors PC coverage and evidence
 
+The additional PC investigation is recorded separately for
+[SW4-II](SW4II_FORMAT.md) and [Spirit of Sanada](SANADA_PC_RESEARCH.md).
+SW4-II's revision, stream and exact native checksum profile are independent of
+DX. Sanada's tested outer framing remains unregistered research without
+gameplay writes or a claim of qualified inner integrity.
+
 ## Samurai Warriors 4 DX: implemented native PC adapter
 
 The adapter accepts gameplay `SAVEDATA0000.dat`–`SAVEDATA0004.dat` copies,

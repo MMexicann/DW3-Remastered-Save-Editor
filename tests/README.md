@@ -65,3 +65,13 @@ exercise field eligibility, malformed staging, all-field surgical edits and
 preserved integrity/dependencies. Library search, named choices, text controls,
 column sorting, Ctrl+C and existing editor sessions have real Tk regression
 checks. Native-file tests are not actual edited game-load tests.
+
+Additional Musou PC tests cover the separately qualified SW4-II revision
+`0x31A4` adapter and unregistered read-only Spirit of Sanada outer framing.
+Set `SW4II_SAVE_COPY` and optionally `SW4II_SECOND_SAVE_COPY` to separate native
+gameplay copies; set `SANADA_PC_SAVE_COPIES` to a copied directory containing
+`SAVEDATA0000.dat`, `SAVEDATA0001.dat` and `SYSDATA.dat`. Genuine-file cases skip
+when those inputs are absent. `test_sw4ii_gui.py` uses the genuine copy when
+provided, otherwise a procedural fixture, and requires Tk with a display.
+See [SW4-II](../docs/SW4II_FORMAT.md) and
+[Sanada](../docs/SANADA_PC_RESEARCH.md) for exact qualifications and blockers.

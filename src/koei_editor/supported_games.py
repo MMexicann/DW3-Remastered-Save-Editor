@@ -22,6 +22,7 @@ from .game_registry import GAMES
 # origins: DYNASTY WARRIORS: ORIGINS / Steam PC · slot saves [Windows PC]
 # wo3u: WARRIORS OROCHI 3 ULTIMATE / Definitive Edition · PC [Windows PC]
 # samurai4dx: SAMURAI WARRIORS 4 DX / Windows PC edition [Windows PC]
+# sw4ii: SAMURAI WARRIORS 4-II / Windows PC edition [Windows PC]
 # dw6: DYNASTY WARRIORS 6 / Native Windows PC edition [Windows PC]
 # dw9emp: DYNASTY WARRIORS 9 EMPIRES / Windows PC · SYSTEMDATA [Windows PC]
 # orochiz: WARRIORS OROCHI Z / Native Windows PC edition [Windows PC]

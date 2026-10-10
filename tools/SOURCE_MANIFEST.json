@@ -33,8 +33,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 6780,
-      "sha256": "dbf0f6bee7433c439adc16d4e7a07c9960d504d990edf2dbbbb65dcbe80b3f57"
+      "bytes": 6906,
+      "sha256": "5d4d52a31abb1f52d4df1ac8611287d800f07c4e9c290d9f0443a0b3b0437210"
     },
     {
       "path": "docs/ADDITIONAL_EDITOR_SURVEY.md",
@@ -65,6 +65,11 @@
       "path": "docs/AYESHA_PS3_FORMAT.md",
       "bytes": 9157,
       "sha256": "04a0edf20c50f83b8b1ac0e61a62f5cb737a9e0d3a1d49614a3509f14df442f8"
+    },
+    {
+      "path": "docs/BLADESTORM_PC_RESEARCH.md",
+      "bytes": 5627,
+      "sha256": "ee766d621b59504f032efbf3e01facd8d038f6128b0ecb2f265d01a75d0ec59e"
     },
     {
       "path": "docs/BODYGUARDS.md",
@@ -122,9 +127,19 @@
       "sha256": "c18261c8c9967aac225a03efc93c67ba028f80a57412f59f74e27d05b5eefb9d"
     },
     {
+      "path": "docs/DW8_ORIGINAL_PC_SCOPE.md",
+      "bytes": 6519,
+      "sha256": "b48a093233ee9035c3a5a737e69a5d1f29f1228f35b946fe7de6deb7a351058d"
+    },
+    {
+      "path": "docs/DW9_ORIGINAL_PC_RESEARCH.md",
+      "bytes": 12589,
+      "sha256": "fd72f12da3b52232de191378067aae038e523bd960d47bb5e6e3be8b45073bf9"
+    },
+    {
       "path": "docs/DYNASTY_RESEARCH.md",
-      "bytes": 19216,
-      "sha256": "d9bc47d0d469a9c08a6e8b825189d6246d0c4ef3bd329efa9caa69d030d14990"
+      "bytes": 19619,
+      "sha256": "87e1dd5bec5d02dcc53024c4c8d94e6ee80d9710ffe31be780389346ebbb1eb1"
     },
     {
       "path": "docs/EXISTING_EDITORS.md",
@@ -133,8 +148,8 @@
     },
     {
       "path": "docs/EXPANSION_COVERAGE.md",
-      "bytes": 28621,
-      "sha256": "ba0eef961eaa252147e1d6219773b8a5953efdb18ba2c6ea4b591fa606f954b4"
+      "bytes": 31263,
+      "sha256": "f3c720e1a05564507faed61a35b0b5fb0bc7056cf059d5d410c15417ec41fa99"
     },
     {
       "path": "docs/FAMILY_NEXT_RESEARCH.md",
@@ -203,8 +218,8 @@
     },
     {
       "path": "docs/PREPARED_UPDATE.md",
-      "bytes": 5487,
-      "sha256": "dfd663f96163a20b016a2605fd7bd0e0385d1d1306e5eb8c23206ffa717b3b89"
+      "bytes": 5892,
+      "sha256": "d1d4329fa5279e7edc015fc586e0c3386e1c4feb16b0e93afc9bd3a448e5326b"
     },
     {
       "path": "docs/PS3_EXPANSION.md",
@@ -218,8 +233,8 @@
     },
     {
       "path": "docs/README.md",
-      "bytes": 3336,
-      "sha256": "9d0ae4516a38225e1d6c453229321efb42adfc7e24c440f1544b31e11778d0ea"
+      "bytes": 3710,
+      "sha256": "e5170c9e703de56cb57d968f220de74a670b2da3b5ebf8a4597f1f410a5d2d08"
     },
     {
       "path": "docs/RELEASE_NOTES.md",
@@ -228,8 +243,8 @@
     },
     {
       "path": "docs/REMAINING_INPUTS.md",
-      "bytes": 15789,
-      "sha256": "887dce6e4244f83abcadaa991728b25707f98ae9b60aba366520595eef2064b2"
+      "bytes": 17917,
+      "sha256": "c1168715370176dac2b1014b6d9f0ae2dd0afe07b331ec388756773967557fec"
     },
     {
       "path": "docs/REPOSITORY_METADATA.md",
@@ -238,8 +253,13 @@
     },
     {
       "path": "docs/SAMURAI_RESEARCH.md",
-      "bytes": 19830,
-      "sha256": "77f865279aac1d4abd9d16146d6561bbf05a9a224f0d48c2497e0accd572ce09"
+      "bytes": 20171,
+      "sha256": "ac5117f894b9123065b0d3e4bd9d55b90a99d774e1c5a6e1c9d152ca0ff2c185"
+    },
+    {
+      "path": "docs/SANADA_PC_RESEARCH.md",
+      "bytes": 11541,
+      "sha256": "353969dd2627d508e5c4967754374c5cf9aea3d077be9bbdf035940d1d543492"
     },
     {
       "path": "docs/SAVE_COMPATIBILITY.md",
@@ -263,8 +283,13 @@
     },
     {
       "path": "docs/SUPPORTED_GAMES.md",
-      "bytes": 4973,
-      "sha256": "3257e791c502c581588c7bd3841a58218bf28ee8c40f3f9b2ce703b66ca0a839"
+      "bytes": 5099,
+      "sha256": "5accbab731de74c768deeb6848c2a9055fd116f41d1eee2ac1907999fc9abfe8"
+    },
+    {
+      "path": "docs/SW4II_FORMAT.md",
+      "bytes": 14747,
+      "sha256": "df5c2b079a02e11c67819a5b835d4a8b6bf3ba20956686fa3a09651ff884af70"
     },
     {
       "path": "docs/SWITCH_WARRIORS_RESEARCH.md",
@@ -278,8 +303,8 @@
     },
     {
       "path": "docs/THIRD_PARTY_NOTICES.md",
-      "bytes": 4275,
-      "sha256": "0e42051402ff2dad0f10f7766a5670ff28d778ab87c45b20121f39f90ba8207a"
+      "bytes": 4985,
+      "sha256": "742e56498914a71de250d515ad41654c2fb0f6844edb1bf6bcba6308e28f8106"
     },
     {
       "path": "docs/TOTORI_PC_RESEARCH.md",
@@ -433,8 +458,8 @@
     },
     {
       "path": "src/koei_editor/data/support_catalog.json",
-      "bytes": 30952,
-      "sha256": "b830ee184d85942372a69af72355237da2481cdfe30d0c6890e9ad4afcb417c4"
+      "bytes": 32009,
+      "sha256": "748c9619bb0d512b61abfe823ba8f9767f1c96a0f45d4531e0ce14288279d7b2"
     },
     {
       "path": "src/koei_editor/data/unique_weapons.json",
@@ -453,8 +478,8 @@
     },
     {
       "path": "src/koei_editor/game_registry.py",
-      "bytes": 13658,
-      "sha256": "5a1a4c0b1c54eae2a6f775c612af155c796adf940dec5631867bf804d8c1a240"
+      "bytes": 13990,
+      "sha256": "3f50510b0d68da8310306378f7f21e26858a2fc1b312a06706637b99b97eba0b"
     },
     {
       "path": "src/koei_editor/games/AGENTS.md",
@@ -1057,6 +1082,26 @@
       "sha256": "93f4a41a92a62e7576336a20eef64d893793757d079048812bc67cf77789cc8d"
     },
     {
+      "path": "src/koei_editor/games/sw4ii/__init__.py",
+      "bytes": 63,
+      "sha256": "ffd6c772361317fea73852cfb3190b5afafd96352f77acb491e6fd98682e1039"
+    },
+    {
+      "path": "src/koei_editor/games/sw4ii/sw4ii_codec.py",
+      "bytes": 2926,
+      "sha256": "72b82d642cd05ebfba481464553c1adc90087cb6e03e26ccc6c5f91f9712c6c6"
+    },
+    {
+      "path": "src/koei_editor/games/sw4ii/sw4ii_editor.py",
+      "bytes": 623,
+      "sha256": "b1fb471b2c024b6ec1ebf88e245c55001b49048f29462cfdabbbdf0b72d00f26"
+    },
+    {
+      "path": "src/koei_editor/games/sw4ii/sw4ii_parser.py",
+      "bytes": 16688,
+      "sha256": "ed05fec0675c10daad7e71684f0f3677ea471b22f0239291bdd9b778b2d2ad88"
+    },
+    {
       "path": "src/koei_editor/games/wo3u/__init__.py",
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1207,6 +1252,16 @@
       "sha256": "bd0629d85f16e60ee6043fcdbf93431975224d96561d3ba0e42399da561a3800"
     },
     {
+      "path": "src/koei_editor/research/sw_sanada/__init__.py",
+      "bytes": 77,
+      "sha256": "c017876f21a57164199830f3e7dc0a5d858686086442dbcdeb19ee2c7e45437d"
+    },
+    {
+      "path": "src/koei_editor/research/sw_sanada/codec.py",
+      "bytes": 2763,
+      "sha256": "f8133ff34e5743931b20d4532ddcb233d449e7216c223253f55c3f68b70112d4"
+    },
+    {
       "path": "src/koei_editor/resources.py",
       "bytes": 947,
       "sha256": "894a14e7e5e4a42a8d2a3afb84ffd1d880b83fc624768670fedc308560c022dd"
@@ -1298,13 +1353,13 @@
     },
     {
       "path": "src/koei_editor/supported_games.py",
-      "bytes": 3548,
-      "sha256": "982ae16914a47ff0482ff820b408161be34960a4a549bf87068c14634c7d69b7"
+      "bytes": 3613,
+      "sha256": "842905e2f9287f6692fc50e4d04f8863ed52bf07b0ff72c4cc1e0d190c318a14"
     },
     {
       "path": "tests/README.md",
-      "bytes": 3793,
-      "sha256": "1d913ad491007232f830cc4ec40670693f524b4e03e90de99ccdc16a2fa3f1e3"
+      "bytes": 4456,
+      "sha256": "18992e584ac51647288a8bbccbc70ae09239bf588db0eac187b3b7ffb825bfb7"
     },
     {
       "path": "tests/scalar_contract.py",
@@ -1782,6 +1837,11 @@
       "sha256": "8bcd6f4a1c186b260c64afa442ccedc954d78bc6eeeaea9f8ad47c9b7e32b721"
     },
     {
+      "path": "tests/test_sanada_pc_framing.py",
+      "bytes": 3951,
+      "sha256": "e8f38d8a5910fac4dec2191e6ea93506ef5dba757325aba7c5b50ecbfd300e4a"
+    },
+    {
       "path": "tests/test_save_provider.py",
       "bytes": 2177,
       "sha256": "5133faa3d2e1dafbba5566f25e4869f387ee6efe3c85faae65e09c84b2608d47"
@@ -1837,6 +1897,21 @@
       "sha256": "b25213ce7e4b6a179c4ff1cb9da33d836a5eab7da4189f65918dde1553eee35d"
     },
     {
+      "path": "tests/test_sw4ii_format.py",
+      "bytes": 12665,
+      "sha256": "e2034550a3a12bd423d59bb6b150292741372583c7b91642cc759122cdbc8660"
+    },
+    {
+      "path": "tests/test_sw4ii_gui.py",
+      "bytes": 4895,
+      "sha256": "f3da76117284503d8b5818d521717325d3df27a7b65e33f39f88b5ce852e8873"
+    },
+    {
+      "path": "tests/test_sw4ii_review.py",
+      "bytes": 10818,
+      "sha256": "7887df5165c0b0f73204b759923fa968f845d284d46ab9b5526c12e87b86f96f"
+    },
+    {
       "path": "tests/test_table_tools.py",
       "bytes": 2611,
       "sha256": "4fc1fe27e129e7940ce2e4fdddcbdbe893dd09f09cd1e687bdf435b3b1fc1e43"
@@ -1863,8 +1938,8 @@
     },
     {
       "path": "tests/test_verified_editors.py",
-      "bytes": 20590,
-      "sha256": "c5f0c9b51d8b2df0c7bdbe0243f4b85ecb1d618de50eb84fbbeb225162ea8227"
+      "bytes": 20734,
+      "sha256": "163416afd03bd0a340c61d17af3aa86ffe78a40a3c57521c97b7c781cb914f92"
     },
     {
       "path": "tests/test_verified_snapshot_review.py",

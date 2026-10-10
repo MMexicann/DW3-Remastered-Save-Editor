@@ -1,5 +1,11 @@
 # Dynasty Warriors PC expansion evidence and coverage
 
+Original DW9 PC fixture acquisition and mechanic-specific blockers are recorded
+in [the original-game investigation](DW9_ORIGINAL_PC_RESEARCH.md). It remains
+separate from the DW9 Empires adapter below. [DW8 edition qualification](DW8_ORIGINAL_PC_SCOPE.md)
+found no distinct original-only Windows product or native format; XL/Complete
+and Empires names do not qualify another original-edition adapter.
+
 Research was performed statically. No supplied game executable was launched.
 Public player saves and attached executables stay outside the repository,
 builds and release assets. No Steam owner identifiers or custom character names

@@ -318,8 +318,10 @@ class SupportGateTests(unittest.TestCase):
         self.assertEqual(catalog['sw5']['status'], 'Static PC cipher candidate; native qualification blocked')
         self.assertTrue(catalog['dw6']['editing_verified'])
         self.assertEqual(get_game('dw6').platform, 'Windows PC')
+        self.assertTrue(catalog['sw4ii']['editing_verified'])
+        self.assertEqual(get_game('sw4ii').get_scalar_adapter().get_format().id, 'sw4ii')
         for game_id in ('berserk','dw8_empires','dw9_original','dw9_empires',
-                        'dw7_definitive','sw4','sw4dx','sw5','sw_sanada','sw4ii','wo3','wo4',
+                        'dw7_definitive','sw4','sw4dx','sw5','sw_sanada','wo3','wo4',
                         'p5s','dqh1','dqh2','abyss', 'dw6_original'):
             with self.assertRaises(SaveError):get_game(game_id)
 
