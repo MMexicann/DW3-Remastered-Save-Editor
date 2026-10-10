@@ -34,7 +34,7 @@
       "title": "Dynasty Warriors 8: Xtreme Legends Complete Edition",
       "platform": "Windows PC",
       "status": "File editing verified",
-      "evidence": "Genuine PC sample passes both integrity layers. Resources, 82 officer stat records and supported existing weapon attribute ranks are editable; progression and equipment identities are inspected read only.",
+      "evidence": "Genuine PC sample passes both integrity layers. Resources, 82 officer stat records, four weapon-action compatibility ratings, existing weapon attribute ranks and individual affinity IDs are editable. Unusual values, equipment identities and progression remain intact; ally records are inspected.",
       "needed": "In-game load checks on copies; controlled attribute/progression pairs and version-labelled samples.",
       "editing_verified": true
     },
@@ -69,10 +69,10 @@
       "id": "pw4",
       "title": "One Piece: Pirate Warriors 4",
       "platform": "Windows PC",
-      "status": "PC archive link; download blocked",
-      "evidence": "Steam PC guide links save_data.rar with Windows import instructions and successful-load reports; Mediafire blocked. Runtime Beli/medal/crew/Soul systems are separate; no disk decoder verified.",
-      "needed": "Copied native PC gameplay files, build/DLC labels, integrity evidence and controlled Beli, medal, growth and Soul Map pairs.",
-      "editing_verified": false
+      "status": "Native PC revision-15 resource editor",
+      "evidence": "Genuine slot in the shared WW/JP/EA cipher profile passes envelope and all 145 native object checksums, unchanged roundtrip and surgical Beli/obtained-coin quantity edits. Earned/spent counters, acquisition flags, unknown records and story stay intact.",
+      "needed": "Native coin names/rarities and controlled growth, skill, Soul Map, unlock and reward dependency pairs; edited game loading and other region/revision qualification.",
+      "editing_verified": true
     },
     {
       "id": "dw6_original",
@@ -87,9 +87,9 @@
       "id": "dw8_empires",
       "title": "Dynasty Warriors 8: Empires",
       "platform": "Windows PC",
-      "status": "Candidate codec; PC sample blocked",
-      "evidence": "Independently implemented published two-layer cipher candidate passes procedural checksum/preservation tests. Steam users share a PC save, but its Google Drive download is blocked; title identity and fields remain unverified.",
-      "needed": "Copied native system and campaign .dat files, build/DLC labels, native identity and resource/merit/bonus-point pairs.",
+      "status": "Native PC codec qualified; gameplay maps blocked",
+      "evidence": "Five genuine native SystemSave/EmpireSave/QuickSave files qualify exact sizes, title revision 0x140828F1, checksum/cipher profiles and unchanged roundtrips. No gameplay writer is registered.",
+      "needed": "Proven native gameplay field identities, legitimate bounds and dependency maps; console and runtime fields do not establish a fixed disk shift.",
       "editing_verified": false
     },
     {
@@ -105,19 +105,19 @@
       "id": "dw9_empires",
       "title": "Dynasty Warriors 9: Empires",
       "platform": "Windows PC",
-      "status": "PC mechanics mapped; sample missing",
-      "evidence": "PC guides distinguish reputation/title, artifact/gem, proficiency/inheritance and CAW dependencies. Public hex and .caw tools edit process memory, not native saves; no disk codec verified.",
-      "needed": "Copied system, campaign and CAW data from the independent Empires directory, actual build/DLC labels and controlled resource/title/equipment/proficiency pairs.",
+      "status": "Attachment transfer blocked; native format unqualified",
+      "evidence": "DW9Emp.exe exceeds the 32 MiB executor transfer limit and was not inspected. No native gameplay format/writer qualified.",
+      "needed": "Accessible smaller archive or binary chunks for static inspection, genuine native PC saves and controlled gameplay/dependency pairs.",
       "editing_verified": false
     },
     {
-      "id": "dw7_definitive",
+      "id": "dw7xl",
       "title": "Dynasty Warriors 7: Xtreme Legends Definitive Edition",
       "platform": "Windows PC",
-      "status": "PC save link; download blocked",
-      "evidence": "Steam users share annotated PC saves and restoration instructions. Google Drive archive blocked here; no bytes reached a decoder trial.",
-      "needed": "Copied native save data, version labels, integrity/decryption evidence and single-value progression pairs.",
-      "editing_verified": false
+      "status": "Native PC file editor",
+      "evidence": "Genuine PC save qualifies exact title, two-step stream and odd-tail checksum. Gold, 65 officers base stats/skill points and active selection between existing owned equipped weapons are mapped. Inventory and skill bits are inspected read only.",
+      "needed": "Matching LINKDATA parameter/name assets or controlled skill/seal/roster/progression pairs; edited game-load validation.",
+      "editing_verified": true
     },
     {
       "id": "sw2",
@@ -132,9 +132,9 @@
       "id": "sw5",
       "title": "Samurai Warriors 5",
       "platform": "Windows PC",
-      "status": "PC path identified; no codec",
-      "evidence": "Published PC backup manifest identifies the Windows save location and Steam edition. No native PC decoder or gameplay edit was verified.",
-      "needed": "Platform/edition-labelled native copies, checksum and field verification.",
+      "status": "Static PC cipher candidate; native qualification blocked",
+      "evidence": "Attached executable statically establishes owner-context AES/key and fingerprint candidates. No genuine native container/integrity qualification or gameplay writer.",
+      "needed": "Native PC saves with matching owner context, qualified framing/checksums and controlled growth/proficiency/weapon/content pairs.",
       "editing_verified": false
     },
     {
@@ -147,13 +147,13 @@
       "editing_verified": false
     },
     {
-      "id": "sw4dx",
+      "id": "samurai4dx",
       "title": "Samurai Warriors 4 DX",
       "platform": "Windows PC",
-      "status": "PC path identified; no codec",
-      "evidence": "Published PC backup manifest identifies the Windows save location and Steam edition. No native PC decoder or gameplay edit was verified.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
-      "editing_verified": false
+      "status": "Native PC file editor",
+      "evidence": "Supplied executable and genuine shared native PC revision 0x39EA qualify envelope and four inner checksums, gold/gems, 55 standard officers and existing weapon skill records. Malformed/revision checks and surgical serialization are tested.",
+      "needed": "Actual edited game loads; qualified roster/gem names, native progression limits and controlled Chronicle, bonds, mounts, custom-character and story/reward maps.",
+      "editing_verified": true
     },
     {
       "id": "sw_sanada",
@@ -174,30 +174,30 @@
       "editing_verified": false
     },
     {
-      "id": "wo3",
+      "id": "wo3u",
       "title": "Warriors Orochi 3 Ultimate Definitive Edition",
       "platform": "Windows PC",
-      "status": "PC archive link; download blocked",
-      "evidence": "Annotated Steam PC save archive found; Mediafire blocked here. Promotions, growth, crafting, upgrade stones and bonds researched; console layouts remain unverified for PC Definitive.",
-      "needed": "Copied native SAVEDATA.BIN, build/DLC labels, checksums and promotion/crafting/bond single-change pairs.",
-      "editing_verified": false
+      "status": "Native Steam PC file editor",
+      "evidence": "Supplied executable serializer and genuine shared native PC save qualify packed revision, 145 playable officer stat records, growth points/gems, attribute orbs, crafting and existing weapon attribute slots/ranks. ASLR-dependent record markers and unknown bytes are preserved.",
+      "needed": "Actual edited game loads, roster/material ID names, controlled promotion/progression/bonds/story rewards and remaining weapon descriptors.",
+      "editing_verified": true
     },
     {
       "id": "wo4",
       "title": "Warriors Orochi 4 / Ultimate",
       "platform": "Windows PC",
-      "status": "Console format leads only",
-      "evidence": "Public decrypted PS4 sample indexed; no verified PC editing layout.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "status": "Launcher only; gameplay DLL missing",
+      "evidence": "Attached WO4.exe is a launcher loading WO4.dll or WO4U.dll. It does not contain the gameplay save implementation.",
+      "needed": "Matching WO4.dll or WO4U.dll, genuine native PC saves and controlled value/dependency pairs.",
       "editing_verified": false
     },
     {
       "id": "allstars",
       "title": "Warriors All-Stars",
       "platform": "Windows PC",
-      "status": "Candidate only",
-      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "status": "Static PC cipher candidate; native sample missing",
+      "evidence": "Attached executable establishes ten-block AES/key/IV/framing candidate. Fingerprint sentinel is not full payload integrity. Source-only procedural checks pass; no native gameplay file or writer.",
+      "needed": "Genuine native Steam PC SAVEDATA.BIN, independent title/revision/framing/integrity qualification and controlled mechanics/dependency pairs.",
       "editing_verified": false
     },
     {
@@ -348,9 +348,9 @@
       "id": "abyss",
       "title": "Warriors: Abyss",
       "platform": "Windows PC",
-      "status": "PC path identified; no codec",
-      "evidence": "Native PC edition and GAMEDATA*.BIN filenames identified; no file decoding/editing verified.",
-      "needed": "Copied native GAMEDATA*.BIN, build labels and controlled resource/unlock pairs.",
+      "status": "Static owner-bound PC cipher candidate; sample missing",
+      "evidence": "Attached executable establishes AES-256-CBC owner-key derivation, plaintext magic and encrypted check word. Read-only source candidate has procedural tests; no native fixture, gameplay checksums or writer.",
+      "needed": "Genuine GAMEDATA files with matching owner context, full framing/integrity and controlled progression/resource/unlock pairs.",
       "editing_verified": false
     },
     {
@@ -367,7 +367,7 @@
       "title": "Atelier Sophie 2: The Alchemist of the Mysterious Dream",
       "platform": "Windows PC (Steam 1.08 layout)",
       "status": "Available PC editor; independent sample check pending",
-      "evidence": "MIT-licensed Steam PC editor codec integrated with strict tagged-layout qualification, bounded existing item/equipment quality edits, two alchemy EXP fields, complete integrity and surgical copied-save writes. Upstream differential vectors and procedural preservation tests; no complete independent native save acquired.",
+      "evidence": "MIT Steam PC codec with strict tagged-layout qualification. Existing item/equipment quality, two alchemy EXP fields and valid consumable refills within saved capacity; searchable occupied inventory. Differential vectors and procedural preservation tests; no independent complete native save acquired.",
       "needed": "Unchanged copied Steam 1.08 data.dat, displayed quality/alchemy values, edition/language and controlled game reload.",
       "editing_verified": false
     },
@@ -378,6 +378,15 @@
       "status": "Native PC decode and read-only map; checksum unresolved",
       "evidence": "Published NIOHUSR revision and complete native sample pair establish decryption. Twenty scalar mappings inspected. Existing editor clears four integrity flags instead of calculating checksums; this project preserves flags and rejects gameplay writes.",
       "needed": "Documented native integrity algorithm, controlled native field/dependency pairs and edited game reload; do not disable integrity flags as a substitute.",
+      "editing_verified": false
+    },
+    {
+      "id": "nioh3",
+      "title": "Nioh 3",
+      "platform": "Windows PC",
+      "status": "Native PC integrity qualified; gameplay maps blocked",
+      "evidence": "Two genuine native USER revisions and an encrypted partner qualify native body checksum and unchanged inspection. Source-only; no gameplay writer.",
+      "needed": "Revision-specific record identities/offsets and dependency pairs; published inventory offsets do not qualify these native files; edited game-load validation.",
       "editing_verified": false
     }
   ],

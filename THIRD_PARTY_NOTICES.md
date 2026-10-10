@@ -50,3 +50,14 @@ Source-only Nioh 2 inspection references the published Apache-2.0 scalar map in
 The attribution, modification notice and licence are retained in
 `licenses/nioh2-save-editor-Apache-2.0.txt`. This implementation exposes no
 editable Nioh 2 fields and does not redistribute its native utility or save.
+
+
+The v1.5 DW7 XL, DW8 Empires, WO3 Ultimate, Orochi Z, Samurai Warriors 4 DX,
+Pirate Warriors 4, All-Stars, Abyss and Nioh 3 implementations are independently
+written from statically recovered and published format facts. Evidence and
+pinned-source references appear in their linked game checklists in
+EXPANSION_COVERAGE.md. Existing MIT-attributed Koei/Katana primitives are reused
+where noted. No GPL, noncommercial or no-derivatives implementation, external
+editor, game executable, extracted game data or player save is incorporated.
+New Sophie 2 refill/presentation logic follows the published MIT ItemRecord;
+its existing full MIT notice remains included.

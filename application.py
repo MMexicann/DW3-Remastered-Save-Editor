@@ -7,7 +7,7 @@ from appearance import Appearance, THEMES
 from game_registry import GAMES, ALL_ADAPTERS, get_game
 import preferences
 
-VERSION = '1.4'
+VERSION = '1.5'
 
 
 class Application(Appearance):

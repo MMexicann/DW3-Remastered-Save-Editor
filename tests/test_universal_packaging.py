@@ -91,6 +91,26 @@ class UniversalPackagingTests(legacy.PackagingTests):
         with self.assertRaisesRegex(ValueError, 'Required public sources.*origins_codec.py'):
             release.verified_sources(self.root)
 
+    def test_registered_game_requires_transitive_local_codec_and_presentation(self):
+        extra = {
+            'game_registry.py': b"Game('new', '', '', '', '', '.dat', '', 'new_editor', 'new_parser', scalar_backend='new_parser')\n",
+            'new_editor.py': b'import new_parser\nfrom new_presentation import Presentation\n',
+            'new_parser.py': b'import new_codec\n',
+            'new_codec.py': b'# Independently implemented format\n',
+            'new_presentation.py': b'# Data-only records\n',
+        }
+        self.sources.update(extra)
+        for name, data in extra.items():
+            (self.root / name).write_bytes(data)
+        self.write_manifest()
+        release.verified_sources(self.root)
+        for name in ('new_editor.py', 'new_parser.py', 'new_codec.py', 'new_presentation.py'):
+            data = self.sources.pop(name)
+            self.write_manifest()
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError, 'Required public sources.*' + name):
+                release.verified_sources(self.root)
+            self.sources[name] = data
+
     def test_reviewed_scaffold_sources_are_packaged_and_cannot_be_omitted(self):
         names = release.ADAPTER_TEMPLATE_FILES | release.PUBLIC_TEST_HELPERS
         for name in names:

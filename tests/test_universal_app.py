@@ -70,7 +70,7 @@ class UniversalGuiTests(unittest.TestCase):
     def test_selector_initializes_both_games_with_isolated_sessions(self):
         self.assertIsNone(self.app.active_game)
         self.assertEqual(set(self.app.game_buttons),
-                         {'dw3', 'dw8xl', 'pw3', 'dw4hyper', 'dw4xl_ps2', 'atelier_sophie2', 'origins'})
+                         {'dw3', 'dw8xl', 'pw3', 'dw4hyper', 'dw4xl_ps2', 'atelier_sophie2', 'origins', 'dw7xl', 'wo3u', 'samurai4dx', 'pw4'})
         dw3 = self.app.select_game('dw3')
         origins = self.app.select_game('origins')
         self.assertIsInstance(dw3, gui.Editor)
@@ -596,8 +596,9 @@ class UniversalGuiTests(unittest.TestCase):
                              if isinstance(dialog, tk.Toplevel) and 'Read Only' in dialog.title())
             inspected = [tree.item(key)['values'] for tree in widgets_of_type(inspector, ttk.Treeview)
                          for key in tree.get_children()]
-            self.assertEqual(len(inspected), 15)
-            self.assertEqual({row[0] for row in inspected}, {'Alchemy', 'Resources', 'Inventory', 'Equipment'})
+            self.assertEqual(len(inspected), 15 + len(backend.item_records(editor.document)))
+            self.assertEqual({row[0] for row in inspected}, {'Alchemy', 'Resources', 'Inventory', 'Equipment'}
+                             | {row['group'] for row in backend.item_records(editor.document)})
             self.assertTrue(any('m_mixGem' in str(row) and str(row[-1]) == '4' for row in inspected))
             inspector.destroy()
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.5
+
+- Added native PC DW7 XL Definitive, WO3 Ultimate Definitive, Samurai Warriors 4
+  DX and Pirate Warriors 4 editors with revision/integrity qualification.
+- Added officer stats/skill points and owned weapon switching in DW7; WO3
+  resources/stats and existing weapon slots/attributes; SW4 resources, manual
+  base stats, guarded unlocks, equipment and attached weapon skills; PW4 Beli
+  and quantities of existing obtained coins.
+- Expanded DW8 XL with weapon-action compatibility, individual affinity and
+  ally inspection. Expanded Sophie 2 with saved-capacity consumable refills and
+  occupied inventory inspection.
+- Added searchable inspector tables, immutable-snapshot and restore hardening,
+  and transitive registered-adapter packaging checks.
+- Added mechanic checklists and strict source-only format research for games
+  whose gameplay mappings, native inputs or owner context remain unqualified.
+  Genuine save file tests do not establish edited game loading.
+
 ## v1.4
 
 - Replaced DW3 weapon bonus item names with stat labels in editing and review.

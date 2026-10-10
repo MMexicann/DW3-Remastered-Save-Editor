@@ -1,49 +1,41 @@
-# Universal Koei Tecmo Save Editor v1.4
+# Universal Koei Tecmo Save Editor v1.5
 
-This update adds Dynasty Warriors: Origins to the game library and makes it easier
-for contributors to add new games.
+Four new Windows PC editors, expanded equipment/inventory controls and searchable
+inspectors, with Mexican's branding, Light/Dark themes, backups, Undo and Review
+Changes retained.
 
-## New in v1.4
+- **DW7 XL Definitive:** gold, 65 officers' stats and skill points, switching
+  between existing owned equipped weapons, searchable weapon/skill inspection.
+- **WO3 Ultimate Definitive:** stats for 145 officers, growth points, gems,
+  58 attribute-orb and 295 crafting balances, existing weapon slots and eight
+  qualified attributes. Natural Speed Max is 180; higher values stay intact.
+- **Samurai Warriors 4 DX:** gold, eight gems, 55 standard officers' base stats,
+  qualified playable unlocks, own-pool equipment selection and named existing
+  weapon skills, with per-slot ceilings and separate activation.
+- **Pirate Warriors 4:** spendable Beli and quantities of existing obtained coins;
+  acquisition flags and lifetime counters remain intact.
+- **DW8 XL:** four weapon-action compatibility ratings per officer and individual
+  affinity selection for qualified existing weapons; searchable ally inspection.
+- **Sophie 2:** refill existing consumables within their saved capacity and
+  search occupied inventory/equipment records.
 
-- Origins Steam PC: edit Gold (0–999,999) and base-game Skill Points (0–999).
-- Edit the separate DLC Skill Point balance (0–999) on supported revision 29 saves.
-- Edit existing bond levels and training counts, provincial peace, and qualified
-  existing weapon reinforcement from +0 up to +99. Max preserves training counts,
-  unusual values, weapon identities, traits and equipment references.
-- Manually mark 35 supported battle-clear history flags as cleared. Already
-  cleared history cannot be reset; history flags are excluded from Max and do
-  not advance the active campaign, establish endings or grant rewards.
-- Support native Origins slot revisions 16, 17 and 29, including save integrity,
-  backups, Undo, Review Changes and Save As.
-- Find fields by name, group or record in scalar editors; Max Visible Fields
-  applies to the filtered rows while hidden pending edits remain staged.
-- Remember the selected Light/Dark appearance across application restarts.
-- DW3 weapon bonuses now use stat names such as Attack, Luck and Musou in
-  selection menus and change reviews.
-- Add a documented adapter interface, starter template and shared tests for new
-  game integrations.
+Find records now searches every inspector column. Modular adapters and additional
+adversarial checks protect unknown records, unusual values, immutable snapshots
+and restore integrity. Packaging verifies registered adapters' local dependencies.
 
-## Supported games
+Download **UniversalKoeiTecmoSaveEditor-v1.5.exe** for a standalone Windows app,
+with no Python installation needed, or the **Windows ZIP** for the same executable
+and user documentation. From source, run `python application.py` with Python/Tk.
+Always open a separate save copy and use Save As.
 
-- Dynasty Warriors 3: Complete Edition Remastered: officers, items, weapons,
-  bodyguards, unlocks, Musou stories, collections and Huanglong Elixirs.
-- Dynasty Warriors: Origins: Gold, base-game/DLC Skill Points, existing bonds,
-  provincial peace, eligible weapon reinforcement and manual battle-clear history.
-- Dynasty Warriors 4 Hyper: officers, weapons, items, bodyguards and difficulty.
-- Dynasty Warriors 8: Xtreme Legends Complete Edition: resources, officer stats
-  and existing weapon attribute ranks.
-- One Piece: Pirate Warriors 3: character stats, special bars and skill slots.
-- Dynasty Warriors 4: Xtreme Legends (USA PS2): supported `.psu` save exports.
-- Atelier Sophie 2 (Steam PC 1.08 layout): item/equipment quality and alchemy EXP.
+The new editors were qualified with genuine public save copies and surgical
+byte/integrity tests. Edited game loading has not been performed. Published-format
+DW4 Hyper, DW4 XL PS2 and Sophie 2 still need independent genuine-file checks.
+Unproved progression, reward, unlock and equipment dependencies remain read only.
+SW4 base-stat storage bounds and WO3 resource edit bounds are not claimed as
+natural gameplay maxima and are excluded from Max.
 
-## How to run
-
-Download the Windows EXE, or extract the Windows ZIP and run
-`UniversalKoeiTecmoSaveEditor-v1.4.exe`. No Python or installation is needed.
-Select your game, open a separate save copy, make your edits and choose **Save As**.
-Keep an untouched backup outside the live save folder.
-
-For Origins, open a copied `SLOT0000.dat` through `SLOT0008.dat`; `USER.dat` is
-system data. Bond events and reward claims, character/weapon XP, learned skills,
-active story progression, endings and unlock flags remain unchanged. Weapon editing
-changes only qualified reinforcement levels; empty and reserved records are preserved.
+Orochi Z, SW5, Abyss, Stars, DW8 Empires and Nioh 3 have source-only research,
+not writable library cards. WO4 requires its matching gameplay DLL; DW9 Empires'
+attachment exceeded the transfer limit. See `EXPANSION_COVERAGE.md` and each game's
+checklist for precise blockers. No player saves or attached binaries are published.

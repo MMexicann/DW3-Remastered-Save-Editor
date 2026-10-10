@@ -26,6 +26,7 @@ class Field:
     group: str = 'Resources'
     slot: int = 0
     minimum: int = 0
+    maxable: bool = True
 
     def value(self, payload):
         return int.from_bytes(payload[self.offset:self.offset + self.size], 'little')
@@ -33,6 +34,21 @@ class Field:
     def validate(self, value):
         if type(value) is not int or not self.minimum <= value <= self.maximum:
             raise SaveError(f'{self.label} requires a whole number from {self.minimum:,} to {self.maximum:,}.')
+
+
+@dataclass(frozen=True)
+class CompatibilityField(Field):
+    """Published aptitude units: 25/50/75/100 correspond to one/four stars.
+
+    Existing other values remain readable and no-op-safe. Deliberate edits use
+    only the four observed native values, rather than arbitrary percentages.
+    """
+
+    def validate(self, value):
+        super().validate(value)
+        if value not in (25, 50, 75, 100):
+            raise SaveError(f'{self.label} requires 25, 50, 75 or 100 '
+                            '(one, two, three or four stars).')
 
 
 @dataclass(frozen=True)
@@ -56,7 +72,13 @@ DW8_FIELDS = tuple([
      for slot in range(82)
      for name, label, offset, maximum in (('attack', 'Attack', 0x7fd5, 1500),
                                          ('defense', 'Defense', 0x7fd7, 1500),
-                                         ('hp', 'Health', 0x7fd9, 1000))])
+                                         ('hp', 'Health', 0x7fd9, 1000))]
+    + [CompatibilityField(f'officer_{slot}_compatibility_{index}',
+                          f'{label} compatibility (25 units per star)',
+                          0x7fdb + slot * 0x48 + index, 1, 100,
+                          'Weapon compatibility', slot + 1, 25)
+       for slot in range(82)
+       for index, label in enumerate(('Dash', 'Dive', 'Shadow Sprint', 'Whirlwind'))])
 
 PW3_FIELDS = tuple([Field(f'character_{slot}_{name}', label, offset + slot * 0x1f0, size, maximum,
            'Characters', slot + 1, minimum)
@@ -72,7 +94,8 @@ FORMATS = {
     'dw8xl': Format('dw8xl', 'Dynasty Warriors 8: Xtreme Legends Complete Edition',
                     0xb7f49, (bytes.fromhex('f002101309'), bytes.fromhex('f027021909')),
                     DW8_FIELDS, 0x13100200,
-                    'Windows PC save.dat. Resources, officer stats and existing ranked weapon attributes. '
+                    'Windows PC save.dat. Resources, officer stats, four-star weapon compatibility '
+                    'and existing weapon affinities/ranked attributes. '
                     'Gems use the community-corroborated 9,999 inventory limit. '
                     'Levels, XP, equipped references and weapon identities are inspected without changing them.'),
     'pw3': Format('pw3', 'One Piece: Pirate Warriors 3', 0x135d04,
@@ -89,6 +112,9 @@ DW8_WEAPON_BASE, DW8_WEAPON_STRIDE, DW8_WEAPON_COUNT = 0xe715, 0x18, 1830
 # These IDs have ranks 2..10 in populated genuine PC records. Consistently-one
 # and unobserved IDs remain untouched; numeric IDs are not assigned guessed names.
 DW8_RANKED_ATTRIBUTES = frozenset([0, *range(2, 24), *range(28, 36), 39, 41, 42, 43, 44])
+# Shared save-patch fields corroborated by the PC fixture and native PC runtime
+# record descriptions. Skill/ally progression is inspected, never rewritten.
+DW8_BODYGUARD_BASE, DW8_BODYGUARD_STRIDE, DW8_BODYGUARD_COUNT = 0x9be9, 0xc, 838
 
 
 def _weapon_record(payload, index):
@@ -110,6 +136,11 @@ def _field_index(game_id, payload):
             record = _weapon_record(payload, index)
             if record is None:
                 continue
+            if record['affinity'] in (0, 1, 2):
+                field = Field(f'weapon_{index}_affinity', 'Affinity ID (0, 1 or 2)',
+                              DW8_WEAPON_BASE + index * DW8_WEAPON_STRIDE + 4,
+                              1, 2, 'Weapon affinity', index + 1, 0, False)
+                fields[field.id] = field
             for attribute, (identity, rank) in enumerate(record['attributes']):
                 if identity not in DW8_RANKED_ATTRIBUTES or rank == 0:
                     continue
@@ -201,6 +232,10 @@ def field_map(document):
 
 
 def validate_document(document):
+    if (not isinstance(document, Document) or not isinstance(document.format, Format) or
+            type(document.format.id) is not str or type(document.raw) is not bytes or
+            type(document.payload) is not bytes or type(document.seed) is not int):
+        raise SaveError('Use an unchanged immutable document from the selected PC editor.')
     layout = get_format(document.format.id)
     if document.format != layout:
         raise SaveError('Unregistered editing layout.')
@@ -271,6 +306,36 @@ def costume_associations(document):
                  for character, local, identity in PW3_COSTUME_ASSOCIATIONS)
 
 
+def compatibilities(document):
+    """Stored aptitude units, separate from weapon attributes and officer EXP."""
+    if document.format.id != 'dw8xl':
+        raise SaveError('Weapon compatibility is mapped only for DW8 PC.')
+    validate_document(document)
+    return tuple(tuple(document.payload[0x7fdb + slot * 0x48 + index]
+                       for index in range(4)) for slot in range(82))
+
+
+def bodyguards(document):
+    """Read existing physical ally progression records without assuming ownership.
+
+    The published shared layout has 838 records. Recruitment, names, battle-skill
+    identity and max-level dependencies are not mapped here, so no edits or
+    ownership labels are inferred from these values.
+    """
+    if document.format.id != 'dw8xl':
+        raise SaveError('Ally progression inspection is mapped only for DW8 PC.')
+    validate_document(document)
+    rows = []
+    for slot in range(DW8_BODYGUARD_COUNT):
+        offset = DW8_BODYGUARD_BASE + slot * DW8_BODYGUARD_STRIDE
+        rows.append({'slot':slot + 1, 'skill_level':document.payload[offset] + 1,
+                     'support_skill_ids':tuple(document.payload[offset + 1:offset + 3]),
+                     'skill_experience':int.from_bytes(document.payload[offset + 4:offset + 6], 'little'),
+                     'male_bond':document.payload[offset + 8],
+                     'female_bond':document.payload[offset + 9]})
+    return tuple(rows)
+
+
 def changed_payload(document, changes):
     fields = field_map(document)
     result = bytearray(document.payload)
@@ -320,8 +385,13 @@ def limit_values(document, changes, keys):
         if key not in fields:
             raise SaveError('A requested field is not verified for this game.')
         field = fields[key]
+        if not field.maxable:
+            continue
         current = changes.get(key, field.value(document.payload))
-        if current <= field.maximum:
+        if isinstance(field, CompatibilityField) and current not in (25, 50, 75, 100):
+            # An unusual original aptitude is not permission to normalize it.
+            continue
+        if type(current) is int and field.minimum <= current <= field.maximum:
             result[key] = field.maximum
     return result
 
@@ -363,6 +433,6 @@ def save_as(document, changes, destination):
 
 def restore(backup_path, destination, game_id):
     layout = get_format(game_id)
-    # Verify native integrity as well as the backup hash before creating output.
-    read_save(backup_path, game_id)
-    return restore_snapshot(backup_path, destination, game_id, '.dat', layout.size)
+    # Qualify the same bounded snapshot that will be written after hash checking.
+    return restore_snapshot(backup_path, destination, game_id, '.dat', layout.size,
+                            validate_raw=lambda raw: decode(raw, game_id))

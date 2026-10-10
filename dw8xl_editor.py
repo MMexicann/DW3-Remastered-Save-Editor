@@ -6,7 +6,7 @@ from musou_presentations import DW8Presentation
 
 class Editor(ScalarEditor):
     game_id = 'dw8xl'
-    summary = 'Resources, officer stats and weapon attribute ranks.'
+    summary = 'Resources, officer stats, weapon compatibility and attribute ranks.'
     presentation_type = DW8Presentation
 
 

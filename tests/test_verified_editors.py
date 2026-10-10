@@ -299,7 +299,7 @@ class VerifiedEditorTests(unittest.TestCase):
 
 class SupportGateTests(unittest.TestCase):
     def test_library_contains_only_verified_editing_adapters(self):
-        self.assertEqual({game.id for game in GAMES}, {'dw3','dw8xl','pw3','dw4hyper','dw4xl_ps2','atelier_sophie2','origins'})
+        self.assertEqual({game.id for game in GAMES}, {'dw3','dw8xl','pw3','dw4hyper','dw4xl_ps2','atelier_sophie2','origins','dw7xl','wo3u','samurai4dx','pw4'})
         self.assertTrue(all(game.editing_verified or game.published_format for game in GAMES))
         self.assertFalse(RESEARCH_TOOLS)
         self.assertTrue(get_game('origins').editing_verified)
@@ -311,10 +311,10 @@ class SupportGateTests(unittest.TestCase):
         self.assertTrue(all(entry['platform'].startswith('Windows PC') or entry['platform'] == 'PlayStation 2' for entry in entries))
         self.assertEqual({entry['id'] for entry in entries if entry['editing_verified']}, {game.id for game in GAMES if game.editing_verified})
         catalog = {entry['id']:entry for entry in entries}
-        self.assertEqual(catalog['sw5']['status'], 'PC path identified; no codec')
+        self.assertEqual(catalog['sw5']['status'], 'Static PC cipher candidate; native qualification blocked')
         self.assertFalse(catalog['dw6_original']['editing_verified'])
         self.assertIn('Plaintext', catalog['dw6_original']['status'])
-        for game_id in ('berserk','pw4','dw8_empires','dw9_original','dw9_empires',
+        for game_id in ('berserk','dw8_empires','dw9_original','dw9_empires',
                         'dw7_definitive','sw4','sw4dx','sw5','sw_sanada','sw4ii','wo3','wo4',
                         'p5s','dqh1','dqh2','abyss', 'dw6_original'):
             with self.assertRaises(SaveError):get_game(game_id)
@@ -333,7 +333,7 @@ class SupportGateTests(unittest.TestCase):
             self.assertTrue(title)
             self.assertIn('GAME_MECHANICS.md',text)
         self.assertIn('read only',guide('pw3')[1])
-        self.assertEqual({game.id for game in GAMES}, {'dw3','dw8xl','pw3','dw4hyper','dw4xl_ps2','atelier_sophie2','origins'})
+        self.assertEqual({game.id for game in GAMES}, {'dw3','dw8xl','pw3','dw4hyper','dw4xl_ps2','atelier_sophie2','origins','dw7xl','wo3u','samurai4dx','pw4'})
 
 
 class ExplicitPublicSampleTests(unittest.TestCase):
