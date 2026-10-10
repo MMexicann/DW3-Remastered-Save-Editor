@@ -328,8 +328,8 @@
     },
     {
       "path": "docs/VALIDATION.md",
-      "bytes": 18416,
-      "sha256": "74378de63c495a2866bb36457004ce555542f612d81736576566ddf90ae792ec"
+      "bytes": 20973,
+      "sha256": "9ab5a40f50bc26af901611e57be18f69db39475c7cdb0b4c71ee2d7005bd3a76"
     },
     {
       "path": "docs/WEAPON_ATTRIBUTES_FIX.md",
@@ -473,8 +473,8 @@
     },
     {
       "path": "src/koei_editor/data/support_catalog.json",
-      "bytes": 42678,
-      "sha256": "78442854aea200a956f07a52af6a546bcbbe0a03e0499b4b2c9e9ee8307019a0"
+      "bytes": 42645,
+      "sha256": "4e450a04f17f44dd69059a028aaa7778342a3811dac3e7be2f57ebe53f178f61"
     },
     {
       "path": "src/koei_editor/data/unique_weapons.json",

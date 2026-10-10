@@ -295,3 +295,43 @@ name. The test now compares canonical destination paths while retaining exact
 source, output and backup-byte checks. The unchanged runtime and corrected test
 passed 24 focused genuine-file/GUI/integrity checks locally; native verification
 must pass again before publication.
+
+## Gust expansion development checks
+
+Before integration with the other instance's latest reviewed work, the complete
+Linux/Xvfb suite ran **1,182 tests in 328.210 seconds: 854 passed, 328 skipped,
+no failures or errors**. Missing private fixtures and platform-specific checks
+account for the skips. This is source validation, not a Windows executable run.
+
+After rebasing onto `bdb3833` from `codex/prepare-next-update`, **172 focused
+integration tests ran in 122.085 seconds: 165 passed, seven skipped, no failures
+or errors**. They include the three new format/contract/audit/GUI suites, genuine
+copied-save checks, read-only Arland checks, shared adapter/session contracts,
+Three Hopes and All-Stars integration, live-save guards and packaging. All
+**32 registered editors** passed application startup, theme and switching smoke
+checks. The generated inventory and source/privacy verifier passed with
+**442 reviewed public manifest entries**; both attributed codec notices are
+required and embedded. Independent integration review confirmed all primary
+registry/catalog records are preserved and Ayesha PS3/Sophie 2 adapters unchanged.
+
+Genuine-file qualification is separate from the procedural generators. Original
+Sophie has byte-exact roundtrips across 31 snapshots from one shared player
+archive, with independent surgical checking of 97,303 aggregate mapped fields.
+Its no-checksum support explicitly relies on original-PC community evidence;
+native loader/integrity confirmation remains an input. Ryza 2 uses a distinct
+native gameplay autosave with passing envelope integrity; mislabeled Ryza 1
+files are excluded. Fatal Frame II Remake qualifies native system/gameplay
+framing, both checksum layers and its distinct JSON schema, preserving the
+binary photo suffix. Native GUI edits, Undo, Review Changes, themes, Save As,
+backup and exact Restore passed for all three registered editors.
+
+Rorona/Meruru's 44 genuine PC gameplay snapshots support only read-only
+structural qualification and unchanged roundtrips. Totori's independently
+qualified PS4 title/Cole lead does not qualify PC gameplay or internal integrity.
+Other Gust/Blue Reflection profiles remain unregistered with exact per-mechanic
+blockers in [the research notes](README.md). Calendar/story/event dependencies
+are kept separate from resource edits.
+
+**No edited file was loaded or re-saved in an actual game.** Native Windows
+build/startup validation remains required before publication. Version 1.6 and
+release links are unchanged; this work creates no release, tag or merge.
