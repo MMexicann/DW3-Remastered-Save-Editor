@@ -151,6 +151,16 @@ class DW8EmpiresHorseTests(unittest.TestCase):
             with self.assertRaises(SaveError):
                 backend.serialize(self.document, pending)
 
+    def test_malformed_requested_field_ids_raise_save_error_without_staging(self):
+        pending = {'horse_0_body': 3}
+        for key in ([], {}, None, True, 1):
+            with self.subTest(key=key), self.assertRaises(SaveError):
+                backend.stage(self.document, pending, key, 0)
+            with self.subTest(max_key=key), self.assertRaises(SaveError):
+                backend.limit_values(self.document, pending, [key])
+        self.assertEqual(pending, {'horse_0_body': 3})
+        self.assertEqual(self.document.raw, procedural_raw())
+
     def test_backup_restored_exact_original_new_copy_and_changed_source(self):
         backup = backend.backup(self.document)
         changed = backend.save_as(self.document, {'horse_0_body': 4}, self.folder / 'edited.dat')

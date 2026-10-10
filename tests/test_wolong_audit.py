@@ -3,6 +3,7 @@
 Procedural checks only; player-derived checks live in test_wolong_format.
 """
 from dataclasses import replace
+import json
 import unittest
 
 from koei_editor.games.dw3.models import SaveError
@@ -67,3 +68,18 @@ class WolongIndependentAuditTests(unittest.TestCase):
         for forged in (replace(doc, payload=bytearray(doc.payload)), replace(doc, payload=memoryview(doc.payload))):
             with self.assertRaises(SaveError): parser.maximums(forged, {})
             with self.assertRaises(SaveError): parser.changed_payload(forged, {})
+
+    def test_unqualified_optional_companions_preserve_copy_and_do_not_break_inspection(self):
+        root = json.loads(procedural_payload()[parser.JSON_OFFSET:].rstrip(b'\0'))
+        for companions in (None, 17, True, 'unknown', {'opaque': 1}):
+            with self.subTest(optional_type=type(companions).__name__):
+                root['PlayerData']['fellow_character_info'] = companions
+                doc = self._doc_with_body(json.dumps(root).encode('utf-8'))
+                self.assertEqual(parser.serialize(doc, {}), doc.raw)
+                rows = parser.inspection_rows(doc)
+                self.assertFalse(any(row['group'] == 'Companions' for row in rows))
+                self.assertTrue(any(row['group'] == 'Inventory' for row in rows))
+                edited = parser.decode(parser.serialize(doc, {'sen': 1}))
+                expected = json.loads(json.dumps(root))
+                expected['PlayerData']['sen'] = 1
+                self.assertEqual(json.loads(edited.payload[parser.JSON_OFFSET:].rstrip(b'\0')), expected)

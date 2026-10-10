@@ -1,6 +1,7 @@
 """Named choices stage native values through the same safe scalar workflow."""
 import tempfile
 import tkinter as tk
+from tkinter import ttk
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -8,6 +9,7 @@ from unittest.mock import patch
 from koei_editor.application import Application
 from koei_editor.games.dw6 import dw6_parser
 from tests.test_dw6_format import procedural_raw
+from koei_editor.shared.table_tools import copy_selected, sort_table
 
 
 class NamedChoiceGuiTests(unittest.TestCase):
@@ -73,6 +75,38 @@ class NamedChoiceGuiTests(unittest.TestCase):
         error.assert_called_once()
         self.assertFalse(editor.changes)
         self.assertFalse(editor.history)
+
+    def test_inspector_filter_keeps_sort_order_and_copies_only_visible_rows(self):
+        self.editor.show_inspector()
+        dialog = next(child for child in self.root.winfo_children()
+                      if isinstance(child, tk.Toplevel))
+        notebook = next(child for child in dialog.winfo_children()
+                        if isinstance(child, ttk.Notebook))
+        horses = next(self.root.nametowidget(tab) for tab in notebook.tabs()
+                      if notebook.tab(tab, 'text') == 'Horses')
+        tools, body = (child for child in horses.winfo_children()
+                       if isinstance(child, ttk.Frame))
+        query = next(child for child in tools.winfo_children()
+                     if isinstance(child, ttk.Entry))
+        view = next(child for child in body.winfo_children()
+                    if isinstance(child, ttk.Treeview))
+        rows = {view.set(row, 'Record'): row for row in view.get_children()}
+        view.selection_set((rows['Horse slot 1'], rows['Horse slot 2']))
+        sort_table(view, 'Record', reverse=True)
+        ordered = view.get_children()
+        query.insert(0, 'horse slot')
+        self.assertEqual(view.get_children(), ordered)
+        query.delete(0, 'end')
+        query.insert(0, 'horse 341')
+        self.assertEqual(view.get_children(), (rows['Horse slot 1'],))
+        self.assertTrue(copy_selected(view))
+        copied = self.root.clipboard_get()
+        self.assertIn('Horse slot 1', copied)
+        self.assertNotIn('Horse slot 2', copied)
+        query.delete(0, 'end')
+        self.assertEqual(view.get_children(), ordered)
+        self.assertEqual(set(view.selection()), {rows['Horse slot 1'], rows['Horse slot 2']})
+        self.assertEqual(self.editor.changes, {})
 
 
 if __name__ == '__main__':

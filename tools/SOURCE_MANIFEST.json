@@ -288,8 +288,8 @@
     },
     {
       "path": "docs/VALIDATION.md",
-      "bytes": 18416,
-      "sha256": "74378de63c495a2866bb36457004ce555542f612d81736576566ddf90ae792ec"
+      "bytes": 25844,
+      "sha256": "0450ed994a8b98b7b7c9a4f34ae0f98b7cf05daef5c3e4f8c66a6f4ba26b3eb3"
     },
     {
       "path": "docs/WEAPON_ATTRIBUTES_FIX.md",
@@ -643,8 +643,8 @@
     },
     {
       "path": "src/koei_editor/games/dw5special/dw5special_parser.py",
-      "bytes": 14331,
-      "sha256": "8d3abef07a53d9c73772d56df594341f0ca58dc32f6110fa002c3097d434dfb5"
+      "bytes": 14403,
+      "sha256": "aafc277a720f6788f00a8bd09b6189488dc60b3b2a5e36c228627ffa8b14f342"
     },
     {
       "path": "src/koei_editor/games/dw6/__init__.py",
@@ -733,8 +733,8 @@
     },
     {
       "path": "src/koei_editor/games/dw8e/dw8e_parser.py",
-      "bytes": 10049,
-      "sha256": "d4f754946521721cef03cf86b6b80c65fe9b999b91acd6a98f31b0350d95a779"
+      "bytes": 10121,
+      "sha256": "f964874bc51bd746707f953c6561531d52a728025e34ffd3b49f4a364930df35"
     },
     {
       "path": "src/koei_editor/games/dw8xl/__init__.py",
@@ -823,8 +823,8 @@
     },
     {
       "path": "src/koei_editor/games/hyrule_legends/parser.py",
-      "bytes": 15581,
-      "sha256": "029f909b43afdd3cf1bdef2ffdddfb5e62312b88caa39fb39b4794082f1b83b7"
+      "bytes": 15675,
+      "sha256": "080ba53ee6e9dd3ed5c460d31c08e4417a1e5fc135c3cab55ba6be5d72351fbc"
     },
     {
       "path": "src/koei_editor/games/hyrule_warriors/__init__.py",
@@ -873,8 +873,8 @@
     },
     {
       "path": "src/koei_editor/games/origins/origins_parser.py",
-      "bytes": 12001,
-      "sha256": "83202c1fe9dae1e03a75af0f3cdd0d1289d5fc0b5a74b83e21a2d2da41a62766"
+      "bytes": 12882,
+      "sha256": "637ad46053f344ae21e067c15c304c50f54832fda4d6741b6a77092e27e14197"
     },
     {
       "path": "src/koei_editor/games/origins/origins_presentation.py",
@@ -1088,8 +1088,8 @@
     },
     {
       "path": "src/koei_editor/games/wolong/wolong_parser.py",
-      "bytes": 14898,
-      "sha256": "ab911cafae9207cb9fc048464509276b6c303c14088005165312a962f6e9a26a"
+      "bytes": 15138,
+      "sha256": "d8a0ba1c80087aeb48d9f1d4954390f5bed99dfc0ba3dce26ab9291b9dbd3a50"
     },
     {
       "path": "src/koei_editor/research/AGENTS.md",
@@ -1223,8 +1223,8 @@
     },
     {
       "path": "src/koei_editor/shared/adapter_contract.py",
-      "bytes": 7366,
-      "sha256": "7592904b142ec910687ad74f355d4709886a044649dcb99ca8cff23260a5fd62"
+      "bytes": 8946,
+      "sha256": "723c1394bb3a82d698369cc10e0830d6c7d497663601afe52428d85662457ad3"
     },
     {
       "path": "src/koei_editor/shared/appearance.py",
@@ -1283,13 +1283,13 @@
     },
     {
       "path": "src/koei_editor/shared/verified_editor.py",
-      "bytes": 19461,
-      "sha256": "f029889c22751013dcaacb05199294b7b00eb59d399b8bfd394bda06bf282372"
+      "bytes": 20647,
+      "sha256": "b48392bf33bf58cf288290d41f9e4ae4b8ce897549aa6a102166fe88c8bc44c7"
     },
     {
       "path": "src/koei_editor/shared/verified_gui.py",
-      "bytes": 20762,
-      "sha256": "e5b46225e6bc82260a51eba8a25048fcd5d1785bcf4b526d53f28a69396bdb07"
+      "bytes": 20795,
+      "sha256": "d601a9c248542a7aa6dab7b2f33a3c2ffe78346697b14f25fc2347e851da68a3"
     },
     {
       "path": "src/koei_editor/shared/verified_self_test.py",
@@ -1342,6 +1342,11 @@
       "sha256": "05f4b656cb2ba3c373eeae1f0b3274215c3c2ddfeb4521aebbd3c907a429050d"
     },
     {
+      "path": "tests/test_bound_pending_safety.py",
+      "bytes": 3545,
+      "sha256": "19bf9d1ffe504910cfde2c6110b10d474ff30732d34771901879bc938476a622"
+    },
+    {
       "path": "tests/test_collections_v085.py",
       "bytes": 5784,
       "sha256": "2c83c3997de0961f752d8b3ca2c776274d932138a4d55956007e6b6b55e629b4"
@@ -1363,8 +1368,8 @@
     },
     {
       "path": "tests/test_dw5special_audit.py",
-      "bytes": 6758,
-      "sha256": "15927e5cdb3f1486f057bf6df2327ed4bffe95de10f5ad02962ed1569431c315"
+      "bytes": 7352,
+      "sha256": "fd3d8d04b0cd26dc90425c9c443548e5157181e00eaafd640a9e635d6e7de341"
     },
     {
       "path": "tests/test_dw5special_format.py",
@@ -1428,8 +1433,8 @@
     },
     {
       "path": "tests/test_dw8e_horses.py",
-      "bytes": 10216,
-      "sha256": "d0bd56256ffa3457d018861dc833850fa71d8830fe92f44f92d2b80651bf1360"
+      "bytes": 10773,
+      "sha256": "b98905529676a1304f84a8e1903d5f45ff5be4103cf2552222dfdffed68bee54"
     },
     {
       "path": "tests/test_dw8e_ps3_codec.py",
@@ -1543,8 +1548,8 @@
     },
     {
       "path": "tests/test_hyrule_legends_audit.py",
-      "bytes": 6080,
-      "sha256": "220ed838dda36591f9630a036ff501f280032fe8b710c9d43ede80a78321c19d"
+      "bytes": 7399,
+      "sha256": "e90283160512651a30cba6aa6239953a94c967b44acf57681f52ecd447800e7d"
     },
     {
       "path": "tests/test_hyrule_legends_gui.py",
@@ -1578,8 +1583,8 @@
     },
     {
       "path": "tests/test_named_field_choices.py",
-      "bytes": 3285,
-      "sha256": "d2f74edb897a7e358c8834d8286092d4ab23a0eb0d731a4208c8809a6474f8f9"
+      "bytes": 5130,
+      "sha256": "034cffea3b6e27b32b045948d8f54b6c93b6f859f6148a75f1d65b059f926247"
     },
     {
       "path": "tests/test_nan_preservation_v10.py",
@@ -1588,8 +1593,8 @@
     },
     {
       "path": "tests/test_new_game_integration.py",
-      "bytes": 4100,
-      "sha256": "6fb1d00db8569541380494ed1ee047047a5b1533358912b53ad5f4c1964f20c7"
+      "bytes": 4308,
+      "sha256": "7a8123bdb8177e086560fdde4abc924814626b5a0458687a5828eb07d51a1e68"
     },
     {
       "path": "tests/test_nioh2_format.py",
@@ -1615,6 +1620,11 @@
       "path": "tests/test_origins_parser.py",
       "bytes": 7030,
       "sha256": "12990fe0f5957c1040c191279329fcc0d2fe6fc69c1fc0b7da811238bb0b0391"
+    },
+    {
+      "path": "tests/test_origins_pending_safety.py",
+      "bytes": 3565,
+      "sha256": "8cb445728adf406289f01a8de661ee2b9b91ed8d9dbe1e27113fcbbd4b767aee"
     },
     {
       "path": "tests/test_origins_presentation.py",
@@ -1823,8 +1833,8 @@
     },
     {
       "path": "tests/test_stars_gui.py",
-      "bytes": 3706,
-      "sha256": "f0c3e359c491317ed40393aab531cd80bf6f688d08c633220cbaaf70e8141a9a"
+      "bytes": 3692,
+      "sha256": "a67ad72b8903f9929542ac1f9c3a24f21992615d1fc2bbf041905b6980248344"
     },
     {
       "path": "tests/test_supported_inventory.py",
@@ -1865,6 +1875,11 @@
       "path": "tests/test_verified_editors.py",
       "bytes": 20590,
       "sha256": "c5f0c9b51d8b2df0c7bdbe0243f4b85ecb1d618de50eb84fbbeb225162ea8227"
+    },
+    {
+      "path": "tests/test_verified_pending_safety.py",
+      "bytes": 6205,
+      "sha256": "b9b0dc3cd5c079295c171ac6591486bdd843546b36aff91dedd3ec903778631e"
     },
     {
       "path": "tests/test_verified_snapshot_review.py",
@@ -1918,8 +1933,8 @@
     },
     {
       "path": "tests/test_wolong_audit.py",
-      "bytes": 4245,
-      "sha256": "d658fe93de225185f4f63e2a534ae079f363ad6d4c952a46d0d12bc77af7c075"
+      "bytes": 5298,
+      "sha256": "46ecb6ff2afe4cb4d05a36e633160b1fe19fb51d70c6745018c722da614ded19"
     },
     {
       "path": "tests/test_wolong_format.py",

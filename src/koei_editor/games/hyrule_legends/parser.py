@@ -263,9 +263,10 @@ def changed_payload(document, changes):
         if type(key) is not str or key not in fields:
             raise SaveError('This field or existing record is not qualified for edits.')
         field = fields[key]
-        field.validate(value)
-        if value == field.value(document.payload):
+        expected_type = str if field.kind == 'text' else int
+        if type(value) is expected_type and value == field.value(document.payload):
             continue  # Preserve stale padding and unusual adjacent bytes on unchanged values.
+        field.validate(value)
         encoded = (value.encode('ascii').ljust(field.size, b'\0') if field.kind == 'text'
                    else value.to_bytes(field.size, BYTEORDER))
         output[field.offset:field.offset + field.size] = encoded

@@ -1,5 +1,113 @@
 # Universal development validation
 
+## Independent development-branch validation — 2026-10-11
+
+This review started at remote `codex/prepare-next-update`, commit
+`f7ca0121d4e98a7caf09f8545a5a7413a0b8dc3e`, on
+`codex/independent-validation`. Parallel audits reviewed all 28 registered
+adapters. Results below are from this review, not inherited qualification claims.
+The final complete-suite result and non-publishing Windows workflow status are
+recorded in the draft PR; the complete-suite run is still pending at this point.
+
+### Confirmed defects and narrow fixes
+
+- Registered scalar Stage, limits and Max could retain invalid prior edits or
+  normalize them into valid values. The bound adapter now checks complete pending
+  mappings, dynamic field identities and values before delegation. DW8/PW3 and
+  Origins also enforce these checks in their direct backend APIs. Exact-type
+  unusual opened values remain preservable and removable. Cached immutable
+  validation and prevalidated Max targets avoid repeated native decryption.
+- DW8/PW3 exposed fields from forged payload/raw/seed snapshots. Field lookup now
+  qualifies the immutable snapshot before exposing writable fields.
+- Legends rejected unchanged above-limit rupees/stars in pending edits. Original
+  equality now precedes edit-bound validation without accepting booleans/floats.
+- DW5 Special and DW8 Empires leaked `TypeError` for malformed field IDs. Those
+  requests now raise `SaveError` without changing pending edits or source bytes.
+- Wo Long's inspector crashed on an unmapped optional companion value such as
+  `null`, an integer or a boolean. Only qualified companion arrays are inspected;
+  other optional data survives unchanged.
+- Inspector filtering reset the selected sort order. Filtering now reapplies
+  that order; the regression also checks selection retention and visible-row copy.
+
+The new adversarial regressions failed before these fixes. Two existing GUI
+tests also had stale expectations: DW7 Undo restores the opened input, and
+All-Stars has three supported inspector groups. Corrected tests retain their
+original save/backup and byte-preservation assertions.
+
+### Procedural and GUI checks
+
+Independent generated inputs for the 21 older scalar adapters passed byte-exact
+no-op roundtrips, one targeted edit per adapter, unstage, immutable originals,
+Max exclusions and preservation of higher originals. All 420 ordered foreign
+scalar-fixture combinations rejected. DW3 separately passed a surgical officer
+skill-point edit and rejected 21 foreign fixtures, three damaged encrypted
+inputs and two oversized-array counts. Sophie 2's documented optional zero
+trailer permits changing its length; that was not classified as corruption.
+
+Focused results (test totals include skips):
+
+| Check | Tests | Passed | Skipped |
+| --- | ---: | ---: | ---: |
+| DW5 Special, DW8E, Legends, genuine copies and actual Tk | 55 | 55 | 0 |
+| Bound pending-edit, scalar contract and shared pending regressions | 31 | 31 | 0 |
+| Shared DW8/PW3 contract, snapshot, affinity and format regression | 79 | 74 | 5 |
+| Origins pending, parser, snapshot, progression and weapons | 29 | 28 | 1 |
+| Storage/source/restore adversarial regressions | 15 | 15 | 0 |
+| Actual Tk library, named choices, tables and new-game workflows | 45 | 41 | 4 |
+| DW7/All-Stars corrected GUI and format regressions | 22 | 21 | 1 |
+| Package, dependencies, inventory and publication-gate regressions | 46 | 46 | 0 |
+
+The shared focused skips were four missing copied-native inputs and one absent
+display in that separate run. Origins lacked a genuine copy; All-Stars lacked
+its genuine sample. The GUI batch lacked two Legends workflows, native P5S and
+native Ayesha; subsequent actual-Tk copied-native checks covered those workflows.
+The complete suite uses actual Tk on a virtual Xorg display with qualified native
+copies for all six new editors, Wii U Hyrule, Age of Calamity and Pirate Warriors 3.
+
+### Genuine-file verification
+
+All downloaded/exported saves, private hashes and provenance remain outside Git.
+Public tests generate their own inputs; optional native checks use environment
+variables and skip when copies are absent.
+
+| Game/platform | Independently checked input and limits |
+| --- | --- |
+| DW5 Special PC | Public premodified 46,000-byte native save; all 728 qualified fields checked surgically, plus actual Tk save/backup/restore. |
+| DW8 Empires PC | Public native SYSTEM copy; both qualified horse-body fields checked. Campaign, quick-save and custom-officer profiles rejected. Actual Tk and copied-save CLI self-test passed. |
+| Hyrule Legends 3DS | Public 234,594-byte export; all 323 fields and combined resource/card/fairy/seal edits checked. Master Sword data preserved. Actual Tk and CLI self-test passed. |
+| Persona 5 Strikers PC | Three distinct public 5,627,552-byte saves; native checksum rejection, no-op and surgical edits across qualified occupied slots, plus actual Tk. |
+| Wo Long PC | One public trainer-modified revision-1.302 gameplay save; native checksums, no-op, resource/stack edits and actual Tk passed. Byte-identical mirrors count as one fixture. Same-size SYSTEM data rejected. |
+| Atelier Ayesha PS3 | Three public US/Japanese exports decrypted independently outside Git; published Cole values, no-op, Cole/stack edits and actual Tk passed. An encrypted unsupported digital-region export rejected. External PFD authentication and PS3 reimport were not checked. |
+| Hyrule Wii U / Age of Calamity Switch | Two cached public Wii U exports and one AoC export; every qualified field checked surgically (495, 689 and 367 fields), Max exclusions/high values and unchanged source hashes passed. |
+
+No edited save was loaded or re-saved by a game. Premodified and trainer-modified
+files provide genuine-file evidence, not pristine gameplay or game-load evidence.
+
+### Installed package, packaging and remaining limits
+
+A non-editable wheel installed in an isolated environment outside the checkout
+loaded all 28 editor/parser/backend registrations and all 14 runtime JSON files.
+Its 191 entries contained no tests, tools, saves or binaries; runtime JSON bytes
+matched the wheel exactly. Module listing and actual-Tk all-interface/theme
+smoke startup passed. Source-manifest and generated-inventory checks passed.
+The version remains 1.6. Linux checks do not validate Windows CNG or an EXE;
+native build status belongs to the explicitly non-publishing workflow run.
+
+Direct calls bypassing the bound adapter remain a legacy API limitation:
+16 older backends can retain unknown prior keys during `stage`; PW4 and Sophie 2
+can also normalize malformed pending values in direct `maximums` calls. For
+example, direct PW4 Max with pending `{'beli': -1}` becomes a maximum, and
+`{'beli': '1'}` raises `TypeError`. Their review/writers reject unknown keys.
+Registered/GUI Stage, limits and Max are guarded and have adversarial regressions;
+no corrupt output from the unknown-key case was established. The affected direct
+modules are DW7 XL, PW4, DW4 Hyper/PS2 XL, Sophie 2, WO3U, SW4 DX, DW9E, Orochi Z,
+Wii U Hyrule/AoC/Definitive/FE Warriors, DW7E PS3, DW7 PS3 and SW4 PS3.
+
+Coordination: this branch changes shared contracts/GUI, Origins and narrow
+DW5/DW8E/Legends/Wo Long edge cases. It adds no game registrations or mechanics.
+Concurrent implementation branches should preserve these regressions and refresh
+the reviewed source manifest after integrating overlapping edits.
+
 Run the complete public suite and all-interface startup check from the repository root:
 
 ```text
