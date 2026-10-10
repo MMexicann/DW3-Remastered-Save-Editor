@@ -188,8 +188,8 @@
     },
     {
       "path": "VALIDATION.md",
-      "bytes": 15399,
-      "sha256": "0f78a012eb26219934b54a1454b9b0ea502f784fbd7284e3d7f4e5481fb4fd2b"
+      "bytes": 15539,
+      "sha256": "05f712579d4e614fcdde437f9dd5fdff5d8010baaccdc5b4b1a9ef02bc69b063"
     },
     {
       "path": "WEAPON_ATTRIBUTES_FIX.md",
@@ -548,8 +548,8 @@
     },
     {
       "path": "package_release.py",
-      "bytes": 16519,
-      "sha256": "bd7b8bbc57bd3fdc3a4395dfc66e4349b2b733413edebcdf201a86e4820df84c"
+      "bytes": 16502,
+      "sha256": "c69cb85f141d6634e4b205ca7704e20ed0180101c99543147b3e6663a832d576"
     },
     {
       "path": "preferences.py",

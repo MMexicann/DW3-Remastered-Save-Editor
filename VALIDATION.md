@@ -111,7 +111,10 @@ For changes to parsing or editing, check:
 
 Review each output's `.changes.json` for the actual byte patches and encrypted blocks. Keep detailed validation reports private; summarize reproducible failures when contributing a fix.
 
-See [BUILDING.md](BUILDING.md) for executable build instructions and [SAVE_FORMAT.md](SAVE_FORMAT.md) for the supported structures and editing rules.
+See [BUILDING.md](BUILDING.md) for executable build instructions and
+[SAVE_FORMAT.md](https://github.com/MMexicann/Universal-Koei-Tecmo-Save-Editor/blob/main/SAVE_FORMAT.md)
+for the supported structures and editing rules. Technical reference files are
+also included in the source download.
 
 The final platform pass adds 23 passing PS2 XL procedural tests and one skipped
 genuine export test. GUI integration exercises PSU opening, edits, Undo/review,

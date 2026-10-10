@@ -15,7 +15,7 @@ ADAPTER_TEMPLATE_FILES={'adapter_template/new_game_parser.py', 'adapter_template
                         'adapter_template/contract_test.py', 'adapter_template/INSTRUCTIONS.md'}
 PUBLIC_TEST_HELPERS={'tests/scalar_contract.py'}
 WINDOWS_DOCS=('README.md','CHANGELOG.md','LICENSE','THIRD_PARTY_NOTICES.md',
-              'BUILDING.md','ARCHITECTURE.md','VALIDATION.md','SAVE_FORMAT.md','EXPANSION_COVERAGE.md',
+              'BUILDING.md','ARCHITECTURE.md','VALIDATION.md','EXPANSION_COVERAGE.md',
               'DYNASTY_RESEARCH.md','OROCHI_RESEARCH.md','SAMURAI_RESEARCH.md',
               'PIRATE_ABYSS_RESEARCH.md','STARS_WO4_RESEARCH.md','NIOH3_RESEARCH.md',
               'DW8_COMPATIBILITY.md','SOPHIE2_COVERAGE.md','PW3_COVERAGE.md')
