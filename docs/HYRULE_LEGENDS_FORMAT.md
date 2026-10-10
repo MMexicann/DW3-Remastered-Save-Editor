@@ -94,3 +94,12 @@ Review, Undo, weapon/item inspection, themes, backup/new-copy Save As and restor
 The genuine original remains unchanged. No save was newly imported, loaded or
 re-saved on a 3DS. Without `HYRULE_LEGENDS_COPY`, three genuine-dependent checks
 skip explicitly. Keep that optional fixture and its export context private.
+
+Independent review in `tests.test_hyrule_legends_audit` adds six checks for
+exact snapshot/format/raw-type qualification, native mixed-field surgical edits,
+the fourteenth fairy boundary, future/unknown records, original ownership and
+ASCII/padding gates, atomic invalid batches and pending-change validation before
+Undo/Max. **All 21 Legends format, GUI and independent review checks pass** with
+the private native input. Pending containers must be ordinary dictionaries;
+selected field identifiers must be strings, and all existing pending edits are
+validated before a new edit or Undo action.

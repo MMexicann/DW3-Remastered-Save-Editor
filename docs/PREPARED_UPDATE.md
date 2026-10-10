@@ -10,11 +10,12 @@ validation artifacts, not a new GitHub release.
 
 | Game | Platform | Implemented controls |
 | --- | --- | --- |
-| Dynasty Warriors 5 Special / Shin Sangokumusou 4 Special | Windows PC | Existing ordinary item ranks; existing own-family weapon attack, named weight choices and existing attribute ranks; searchable named officers, weapons, items, bodyguards and separate Shura resources. |
+| Dynasty Warriors 5 Special / Shin Sangokumusou 4 Special | Windows PC | Existing ordinary item ranks; existing own-family stored weapon attack adjustment, named weight choices and existing attribute ranks; searchable named officers, weapons, items, bodyguards and separate Shura resources. |
 | Dynasty Warriors 8 Empires | Windows PC | Existing custom-horse body type; searchable appearance, stats and ability records in SystemSave.dat. Campaign files remain separate. |
 | Hyrule Warriors Legends | Nintendo 3DS | Rupees, existing named materials and base-map cards, generic weapon stars, ordinary seal KO reductions and existing ASCII My Fairy names; named character/food/fairy inspection. |
 | Persona 5 Strikers | Windows PC | Occupied-slot money, Persona points, unspent BOND points and existing named ordinary consumable/cooking quantities; character-level and held-Persona inspection. |
 | Wo Long: Fallen Dynasty | Windows PC | Available Genuine Qi, copper, accolades, existing ordinary stack reductions and searchable inventory/equipment/companions/progression. |
+| Fire Emblem Warriors: Three Hopes | Nintendo Switch | Existing gold reductions and owned Shez/Byleth name customization with synchronized mirrors; named character and weapon inspection. |
 | Atelier Ayesha: The Alchemist of Dusk | PlayStation 3, US/Japanese decrypted exports | Cole and existing ordinary stack reductions; searchable inventory with float qualities, potentials/effects and distinct memory values. Apollo handles reimport/resigning. |
 
 Each has its own parser and explicit identity/revision gates. Resource ceilings
@@ -27,6 +28,8 @@ story/level/reward transitions are preserved.
 | Editor | Addition |
 | --- | --- |
 | DW4 Hyper and DW4 Xtreme Legends PS2 | Already-owned harness/orb assignment with item-ownership protection; Hyper additionally supports guarded existing created-officer cosmetics and consistent paired progression mirrors. Independent genuine exports now qualify both profiles. |
+| Warriors All-Stars PC | Select already-owned ordinary Hero Cards from the same hero pool; searchable occupied card records, preserving special gifts and card properties. |
+| DW7 XL Definitive PC | Named first/second existing equipped-weapon choices reference only valid owned inventory slots. |
 | DW6 PC | Named element choices for existing qualified weapons: Fire, Ice, Lightning or none. |
 | Warriors Orochi Z | Existing own-pool equipped weapon selection and coherent progressed EXP confined to the already opened level. |
 | Warriors Orochi 3 Ultimate Definitive PC | Additional qualified ranked weapon attributes and guarded attack-reinforcement reductions; binary/dormant effects remain preserved. |
