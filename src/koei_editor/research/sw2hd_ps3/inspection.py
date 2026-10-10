@@ -9,11 +9,36 @@ from dataclasses import dataclass
 from koei_editor.games.dw3.models import SaveError
 
 SOURCE_URL = 'https://github.com/bucanero/apollo-patches/blob/main/PS3/NPJB00439.savepatch'
+RECORD_SOURCE_URL = 'https://web.save-editor.com/cache/bbs_savedata_ps3/7070.html'
 CHECKSUM_RANGE = (0x8, 0x36E0)  # End is exclusive.
 CHECKSUM_OFFSETS = (0x36E0, 0x23790)
 MONEY_OFFSET = 0x2758
 MIN_CANDIDATE_SIZE = 0x23794
 MAX_CANDIDATE_SIZE = 2 * 1024 * 1024  # Processing ceiling, not native size.
+# Only independently published anchors, never an invented complete roster.
+EXP_ANCHORS = ((0x2C, 'Sanada Yukimura'), (0xE3C, 'Ina'), (0x1D3C, 'Shibata Katsuie'))
+WEAPON_ANCHORS = ((0x47, 2), (0x5A, 3), (0x6D, 4))
+
+
+@dataclass(frozen=True)
+class ExperienceProbe:
+    offset: int
+    published_officer_label: str
+    stored_value: int
+    identity_qualified: bool = False
+
+
+@dataclass(frozen=True)
+class WeaponProbe:
+    offset: int
+    published_position: int
+    raw_record: bytes
+    stored_type: int
+    stored_element: int
+    stored_effect_ids: tuple[int, ...]
+    stored_effect_values: tuple[int, ...]
+    stored_effect_count: int
+    ownership_qualified: bool = False
 
 
 @dataclass(frozen=True)
@@ -25,12 +50,29 @@ class Inspection:
     checksums_match: bool
     editable: bool = False
     qualified_game_profile: bool = False
+    experience_probes: tuple[ExperienceProbe, ...] = ()
+    weapon_probes: tuple[WeaponProbe, ...] = ()
 
 
 def inspect(raw):
+    """Probe a bounded candidate; matching sums do not validate a save.
+
+    The published additive range covers only an initial section. Bytes outside
+    it, including the header, may change while both sums still match. Probes
+    deliberately retain unusual integers and unknown IDs/counts as raw facts;
+    no ownership, level/stat dependency, natural cap or native profile is inferred.
+    """
     if (type(raw) is not bytes or not MIN_CANDIDATE_SIZE <= len(raw) <= MAX_CANDIDATE_SIZE):
         raise SaveError('Source-only SW2 HD diagnostic requires bounded decrypted candidate bytes.')
     expected = sum(raw[CHECKSUM_RANGE[0]:CHECKSUM_RANGE[1]]) & 0xFFFFFFFF
     actual = tuple(int.from_bytes(raw[offset:offset + 4], 'big') for offset in CHECKSUM_OFFSETS)
     money = int.from_bytes(raw[MONEY_OFFSET:MONEY_OFFSET + 4], 'big')
-    return Inspection(len(raw), money, expected, actual, actual == (expected, expected))
+    experience = tuple(ExperienceProbe(offset, label, int.from_bytes(raw[offset:offset + 4], 'big'))
+                       for offset, label in EXP_ANCHORS)
+    weapons = []
+    for offset, position in WEAPON_ANCHORS:
+        record = raw[offset:offset + 0x13]
+        weapons.append(WeaponProbe(offset, position, record, record[0], record[1],
+                                   tuple(record[2:10]), tuple(record[10:18]), record[18]))
+    return Inspection(len(raw), money, expected, actual, actual == (expected, expected),
+                      experience_probes=experience, weapon_probes=tuple(weapons))

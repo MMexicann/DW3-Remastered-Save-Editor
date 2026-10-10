@@ -65,3 +65,18 @@ exercise field eligibility, malformed staging, all-field surgical edits and
 preserved integrity/dependencies. Library search, named choices, text controls,
 column sorting, Ctrl+C and existing editor sessions have real Tk regression
 checks. Native-file tests are not actual edited game-load tests.
+
+Console expansion tests keep US PS3 WO3 Ultimate (`test_wo3u_ps3.py`) separate
+from PC Definitive, and US PS3 DW8 Empires SYSTEM (`test_dw8e_ps3_horses.py`,
+`test_dw8e_ps3_gui.py`) separate from PC and console campaigns. Genuine copies
+use `WO3U_PS3_US_COPIES` and `DW8E_PS3_SYSTEM_COPY`, with original `PARAM.SFO`
+beside each input. Actual Tk workflows and the registered copied-save self-test
+cover private opaque metadata propagation, backups, Undo/Review and restore.
+`test_console_expansion_registry.py` verifies platform separation and that
+unqualified candidates cannot create library cards.
+
+Strikeforce and Xbox SW2 tests are read-only native observations, not editing
+qualification. Their optional inputs are `STRIKEFORCE_PS3_US_COPY`,
+`STRIKEFORCE_PS3_US_SECOND_COPY` and `SW2_XBOX360_EXPORT_COPY`. SW2 HD's four
+procedural probe tests demonstrate partial-sum collisions and uncovered bytes;
+no genuine HD file is claimed. See each console checklist for exact blockers.

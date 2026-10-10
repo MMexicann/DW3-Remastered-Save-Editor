@@ -118,3 +118,9 @@ collect package metadata and validate reviewed paths against
 foreign binaries and personal paths. The Windows workflow runs native tests,
 EXE smoke/startup and archive/hash checks before publishing a new release.
 Existing releases are not overwritten. See [BUILDING.md](BUILDING.md).
+
+Context-dependent console adapters may implement `prepare_copy_context` for
+the shared copied-save self-test. The backend validates and copies its original
+bounded companion opaquely into the new private output before reopening the
+gameplay copy. It never fabricates identity metadata, extracts account values
+or constructs PFD/STFS signing; self-test outputs remain private local files.

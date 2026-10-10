@@ -12,7 +12,9 @@ Windows download remains v1.6 until the next release.
 Select the game and platform that match your save. Windows PC is selected by
 default. Console editors open extracted or decrypted save exports: `.psu` for
 PlayStation 2, `APP.BIN` for Wii U and DW7 PS3, `DATA.BIN` for SW4 PS3, and `svdt`
-for Age of Calamity. Export and reimport/resign PS3 saves with Apollo Save Tool.
+for Age of Calamity. Some PS3 profiles require the original `PARAM.SFO` beside
+the copied gameplay file and edited output. Export and reimport/resign PS3 saves
+with Apollo Save Tool; this editor does not rebuild `PARAM.PFD` or sign exports.
 
 <!-- BEGIN SUPPORTED GAMES -->
 | Game / edition | Platform | Implemented scope |
@@ -46,6 +48,8 @@ for Age of Calamity. Export and reimport/resign PS3 saves with Apollo Save Tool.
 | ATELIER AYESHA — The Alchemist of Dusk · PS3 US/Japanese export | PlayStation 3 | Cole, existing stack reductions and searchable inventory quality, properties and effects. |
 | DYNASTY WARRIORS 5 SPECIAL — Shin Sangokumusou 4 Special · Windows PC | Windows PC | Existing ordinary item ranks, weapon attack/weight and attributes; named officer/bodyguard inspection. |
 | FIRE EMBLEM WARRIORS: THREE HOPES — Switch · extracted SlotData exports | Nintendo Switch | Gold reductions, owned Shez/Byleth name customization and searchable character/weapon records. |
+| DYNASTY WARRIORS 8 EMPIRES — US · decrypted SYSTEM APP.BIN | PlayStation 3 | Existing custom-horse Body Type; searchable appearance, stats and ability records. |
+| WARRIORS OROCHI 3 ULTIMATE — US · decrypted APP.BIN · NPUB31505 | PlayStation 3 | Manual unallocated growth points and gems; searchable officer, weapon and inventory inspection. |
 <!-- END SUPPORTED GAMES -->
 
 ## Download and use

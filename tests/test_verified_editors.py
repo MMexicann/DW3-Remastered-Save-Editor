@@ -312,7 +312,8 @@ class SupportGateTests(unittest.TestCase):
     def test_catalog_cannot_add_an_unverified_editor(self):
         entries = load_catalog()
         self.assertGreater(len(entries), 30)
-        self.assertTrue(all(entry['platform'].startswith('Windows PC') or entry['platform'] in {'PlayStation 2', 'PlayStation 3', 'Wii U', 'Nintendo Switch', 'Nintendo 3DS'} for entry in entries))
+        self.assertTrue(all(entry['platform'].startswith('Windows PC') or entry['platform'] in {'PlayStation 2', 'PlayStation 3', 'Xbox 360', 'Wii U', 'Nintendo Switch', 'Nintendo 3DS'} for entry in entries))
+        self.assertTrue(all(not entry['editing_verified'] for entry in entries if entry['platform'] == 'Xbox 360'))
         self.assertEqual({entry['id'] for entry in entries if entry['editing_verified']}, {game.id for game in GAMES if game.editing_verified})
         catalog = {entry['id']:entry for entry in entries}
         self.assertEqual(catalog['sw5']['status'], 'Static PC cipher candidate; native qualification blocked')

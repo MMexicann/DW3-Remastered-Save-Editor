@@ -295,3 +295,47 @@ name. The test now compares canonical destination paths while retaining exact
 source, output and backup-byte checks. The unchanged runtime and corrected test
 passed 24 focused genuine-file/GUI/integrity checks locally; native verification
 must pass again before publication.
+
+## Console expansion on prepare-next-update
+
+The console-only pass adds qualified US PS3 WO3 Ultimate resource controls and
+US PS3 DW8 Empires SYSTEM custom-horse Body Type controls. Japanese PS3 SW2 HD,
+US PS3 Strikeforce and each legacy Xbox360 title retain separate research-only
+status and exact blockers; diagnostic fixtures do not qualify writable profiles.
+
+**96 focused tests passed with no skips**, using Python 3.12, Tk under Xvfb,
+the genuine DW8E SYSTEM export, both genuine WO3 Ultimate exports, both genuine
+Strikeforce exports and the extracted genuine Xbox360 base SW2 payload. These
+checks distinguish procedural corruption/dependency tests from genuine no-op
+roundtrips and surgical edits. Actual Tk workflows exercise Undo, Review,
+themes, backup, Save Copy As and restore. SW2 HD probes use procedural fixtures
+because its exact genuine Japanese native profile is still missing.
+
+Registered copied-save self-tests separately passed on genuine DW8E SYSTEM and
+both WO3 Ultimate exports, preserving source bytes, unchanged copies and
+restored backups. The narrow manual controls are deliberately excluded from
+Max. DW8E verifies its native checksum; WO3 records external integrity and does
+not authenticate arbitrary unknown-byte corruption or establish a global
+checksum-free format. Mandatory original PARAM.SFO context is copied opaquely
+only to private self-test outputs.
+
+Full discovery on the initial base `f7ca012` completed **1,158 tests in
+363.616 seconds: 828 passed, 327 skipped and three failed**. Two failures
+(DW7 XL GUI staging and the All-Stars Hero Card inspector expectation) also
+reproduced on an untouched copy of that base. The third was the support-catalog
+test's platform whitelist, extended here for research-only Xbox360 entries with
+an explicit no-writable-Xbox assertion. During validation the shared preparation
+branch advanced to `bdb3833`, resolving both existing GUI failures. This console
+branch was rebased onto that update with both instances' metadata preserved;
+**103 focused tests then passed with no skips**, including all three previously
+failing cases. A second complete discovery run after that rebase was not made.
+
+All **31 registered interfaces** passed application startup, theme and game
+switching checks. Generated support inventory and the **430-file reviewed
+public source manifest** verify. Windows build configuration includes both new
+adapters, but a native Windows EXE was not built or tested in this pass.
+
+**No edited console export was loaded and re-saved in an actual game.** PS3
+PFD reimport/resigning and Xbox360 STFS reimport/hash/signing remain external.
+No player saves, game/editor binaries, account identifiers or private analysis
+are included in Git or the reviewed public package.
