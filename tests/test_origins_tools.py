@@ -55,7 +55,7 @@ class OriginsCopyTests(unittest.TestCase):
             with self.assertRaises(SaveError):
                 get_game('dw3').read_save(self.source)
             dw3_reader.assert_not_called()
-        with patch.object(origins, 'read_save') as origins_reader:
+        with patch('origins_parser.read_save') as origins_reader:
             with self.assertRaises(SaveError):
                 get_game('origins').read_save(dw3)
             origins_reader.assert_not_called()

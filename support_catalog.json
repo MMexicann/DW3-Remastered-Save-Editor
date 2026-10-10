@@ -51,10 +51,10 @@
       "id": "origins",
       "title": "Dynasty Warriors: Origins",
       "platform": "Windows PC",
-      "status": "Research copy tools only",
-      "evidence": "One real public Steam DLC save inspected. Asset cipher and older save ciphers did not establish a valid gameplay payload.",
-      "needed": "Version/DLC-labelled control and single-value before/after saves; verified save encryption and checksums.",
-      "editing_verified": false
+      "status": "Native Steam slot editor",
+      "evidence": "Native Steam envelope, checksum, revision16/17/29 sizes and nine copied slots qualified. Gold, base/DLC skill points, formed bonds, provincial peace, catalogue-qualified weapon reinforcement and persistent battle history are mapped and preserve unrelated bytes.",
+      "needed": "Independent game loading; weapon proficiency/moveset/reward transitions and active campaign/ending dependencies remain separate research.",
+      "editing_verified": true
     },
     {
       "id": "berserk",
@@ -292,7 +292,7 @@
     },
     {
       "id": "rotk",
-      "title": "Romance of the Three Kingdoms / Nobunaga’s Ambition",
+      "title": "Romance of the Three Kingdoms / Nobunaga\u00e2\u20ac\u2122s Ambition",
       "platform": "Windows PC",
       "status": "Candidate only",
       "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
@@ -388,8 +388,8 @@
   "retry_reference": "PC_RESEARCH_RETRY.md",
   "console_scope": "Only source-backed DW4 XL PS2 SLUS-20812 PSU editing currently; other console formats are unimplemented.",
   "pc_scope_exclusions": [
-    "Dynasty Warriors 1–3 original console editions and console-only expansions",
-    "Dynasty Warriors 4–7 Empires",
+    "Dynasty Warriors 1\u00e2\u20ac\u201c3 original console editions and console-only expansions",
+    "Dynasty Warriors 4\u00e2\u20ac\u201c7 Empires",
     "Dynasty Warriors: Gundam series",
     "One Piece: Pirate Warriors 1 and 2",
     "Berserk PS Vita",

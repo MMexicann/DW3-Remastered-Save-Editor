@@ -8,6 +8,7 @@ import unittest
 import uuid
 import zipfile
 from types import SimpleNamespace
+from unittest.mock import patch
 
 PROJECT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(PROJECT))
@@ -69,6 +70,32 @@ class PackagingTests(unittest.TestCase):
         for name in ('../private.sav','work/private.sav','tests/fixture.sav','C:/private.sav',
                      'gui.py/../private.sav','licenses/private.exe','.git/config','tests/.runs/test_example.py'):
             with self.subTest(name=name),self.assertRaises(ValueError):release.public_path(name)
+
+    def test_contributor_scaffold_and_test_helper_paths_are_narrowly_allowed(self):
+        self.assertEqual(release.public_path('.gitattributes').as_posix(), '.gitattributes')
+        for name in release.ADAPTER_TEMPLATE_FILES | release.PUBLIC_TEST_HELPERS:
+            with self.subTest(name=name):
+                self.assertEqual(release.public_path(name).as_posix(), name)
+        for name in ('adapter_template/private.dat', 'adapter_template/fixture.json',
+                     'adapter_template/another_parser.py', 'adapter_template/nested/new_game_parser.py',
+                     'adapter_template/INSTRUCTIONS.md/../private.dat', 'adapter_template/.private.txt',
+                     'adapter_template/new_game_parser.py.bak', 'tests/another_helper.py',
+                     'tests/scalar_contract.py/../private.dat', 'tests/helpers/scalar_contract.py'):
+            with self.subTest(name=name), self.assertRaises(ValueError):
+                release.public_path(name)
+
+    def test_present_git_text_policy_is_required_and_packaged_byte_exactly(self):
+        policy = b'*.py text eol=lf\n*.json text eol=lf\n'
+        (self.root / '.gitattributes').write_bytes(policy)
+        with self.assertRaisesRegex(ValueError, 'Required public sources.*gitattributes'):
+            release.verified_sources(self.root)
+        self.sources['.gitattributes'] = policy
+        self.write_manifest()
+        with patch.object(release, 'verify_executable', return_value=1):
+            assets = release.package(self.root)
+        with zipfile.ZipFile(assets[1]) as archive:
+            prefix = 'UniversalKoeiTecmoSaveEditor' if (self.root / 'application.py').exists() else 'DW3RemasteredSaveEditor'
+            self.assertEqual(archive.read(prefix + '-v1.0-Source/.gitattributes'), policy)
 
     def test_personal_path_duplicate_and_mismatched_versions_are_rejected(self):
         self.sources['README.md']=('Local path '+'C:'+ '/Users/'+'PrivateOwner/'+'Documents').encode()

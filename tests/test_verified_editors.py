@@ -299,10 +299,11 @@ class VerifiedEditorTests(unittest.TestCase):
 
 class SupportGateTests(unittest.TestCase):
     def test_library_contains_only_verified_editing_adapters(self):
-        self.assertEqual({game.id for game in GAMES}, {'dw3','dw8xl','pw3','dw4hyper','dw4xl_ps2','atelier_sophie2'})
+        self.assertEqual({game.id for game in GAMES}, {'dw3','dw8xl','pw3','dw4hyper','dw4xl_ps2','atelier_sophie2','origins'})
         self.assertTrue(all(game.editing_verified or game.published_format for game in GAMES))
-        self.assertEqual({game.id for game in RESEARCH_TOOLS}, {'origins'})
-        self.assertFalse(get_game('origins').editing_verified)
+        self.assertFalse(RESEARCH_TOOLS)
+        self.assertTrue(get_game('origins').editing_verified)
+        self.assertEqual(get_game('origins').scalar_backend, 'origins_parser')
 
     def test_catalog_cannot_add_an_unverified_editor(self):
         entries = load_catalog()
@@ -332,7 +333,7 @@ class SupportGateTests(unittest.TestCase):
             self.assertTrue(title)
             self.assertIn('GAME_MECHANICS.md',text)
         self.assertIn('read only',guide('pw3')[1])
-        self.assertEqual({game.id for game in GAMES}, {'dw3','dw8xl','pw3','dw4hyper','dw4xl_ps2','atelier_sophie2'})
+        self.assertEqual({game.id for game in GAMES}, {'dw3','dw8xl','pw3','dw4hyper','dw4xl_ps2','atelier_sophie2','origins'})
 
 
 class ExplicitPublicSampleTests(unittest.TestCase):

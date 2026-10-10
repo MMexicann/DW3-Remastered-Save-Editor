@@ -48,7 +48,7 @@ def snapshot_backup(raw, source, game_id, folder=None):
     return result
 
 
-def restore_snapshot(backup, destination, game_id, suffix, max_size):
+def restore_snapshot(backup, destination, game_id, suffix, max_size, validate_raw=None):
     backup, destination = safe_path(backup), safe_path(destination)
     if backup.suffix.lower() != suffix or destination.suffix.lower() != suffix:
         raise SaveError(f'Choose a {suffix} backup and a new {suffix} destination.')
@@ -67,4 +67,8 @@ def restore_snapshot(backup, destination, game_id, suffix, max_size):
             manifest.get('kind') != 'opaque-copy' or manifest.get('size_bytes') != len(raw) or
             manifest.get('sha256') != hashlib.sha256(raw).hexdigest()):
         raise SaveError('Backup game, hash, or size does not match its manifest.')
+    if validate_raw is not None:
+        # Qualify the same bounded bytes that will be written, rather than a
+        # separate earlier read whose backup or manifest could change.
+        validate_raw(raw)
     return atomic_new(raw, destination)

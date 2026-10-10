@@ -3,6 +3,8 @@ name: Windows build and release
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
 
@@ -15,6 +17,7 @@ concurrency:
 
 jobs:
   build:
+    if: github.event_name == 'workflow_dispatch' || github.ref_type == 'tag' || contains(github.event.head_commit.message, '[release]')
     runs-on: windows-latest
     timeout-minutes: 30
     defaults:
@@ -66,7 +69,7 @@ jobs:
           if-no-files-found: error
 
   release:
-    if: github.event_name == 'push' && github.ref_type == 'tag'
+    if: github.event_name == 'push' && (github.ref_type == 'tag' || (github.ref_name == 'main' && contains(github.event.head_commit.message, '[release]')))
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -88,5 +91,14 @@ jobs:
         run: |
           set -euo pipefail
           version=$(python package_release.py --version)
-          test "$GITHUB_REF_NAME" = "v$version"
-          gh release create "$GITHUB_REF_NAME" --verify-tag --title "Universal Koei Tecmo Save Editor v$version" --notes-file RELEASE_NOTES.md release/*.exe release/*.zip release/SHA256SUMS.txt
+          release_tag="v$version"
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            test "$GITHUB_REF_NAME" = "$release_tag"
+          else
+            test "$GITHUB_REF_NAME" = main
+            # A release-marked main commit creates one new tag at the exact
+            # tested SHA. Existing tags are never moved or overwritten.
+            gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" \
+              -f "ref=refs/tags/$release_tag" -f "sha=$GITHUB_SHA"
+          fi
+          gh release create "$release_tag" --verify-tag --title "Universal Koei Tecmo Save Editor v$version" --notes-file RELEASE_NOTES.md release/*.exe release/*.zip release/SHA256SUMS.txt

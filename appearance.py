@@ -2,6 +2,7 @@
 import tkinter as tk
 from tkinter import font
 from tkinter import ttk
+import preferences
 
 
 def ui_font(root):
@@ -29,6 +30,7 @@ class Appearance:
         """Change appearance without rebuilding forms or touching pending edits."""
         if name not in THEMES:
             raise ValueError('Unsupported appearance.')
+        previous = getattr(self, '_applied_theme', None)
         palette = THEMES[name]
         self.font_family = ui_font(self.root)
         self.theme_name.set(name)
@@ -76,6 +78,9 @@ class Appearance:
         self.root.option_add('*TCombobox*Listbox.selectBackground', palette['accent'])
         self.root.option_add('*TCombobox*Listbox.selectForeground', '#ffffff')
         self.theme_widgets(self.root)
+        self._applied_theme = name
+        if getattr(self, '_persist_theme', False) and previous is not None and previous != name:
+            preferences.save_theme(name, getattr(self, 'preferences_path', None))
 
     def theme_widgets(self, parent):
         """Apply colors to the small number of widgets outside ttk's styling."""

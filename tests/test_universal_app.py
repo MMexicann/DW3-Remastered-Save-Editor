@@ -52,9 +52,14 @@ REMOVED_UI_PHRASES = (
 @unittest.skipUnless(os.name == 'nt' or os.environ.get('DISPLAY'), 'A graphical display is required.')
 class UniversalGuiTests(unittest.TestCase):
     def setUp(self):
+        area = PROJECT / '.test-runs'
+        area.mkdir(exist_ok=True)
+        self.preference_folder = tempfile.TemporaryDirectory(dir=area)
+        self.addCleanup(self.preference_folder.cleanup)
+        self.preferences_path = Path(self.preference_folder.name) / 'preferences.json'
         self.root = tk.Tk()
         self.root.withdraw()
-        self.app = Application(self.root)
+        self.app = Application(self.root, preferences_path=self.preferences_path)
 
     def tearDown(self):
         try:
@@ -65,17 +70,18 @@ class UniversalGuiTests(unittest.TestCase):
     def test_selector_initializes_both_games_with_isolated_sessions(self):
         self.assertIsNone(self.app.active_game)
         self.assertEqual(set(self.app.game_buttons),
-                         {'dw3', 'dw8xl', 'pw3', 'dw4hyper', 'dw4xl_ps2', 'atelier_sophie2'})
+                         {'dw3', 'dw8xl', 'pw3', 'dw4hyper', 'dw4xl_ps2', 'atelier_sophie2', 'origins'})
         dw3 = self.app.select_game('dw3')
         origins = self.app.select_game('origins')
         self.assertIsInstance(dw3, gui.Editor)
-        self.assertIsInstance(origins, origins_gui.Editor)
+        from origins_game_editor import Editor as OriginsEditor
+        self.assertIsInstance(origins, OriginsEditor)
         self.assertIsNot(dw3.changes, origins.changes)
         self.assertIsNone(dw3.document)
         self.assertIsNone(origins.document)
         self.assertEqual(set(dw3.tabs), {'Officers', 'Items', 'Weapons', 'Bodyguards', 'Unlocks',
                                          'Collections', 'Musou Saves'})
-        self.assertEqual(len(origins.features.get_children()), 11)
+        self.assertFalse(origins.fields.get_children())
 
     def test_switching_and_theme_changes_retain_pending_edits_and_form_values(self):
         dw3 = self.app.select_game('dw3')
@@ -120,7 +126,10 @@ class UniversalGuiTests(unittest.TestCase):
             destroy.assert_not_called()
 
     def test_origins_open_backup_compare_export_save_copy_and_restore_callbacks(self):
-        editor = self.app.select_game('origins')
+        # Opaque copy tooling remains source-only. Its callbacks are tested
+        # directly, without registering it as a gameplay library session.
+        host = ttk.Frame(self.root)
+        editor = origins_gui.Editor(self.root, parent=host)
         raw = bytes(range(256)) * 4
         with tempfile.TemporaryDirectory() as folder:
             source = Path(folder) / 'SLOT0001.dat'
@@ -151,14 +160,183 @@ class UniversalGuiTests(unittest.TestCase):
             self.assertEqual(after.read_bytes(), raw[:-1] + bytes([raw[-1] ^ 1]))
 
     def test_failed_origins_open_preserves_previous_session(self):
+        import verified_gui
         editor = self.app.select_game('origins')
         original = object()
         editor.document = original
-        with patch.object(origins_gui.filedialog, 'askopenfilename', return_value='wrong.sav'), \
-                patch.object(origins_gui.messagebox, 'showerror') as error:
+        with patch.object(verified_gui.filedialog, 'askopenfilename', return_value='wrong.sav'), \
+                patch.object(verified_gui.messagebox, 'showerror') as error:
             editor.open()
             error.assert_called_once()
         self.assertIs(editor.document, original)
+
+    def test_native_origins_staging_max_undo_review_save_restore_and_user_rejection(self):
+        from tests.test_origins_parser import fixture
+        import origins_codec
+        import origins_parser
+        import verified_gui
+        editor = self.app.select_game('origins')
+        area = PROJECT / '.test-runs'
+        area.mkdir(exist_ok=True)
+        raw = fixture()
+        user_raw = origins_codec.encode(bytes(origins_codec.USER_FILE_SIZE - 4), 9, 'user')
+        with tempfile.TemporaryDirectory(dir=area) as folder:
+            source = Path(folder) / 'SLOT0000.dat'
+            user = Path(folder) / 'USER.dat'
+            source.write_bytes(raw)
+            user.write_bytes(user_raw)
+            with patch.object(verified_gui.filedialog, 'askopenfilename', return_value=str(source)), \
+                    patch.object(verified_gui.messagebox, 'showerror') as error:
+                editor.open()
+                error.assert_not_called()
+            opened = editor.document
+            snapshot = editor.backup
+            self.assertEqual(snapshot.read_bytes(), raw)
+            editor.group.set('Resources')
+            editor.refresh()
+            self.assertEqual(set(editor.fields.get_children()), {'gold', 'skill_points', 'dlc_skill_points'})
+            editor.fields.selection_set('gold')
+            editor.value.set('77777')
+            editor.apply_selected()
+            self.assertEqual(editor.changes, {'gold': 77777})
+            self.app.select_game('dw3')
+            self.app.apply_theme('Dark')
+            self.assertIs(self.app.select_game('origins'), editor)
+            self.assertIs(editor.document, opened)
+            self.assertEqual(editor.value.get(), '77777')
+            editor.max_visible()
+            self.assertEqual(editor.changes, {'gold': 999999, 'skill_points': 999, 'dlc_skill_points': 999})
+            self.assertEqual(len(editor.history), 2)
+            editor.undo()
+            self.assertEqual(editor.changes, {'gold': 77777})
+            editor.fields.selection_set(('gold', 'skill_points', 'dlc_skill_points'))
+            editor.max_selected()
+            pending = dict(editor.changes)
+            history = list(editor.history)
+            self.assertEqual(pending, {'gold': 999999, 'skill_points': 999, 'dlc_skill_points': 999})
+            self.assertEqual(origins_parser.field_map(opened)['gold'].value(opened.payload), 3456)
+            editor.review()
+            editor.show_inspector()
+            texts = '\n'.join(widget_texts(self.root))
+            self.assertIn('Review Changes', texts)
+            rows = [view.item(key, 'values') for view in widgets_of_type(self.root, ttk.Treeview)
+                    for key in view.get_children()]
+            self.assertIn(('Gold', '3456', '999999'), rows)
+            self.assertIn(('DLC Skill Points', '20', '999'), rows)
+            self.assertIn(('Format', 'Native slot revision', '29'), rows)
+            # A valid system envelope must fail the gameplay slot parser without
+            # discarding the active document, pending edits or Undo history.
+            with patch.object(verified_gui.filedialog, 'askopenfilename', return_value=str(user)), \
+                    patch.object(verified_gui.messagebox, 'showerror') as error:
+                editor.open()
+                error.assert_called_once()
+                self.assertIn('USER.dat', str(error.call_args))
+            self.assertIs(editor.document, opened)
+            self.assertEqual(editor.changes, pending)
+            self.assertEqual(editor.history, history)
+            target = Path(folder) / 'edited.dat'
+            with patch.object(verified_gui.filedialog, 'asksaveasfilename', return_value=str(target)), \
+                    patch.object(verified_gui.messagebox, 'showerror') as error:
+                editor.save_as()
+                error.assert_not_called()
+            reopened = origins_parser.read_save(target)
+            self.assertEqual(origins_parser.field_map(reopened)['gold'].value(reopened.payload), 999999)
+            self.assertEqual(origins_parser.field_map(reopened)['skill_points'].value(reopened.payload), 999)
+            self.assertEqual(origins_parser.field_map(reopened)['dlc_skill_points'].value(reopened.payload), 999)
+            self.assertFalse(editor.changes)
+            self.assertFalse(editor.history)
+            restored = Path(folder) / 'restored.dat'
+            with patch.object(verified_gui.filedialog, 'askopenfilename', return_value=str(snapshot)), \
+                    patch.object(verified_gui.filedialog, 'asksaveasfilename', return_value=str(restored)), \
+                    patch.object(verified_gui.messagebox, 'showerror') as error:
+                editor.restore()
+                error.assert_not_called()
+            self.assertEqual(restored.read_bytes(), raw)
+            self.assertEqual(source.read_bytes(), raw)
+            self.assertEqual(user.read_bytes(), user_raw)
+
+    def test_native_origins_dynamic_groups_search_and_nonmaxable_training(self):
+        from tests.test_origins_integration import mapped_fixture
+        import verified_gui
+        editor = self.app.select_game('origins')
+        raw = mapped_fixture(29)
+        editor.document = editor.adapter.decode(raw)
+        editor.refresh()
+        self.assertTrue({'Existing bonds', 'Bond training', 'Provincial peace', 'Weapons', 'Battle clear history'}
+                        <= set(editor.group_selector.cget('values')))
+        editor.stage_values({'gold': 77777})
+        editor.group.set('Bond training')
+        editor.search.set('7 training')
+        self.assertEqual(editor.fields.get_children(), ('bond_7_training',))
+        editor.max_visible()
+        self.assertEqual(editor.changes, {'gold': 77777})
+        self.assertEqual(len(editor.history), 1)
+        editor.fields.selection_set('bond_7_training')
+        editor.selected()
+        self.assertIn('excluded from Max', editor.selection_info.get())
+        editor.value.set('3')
+        editor.apply_selected()
+        editor.group.set('Weapons')
+        editor.search.set('weapon 0043')
+        self.assertEqual(editor.fields.get_children(), ('weapon_0043_upgrade',))
+        editor.max_visible()
+        self.assertEqual(editor.changes['weapon_0043_upgrade'], 99)
+        self.assertEqual(editor.changes['bond_7_training'], 3)
+        editor.group.set('Existing bonds')
+        editor.search.set('7 level')
+        editor.max_visible()
+        self.assertEqual(editor.changes['bond_7_level'], 5)
+        editor.undo()
+        self.assertNotIn('bond_7_level', editor.changes)
+        editor.group.set('Provincial peace')
+        editor.search.set('8 peace')
+        self.assertEqual(editor.fields.get_children(), ('peace_8',))
+        editor.max_visible()
+        expected = {'gold': 77777, 'bond_7_training': 3,
+                    'weapon_0043_upgrade': 99, 'peace_8': 10000}
+        self.assertEqual(editor.changes, expected)
+        self.app.select_game('pw3')
+        self.app.apply_theme('Dark')
+        self.assertIs(self.app.select_game('origins'), editor)
+        self.assertEqual(editor.search.get(), '8 peace')
+        self.assertEqual(editor.fields.get_children(), ('peace_8',))
+        self.assertEqual(editor.changes, expected)
+        with patch.object(verified_gui.messagebox, 'showerror') as error:
+            editor.stage_values({'weapon_0043_upgrade': 99, 'bond_7_level': 0})
+            error.assert_called_once()
+        self.assertEqual(editor.changes, expected)
+        editor.group.set('Battle clear history')
+        editor.search.set('battle_history 68')
+        self.assertEqual(editor.fields.get_children(), ('battle_history_68',))
+        history_length = len(editor.history)
+        editor.max_visible()
+        self.assertEqual(len(editor.history), history_length)
+        self.assertEqual(editor.changes, expected)
+        editor.fields.selection_set('battle_history_68')
+        editor.max_selected()
+        self.assertEqual(editor.changes, expected)
+        editor.value.set('1')
+        editor.apply_selected()
+        self.assertEqual(editor.changes, expected | {'battle_history_68': 1})
+        editor.search.set('battle_history_0')
+        self.assertEqual(editor.fields.get_children(), ('battle_history_0',))
+        editor.fields.selection_set('battle_history_0')
+        editor.value.set('0')
+        with patch.object(verified_gui.messagebox, 'showerror') as error:
+            editor.apply_selected()
+            error.assert_called_once()
+        self.assertEqual(editor.changes, expected | {'battle_history_68': 1})
+        editor.undo()
+        self.assertEqual(editor.changes, expected)
+        editor.group.set('Weapons')
+        editor.search.set('weapon 0046')
+        self.assertEqual(editor.fields.get_children(), ('weapon_0046_upgrade',))
+        editor.fields.selection_set('weapon_0046_upgrade')
+        editor.selected()
+        self.assertEqual(editor.value.get(), '0')
+        editor.max_selected()
+        self.assertEqual(editor.changes, expected | {'weapon_0046_upgrade': 99})
+        self.assertEqual(editor.document.raw, raw)
 
     def test_contact_dialog_uses_existing_author_branding(self):
         self.app.apply_theme('Dark')
@@ -230,6 +408,41 @@ class UniversalGuiTests(unittest.TestCase):
             error.assert_called_once()
         self.assertFalse(editor.changes)
         self.assertFalse(editor.history)
+
+    def test_scalar_search_tokens_group_scope_max_visible_and_hidden_edits_survive_switch(self):
+        from tests.test_verified_editors import synthetic_raw
+        import verified_editor
+        editor = self.app.select_game('dw8xl')
+        raw = synthetic_raw('dw8xl')
+        editor.document = verified_editor.decode(raw, 'dw8xl')
+        editor.refresh()
+        editor.stage_values({'gold': 123})
+        editor.group.set('Officers')
+        query = 'oFFicer SlOT 01 AtTaCK'
+        editor.search.set(query)
+        self.assertEqual(editor.fields.get_children(), ('officer_0_attack',))
+        self.assertEqual(editor.changes, {'gold': 123})
+        editor.max_visible()
+        self.assertEqual(editor.changes, {'gold': 123, 'officer_0_attack': 1500})
+        self.assertEqual(len(editor.history), 2)
+        editor.undo()
+        self.assertEqual(editor.changes, {'gold': 123})
+        self.app.select_game('pw3')
+        self.app.apply_theme('Dark')
+        self.assertIs(self.app.select_game('dw8xl'), editor)
+        self.assertEqual(editor.search.get(), query)
+        self.assertEqual(editor.fields.get_children(), ('officer_0_attack',))
+        editor.search.set('no matching record')
+        self.assertFalse(editor.fields.get_children())
+        editor.max_visible()
+        self.assertEqual(editor.changes, {'gold': 123})
+        self.assertEqual(len(editor.history), 1)
+        editor.group.set('All fields')
+        editor.search.set('resources GOLD')
+        self.assertEqual(editor.fields.get_children(), ('gold',))
+        editor.search.set('')
+        self.assertEqual(len(editor.fields.get_children()), len(editor.adapter.fields_for(editor.document)))
+        self.assertEqual(editor.document.raw, raw)
 
     def test_dw4_candidate_uses_own_backend_copy_workflow_and_retains_session(self):
         from tests.test_dw4hyper_format import procedural_raw
@@ -490,8 +703,8 @@ class UniversalGuiTests(unittest.TestCase):
             with self.assertRaises(SaveError):
                 get_game('dw4hyper').read_save(foreign)
 
-    def test_removed_research_and_mechanics_screens_are_absent(self):
-        self.assertNotIn('origins', self.app.game_buttons)
+    def test_native_origins_card_and_removed_research_and_mechanics_screens(self):
+        self.assertIn('origins', self.app.game_buttons)
         for name in ('show_research', 'show_mechanics', 'research_button', 'mechanics_button'):
             self.assertFalse(hasattr(self.app, name), name)
         texts = '\n'.join(widget_texts(self.app.library)).lower()
@@ -543,15 +756,24 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_future_library_rows_scroll_focus_reveal_and_invoke_real_buttons(self):
         from dataclasses import replace
+        from types import SimpleNamespace
+        from adapter_contract import SESSION_ACTIONS
         import game_registry
         from game_registry import GAMES
+        def future_session(game, root, parent, theme, on_theme):
+            # This test exercises library geometry, not a falsely registered
+            # PW3 parser under an invented game identity.
+            return SimpleNamespace(game_id=game.id, document=None, changes={},
+                                   theme_name=tk.StringVar(root, value=theme),
+                                   **{name: lambda: True for name in SESSION_ACTIONS})
         expanded = GAMES + tuple(replace(GAMES[2], id=f'future_{index}',
                                         title=f'FUTURE WARRIORS {index + 1}') for index in range(7))
         future_root = tk.Tk()
         try:
             with patch('application.GAMES', expanded), \
-                    patch.object(game_registry, 'ALL_ADAPTERS', expanded + game_registry.RESEARCH_TOOLS):
-                app = Application(future_root)
+                    patch.object(game_registry, 'ALL_ADAPTERS', expanded + game_registry.RESEARCH_TOOLS), \
+                    patch.object(game_registry.Game, 'create_editor', new=future_session):
+                app = Application(future_root, preferences_path=self.preferences_path)
                 future_root.geometry('1080x820')
                 future_root.update()
                 canvas = app.platform_canvases['Windows PC']
@@ -611,7 +833,7 @@ class UniversalGuiTests(unittest.TestCase):
 
     def test_scalar_editor_keeps_editing_controls_and_removes_evidence_panels(self):
         self.root.deiconify()
-        for game_id in ('dw8xl', 'pw3', 'dw4hyper', 'dw4xl_ps2', 'atelier_sophie2'):
+        for game_id in ('dw8xl', 'pw3', 'dw4hyper', 'dw4xl_ps2', 'atelier_sophie2', 'origins'):
             editor = self.app.select_game(game_id)
             self.root.update()
             frame = self.app.sessions[game_id][0]

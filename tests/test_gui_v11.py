@@ -3,6 +3,7 @@ from pathlib import Path
 import hashlib
 import shutil
 import sys
+import tempfile
 import tkinter as tk
 from tkinter import ttk
 import unittest
@@ -27,8 +28,12 @@ AREA=PROJECT/'work/gui-v11-tests'
 class AppearanceGuiTests(unittest.TestCase):
     """Appearance switches must leave forms, selection and disabled actions intact."""
     def setUp(self):
+        area = PROJECT / '.test-runs'
+        area.mkdir(exist_ok=True)
+        self.preference_folder = tempfile.TemporaryDirectory(dir=area)
+        self.addCleanup(self.preference_folder.cleanup)
         self.root=tk.Tk();self.root.withdraw()
-        self.editor=gui.Editor(self.root)
+        self.editor=gui.Editor(self.root, preferences_path=Path(self.preference_folder.name) / 'preferences.json')
 
     def tearDown(self):
         self.root.destroy()
@@ -93,7 +98,7 @@ class MissingCounterGuiTests(unittest.TestCase):
         self.copy=self.folder/'fresh-copy.sav'
         self.copy.write_bytes(self.missing.encrypted)
         self.root=tk.Tk();self.root.withdraw()
-        self.editor=gui.Editor(self.root)
+        self.editor=gui.Editor(self.root, preferences_path=self.folder / 'preferences.json')
         self.errors=[]
         self.dialogs=[]
         for name,kwargs in [('showerror',{'side_effect':lambda *a,**k:self.errors.append(a)}),

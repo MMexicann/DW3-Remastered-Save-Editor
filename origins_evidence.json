@@ -1,6 +1,32 @@
 {
   "game_id": "origins",
-  "format_status": "opaque; encryption and gameplay schema unverified",
+  "format_status": "Native Steam envelope and revisions 16, 17, 29 qualified; resources, existing bonds, provincial peace, catalogue-qualified weapon reinforcement and persistent battle clear history mapped; independent game loading unvalidated",
+  "native_evidence": {
+    "steam_build": "21711288",
+    "executable_sha256": "5b8599854143ef7483b272dfa28f7cae616add6b2a8c31550c8a0c8eb1bd63d9",
+    "method": "Read-only native executable analysis, registry and pure revision-size routine evaluation, plus preserved copied-save validation",
+    "envelope_reader_rva": "0x18a6fa0",
+    "envelope_writer_rva": "0x18a6e80",
+    "checksum_rva": "0x18a6d90",
+    "checksum": "sum of decrypted little-endian 16-bit words modulo 65536; weak integrity, not authentication",
+    "cipher": "one unsigned 32-bit advance per little-endian word: state = state * 0x5b1a7851 + 0xce4e modulo 2^32; XOR word with state",
+    "slot_file_bytes": 2561636,
+    "user_file_bytes": 10244,
+    "body_metadata_bytes": 1632,
+    "serialized_length_body_offset": "0x660",
+    "revision_body_offset": "0x664",
+    "qualified_revision_lengths": {
+      "16": 136429,
+      "17": 136430,
+      "29": 142173
+    },
+    "revision_size_validation_rva": "0xa92f80",
+    "revision_size_calculator_rva": "0xa914d0",
+    "registry_initialization_rva": "0xa916f0",
+    "native_copied_slot_roundtrips": 9,
+    "native_copied_user_roundtrips": 1,
+    "game_load_validation": false
+  },
   "references": [
     {
       "source": "https://github.com/VdustR/game-save-dwo-d4h",
@@ -16,9 +42,75 @@
     "source": "https://github.com/Kelebek1/dwo",
     "commit": "5de9b3e615691f2280ceeb6100416275adfbe75c",
     "scope": "LINKDATA assets and stage scripts, not a save schema",
-    "finding": "Published asset AES key did not produce a recognizable save structure when tested; it is not used by this editor"
+    "finding": "Native save codec differs from asset encryption. Private read-only catalogue inspection establishes weapon eligibility and counted battle IDs; native assets and asset-encryption material are not distributed."
   },
-  "editable_fields": [],
+  "editable_fields": [
+    {
+      "id": "gold",
+      "label": "Gold",
+      "body_offset": "0x69b",
+      "width_bytes": 4,
+      "encoding": "little-endian unsigned integer",
+      "minimum": 0,
+      "maximum": 999999,
+      "serialization_rva": "0xa68980",
+      "native_member_offset": "0x384",
+      "getter_rva": "0xa69e20",
+      "setter_rva": "0xa69e40",
+      "gain_rva": "0xaacdb0",
+      "spend_rva": "0xaace90",
+      "merchant_sell_rva": "0x1250d50",
+      "merchant_buy_rva": "0x1251b60",
+      "evidence": "Native one-record subsystem chain, exact preceding two-byte subsystem size, member serialization, gameplay clamps and merchant transactions",
+      "game_load_validated": false
+    },
+    {
+      "id": "skill_points",
+      "label": "Base unspent skill points",
+      "body_offset": "0xa87",
+      "width_bytes": 2,
+      "encoding": "little-endian unsigned integer",
+      "minimum": 0,
+      "maximum": 999,
+      "serialization_rva": "0xa68980",
+      "native_member_offset": "0x458",
+      "getter_rva": "0xa69fc0",
+      "setter_rva": "0xa69ff0",
+      "gain_rva": "0xaaa3d0",
+      "spend_rva": "0xaaa440",
+      "skill_purchase_payment_call_rva": "0x12b933b",
+      "portable_item_payment_call_rva": "0x1251eb7",
+      "gold_exchange_payment_call_rva": "0x12534bc",
+      "gold_exchange_grant_rva": "0x1253507",
+      "evidence": "Native sequential member serialization and capped unspent counter, skill-catalogue purchase and skill-point-to-Gold portable-item exchanges",
+      "scope": "Base unspent pool only; ownership and DLC point pools are separate",
+      "game_load_validated": false
+    },
+    {
+      "id": "dlc_skill_points",
+      "label": "DLC unspent skill points",
+      "qualified_revisions": [
+        29
+      ],
+      "body_offset": "0x21f1a",
+      "width_bytes": 2,
+      "encoding": "little-endian unsigned integer",
+      "minimum": 0,
+      "maximum": 999,
+      "registry_subsystem": 31,
+      "subsystem_body_offset": "0x21ef6",
+      "subsystem_record_bytes": 46,
+      "subsystem_record_field_offset": "0x24",
+      "serialization_rva": "0xa79d30",
+      "native_member_offset": "0x22",
+      "getter_rva": "0xa7a900",
+      "setter_rva": "0xa7a930",
+      "size_calculator_rva": "0xadd1d0",
+      "evidence": "Native registry-size sum, independently evaluated pure member serializer, capped counter and skill-catalogue flag selecting this pool",
+      "scope": "Revision 29 only; subsystem absent in qualified revisions 16 and 17; distinct from base point pool and skill ownership",
+      "game_load_validated": false
+    }
+  ],
   "features": [
     "Character progression and levels",
     "Skill points",
@@ -31,5 +123,106 @@
     "Battle Arts",
     "Bonds",
     "Story progression"
+  ],
+  "editable_structures": [
+    {
+      "id": "bonds",
+      "bases": {
+        "16": "0x136e",
+        "17": "0x136e",
+        "29": "0x1436"
+      },
+      "records": 101,
+      "stride": 5,
+      "level": {
+        "relative_offset": 0,
+        "width": 1,
+        "minimum": 1,
+        "maximum": 5
+      },
+      "training": {
+        "relative_offset": 2,
+        "width": 2,
+        "minimum": 0,
+        "maximum": 999,
+        "maxable": false
+      },
+      "qualification": "Existing formed level 1\u20135 only; event/reward/learned-art bytes preserved",
+      "serializer_rva": "0xaeafa0",
+      "confidence": "high"
+    },
+    {
+      "id": "peace",
+      "bases": {
+        "16": "0x1f64b",
+        "17": "0x1f64c",
+        "29": "0x1f716"
+      },
+      "records": 13,
+      "stride": 2,
+      "maximum": 10000,
+      "percentage_divisor": 100,
+      "setter_rva": "0xa9e1e0",
+      "qualification": "Canonical native counters only; reward claim flags preserved",
+      "confidence": "high"
+    },
+    {
+      "id": "weapons",
+      "bases": {
+        "16": "0x1567",
+        "17": "0x1567",
+        "29": "0x162f"
+      },
+      "records": 1000,
+      "stride": 27,
+      "editable_inventory_indices": [
+        0,
+        849
+      ],
+      "upgrade_relative_offset": 2,
+      "upgrade_width": 1,
+      "maximum": 99,
+      "catalogue_slot": 452,
+      "catalogue_id": 4327,
+      "qualified_catalogue_ids": 195,
+      "qualification": "Occupied native catalogue ID with valid family/grade and reforging flag bit0 at row+0x19",
+      "serializer_rva": "0xaec5a0",
+      "setter_rva": "0xa64c30",
+      "confidence": "high"
+    },
+    {
+      "id": "battle_history",
+      "bases": {
+        "16": "0x210a1",
+        "17": "0x210a2",
+        "29": "0x21365"
+      },
+      "records": 1000,
+      "stride": 1,
+      "qualified_ids": 35,
+      "catalogue_ids": [
+        4590,
+        4591
+      ],
+      "catalogue_types": [
+        1,
+        7,
+        8
+      ],
+      "minimum": "Original saved byte",
+      "maximum": 1,
+      "maxable": false,
+      "setter_rva": "0xabc780",
+      "qualification": "Canonical 0/1 only; completion-only, reserved/additional ID70 excluded",
+      "scope": "Persistent battle clear history only; active campaign, endings, events and rewards preserved",
+      "confidence": "high"
+    }
+  ],
+  "unmapped_writes": [
+    "Weapon proficiency and derived moveset/rank rewards",
+    "Weapon trait levels",
+    "Active campaign and route endings",
+    "Gem and horse progression",
+    "Bond conversations, events and rewards"
   ]
 }

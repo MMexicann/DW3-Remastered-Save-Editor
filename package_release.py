@@ -9,8 +9,11 @@ import re
 import zipfile
 
 ROOT=Path(__file__).resolve().parent
-ROOT_FILES={'.gitignore','LICENSE'}
+ROOT_FILES={'.gitignore','.gitattributes','LICENSE'}
 SOURCE_SUFFIXES={'.py','.pyw','.json','.md','.txt'}
+ADAPTER_TEMPLATE_FILES={'adapter_template/new_game_parser.py', 'adapter_template/new_game_editor.py',
+                        'adapter_template/contract_test.py', 'adapter_template/INSTRUCTIONS.md'}
+PUBLIC_TEST_HELPERS={'tests/scalar_contract.py'}
 WINDOWS_DOCS=('README.md','CHANGELOG.md','LICENSE','THIRD_PARTY_NOTICES.md')
 PERSONAL_PATH=re.compile(r'(?i)(?:[a-z]:[\\/]+Users[\\/]+(?!Player(?:[\\/]|\b))[^\\/\s"\']+|/(?:home|Users)/[^/\s"\']+)')
 
@@ -46,7 +49,9 @@ def public_path(name):
     if len(parts)==1:
         allowed=name in ROOT_FILES or path.suffix in SOURCE_SUFFIXES
     elif parts[0]=='tests':
-        allowed=len(parts)==2 and parts[1].startswith('test_') and path.suffix=='.py'
+        allowed=name in PUBLIC_TEST_HELPERS or (len(parts)==2 and parts[1].startswith('test_') and path.suffix=='.py')
+    elif parts[0]=='adapter_template':
+        allowed=name in ADAPTER_TEMPLATE_FILES
     elif parts[0]=='licenses':
         allowed=len(parts)==2 and path.suffix in {'.txt','.terms'}
     elif parts[:2]==('.github','workflows'):
@@ -86,10 +91,24 @@ def verified_sources(root=ROOT):
         sources[name]=data
     required=set(WINDOWS_DOCS)|{'gui.py','build_windows.py','build-requirements.txt','package_release.py',
                                'RELEASE_NOTES.md','.github/workflows/windows-release.yml'}
+    if (root/'.gitattributes').exists():
+        required.add('.gitattributes')
     if (root/'application.py').exists():
         required.update({'application.py','appearance.py','game_registry.py','origins_gui.py',
                          'origins_editor.py','origins_evidence.json','save_safety.py','copy_storage.py',
-                         'ORIGINS_FORMAT.md','launch.pyw'})
+                         'ORIGINS_FORMAT.md','launch.pyw','adapter_contract.py',
+                         'scalar_presentation.py','musou_presentations.py','preferences.py'})
+        if b'origins_parser' in sources.get('game_registry.py', b''):
+            required.update({'origins_game_editor.py', 'origins_parser.py', 'origins_codec.py'})
+            native_tree = ast.parse(sources.get('origins_parser.py', b''))
+            for node in ast.walk(native_tree):
+                modules = ([node.module] if isinstance(node, ast.ImportFrom) and node.level == 0
+                           else [alias.name for alias in node.names] if isinstance(node, ast.Import)
+                           else [])
+                required.update(module + '.py' for module in modules
+                                if module and module.startswith('origins_') and '.' not in module)
+        if (root/'adapter_template').exists():
+            required.update(ADAPTER_TEMPLATE_FILES | PUBLIC_TEST_HELPERS)
         if (root/'verified_editor.py').exists() or b'dw8xl_editor' in sources.get('game_registry.py',b''):
             required.update({'verified_editor.py','verified_gui.py','koei_codec.py','dw8xl_editor.py',
                              'pw3_editor.py','support_catalog.py','support_catalog.json','KOEI_FORMATS.md',

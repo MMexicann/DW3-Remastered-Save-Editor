@@ -1,28 +1,49 @@
-# Universal Koei Tecmo Save Editor v1.3
+# Universal Koei Tecmo Save Editor v1.4
 
-Added **Atelier Sophie 2: The Alchemist of the Mysterious Dream** for its Steam PC
-1.08 layout. Edit quality on existing inventory and equipped items, or change
-Sophie and Plachta's alchemy EXP. Quality supports individual and bulk Max;
-EXP is excluded from Max. Uses the shared backups, Undo, Review Changes and
-new-destination Save As workflow.
+This update adds Dynasty Warriors: Origins to the game library and makes it easier
+for contributors to add new games.
 
-- Six game editors in one Windows executable: DW3 Remastered, DW4 Hyper,
-  DW8 XL Complete Edition, Pirate Warriors 3, Atelier Sophie 2 and the separate
-  PS2 USA DW4 XL export editor.
-- A scrollable game grid keeps additional games accessible; field groups
-  follow the records in the loaded save. Light/Dark themes and retained sessions
-  remain available.
-- The MIT-licensed Sophie 2 codec is adapted with preserved unknown data,
-  full integrity read-back and embedded attribution. Existing DW3 functionality
-  and Mexican's branding are retained.
+## New in v1.4
 
-Download **UniversalKoeiTecmoSaveEditor-v1.3.exe** and work on separate save copies.
-Source and Windows archives include SHA-256 checksums. Independent Sophie 2
-native-save and in-game checks remain pending; exact limits and test evidence
-are in [VALIDATION.md](https://github.com/MMexicann/DW3-Remastered-Save-Editor/blob/main/VALIDATION.md).
+- Origins Steam PC: edit Gold (0–999,999) and base-game Skill Points (0–999).
+- Edit the separate DLC Skill Point balance (0–999) on supported revision 29 saves.
+- Edit existing bond levels and training counts, provincial peace, and qualified
+  existing weapon reinforcement from +0 up to +99. Max preserves training counts,
+  unusual values, weapon identities, traits and equipment references.
+- Manually mark 35 supported battle-clear history flags as cleared. Already
+  cleared history cannot be reset; history flags are excluded from Max and do
+  not advance the active campaign, establish endings or grant rewards.
+- Support native Origins slot revisions 16, 17 and 29, including save integrity,
+  backups, Undo, Review Changes and Save As.
+- Find fields by name, group or record in scalar editors; Max Visible Fields
+  applies to the filtered rows while hidden pending edits remain staged.
+- Remember the selected Light/Dark appearance across application restarts.
+- DW3 weapon bonuses now use stat names such as Attack, Luck and Musou in
+  selection menus and change reviews.
+- Add a documented adapter interface, starter template and shared tests for new
+  game integrations.
 
-Contributors can start with
-[CONTRIBUTING.md](https://github.com/MMexicann/DW3-Remastered-Save-Editor/blob/main/CONTRIBUTING.md)
-and [AGENTS.md](https://github.com/MMexicann/DW3-Remastered-Save-Editor/blob/main/AGENTS.md).
-Checked editor sources are documented in
-[EXISTING_EDITORS.md](https://github.com/MMexicann/DW3-Remastered-Save-Editor/blob/main/EXISTING_EDITORS.md).
+## Supported games
+
+- Dynasty Warriors 3: Complete Edition Remastered: officers, items, weapons,
+  bodyguards, unlocks, Musou stories, collections and Huanglong Elixirs.
+- Dynasty Warriors: Origins: Gold, base-game/DLC Skill Points, existing bonds,
+  provincial peace, eligible weapon reinforcement and manual battle-clear history.
+- Dynasty Warriors 4 Hyper: officers, weapons, items, bodyguards and difficulty.
+- Dynasty Warriors 8: Xtreme Legends Complete Edition: resources, officer stats
+  and existing weapon attribute ranks.
+- One Piece: Pirate Warriors 3: character stats, special bars and skill slots.
+- Dynasty Warriors 4: Xtreme Legends (USA PS2): supported `.psu` save exports.
+- Atelier Sophie 2 (Steam PC 1.08 layout): item/equipment quality and alchemy EXP.
+
+## How to run
+
+Download the Windows EXE, or extract the Windows ZIP and run
+`UniversalKoeiTecmoSaveEditor-v1.4.exe`. No Python or installation is needed.
+Select your game, open a separate save copy, make your edits and choose **Save As**.
+Keep an untouched backup outside the live save folder.
+
+For Origins, open a copied `SLOT0000.dat` through `SLOT0008.dat`; `USER.dat` is
+system data. Bond events and reward claims, character/weapon XP, learned skills,
+active story progression, endings and unlock flags remain unchanged. Weapon editing
+changes only qualified reinforcement levels; empty and reserved records are preserved.

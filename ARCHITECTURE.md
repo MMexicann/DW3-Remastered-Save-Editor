@@ -15,15 +15,25 @@ or external services are needed.
 
 `GAMES` contains implemented platform-specific editors. Independent native-file
 verification (`editing_verified`) is separate from cited published-format support
-(`published_format`). The five PC entries and PS2 XL entry are filtered by their
+(`published_format`). The six PC entries and PS2 XL entry are filtered by their
 explicit `platform`; switching platforms retains game sessions. `RESEARCH_TOOLS`
-contains Origins copy tools. `ALL_ADAPTERS` includes both for packaging and startup.
+is currently empty; opaque Origins copy tools remain source-only. `ALL_ADAPTERS`
+includes registered gameplay editors and any explicit research sessions for packaging and startup.
 `support_catalog.py` checks independent verification flags against the registry. Research rows never create parsers.
 
 Platforms with more than four entries use a scrollable three-column library.
 The footer stays visible, focus reveals the selected card, and scrolling applies
 only to the visible library. Scalar field groups refresh from the loaded document,
 allowing adapters with dynamic occupied-record maps to use the same GUI.
+Shared scalar search matches field labels, groups and record labels. It combines
+with the selected group, preserves hidden pending edits and survives switching;
+Max Visible applies only to displayed rows.
+
+`preferences.py` stores only the chosen Light/Dark theme in the user's application
+config directory, independently of game copies. The application owns persistence
+for embedded sessions; standalone DW3 uses the same preference. Bounded, strict
+reads fall back to Light, failed atomic replacements leave the editor usable,
+and smoke/self-test workflows do not write settings.
 
 `koei_codec.py` independently implements the verified DWORD and byte save ciphers.
 `verified_editor.py` owns immutable documents, explicit layouts, native checksums,
@@ -37,9 +47,24 @@ documented in `GAME_MECHANICS.md`. It has no application menu. PW3 level/XP insp
 health model is not a progression writer. Bulk-limit helpers preserve higher
 values already present in a copied save.
 
-The shared scalar GUI calls its injected `backend`, with optional record labels,
-field hints and read-only inspection rows. It does not fall back to another game's
-parser. `dw4hyper_editor.py` injects `dw4hyper_parser.py`: strict published size,
+The shared scalar GUI retains its injected `backend` for game-specific data
+presentation; core operations go through `adapter_contract.BoundScalarAdapter`.
+It checks backend completeness, game/platform identity and extensions before
+delegating to the dedicated reader/writer. `Game.scalar_backend` declares that
+same module for registry reads and copied-save CLI tests, removing their lists of
+individual scalar game IDs. Editor construction also checks declared identity,
+backend/extension agreement and the launcher `EditorSession` contract. DW3 uses
+only the session contract and keeps its established document/patch APIs.
+
+`scalar_presentation.py` defines optional data-only inspector tables, field hints,
+record labels and filename guidance. `musou_presentations.py` supplies DW8/PW3
+views through their adapter classes; shared Tk code contains no branches for
+those games. Other backends use their existing optional hooks or a basic field
+table. The unregistered `adapter_template/` scaffold documents the format seams
+and registration workflow, while `tests/scalar_contract.py` supplies behavioral
+tests reused across existing scalar games. It never probes another game's parser.
+
+`dw4hyper_editor.py` injects `dw4hyper_parser.py`: strict published size,
 checksum and roster checks, bounded semantic item edits and surgical byte writes.
 Its sample-qualified flag remains false; contributor documentation and copied-save
 self-tests record that genuine PC fixture and in-game validation are pending. Availability
@@ -72,15 +97,29 @@ Segoe UI is used on Windows, with a portable Helvetica fallback for GUI tests.
 DW3 retains `gui.Editor` and all existing parsing/editing modules. Its constructor
 accepts an optional container for embedding; default construction still supports
 the existing tests. Its module version remains 1.1 while the universal application's
-release version is 1.3. DW3's tagged Unreal schema, AES envelope, metadata,
+release version is 1.4. DW3's tagged Unreal schema, AES envelope, metadata,
 edit limits, atomic save writer and audit reports remain game specific. Explicit
 DW3 self-test and compatibility-test command lines continue to work.
 
-Origins uses `origins_gui.py` and `origins_editor.py`, with evidence separate in
-`origins_evidence.json`. `OriginsCopy` is an immutable opaque artifact; it has no
-decoded gameplay fields or edit capabilities. Unknown artifacts remain visibly
-unverified, and gameplay serialization is unavailable. Adding a serializer needs
-the evidence and acceptance checks in `ORIGINS_FORMAT.md`.
+Origins uses `origins_game_editor.py`, `origins_parser.py` and `origins_codec.py`.
+The native Steam slot reader qualifies integrity, serialized block length and
+revision 16, 17 or 29 before exposing Gold and base-game Skill Points; revision
+29 also exposes its separate DLC Skill Point pool. `origins_progression.py` and
+`origins_weapons.py` supply document-specific field definitions for formed bonds,
+provincial peace and qualified existing weapon reinforcement. Training counts
+and supported battle-clear history are editable but excluded from bulk Max;
+history only permits clearing supported original 0/1 records and cannot reset
+an opened clear. Active campaigns, endings and rewards remain separate.
+Unmapped flags and records, original
+seeds and revision metadata are preserved. `USER.dat` system envelopes
+are rejected by the gameplay adapter. The shared GUI and registry-driven scalar
+self-test provide staging, Undo, review, backup/restore and new-copy saving.
+Native evidence, copied-file qualification and remaining in-game validation are
+tracked separately in `ORIGINS_FORMAT.md` and `origins_evidence.json`.
+
+`origins_gui.py` / `origins_editor.py` retain the earlier source-only opaque copy
+tools and their immutable `OriginsCopy`; they are no longer registered library
+editors. Their copy/comparison tests exercise those tools directly.
 
 `save_safety.py` supplies the shared live-save/Steam Cloud path policy, including
 resolved aliases. `copy_storage.py` implements immutable Origins snapshots,
@@ -89,9 +128,14 @@ writer and backup naming convention. Windows uses native CNG for DW3 AES;
 non-Windows development can optionally use `cryptography` without adding that
 library to the Windows runtime.
 
+Native adapters can supply a validator to qualify the same bounded backup bytes
+that restore will atomically write; Origins uses this to reject changed system
+or foreign-format backups even if the reread manifest and hash agree.
+
 `build_windows.py` builds the universal entry point into one standalone Windows
 EXE. `package_release.py` verifies the source manifest, bundle metadata, private
 file exclusions, and personal-path protections before making local archives.
 Manual workflow runs produce build artifacts. A matching version tag publishes
-a new release only after native Windows tests, executable startup, bundle privacy
-checks and artifact hash validation succeed. Existing releases are not overwritten.
+a new release; a `[release]` main commit can create the version tag at its tested
+commit. Both paths require native Windows tests, executable startup, bundle privacy
+checks and artifact hash validation. Existing releases are not overwritten.

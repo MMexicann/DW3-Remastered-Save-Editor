@@ -5,22 +5,26 @@ import tkinter as tk
 from tkinter import ttk
 from appearance import Appearance, THEMES
 from game_registry import GAMES, ALL_ADAPTERS, get_game
+import preferences
 
-VERSION = '1.3'
+VERSION = '1.4'
 
 
 class Application(Appearance):
-    def __init__(self, root):
+    def __init__(self, root, preferences_path=None, persist_preferences=True):
         self.root = root
+        self.preferences_path = preferences_path
+        self._persist_theme = persist_preferences
+        initial_theme = preferences.load_theme(preferences_path)
         self.style = ttk.Style(root)
         self.style.theme_use('clam')
-        self.theme_name = tk.StringVar(root, value='Light')
+        self.theme_name = tk.StringVar(root, value=initial_theme)
         self.sessions = {}
         self.active_game = None
         root.title(f'Universal Koei Tecmo Save Editor — v{VERSION}')
         root.geometry('1180x930')
         root.minsize(1080, 820)
-        self.apply_theme('Light')
+        self.apply_theme(initial_theme)
         root.option_add('*Font', (self.font_family, 10))
         top = ttk.Frame(root, padding=(18, 10))
         top.pack(fill='x')
@@ -256,11 +260,12 @@ def main():
     tests.add_argument('--self-test', nargs=2, metavar=('INPUT', 'OUTPUT'))
     tests.add_argument('--compatibility-test', nargs=2, metavar=('INPUT', 'OUTPUT'))
     arguments = parser.parse_args()
-    if arguments.self_test and arguments.game in ('dw8xl', 'pw3', 'dw4hyper', 'dw4xl_ps2', 'atelier_sophie2'):
+    selected_game = get_game(arguments.game or 'dw3')
+    if arguments.self_test and selected_game.scalar_backend is not None:
         from verified_self_test import run
         report = run(arguments.game, *arguments.self_test)
         status = ('Candidate copy checks passed; independent qualification pending'
-                  if not report['format_sample_verified'] else 'PC self-test passed')
+                  if not report['format_sample_verified'] else 'Copied-save self-test passed')
         print(f"{arguments.game}: {status}. {report['fields_checked']} fields checked. In-game loading remains untested.")
         return
     if arguments.self_test or arguments.compatibility_test:
@@ -279,7 +284,7 @@ def main():
     root = tk.Tk()
     if arguments.smoke_test:
         root.withdraw()
-    app = Application(root)
+    app = Application(root, persist_preferences=not arguments.smoke_test)
     if arguments.smoke_test:
         for game in ALL_ADAPTERS:
             editor = app.select_game(game.id)

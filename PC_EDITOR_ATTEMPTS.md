@@ -1,6 +1,6 @@
 # PC editor qualification results
 
-Research cutoff: 2026-10-09. Development remains local; nothing was published.
+Original research cutoff: 2026-10-09; Origins qualification updated for v1.4.
 
 Following the requested scope, further gameplay implementation concentrates on
 games for which native Windows PC decoding and evidenced field editing have been
@@ -13,6 +13,7 @@ demonstrated. A candidate, console patch or memory trainer does not qualify.
 | Dynasty Warriors 3: Complete Edition Remastered | Existing full v1.1 editor retained; original native schema and rules |
 | Dynasty Warriors 8: Xtreme Legends Complete Edition | Genuine PC sample decoded; gold, gems, materials, 82 officer stat records and supported existing weapon attribute ranks edited; both integrity layers regenerated |
 | One Piece: Pirate Warriors 3 | Two genuine PC samples decoded; 47 numbered records' health, attack, defense, special bars and skill slots edited; native checksum regenerated |
+| Dynasty Warriors: Origins | Nine native Steam slots across revisions16/17/29; resources, existing bonds, peace, qualified weapon reinforcement and persistent battle history with native checksum preservation |
 
 For the two new editors, unchanged files round-trip byte for byte and unrelated
 plaintext is preserved. **Actual game loading and re-saving remain untested.**
@@ -22,14 +23,13 @@ See [KOEI_FORMATS.md](KOEI_FORMATS.md) and [VALIDATION.md](VALIDATION.md).
 ## Unqualified and blocked investigations
 
 These results describe the checks actually completed, rather than treating every
-missing sample as a failed decryption. Origins has real-save trials that did not
-establish a valid payload. None of the renewed candidates reached a demonstrated
+missing sample as a failed decryption. Origins' earlier cipher trials did not
+establish a valid payload; v1.4 supersedes them with native codec evidence. None of the renewed candidates reached a demonstrated
 PC decryption failure. Public links blocked before download have not been tested
 with a decoder. See [renewed attempts, original URLs and precise sample requirements](PC_RESEARCH_RETRY.md).
 
 | PC edition | Current result | Evidence and remaining blocker |
 | --- | --- | --- |
-| Dynasty Warriors: Origins | Research copy tools only | One real public Steam DLC save inspected. Asset cipher and older save ciphers did not establish a valid gameplay payload. |
 | Dynasty Warriors 4 Hyper | Published-format PC editor available | 331 fields and surgical checksum-preserving serialization implemented from the supplied native PC editor. Independent genuine-file and in-game validation pending. |
 | Dynasty Warriors 6 | Plaintext PC reader lead | Native PC save.dat reader and author-reported successful edits found. Officer/weapon/unlock layouts partly corroborated by screenshots; no independent complete save validation. |
 | Dynasty Warriors 7: Xtreme Legends Definitive Edition | PC save link; download blocked | Steam users share annotated PC saves and restoration instructions. Google Drive archive blocked here; no bytes reached a decoder trial. |
@@ -51,8 +51,8 @@ with a decoder. See [renewed attempts, original URLs and precise sample requirem
 | Dragon Quest Heroes II | PC path identified; no codec | Native PC backup path identified; no usable sample, disk codec or editable schema verified. |
 | Warriors: Abyss | PC path identified; no codec | Native PC edition and GAMEDATA*.BIN filenames identified; no file decoding/editing verified. |
 
-Other unimplemented titles stay outside the library; Origins retains opaque copy
-tools. DW4 Hyper is available from the published PC format, with independent
+Other unimplemented titles stay outside the library; Origins now uses a native
+qualified slot parser. DW4 Hyper is available from the published PC format, with independent
 genuine-file validation still pending. DW4 XL is available in the separate PS2
 platform library. DW4–7 Empires have no PC editions. See DW4_PLATFORM_FORMATS.md.
 

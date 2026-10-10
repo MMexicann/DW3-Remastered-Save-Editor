@@ -34,12 +34,27 @@ LABELS = {'SPoint': 'Merit', 'MaxHealth': 'Life / HP', 'MaxMusou': 'Musou', 'Att
 GUARD_ITEMS = guard_editor.GUARD_ITEMS
 GUARD_WEAPONS = guard_editor.GUARD_WEAPONS
 from appearance import THEMES, Appearance, ui_font
+import preferences
+
+
+def weapon_bonus_label(item):
+    """Name the weapon stat while retaining the underlying item ID."""
+    if item['kind'] != 'normal':
+        return item['name']
+    effect = (item.get('effect') or item['name']).strip()
+    return {'Max HP': 'Life', 'Max Musou': 'Musou',
+            'Mounted Def.': 'Mounted Defense'}.get(effect, effect)
 
 
 class Editor(Appearance):
-    def __init__(self, root, parent=None, theme='Light', on_theme=None):
+    def __init__(self, root, parent=None, theme=None, on_theme=None,
+                 preferences_path=None, persist_preferences=True):
         self.root = root
         self.on_theme = on_theme
+        self.preferences_path = preferences_path
+        self._persist_theme = parent is None and persist_preferences
+        if theme is None:
+            theme = preferences.load_theme(preferences_path) if parent is None else 'Light'
         host = parent if parent is not None else root
         embedded = parent is not None
         self.document = None
@@ -63,7 +78,7 @@ class Editor(Appearance):
             root.minsize(1040, 740)
         self.style = ttk.Style(root)
         self.style.theme_use('clam')
-        self.theme_name = tk.StringVar(root, value='Light')
+        self.theme_name = tk.StringVar(root, value=theme)
         self.font_family = ui_font(root)
         root.option_add('*Font', (self.font_family, 10))
         self.apply_theme(theme)
@@ -329,7 +344,7 @@ class Editor(Appearance):
         self.weapon_bonus_names, self.weapon_bonus_values = [], []
         self.weapon_bonus_boxes, self.weapon_bonus_value_boxes = [], []
         self.weapon_bonus_choices = {'None':None}
-        self.weapon_bonus_choices.update({row['name']:index for index,row in ITEMS.items() if row['kind']=='normal'})
+        self.weapon_bonus_choices.update({weapon_bonus_label(row):index for index,row in ITEMS.items() if row['kind']=='normal'})
         self.weapon_bonus_choices.update({ITEMS[index]['name']:index for index in weapon_editor.RARE_ITEMS})
         for index in range(9):
             name, value = tk.StringVar(value='None'), tk.StringVar()
@@ -886,7 +901,7 @@ class Editor(Appearance):
                 self.clear_weapon_form(); self.weapon_selected.set('No matching weapons')
 
     def describe_skill(self, item, value):
-        if item['kind'] == 'normal': return f'{item.get("effect") or item["name"]} +{value}'
+        if item['kind'] == 'normal': return f'{weapon_bonus_label(item)} +{value}'
         return item['name']
 
     def select_weapon(self, event=None):
@@ -921,7 +936,7 @@ class Editor(Appearance):
                 name.set('None');value.set('');box.configure(state='disabled');valuebox.configure(state='disabled',values=())
             for slot, skill in enumerate(row['skills'][:9]):
                 item = ITEMS.get(skill['id'])
-                label = item['name'] if item else ('None' if skill['id'] is None else f'Unknown bonus {skill["id"]}')
+                label = weapon_bonus_label(item) if item else ('None' if skill['id'] is None else f'Unknown bonus {skill["id"]}')
                 self.weapon_bonus_names[slot].set(label)
                 self.weapon_bonus_values[slot].set(str(skill['value']) if skill['id'] in weapon_editor.NORMAL_ITEMS else '—' if skill['id'] is not None else '')
                 protected = skill['id'] is not None and skill['id'] not in weapon_editor.NORMAL_ITEMS and skill['id'] not in weapon_editor.RARE_ITEMS
@@ -1233,7 +1248,7 @@ class Editor(Appearance):
         for skill in skills:
             if skill['id'] is None: continue
             metadata = GUARD_ITEMS.get(skill['id'])
-            if metadata: labels.append(f'{metadata.get("effect",metadata["name"]).strip()} +{skill["value"]}' if metadata['kind']=='normal' else metadata['name'])
+            if metadata: labels.append(self.describe_skill(metadata, skill['value']))
         return ', '.join(labels) or 'No bonuses'
 
     def select_guard_weapon(self, event=None):
@@ -1250,9 +1265,9 @@ class Editor(Appearance):
         if row is not None and not row['editable']: detail += '\n' + row['reason']
         self.guard_weapon_detail.set(f'{metadata["name"]} | {guard_editor.FAMILY_NAMES[metadata["family_index"]]} tier {metadata["tier"]} | Base attack {metadata["base_power"]}\n{detail}')
         self.guard_bonus_choices = {'None':None}
-        self.guard_bonus_choices.update({GUARD_ITEMS[index]['name']:index for index in metadata['allowed_skill_ids']})
+        self.guard_bonus_choices.update({weapon_bonus_label(GUARD_ITEMS[index]):index for index in metadata['allowed_skill_ids']})
         if row is not None and not row['editable']:
-            self.guard_bonus_choices.update({GUARD_ITEMS[s['id']]['name']:s['id'] for s in row['skills']})
+            self.guard_bonus_choices.update({weapon_bonus_label(GUARD_ITEMS[s['id']]):s['id'] for s in row['skills']})
         self.loading_guard_form = True
         try:
             for index in range(3):
@@ -1668,7 +1683,7 @@ def main():
         return application_main()
     root = tk.Tk()
     if any(flag in sys.argv for flag in ('--smoke-test','--self-test','--compatibility-test')): root.withdraw()
-    editor = Editor(root)
+    editor = Editor(root, persist_preferences=False)
     if '--self-test' in sys.argv or '--compatibility-test' in sys.argv:
         compatibility='--compatibility-test' in sys.argv
         index = sys.argv.index('--compatibility-test' if compatibility else '--self-test')

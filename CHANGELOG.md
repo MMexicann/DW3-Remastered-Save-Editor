@@ -1,5 +1,24 @@
 # Changelog
 
+## v1.4
+
+- Replaced DW3 weapon bonus item names with stat labels in editing and review.
+- Added native Origins Steam slot editing for Gold, base-game/DLC Skill Points,
+  existing bonds, provincial peace and eligible weapon reinforcement from +0,
+  with revision-specific qualification, integrity regeneration and copy backups.
+- Added manual clear-history edits for 35 supported battles, preserving completed
+  history and excluding these flags from Max. Campaign events, endings and battle
+  rewards are unchanged.
+- Preserved bond events, reward claims, XP, active story/unlock flags, weapon identities,
+  traits and equipment references; training counts are excluded from bulk Max.
+- Added field search by name, group and record to scalar editors. Max Visible
+  Fields respects the filter and hidden pending edits remain staged.
+- Remembered the selected Light/Dark appearance across restarts, including
+  standalone DW3 sessions. Damaged or unavailable settings fall back safely.
+- Added a formal adapter/session contract, generic scalar presentation hooks,
+  registry-driven self-tests and a contributor starter with shared tests.
+- Kept existing game sessions, fields and save workflows intact.
+
 ## v1.3
 
 - Added Atelier Sophie 2 (Steam PC 1.08 layout), adapting the MIT-licensed

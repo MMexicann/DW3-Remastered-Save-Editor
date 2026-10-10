@@ -6,7 +6,7 @@ from pathlib import Path
 from game_registry import ALL_ADAPTERS
 
 ROOT = Path(__file__).resolve().parent
-VERSION = '1.3'
+VERSION = '1.4'
 DATA = ['officer_names.json', 'game_metadata.json', 'unique_weapons.json',
         'verified_limits.json', 'item_limits.json', 'native_enums.json',
         'bodyguard_growth.json', 'bodyguard_items.json', 'bodyguard_weapons.json',
@@ -23,8 +23,9 @@ def build_args(root=ROOT):
     for name in DATA:
         args.extend(['--add-data', str(root / name) + os.pathsep + Path(name).parent.as_posix()])
     for game in ALL_ADAPTERS:
-        for module in (game.editor_module, game.parser_module):
-            args.extend(['--hidden-import', module])
+        for module in dict.fromkeys((game.editor_module, game.parser_module, game.scalar_backend)):
+            if module is not None:
+                args.extend(['--hidden-import', module])
     args.append(str(root / 'application.py'))
     return args
 

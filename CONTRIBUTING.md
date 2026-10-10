@@ -28,6 +28,52 @@ explicit adapters. `verified_gui.py` delegates scalar editing to an injected
 backend. DW8/PW3 share `verified_editor.py`; DW4 Hyper and PS2 XL have separate
 parsers. DW3 keeps its existing schema, feature modules and patch writer.
 
+## Add a scalar adapter
+
+Start with [adapter_template/INSTRUCTIONS.md](adapter_template/INSTRUCTIONS.md).
+Its parser/editor/test scaffolds stay unregistered and reject unmapped files.
+[adapter_contract.py](adapter_contract.py) defines `ScalarField`, `ScalarFormat`,
+`ScalarDocument`, `ScalarBackend` and the common launcher `EditorSession` contract.
+Existing game writers keep their own codec/container logic. The bound adapter
+checks the selected game/platform and extension before delegating; it never tries
+another backend after rejection. DW3 implements the launcher session contract
+while retaining its tagged document and established patch workflow.
+
+A scalar `Game` registration declares `scalar_backend='your_parser_module'`.
+That enables the shared copied-save self-test and binds the backend to the exact
+game/platform. The shared GUI's core operations use the same contract, preserving
+staging, batch Undo, review, automatic backups, source-change checks and atomic
+Save As to a new destination. Save As returns a freshly validated frozen document;
+assigning an opened value unstages it. `SaveError` rejects invalid formats/values;
+`FileExistsError` rejects an existing destination.
+
+Use `maxable=False` for fields that permit deliberate individual edits but should
+be excluded from bulk Max, such as historical counters or dependency-sensitive
+choices. The backend's `limit_values` and `maximums` must honor that metadata,
+preserve higher existing values and use validated original records to select fields.
+
+Optional backend `record_label`, `field_hint` and `inspection_rows` hooks supply
+data for the standard inspector. Richer read-only views subclass
+`ScalarPresentation` in [scalar_presentation.py](scalar_presentation.py), returning
+`InspectionTable` objects and field guidance. The game's editor declares its
+`presentation_type`, summary and subtitle. Keep game-specific presentation in
+adapter modules; adding a game should require no shared GUI or CLI ID branches.
+
+Subclass [tests/scalar_contract.py](tests/scalar_contract.py)'s
+`ScalarContractTests` alongside `unittest.TestCase`, providing `game_id` and
+`fixture_bytes()`. Its shared checks exercise no-op round trips, immutable staged
+changes and unstage, review, surgical payload edits, invalid fields/values,
+cross-platform documents, backup/restore, existing destinations and source
+changes. Declare `payload_integrity_offsets` only for mapped native integrity
+stored inside the decoded payload. Add separate format-specific corruption and
+dependency checks and record copied-native/in-game evidence honestly.
+
+```powershell
+python -m unittest tests.test_adapter_contract -v
+python -m unittest tests.test_universal_app -v
+python application.py --smoke-test
+```
+
 ## Map a save format
 
 1. Identify the exact game, platform, region, build and DLC. Record source/license
@@ -91,7 +137,9 @@ python application.py --game dw8xl --self-test "D:\SaveCopies\dw8-copy.dat" "D:\
 
 Use a new/empty output directory. Require exit 0, `success: true`, input-hash
 preservation and the reported backup/roundtrip checks. `--game pw3`,
-`--game dw4hyper` and `--game dw4xl_ps2` select their own workflows and extensions.
+`--game dw4hyper`, `--game dw4xl_ps2`, `--game atelier_sophie2` and `--game origins`
+select their own registered scalar backends and extensions. Origins accepts
+native slot copies; `USER.dat` system data is excluded.
 DW3 uses `python application.py --self-test INPUT OUTPUT`. These reports do not
 establish in-game loading or turn a procedural input into genuine-file evidence.
 
@@ -114,6 +162,7 @@ Optional copied real saves are selected locally:
 | `DW4HYPER_SAVE_COPY` | Native PC Hyper `save.dat` copy |
 | `DW4XL_PSU_COPY` | USA PS2 XL `.psu` export |
 | `SOPHIE2_SAVE_COPY` | Native Steam 1.08 Atelier Sophie 2 `data.dat` copy |
+| `ORIGINS_SAVE_COPIES` | Folder of copied native Steam `SLOT*.dat` Origins saves |
 | `NIOH2_SAVE_COPY` | PC Nioh 2 user `.bin` copy for read-only inspection |
 | `KATANA_GOLDEN_DIR` | Locally reviewed upstream encrypted/decrypted reference-pair directory |
 | `DW3_TEST_REPORTED_SAVE` | Explicit DW3 regression copy used by `test_save_variants.py` |

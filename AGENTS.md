@@ -22,6 +22,11 @@ what has actually been tested.
 - Sophie 2 PC: `atelier_sophie2_codec.py`, `atelier_sophie2_parser.py` and
   `atelier_sophie2_editor.py`. Adapted MIT codec, tagged record qualification and
   dynamic fields for occupied items; do not manufacture empty records.
+- Origins PC: `origins_codec.py`, `origins_parser.py`, `origins_progression.py`,
+  `origins_weapons.py` and `origins_game_editor.py`. Native qualified revisions
+  16/17/29; preserve active story, derived proficiency and reward dependencies.
+- `preferences.py`: optional theme-only application configuration, separate
+  from save storage. GUI tests inject a temporary path; smoke tests never write it.
 - `katana_codec.py` / `nioh2_parser.py`: source-only PC research. Nioh-family and
   SOP gameplay integrity is unmapped; do not enable writes by clearing flags.
   A Wo Long dummy cipher vector is not a valid gameplay fixture.

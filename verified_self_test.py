@@ -1,25 +1,14 @@
-"""Explicit PC copied-save validation, including the standalone application."""
+"""Copied-save validation for explicitly registered scalar adapters."""
 import hashlib
 import json
-from pathlib import Path
 from copy_storage import atomic_new
 from models import SaveError
 from save_safety import safe_path
-import verified_editor as backend
 
 
 def run(game_id, source, output):
-    if game_id == 'dw4hyper':
-        import dw4hyper_parser as game_backend
-    elif game_id == 'dw4xl_ps2':
-        import dw4xl_parser as game_backend
-    elif game_id == 'atelier_sophie2':
-        import atelier_sophie2_parser as game_backend
-    elif game_id in ('dw8xl', 'pw3'):
-        game_backend = backend
-    else:
-        raise SaveError('Choose an explicitly registered save editor.')
-    return _run(game_backend, game_id, source, output)
+    from game_registry import get_game
+    return _run(get_game(game_id).get_scalar_adapter(), game_id, source, output)
 
 
 def _run(backend, game_id, source, output):

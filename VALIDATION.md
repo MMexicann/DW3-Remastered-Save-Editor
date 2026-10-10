@@ -51,7 +51,8 @@ remain enabled; both currency fields are preserved.
 The real public Origins reference was separately inspected and copied through
 backup, restore and Save Copy As. Every output matched its original bytes; an
 unchanged comparison reported zero differences. This verifies copy operations,
-not gameplay parsing or game loading. Origins gameplay edits remain unavailable.
+not gameplay parsing or game loading. Those earlier checks covered opaque copies only. Native Origins editing is now
+qualified separately as described below.
 
 The universal source GUI and existing DW3 GUI initialize under Xvfb. The rebuilt
 local Linux one-file PyInstaller validation bundle initializes all six registered
@@ -171,3 +172,28 @@ saves/account data and third-party binaries remain excluded. Native Windows
 release validation runs through the matching-tag workflow. No in-game reload
 was performed in this cloud environment. See EXISTING_EDITORS.md for exact source
 licences, platform distinctions and download failures.
+
+## v1.4 Origins and adapter contracts
+
+Origins native envelope checks and serializer lengths were independently traced
+in the installed Steam executable. All nine copied slots, spanning revisions
+16, 17 and 29, decrypt with matching checksums and re-encrypt unchanged byte for
+byte. Resources, existing bonds, provincial peace, catalogue-qualified weapon
+reinforcement and persistent battle clear history have native serializer and
+limit evidence in ORIGINS_FORMAT.md. The DLC point field is absent from older
+profiles. Independent tests cover exact revision offsets, empty/reserved/special
+weapon exclusion, monotonic manual history and training/history exclusion from
+Max; history edits preserve active story and reward state.
+
+Procedural and copied-file tests cover unchanged round trips, field-only plaintext
+and ciphertext changes, legitimate maxima, preserved higher existing balances,
+malformed checksums and layouts, forged documents, wrong-game selection, backup
+restore and source/destination safety. Shared adapter contract and Tk workflow
+regressions cover the existing editors and the new Origins interface. Native
+Origins edited saves have not been loaded into the game during this task.
+
+Theme regression tests restart both the universal application and standalone DW3
+with isolated preference files, including actual appearance selector callbacks,
+corrupt settings, failed atomic writes and no-write smoke mode. DW3 weapon label
+tests verify stat names in selectors and review while item tabs, numeric IDs and
+the opened save remain unchanged.
