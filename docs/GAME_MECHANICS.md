@@ -176,7 +176,12 @@ outside the editor selector until a genuine PC save decoder/writer is validated.
 
 ## Berserk and the Band of the Hawk
 
-Public PC tutorial translation:
+The official [Steam PC manual](https://store.steampowered.com/manual/502280)
+states a natural character Level 99 limit (printed p27), three equipped
+accessories (p29), and four inherited accessory skills with consumed amalgamation
+inputs (p26). These mechanic limits do not establish storage offsets or bounds.
+
+Additional public PC tutorial translation:
 [ayozetr/berserk-band-of-the-hawk-es](https://github.com/ayozetr/berserk-band-of-the-hawk-es/tree/a10d3affa706dc9d4650f5f54e82bb90c251986c),
 commit `a10d3affa706dc9d4650f5f54e82bb90c251986c`,
 [tutorial entries](https://github.com/ayozetr/berserk-band-of-the-hawk-es/blob/a10d3affa706dc9d4650f5f54e82bb90c251986c/translation/es.json#L2784).
@@ -194,9 +199,12 @@ These are translated tutorial semantics, not native save mappings:
 
 A future equipment editor therefore needs valid item identity/class, reinforcement,
 ability IDs/levels, equipped-item references and material compatibility. Eclipse
-progress needs separate per-character, shared and ongoing-run state. No PC save
-mapping, integrity algorithm or character-level cap was established. It remains
-a research candidate.
+progress needs separate per-character, shared and ongoing-run state. A genuine
+PC file now qualifies its three-advance outer cipher/checksum and unchanged
+roundtrip, while body records, revision and additional integrity remain
+unqualified. No gameplay adapter is registered. See the
+[Windows research checklist](BERSERK_PC_RESEARCH.md) for official manual evidence,
+the PS Vita editor distinction and controlled-save prerequisites.
 
 ## DW8 Empires and Samurai Warriors 4-II
 

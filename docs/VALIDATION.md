@@ -214,6 +214,69 @@ validation **0**. Existing-game regressions do not qualify these candidates.
 The linked notes and [input checklist](REMAINING_INPUTS.md) record the precise
 serializer, native-file and controlled-action evidence still needed.
 
+## Berserk and Attack on Titan Windows follow-up
+
+The 2026-10-11 follow-up is **read-only envelope research**, with no new gameplay
+adapter. The three privately reacquired native contributor files qualify only
+the observed outer cipher/u16 sum and unchanged reconstruction. Revision gates,
+semantic records, additional integrity and edited game-load/re-save remain
+unqualified. [Evidence and reproducible inputs](OTHER_KOEI_PC_RESEARCH.md).
+
+With `BERSERK_SAVE_COPY`, `AOT1_SAVE_COPY` and `AOT2_PK_SAVE_COPY` supplied,
+`python -m unittest tests.test_berserk_aot_envelopes -v` completed **15 tests in
+11.236 seconds: 15 passed, zero failures/errors/skips**. Twelve cases cover
+independent procedural arithmetic, additive collisions, malformed/wrong-family
+inputs, immutable snapshots, buffer-subclass size bypass, forged qualification
+flags, privacy and absence of gameplay/file-writing APIs. Three cases check
+genuine unchanged ciphertext roundtrips and first/last-body corruption rejection.
+No native bytes or owner context appear in the public fixtures.
+
+Independent arithmetic additionally checked all three genuine files: **3/3
+outer sums and byte-exact roundtrips**, **21/21 single-byte corruptions**,
+**12/12 incorrect lengths**, **6/6 wrong-profile selections** and **6/6 alternate
+cipher-family checks** behaved as expected. Wrong-profile rejection here follows
+the distinct observed sizes; it does not prove a universal title identifier.
+
+The headless Linux baseline ran **1,148 tests in 216.708 seconds: 734 passed,
+409 skipped, five errors**. All five errors are pre-existing Tk setup failures
+from the unavailable display: two `test_gui_v11.AppearanceGuiTests` cases and
+three `test_weapon_bonus_labels.WeaponBonusLabelTests` cases. Other display,
+private-fixture and platform-dependent tests skip. The source GUI smoke test
+also stops at Tk creation with `no display name and no $DISPLAY environment
+variable`; it did not validate GUI startup. The supported-inventory check passes
+for the unchanged **29 adapters**.
+
+The final full Linux run supplied all three new genuine-copy inputs and
+completed **1,163 tests in 223.269 seconds: 749 passed, 409 skipped, five errors**.
+The same five unavailable-display errors remain; no new regression failed.
+The focused packaging/inventory suite completed **23 tests in 0.530 seconds,
+all passed**. Manifest/privacy verification passed for **414 reviewed public
+source files** (plus the manifest itself); the Windows build configuration was
+inspected without producing or executing a Windows EXE.
+
+The publication-disabled [Windows workflow](https://github.com/MMexicann/Universal-Koei-Tecmo-Save-Editor/actions/runs/38096642271)
+then tested implementation commit `bea25520e408b2676a551e9424b42014fb1e41f7`
+on Windows/Python 3.14: **1,163 tests in 404.467 seconds, 822 passed, 341 skipped,
+zero failures/errors**. The twelve new procedural cases ran; the three optional
+genuine-copy cases skipped because private saves were not uploaded to CI.
+The locally completed genuine-file tests above remain separate evidence.
+
+All **29 source interfaces**, themes and switching passed GUI startup. The
+standalone Windows EXE built and passed frozen GUI startup, embedded metadata/
+module privacy verification and local archive packaging. The workflow uploaded
+validation artifacts only; `publish=false`, and both `prepare_release` and
+`release` jobs were **skipped**. No merge, version bump, tag or GitHub release
+occurred. The follow-up commit records these results and refreshes only the
+documentation manifest hashes; runtime code/data remain the tested bytes.
+
+No title-specific surgical edit, dependency/backup/Undo/Review Changes/save GUI
+workflow is claimed because no writable Berserk/AoT adapter exists. Linux tests
+do not validate Windows CNG, a Windows EXE or actual edited game loading. No
+game/editor/trainer binaries were executed, no saves/identifiers/assets were
+published, and version 1.6 remains unchanged.
+
+## Earlier development runs
+
 Run the complete public suite and all-interface startup check from the repository root:
 
 ```text

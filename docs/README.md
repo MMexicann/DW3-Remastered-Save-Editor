@@ -72,6 +72,10 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Hyrule, Fire Emblem and Pirate follow-up](FAMILY_NEXT_RESEARCH.md)
 - [Dragon Quest Heroes II, Berserk and Attack on Titan PC follow-up](OTHER_KOEI_PC_RESEARCH.md)
 - [Dragon Quest Heroes I/II and Fate/Samurai Remnant Windows blockers](LICENSED_ACTION_RPG_STATUS.md)
+
+- [Berserk Windows mechanics and save blockers](BERSERK_PC_RESEARCH.md)
+- [Attack on Titan / Wings of Freedom Windows research](AOT1_PC_RESEARCH.md)
+- [Attack on Titan 2 Windows / Final Battle research](AOT2_PC_RESEARCH.md)
 - [Additional editor survey](ADDITIONAL_EDITOR_SURVEY.md)
 - [Bladestorm: Nightmare PC candidate and evidence gate](BLADESTORM_PC_RESEARCH.md)
 
