@@ -20,3 +20,11 @@ BASE_ATTACK_MAXIMUMS = (
     436, 480, 406, 414, 448, 427, 412, 459, 420, 405, 406, 410, 456, 480, 423, 403,
     451, 459, 420, 409, 473, 424, 409, 407, 400, 452, 461, 480, 400, 449, 405, 461,
 )
+# Native 99-entry threshold table at 0x6D5E90. Its early increments are
+# 800 + 40*level and plateau at 2,720. This independent formula matches every
+# entry, rather than bundling an extracted asset or a foreign edition's curve.
+LEVEL_EXP_THRESHOLDS = tuple(
+    20 * level * level + 780 * level if level <= 49
+    else 86240 + (level - 49) * 2720
+    for level in range(99)
+)

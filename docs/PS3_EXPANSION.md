@@ -49,7 +49,7 @@ without these variables, genuine qualification is explicitly skipped.
 | SW4 gold and eight gem quantities | Manual editing, gold up to 999,999 and gems up to 99 | PS3 native cap evidence for Max; exact ordered gem-name table. |
 | SW4 weapon proficiency | Read-only levels and four stored EXP values for 55 qualified standard officers | Exact level/EXP threshold and growth dependencies are unqualified; published level-only patches are insufficient. No proficiency writes are exposed. |
 | SW4 character stats, levels/EXP, unlocks | No writes | Published EXP and 50-gauge cheat targets alone do not prove legitimate level/stat/gauge dependencies; native PS3 generation/reward routines or controlled saves required. |
-| SW4 weapons, skills, rarity, reinforcement/fusion | No writes | Published weapon patches fabricate a first weapon and contain placeholder IDs. Existing record ownership, skill ceiling/activation/rank reward dependencies need qualification. |
+| SW4 weapons, skills, rarity, reinforcement/fusion | Searchable read-only 60 × 8 weapon records with eight named skills, stored ceiling/rank and raw flags | Published first-weapon patches contain placeholder IDs. Existing owner/type aliases and PS3 activation/rank reward dependencies still need native routines or controlled action pairs before writes. |
 | SW4 mounts, bonds/bodyguards, Chronicle/story, exploration, stages, movies/music | No writes | Per-system stored identities and dependencies; completion remains separate from resources. |
 | SW4 Japanese profiles | Checksum research only; US adapter rejects them | JP gold layout differs by regional serialized sections; qualify exact scalar offsets separately before registering JP editing. |
 
@@ -102,6 +102,22 @@ native PS3 serialization routines is needed before exposing writes; bounds and
 prerequisites for its character growth, weapons/attributes, skills, guards,
 horses, Survival, story/stages and collections remain unqualified.
 
+The two corresponding GameFAQs PS3 save pages (compilation 723490 and standalone
+737594) were revisited and contain no downloadable save entries. Original PS2,
+Xbox, Xbox 360, Vita and HD PS3 files are separate profiles; their offsets and
+product identifiers are not transplanted. The current money/checksum candidate
+does not justify a standalone PS3 writer without native identity/layout evidence.
+
+The SW4 US weapon inspector independently walks the source-documented block at
+`0x3882`: 60 pools × eight `0x22`-byte records end exactly before gold at `0x7842`.
+The public PS3 patch's per-pool stride is `0x110` and its eight-byte arrays locate
+ceilings at `+2`, skill IDs at `+0xA`, ranks at `+0x12`, and raw flags at `+0x1A`.
+The genuine US sample has 180 nonempty records with 1,440 attached skills;
+empty identity 180, unknown IDs/ceilings/ranks/flags are preserved. Named skill
+inspection does not interpret raw flags as qualified PS3 activation controls.
+Nine resource fields remain writable, with existing section checksums and
+decrypted-export/reimport/resign requirements unchanged.
+
 ## Dynasty Warriors 7 Empires: US PS3 system profile
 
 The separate `dw7e_ps3` adapter accepts the **SYSTEM** `DATA.BIN` export from
@@ -141,19 +157,25 @@ stride `0x18000`, gold and 196 storehouse ID/ownership/quantity entries; one
 shared save has modified quantity 150. Exact native identity/revision/integrity
 and record ownership semantics are required before exposing edits. Character
 EXP/proficiency, growth and abilities must be qualified together; patch targets
-alone are insufficient. No Strikeforce adapter is registered from these facts.
+alone are insufficient. No Strikeforce adapter is registered from these facts. The new
+[US record inspector](STRIKEFORCE_PS3.md) independently qualifies occupied player
+records and separates 42 persistent officers from selected-state copies. Its
+196-row material-ID array begins at `0x9B8`, eight bytes after Apollo's broad
+patch block start. It preserves empty/unknown IDs, raw flags and modified values
+without authorizing writes; native integrity/revision remains the exact blocker.
 
 Samurai Warriors 2 HD's correctly identified GameFAQs pages
 [723490](https://gamefaqs.gamespot.com/ps3/723490-sengoku-musou-2-with-moushouden-and-empires-hd/saves)
 and [737594](https://gamefaqs.gamespot.com/ps3/737594-sengoku-musou-2-with-moushouden-hd-version/saves)
 contained no public save downloads at the time checked. Its unregistered
-`research/sw2hd_ps3/inspection.py` diagnoses only the candidate money and
-checksum facts described above; it deliberately offers no game profile or
-write API. Two procedural tests verify checksum endianness, duplicated sums,
-bounded input rejection and the absence of editing operations. These are not
-genuine-file qualification.
+`research/sw2hd_ps3/inspection.py` diagnoses candidate money, partial checksums
+and three separately published EXP/weapon anchors; it deliberately offers no
+game profile or write API. Four procedural tests verify checksum endianness,
+duplicated sums, bounded immutable input, raw record preservation and checksum
+collisions/uncovered bytes that cannot qualify complete integrity. These are
+not genuine-file qualification. See the updated [exact-edition checklist](SW2HD_PS3.md).
 
-## Dynasty Warriors 8 Empires PS3 codec qualification
+## Dynasty Warriors 8 Empires PS3 codecs and SYSTEM custom horses
 
 The [US public GameFAQs export 30046](https://gamefaqs.gamespot.com/ps3/806920-dynasty-warriors-8-empires/saves/30046)
 contains both `NPUB31656-SYSTEM` and `NPUB31656-EMPIRE3` console files.
@@ -191,3 +213,30 @@ Three codec tests cover procedural profiles, corrupted SYSTEM checksum,
 wrong revision/platform/size, exact immutable snapshots, read-only records
 and optional genuine exports through `DW8E_PS3_SYSTEM_COPY` and
 `DW8E_PS3_EMPIRE_COPY`. They are distinct from game-load validation.
+
+
+The new separate [US SYSTEM adapter](DW8E_PS3.md) independently identifies the
+PS3 custom-horse table at decoded `0x39B94`, checks all 150 ordinal identities,
+and implements manual Body Type editing for qualified existing ordinary horses.
+It recomputes the existing game byte checksum and preserves type/model/stats,
+abilities and ownership. The original exact `NPUB31656-SYSTEM` metadata is
+mandatory beside source and destination. This narrow SYSTEM feature does not
+resolve campaign resource ownership/order. Genuine surgical and actual Tk
+backup/save/restore tests pass; console loading remains untested.
+
+## Warriors Orochi 3 Ultimate: US PS3 NPUB31505
+
+The separate [US Ultimate adapter](WO3U_PS3.md) edits only unallocated growth
+points and precious stones. Two genuine exports establish `NPUB31505-SAVEDATA`,
+native revision `0x140318F1`, plaintext length `0x2119CA`, and every PS3 officer
+and weapon marker. Original metadata is mandatory. Apollo's `NPUB50173` and
+`NPEB02052` patch identifiers are leads, not alternative accepted identities.
+
+A firsthand US PS3 direct-hex-edit report corroborates these two resources.
+Its incorrect numeric conversion is not implemented. The narrow writer changes
+only the selected little-endian DWORD and preserves all other bytes; arbitrary
+unknown-byte corruption cannot be authenticated by record checks. It makes no
+global native-checksum-absence claim. Officer progression, weapons/fusion,
+inventories, bonds, stages and collections are inspected or preserved rather
+than written. Genuine no-op/surgical and Tk backup/save/restore tests pass;
+external PFD reimport/resigning and our actual console load remain separate.

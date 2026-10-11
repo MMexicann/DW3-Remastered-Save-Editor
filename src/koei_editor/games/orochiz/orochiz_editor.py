@@ -21,7 +21,9 @@ class OrochiZPresentation(ScalarPresentation):
                                 ('Officer ID', 'Stored level + 1', 'EXP', 'Stored stats (1/2)',
                                  'Base attack', 'Stored stats (4/5)',
                                  'Stored proficiency', 'Equipped slot + 1'), officers,
-                                'Read only. Search by officer ID. Progression and equipment remain unchanged.'),
+                                'Read only. Search by officer ID. Qualified existing weapons can be selected '
+                                'in Equipment. Officer growth adjusts EXP within the opened level; '
+                                'level and proficiency remain unchanged.'),
                 InspectionTable('Weapon inventory',
                                 ('Officer ID', 'Slot', 'Weapon ID', 'Status', 'Attack bonus',
                                  'Attribute slots', 'Owned attributes', 'Attribute ID:level',
@@ -36,7 +38,7 @@ class Editor(ScalarEditor):
     backend = backend
     presentation_type = OrochiZPresentation
     subtitle = 'Windows PC save.dat editor'
-    summary = 'Stock EXP, base attack and existing weapon fusion properties, with searchable progression and weapons.'
+    summary = 'Stock EXP, base attack, EXP within current levels, existing weapon properties and equipment choices.'
 
 
 def read_save(path):

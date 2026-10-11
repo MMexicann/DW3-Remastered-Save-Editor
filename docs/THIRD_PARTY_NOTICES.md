@@ -4,6 +4,13 @@ The Windows executable includes Python, the Tcl/Tk runtime, and the PyInstaller 
 
 The editor uses Windows CNG from the operating system; no separate crypto library is redistributed. Original editor code is covered by the MIT `LICENSE` file.
 
+The original Windows Samurai Warriors 2 and Warriors Orochi adapters are
+independent implementations of factual save layouts observed in period Van
+editors and independently shared native saves. Those editors are research
+references, not bundled dependencies. Their binaries, implementations,
+translations and extracted resources are not redistributed. Original PC format
+notes document provenance and validation separately from other editions.
+
 Non-Windows source development can optionally use the installed cryptography
 package as an AES test provider. It is not bundled by the Windows build, which
 continues to use native CNG. Origins reference metadata cites public resources;
@@ -16,6 +23,12 @@ references, not bundled dependencies. Their implementations, saves, game assets,
 console keys and account data are not redistributed. The new cipher and editor
 code was independently written from factual format observations. See
 `KOEI_FORMATS.md` for inspected commits, sample fingerprints and limits.
+
+The Gundam and Ken's Rage PS3 adapters independently implement factual patch
+positions, native integrity and observed layout rules. Apollo GPL patch/library
+source and external player samples are research references only; no implementation,
+catalog, save, console/account metadata or game asset is redistributed. See
+[licensed Musou evidence](LICENSED_MUSOU.md).
 
 Additional mechanics research references `gamesaves/OPPW3`, published native PC
 instruction/structure annotations from `Hexorg/CheatEngineTables`, PC runtime
@@ -38,11 +51,14 @@ is retained in `licenses/atelier-sophie2-save-editor-MIT.txt` and embedded in th
 standalone EXE. Changes add bounded parsing and preserve opaque footer and
 decoded trailing-zero data. Its GUI and player saves are not bundled.
 
-Source-only `src/koei_editor/research/katana/katana_codec.py` adapts algorithms from
+`src/koei_editor/research/katana/katana_codec.py` adapts algorithms from
 [mi5hmash/KatanaSaveDataResigner](https://github.com/mi5hmash/KatanaSaveDataResigner/tree/4c90a2b388438cb27a9752e6eab7333257de215f),
 copyright 2026 Michał Gębicki, MIT. See
 `licenses/katana-save-data-resigner-MIT.txt`. Native encrypted/decrypted pairs
-stay outside public packages. Nioh and SOP gameplay writes are disabled here;
+stay outside public packages. The registered Fatal Frame II Remake adapter reuses
+these attributed cipher/checksum primitives and embeds the exact MIT notice.
+Its gameplay schema and surgical writer are independently authored; upstream
+dummy files are not native evidence. Nioh and SOP gameplay writes are disabled here;
 no native checksum-bypass behavior is copied into the application.
 
 Source-only Nioh 2 inspection references the published Apache-2.0 scalar map in
@@ -61,3 +77,27 @@ where noted. No GPL, noncommercial or no-derivatives implementation, external
 editor, game executable, extracted game data or player save is incorporated.
 New Sophie 2 refill/presentation logic follows the published MIT ItemRecord;
 its existing full MIT notice remains included.
+
+The additional SW4-II PC adapter and Sanada read-only framing investigation are
+independently written using the existing project cipher primitive and facts
+checked against genuine copies. Public memory research, checksum arithmetic,
+manuals and save-editor discussions informed the investigations; no Van editor,
+trainer implementation, restricted catalog, player file or downloaded binary is
+included. Sources and the independent SW4-II qualification proof are documented
+in [SW4II_FORMAT.md](SW4II_FORMAT.md) and [SANADA_PC_RESEARCH.md](SANADA_PC_RESEARCH.md).
+The original DW9, DW8 edition-scope and optional Bladestorm notes likewise
+introduce factual documentation, not external project implementations.
+
+The Ryza 2 adapter reuses the existing attributed Sophie 2 envelope codec after
+independent native checksum qualification. Its title-specific records and quality
+writer are independently authored. Original Sophie and the read-only Arland
+inspectors derive format facts from public references and genuine native copies;
+no external editor implementation, restricted catalog or player data is bundled.
+
+The Three Houses Nintendo Switch adapter is independently written from factual
+serialization and a small ordinary-equipment identity set, checked against
+privately retained public extracted-save candidates. Evidence is pinned in
+[THREE_HOUSES_FORMAT.md](THREE_HOUSES_FORMAT.md). The original imouto1994 editor
+has no licence; hashcade's MIT additions explicitly exclude unlicensed upstream
+code and assets. Neither implementation nor bulk catalog is reused. No editor
+binary, game asset, player data or third-party website prose is bundled.

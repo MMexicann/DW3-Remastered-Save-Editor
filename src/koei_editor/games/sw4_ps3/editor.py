@@ -8,7 +8,7 @@ class Editor(ScalarEditor):
     backend = parser
     save_extension = '.bin'
     subtitle = 'PS3 decrypted export; Apollo reimport/resign required'
-    summary = 'Gold and eight gem quantities; inspect stored proficiency levels and EXP. Native section checksums are verified and regenerated; story and weapon fabrication remain unchanged.'
+    summary = 'Gold and eight gem quantities, with read-only proficiency and named weapon-skill inspection. Native section checksums are verified and regenerated.'
 
 
 def read_save(path):

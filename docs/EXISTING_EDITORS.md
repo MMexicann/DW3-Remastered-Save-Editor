@@ -10,6 +10,19 @@ console editor does not establish a compatible native PC disk-save writer.
 
 ## Later expansion findings
 
+- The licensed Musou expansion independently implements qualified Gundam and
+  Ken's Rage PS3 export controls from public patches and genuine-file evidence.
+  See [exact profiles, dependencies and blockers](LICENSED_MUSOU.md). Console
+  reimport/signing and actual edited game-load tests remain external.
+
+
+- Original Samurai Warriors 2 and Warriors Orochi Windows saves were acquired
+  independently from public sharing pages and compared with their period Van
+  disk editors. The original PC investigations are separate from SW2 HD PS3,
+  Orochi Z and later games. Editor executables were inspected as data, never
+  run; no editor code, binaries or player files are redistributed. Their
+  game-specific format notes distinguish verified writes from remaining
+  mechanics and game-load checks.
 - Native executable analysis and genuine files now support DW7 XL Definitive,
   WO3 Ultimate Definitive, SW4 DX, PW4, Orochi Z and All-Stars PC controls.
   DW9 Empires SYSTEMDATA quantity editing is native-source-backed; a genuine
@@ -32,7 +45,10 @@ console editor does not establish a compatible native PC disk-save writer.
 | --- | --- | --- |
 | [Tartarshia/Sophie2SaveEditor](https://github.com/Tartarshia/Sophie2SaveEditor/tree/93d807072a852c73799394af4d32fb164841cd3e) | Atelier Sophie 2, Steam Windows 1.08; MIT | Codec adapted and existing item/equipment quality plus two alchemy EXP fields integrated into the master editor. Exact upstream vectors, procedural edits, integrity, preservation, safety and GUI workflows tested. Independent native fixture and in-game load pending. |
 | [mi5hmash/KatanaSaveDataResigner](https://github.com/mi5hmash/KatanaSaveDataResigner/tree/4c90a2b388438cb27a9752e6eab7333257de215f) | PC Nioh 1/2/3, Stranger of Paradise and Wo Long; MIT | Source-only codecs implemented. Complete supplied Nioh/SOP cipher pairs match, but their gameplay integrity is unmapped. Wo Long cipher pair matches; its supplied dummy fails native checksum and JSON checks. No gameplay cards added. |
+| [imouto1994/fe3h-editor](https://github.com/imouto1994/fe3h-editor/tree/5e4a73b71f28feb271ccdbc614ea934517c235b5) and [hashcade/feth-save-editor](https://github.com/hashcade/feth-save-editor/tree/b9f53f0e01a3dd2cd24c96f97f1a829e51a1f00d) | Three Houses Switch; original unlicensed, later MIT additions expressly exclude upstream/assets | Factual layout/identity evidence only; no implementation or bulk catalog reused. Independent exact gameplay v13/v23 adapter checks native integrity and original ownership, offers conservative gold/ordinary-equipment reductions and separate read-only mechanics. Eight extracted candidates qualify file behavior; actual Switch loading, exact patch and DLC entitlement remain unproved. [Details](THREE_HOUSES_FORMAT.md). |
 | [alfizari/Nioh-2-Save-Editor](https://github.com/alfizari/Nioh-2-Save-Editor/tree/7de1e3d5b20b7f94b055eb228a5e3b0746ea1452) | Nioh 2 PC and PS4; Apache-2.0 | PC sample and 20 scalar offsets independently inspected. Upstream clears four integrity flags instead of recalculating checksums. Our parser preserves them, is read-only and rejects writes. Level and stat dependencies also need controlled mapping. |
+| [alfizari/Nioh-3-Save-Editor](https://github.com/alfizari/Nioh-3-Save-Editor/tree/b5d0789791fe31d06ad325d4012aa0333c60cd8f) | Nioh 3 PC; Apache-2.0 factual/source leads | Genuine copies qualify native integrity and two exact revisions. Independently discovered native tags/lengths replace mismatching published pool bases. Existing known common-stack reductions and separate equipment inspection are integrated; no code/catalog copied. [Coverage](NIOH3_RESEARCH.md). |
+| [ike9000e/ngii-save-update-util](https://github.com/ike9000e/ngii-save-update-util/tree/ff3fb1506ce0f5b94a66f61b3e8e038900bc2010) | Original Ninja Gaiden II Xbox 360/Xenia; GPL-3 factual/source leads | Native checksum/item facts independently implemented and corroborated on 22 genuine extracted stories plus a matching CON. No GPL code copied. Essence/existing-stack editor excludes CON signing and other editions. [Coverage](NINJA_GAIDEN_RESEARCH.md). |
 
 The Sophie 2 adapter uses the shared GUI and copy-storage safeguards; it does not
 embed the upstream executable, overwrite live saves, clone items or start another

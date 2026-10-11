@@ -243,6 +243,7 @@ def stage(document, changes, key, value):
 
 def limit_values(document, changes, keys):
     mapped = field_map(document)
+    changed_payload(document, changes)
     result = {}
     for key in keys:
         if key not in mapped:

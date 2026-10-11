@@ -103,7 +103,7 @@ def read_save(path, game_id=GAME_ID):
 
 
 def validate_document(document):
-    if (type(document) is not Document or document.format != FORMAT
+    if (type(document) is not Document or document.format is not FORMAT
             or type(document.raw) is not bytes or type(document.payload) is not bytes
             or type(document.seed) is not int or document.seed != 0):
         raise SaveError('A frozen native PC DW9 Empires SYSTEMDATA document is required.')

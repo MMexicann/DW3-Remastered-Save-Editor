@@ -51,7 +51,9 @@ not cryptographic authentication, and does not qualify other revisions.
 | Fairy food | 129 named u8 quantities inspected read-only. The source's 255 target is a storage ceiling; legitimate quantity limits, discovery/ownership and fairy-feed consumption dependencies are unresolved. |
 | Character progression | 31 named records, stride `0x30` from `0x3307A`: existing unlock byte+`0xA`, EXP u32+`0x12` and stored level index byte+`0x1A`, all read-only. Need synchronized growth/stat/heart rewards, exact level encoding and acquisition dependencies. Reserved Ganon/Cucco rows are inspected without granting ownership. |
 | Character health/attack/badges/combos | No writes. The public source calls one health field uncertain and permits values beyond its u16 width. Native caps, derived growth and badge nodes/costs/prerequisites need controlled growth/allocation pairs or native routines. |
-| Weapons, stars, attributes, fusion and seals | Searchable read-only weapon/skill records: the observed profile fits exactly 1,030 physical `0x28`-byte entries from `0x337F4` to EOF. The native sample has 345 occupied entries with matching ID/power/stars/eight skill-ID/eight KO-counter fields. 213 factual weapon names include Yuga's ID 212, which the upstream UI incorrectly excludes. Empty 0xFFFF records are omitted; unknown IDs remain numeric. No writes: state/equip ownership, Master Sword/Legendary/Evil's Bane prerequisites, ordinary seals, skill exclusions, fusion/costs and legitimate power bounds remain unresolved. Other profiles need independent array/layout proof; Wii U's different layout is not reused. |
+| Existing weapon stars | Qualified normal state `0x03` and existing Legendary state `0x13`, known ordinary weapon IDs, stars u16 at record+`0x14`, 0–5 with natural Max. Master Sword ID 60 is excluded by identity regardless of state; reserved Ganon/Cucco IDs 108/109 and unknown states/IDs stay read-only. The observed pool has 1,030 × `0x28` physical entries from `0x337F4` to EOF, 345 occupied rows and 344 qualified star fields. No identity, state, base power, equipped reference or collection flag changes. |
+| Ordinary weapon seals | Existing positive known ordinary KO counters may decrease 0..opened value, conservative admission at most 5,000, normal state `0x03` only. 38 genuine native counters qualify. Skill IDs/slots are preserved, named inspection covers IDs 0..54, and every KO action is excluded from Max. Evil's Bane 41, Legendary 42, Exorcism 53 and the entire Master Sword record are always excluded. Larger/unusual or unknown counters remain read-only. |
+| Power / fusion / collection-sensitive seals | Stored base power is distinct from the derived star-adjusted attack. Power, skill creation/swaps, capacity, fusion costs, reward/collection flags and special-seal prerequisites remain read-only. Master Sword / Evil's Bane / Legendary / Exorcism collection dependencies are unqualified. Other profiles need independent layout proof; Wii U offsets are not reused. |
 | Adventure map cards/stages/exploration | No writes. Candidate Adventure offsets do not qualify all nine maps, reward/medal/rank/objective bits, fog, item cards, searches or prerequisite state. Need exact map record identities and controlled use/clear/reward pairs. |
 | My Fairy / companions | Food inspection does not edit fairy ownership, element, personality, skills, trust, refresh levels, clothing or companion skills. Need native fairy records and feed/refresh/equip pairs, with growth thresholds and dependencies. |
 | Story/character/weapon/costume unlocks | No writes. Unlock flags alone cannot create starter equipment or rewards. Need explicit ownership/entitlement and reward dependencies; story remains separate from resource controls. |
@@ -60,16 +62,57 @@ not cryptographic authentication, and does not qualify other revisions.
 
 ## Validation
 
-Eight format tests and one real Tk workflow pass with `HYRULE_DE_COPY` enabled.
-The private shared native file passes byte-exact unchanged roundtrip and a
-surgical known-material edit; all bytes outside that u16 remain identical.
-Procedural tests separately cover endian encoding, malformed sizes/markers,
-stored-size mismatch, immutable snapshots, bounds, unknown/empty/higher-record
-exclusions, original-value unstage, disabled Max, read-only character/food/weapon inspection, Yuga/unknown IDs, backups,
-exact-byte restore, changed-source rejection and destination protection.
-The GUI test covers named search, Apply, Review, Undo, inspection, themes,
-backup and Save As. Without a native input, one native test skips explicitly.
+Fifteen format/contract/native and real-Tk checks pass with `HYRULE_DE_COPY`
+enabled. The private native file passes byte-exact unchanged roundtrip, surgical
+known-material edits and independent edits to all 382 qualified weapon fields.
+Procedural checks cover malformed shapes/markers/stored size, immutable snapshots,
+invalid pending edits before Max, special/unknown/empty/higher record exclusions,
+original-value unstage, material Max exclusion, read-only growth/food inspection,
+backup/restore and source/destination protection. GUI workflows cover named
+search, weapon-star Apply/Review/Undo, ordinary-seal Max exclusion, inspection,
+themes and backup/new-copy saving. Without the native input, two native checks
+skip explicitly.
 
 **No edited Switch save was imported, loaded or re-saved in the game.** The
 shared downloaded file is edited native data, not an untouched gameplay control.
 Controlled unmodified before/after saves remain useful for deeper qualification.
+
+## Unreleased weapon expansion evidence and checks
+
+The dedicated Switch source `CreateWeaponObj` reads eight little-endian u16 KO
+counters at +0..+0xE, ID +0x10, base power +0x12, stars +0x14, eight u8 skills
++0x16..+0x1D and identifier +0x1E. `SaveCurrentProcess` writes those exact fields;
+our surgical writers touch only staged star/ordinary-counter bytes. The source
+has a `<212` UI filtering error; its full named weapon catalogue includes Yuga's
+ID 212, and we preserve that independently mapped valid record.
+
+[nedron92's original Legends source](https://github.com/nedron92/HWL-SaveEditor/blob/master/source/core/HWLWeapon.cpp)
+independently describes the same relative weapon structure and enumerates states
+`0x03` normal, `0x13` Legendary and `0x0B` Master Sword. This corroborates state
+interpretation alongside the dedicated Switch getters and actual native record
+patterns; no 3DS absolute position or file-size rule is transplanted. Its
+`change_stars` recalculates a display value as base damage × (1 + stars × 0.1);
+`save_stars` stores only +0x14 and no derived attack scalar. We preserve the
+Switch record's base power and all state/identity/reference bytes. The 0–5 star
+quality range is independently described as gameplay weapon quality, not inferred
+from its u16 storage ceiling. We do not reproduce its 650 base-power cheat limit.
+No project licence was found; only factual layout/identity observations are used,
+with independent Python implementation and no source/assets copied.
+
+The native specimen contains one Master Sword (ID 60, state 0x0B) with both
+Evil's Bane and Exorcism counters. Its entire 40-byte record remains identical
+across every targeted new-feature test. All 382 qualified weapon fields were
+independently changed, serialized/reparsed and checked for differences confined
+to their declared scalar range. Every unknown/empty/reserved record, ordinary
+weapon's base power, skill IDs, state and opaque references are preserved.
+
+The existing eight format checks and original real-Tk workflow, plus six new
+format/native/GUI checks in `tests.test_hyrule_definitive_expansion`, pass
+**15/15** with the private genuine export variable enabled. New tests cover
+surgical star+counter edits, source-specific Yuga ID, special-seal/Master Sword
+exclusions even under unusual states, reserved/foreign IDs, higher-star Max
+preservation and original-value unstage, invalid pending edits before Max,
+individual genuine native fields and searchable stars/seals with visible Max,
+Review, Undo, theme, inspection, backup/new-copy saving and restore. Two optional
+native checks skip if the private fixture is absent. This remains native-file and
+real-Tk qualification, not actual edited Switch game-load/re-save validation.

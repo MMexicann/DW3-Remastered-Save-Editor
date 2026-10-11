@@ -1,5 +1,282 @@
 # Universal development validation
 
+## Independent development-branch validation — 2026-10-11
+
+This review started at remote `codex/prepare-next-update`, commit
+`f7ca0121d4e98a7caf09f8545a5a7413a0b8dc3e`, on
+`codex/independent-validation`. Parallel audits reviewed all 28 registered
+adapters. Results below are from this review, not inherited qualification claims.
+The complete suite for that 28-adapter snapshot ran **1,136 tests in 356.160 seconds: 824 passed,
+312 skipped, no failures or errors**, using Python 3.12 and actual Tk on a virtual
+Xorg display. Qualified copied-native inputs were explicitly configured for all
+six new editors, Wii U Hyrule, Age of Calamity and Pirate Warriors 3.
+Skips require unavailable private fixtures, except one Windows filename-rule
+check; two fixture-dependent GUI skips also require Windows. There were no
+display-only skips. A prior full run had 1,123 tests, two stale GUI expectation
+failures and 328 skips; those expectations were corrected before the final run.
+
+The [non-publishing Windows run](https://github.com/MMexicann/Universal-Koei-Tecmo-Save-Editor/actions/runs/38094440495)
+was dispatched with `publish=false` at application/test commit `a969687`.
+It completed successfully: source checks, standalone EXE build and executable
+verification passed; both release jobs were skipped. This is native Windows
+evidence for the 28-adapter application/test snapshot, not the subsequent
+29-adapter integration below.
+
+### Confirmed defects and narrow fixes
+
+- Registered scalar Stage, limits and Max could retain invalid prior edits or
+  normalize them into valid values. The bound adapter now checks complete pending
+  mappings, dynamic field identities and values before delegation. DW8/PW3 and
+  Origins also enforce these checks in their direct backend APIs. Exact-type
+  unusual opened values remain preservable and removable. Cached immutable
+  validation and prevalidated Max targets avoid repeated native decryption.
+- DW8/PW3 exposed fields from forged payload/raw/seed snapshots. Field lookup now
+  qualifies the immutable snapshot before exposing writable fields.
+- Legends rejected unchanged above-limit rupees/stars in pending edits. Original
+  equality now precedes edit-bound validation without accepting booleans/floats.
+- DW5 Special and DW8 Empires leaked `TypeError` for malformed field IDs. Those
+  requests now raise `SaveError` without changing pending edits or source bytes.
+- Wo Long's inspector crashed on an unmapped optional companion value such as
+  `null`, an integer or a boolean. Only qualified companion arrays are inspected;
+  other optional data survives unchanged.
+- Inspector filtering reset the selected sort order. Filtering now reapplies
+  that order; the regression also checks selection retention and visible-row copy.
+
+The new adversarial regressions failed before these fixes. Two existing GUI
+tests also had stale expectations: DW7 Undo restores the opened input, and
+All-Stars then had three supported inspector groups. The later upstream update
+adds Hero cards, and the four-group expectation was restored. Corrected tests
+retain their original save/backup and byte-preservation assertions.
+
+### Procedural and GUI checks
+
+Independent generated inputs for the 21 older scalar adapters passed byte-exact
+no-op roundtrips, one targeted edit per adapter, unstage, immutable originals,
+Max exclusions and preservation of higher originals. All 420 ordered foreign
+scalar-fixture combinations rejected. DW3 separately passed a surgical officer
+skill-point edit and rejected 21 foreign fixtures, three damaged encrypted
+inputs and two oversized-array counts. Sophie 2's documented optional zero
+trailer permits changing its length; that was not classified as corruption.
+
+Focused results (test totals include skips):
+
+| Check | Tests | Passed | Skipped |
+| --- | ---: | ---: | ---: |
+| DW5 Special, DW8E, Legends, genuine copies and actual Tk | 55 | 55 | 0 |
+| Bound pending-edit, scalar contract and shared pending regressions | 31 | 31 | 0 |
+| Shared DW8/PW3 contract, snapshot, affinity and format regression | 79 | 74 | 5 |
+| Origins pending, parser, snapshot, progression and weapons | 29 | 28 | 1 |
+| Storage/source/restore adversarial regressions | 15 | 15 | 0 |
+| Actual Tk library, named choices, tables and new-game workflows | 45 | 41 | 4 |
+| DW7/All-Stars corrected GUI and format regressions | 22 | 21 | 1 |
+| Package, dependencies, inventory and publication-gate regressions | 46 | 46 | 0 |
+
+The shared focused skips were four missing copied-native inputs and one absent
+display in that separate run. Origins lacked a genuine copy; All-Stars lacked
+its genuine sample. The GUI batch lacked two Legends workflows, native P5S and
+native Ayesha; subsequent actual-Tk copied-native checks covered those workflows.
+The complete suite uses actual Tk on a virtual Xorg display with qualified native
+copies for all six new editors, Wii U Hyrule, Age of Calamity and Pirate Warriors 3.
+
+### Updated development branch integration
+
+The development branch advanced to `bdb3833` while this review was finishing.
+That update was integrated without replacing validation work: it adds the
+29th registered adapter, Three Hopes, and All-Stars owned-card equipment.
+The upstream stricter format-object identity check and this branch's pending-edit
+guards both remain. The overlapping DW7 Undo assertion has equivalent semantics;
+the All-Stars inspector expectation now includes the newly implemented Hero cards.
+
+Affected shared-contract, pending-edit, GUI/session, registry, packaging and
+inventory suites passed **102/102 tests, no skips, in 35.196 seconds** with actual
+Tk. Three Hopes and All-Stars equipment suites ran **28 tests in 8.829 seconds:
+21 passed, seven skipped for unavailable genuine copies**. Independent procedural
+probes checked Three Hopes' 143 native-stored sections/nested checksums, mirrored
+fields, surgical edits, unsupported targets and 25 corruptions; All-Stars probes
+checked owned-pool equipment boundaries, campaign/hero boundaries, invalid
+references, unstage and unchanged unrelated encrypted blocks. Those probes passed
+and are synthetic evidence only. No independently verified genuine Three Hopes or
+All-Stars file, or game loading, is claimed by this review.
+
+The entire 1,136-test suite was not repeated after this integration. Its result
+above applies to the original 28-adapter snapshot; these affected-area checks,
+29-interface source and installed-wheel startup checks, and fresh manifest and
+inventory checks apply to the integrated branch. The Windows run also predates
+this integration.
+
+### Genuine-file verification
+
+All downloaded/exported saves, private hashes and provenance remain outside Git.
+Public tests generate their own inputs; optional native checks use environment
+variables and skip when copies are absent.
+
+| Game/platform | Independently checked input and limits |
+| --- | --- |
+| DW5 Special PC | Public premodified 46,000-byte native save; all 728 qualified fields checked surgically, plus actual Tk save/backup/restore. |
+| DW8 Empires PC | Public native SYSTEM copy; both qualified horse-body fields checked. Campaign, quick-save and custom-officer profiles rejected. Actual Tk and copied-save CLI self-test passed. |
+| Hyrule Legends 3DS | Public 234,594-byte export; all 323 fields and combined resource/card/fairy/seal edits checked. Master Sword data preserved. Actual Tk and CLI self-test passed. |
+| Persona 5 Strikers PC | Three distinct public 5,627,552-byte saves; native checksum rejection, no-op and surgical edits across qualified occupied slots, plus actual Tk. |
+| Wo Long PC | One public trainer-modified revision-1.302 gameplay save; native checksums, no-op, resource/stack edits and actual Tk passed. Byte-identical mirrors count as one fixture. Same-size SYSTEM data rejected. |
+| Atelier Ayesha PS3 | Three public US/Japanese exports decrypted independently outside Git; published Cole values, no-op, Cole/stack edits and actual Tk passed. An encrypted unsupported digital-region export rejected. External PFD authentication and PS3 reimport were not checked. |
+| Hyrule Wii U / Age of Calamity Switch | Two cached public Wii U exports and one AoC export; every qualified field checked surgically (495, 689 and 367 fields), Max exclusions/high values and unchanged source hashes passed. |
+
+No edited save was loaded or re-saved by a game. Premodified and trainer-modified
+files provide genuine-file evidence, not pristine gameplay or game-load evidence.
+
+### Installed package, packaging and remaining limits
+
+A non-editable wheel installed in an isolated environment outside the checkout
+loaded all 29 editor/parser/backend registrations and all 14 runtime JSON files.
+Its 195 entries contained no tests, tools, saves or binaries; runtime JSON bytes
+matched the wheel exactly. Module listing and actual-Tk all-interface/theme
+smoke startup passed. The source manifest verifies 411 public entries, and the
+generated-inventory check passed.
+The version remains 1.6. Linux checks do not validate Windows CNG or an EXE;
+native build status belongs to the explicitly non-publishing workflow run.
+
+Direct calls bypassing the bound adapter remain a legacy API limitation:
+16 older backends can retain unknown prior keys during `stage`; PW4 and Sophie 2
+can also normalize malformed pending values in direct `maximums` calls. For
+example, direct PW4 Max with pending `{'beli': -1}` becomes a maximum, and
+`{'beli': '1'}` raises `TypeError`. Their review/writers reject unknown keys.
+Registered/GUI Stage, limits and Max are guarded and have adversarial regressions;
+no corrupt output from the unknown-key case was established. The affected direct
+modules are DW7 XL, PW4, DW4 Hyper/PS2 XL, Sophie 2, WO3U, SW4 DX, DW9E, Orochi Z,
+Wii U Hyrule, AoC, Hyrule Definitive, FE Warriors, DW7E PS3, DW7 PS3 and SW4 PS3.
+
+Coordination: the validation changes affect shared contracts/GUI, Origins and
+narrow DW5/DW8E/Legends/Wo Long edge cases. No registrations or game mechanics
+were authored by this review; the new registration/equipment come from upstream.
+Concurrent implementation branches should preserve these regressions and refresh
+the reviewed source manifest after integrating overlapping edits.
+
+## Licensed Musou expansion (2026-10-11)
+
+Linux Python 3.12 with a real Tk/Xvfb display completed **1,189 tests: 854
+passed, 335 skipped, zero failures/errors**. Skips concern absent unrelated
+private fixtures and platform-specific checks. The focused licensed Musou suite
+completed **41 tests, all passed, zero skips**, with all eight genuine PS3 copies
+explicitly selected. Three registered scalar contracts, malformed/foreign input,
+dependency/unknown-value preservation, native checksums where established,
+source safety, backup/restore and retained GUI sessions are covered.
+
+Gundam 1 passes four genuine unchanged roundtrips and 269 independent surgical
+skill-bit additions across 20 qualified pilot records. Ken's Rage 1 passes two
+genuine unchanged roundtrips and 16 surgical skill-point edits. Their genuine
+Tk editing/review/Undo/save/backup/restore workflows also pass. Ken's Rage 2
+passes two genuine unchanged roundtrips and genuine GUI preservation workflows;
+its unlock edits remain procedural because both genuine samples already have
+all mapped galleries unlocked. No actual edited game-load/re-save was performed.
+
+All 32 registered interfaces pass the startup smoke test. Three native
+copied-save CLI workflows pass unchanged input/backup/restore checks and report
+zero Max edits, as all new controls disable bulk Max. Gundam and Ken's Rage 2
+report established native integrity; Ken's Rage 1 explicitly reports external
+integrity and unverified native checksums. Inventory consistency, all six new
+qualified Windows build imports and **424 reviewed public source files** pass
+packaging/privacy verification. No Windows EXE/CNG run, version bump, tag or
+release was performed. See [exact scope and blockers](LICENSED_MUSOU.md).
+
+## Hunting/monster Windows investigation, 2026-10-11
+
+The branch based on preparation commit `bdb3833` adds qualification notes for
+[Toukiden Kiwami](TOUKIDEN_KIWAMI_RESEARCH.md),
+[Toukiden 2](TOUKIDEN2_RESEARCH.md) and
+[Monster Rancher 1 & 2 DX](MONSTER_RANCHER_DX_RESEARCH.md). **No editor or writable
+mapping qualified for these four titles.** The existing 29-game registry,
+runtime metadata, supported inventory and version 1.6 remain unchanged.
+
+Python 3.12/Linux with Tk under Xvfb completed these existing-game checks:
+
+| Check | Exact result |
+| --- | --- |
+| `python -m unittest discover -s tests -v` | 1,148 tests in 423.657 seconds: 813 passed, 335 skipped, no failures or errors. |
+| Focused GUI/integration/library/choice/packaging/dependency suite | 71 tests in 29.838 seconds: all passed, no skips, failures or errors. Modules: `test_universal_app`, `test_new_game_integration`, `test_library_search`, `test_named_field_choices`, `test_universal_packaging`, `test_package_dependency_review`. |
+| `python -m koei_editor --smoke-test` | All 29 registered interfaces, themes and switching initialized successfully. |
+| `python -m tools.update_supported_games --check` | 29 supported game/platform adapters; consistency passed. |
+| `python -m tools.package_release --verify-only` | All 411 reviewed public source files verified; no private saves, source copies, identifiers or game assets added. |
+| Documentation links / whitespace | 124 local links resolved in the eight investigation/coverage documents; `git diff --check` passed. |
+
+The full suite's skips cover unavailable optional fixtures and platform-specific
+requirements. No target-game fixture was treated as an existing adapter input.
+An initial run was interrupted after a virtual-display connection problem; the
+completed run above used the corrected display. No native Windows executable
+build or edited game-load/re-save was performed.
+
+Kiwami acquisition yielded five candidate files from two public archives;
+Toukiden 2 yielded thirteen files from one public archive. These remained
+private analytical inputs, without native codec/integrity or revision proof.
+Monster Rancher DX yielded no complete native Windows fixture. For **each** of
+the four target games: procedural adapter tests **0**, qualified genuine-file
+unchanged roundtrips **0**, surgical edit/checksum/dependency tests **0**,
+backup/Undo/Review/GUI editor workflows **0**, actual edited game-load/re-save
+validation **0**. Existing-game regressions do not qualify these candidates.
+The linked notes and [input checklist](REMAINING_INPUTS.md) record the precise
+serializer, native-file and controlled-action evidence still needed.
+
+## Berserk and Attack on Titan Windows follow-up
+
+The 2026-10-11 follow-up is **read-only envelope research**, with no new gameplay
+adapter. The three privately reacquired native contributor files qualify only
+the observed outer cipher/u16 sum and unchanged reconstruction. Revision gates,
+semantic records, additional integrity and edited game-load/re-save remain
+unqualified. [Evidence and reproducible inputs](OTHER_KOEI_PC_RESEARCH.md).
+
+With `BERSERK_SAVE_COPY`, `AOT1_SAVE_COPY` and `AOT2_PK_SAVE_COPY` supplied,
+`python -m unittest tests.test_berserk_aot_envelopes -v` completed **15 tests in
+11.236 seconds: 15 passed, zero failures/errors/skips**. Twelve cases cover
+independent procedural arithmetic, additive collisions, malformed/wrong-family
+inputs, immutable snapshots, buffer-subclass size bypass, forged qualification
+flags, privacy and absence of gameplay/file-writing APIs. Three cases check
+genuine unchanged ciphertext roundtrips and first/last-body corruption rejection.
+No native bytes or owner context appear in the public fixtures.
+
+Independent arithmetic additionally checked all three genuine files: **3/3
+outer sums and byte-exact roundtrips**, **21/21 single-byte corruptions**,
+**12/12 incorrect lengths**, **6/6 wrong-profile selections** and **6/6 alternate
+cipher-family checks** behaved as expected. Wrong-profile rejection here follows
+the distinct observed sizes; it does not prove a universal title identifier.
+
+The headless Linux baseline ran **1,148 tests in 216.708 seconds: 734 passed,
+409 skipped, five errors**. All five errors are pre-existing Tk setup failures
+from the unavailable display: two `test_gui_v11.AppearanceGuiTests` cases and
+three `test_weapon_bonus_labels.WeaponBonusLabelTests` cases. Other display,
+private-fixture and platform-dependent tests skip. The source GUI smoke test
+also stops at Tk creation with `no display name and no $DISPLAY environment
+variable`; it did not validate GUI startup. The supported-inventory check passes
+for the unchanged **29 adapters**.
+
+The final full Linux run supplied all three new genuine-copy inputs and
+completed **1,163 tests in 223.269 seconds: 749 passed, 409 skipped, five errors**.
+The same five unavailable-display errors remain; no new regression failed.
+The focused packaging/inventory suite completed **23 tests in 0.530 seconds,
+all passed**. Manifest/privacy verification passed for **414 reviewed public
+source files** (plus the manifest itself); the Windows build configuration was
+inspected without producing or executing a Windows EXE.
+
+The publication-disabled [Windows workflow](https://github.com/MMexicann/Universal-Koei-Tecmo-Save-Editor/actions/runs/38096642271)
+then tested implementation commit `bea25520e408b2676a551e9424b42014fb1e41f7`
+on Windows/Python 3.14: **1,163 tests in 404.467 seconds, 822 passed, 341 skipped,
+zero failures/errors**. The twelve new procedural cases ran; the three optional
+genuine-copy cases skipped because private saves were not uploaded to CI.
+The locally completed genuine-file tests above remain separate evidence.
+
+All **29 source interfaces**, themes and switching passed GUI startup. The
+standalone Windows EXE built and passed frozen GUI startup, embedded metadata/
+module privacy verification and local archive packaging. The workflow uploaded
+validation artifacts only; `publish=false`, and both `prepare_release` and
+`release` jobs were **skipped**. No merge, version bump, tag or GitHub release
+occurred. The follow-up commit records these results and refreshes only the
+documentation manifest hashes; runtime code/data remain the tested bytes.
+
+No title-specific surgical edit, dependency/backup/Undo/Review Changes/save GUI
+workflow is claimed because no writable Berserk/AoT adapter exists. Linux tests
+do not validate Windows CNG, a Windows EXE or actual edited game loading. No
+game/editor/trainer binaries were executed, no saves/identifiers/assets were
+published, and version 1.6 remains unchanged.
+
+## Earlier development runs
+
 Run the complete public suite and all-interface startup check from the repository root:
 
 ```text
@@ -15,6 +292,57 @@ non-Windows, install the optional AES development provider with
 `python -m pip install -r tools/requirements/dev.txt` and provide a graphical display
 for Tk tests (for example, a locally installed Xvfb). Windows remains the target
 for the standalone EXE and native CNG validation.
+
+## Regional and Special edition qualification — 2026-10-11
+
+Branch `codex/special-regional-editions` is based on the current preparation
+commit `bdb3833a1ad4169c12d3f889d5e971dc481c9cc2`. This work implements an
+**unregistered, read-only PSP envelope inspector**, clarifies DW5 Special's
+regional evidence, and records product/format research. It adds **no gameplay
+editor, writable field, regional conversion or supported-game entry**. All 29
+existing adapters remain registered and the application version remains 1.6.
+
+Validation used Linux Python 3.12.14, Tk 9.0, a preexisting Xvfb testing runtime
+and the optional development crypto provider. No downloaded game/editor binary
+was executed. The three privately acquired PSP references were explicitly
+configured; unrelated private gameplay fixtures were not supplied.
+
+| Check | Exact result and limit |
+| --- | --- |
+| Complete corrected public suite | **1,165 tests in 370.497 seconds: 830 passed, 335 skipped, zero failures/errors.** Skips require unavailable private fixtures or platform checks. Includes existing corruption, integrity, dependencies, unusual-value preservation, safe storage, backups/restore and procedural GUI regressions. |
+| Focused regional/PSP/DW5/inventory suite | **39 tests in 1.165 seconds: 37 passed, 2 skipped, zero failures/errors.** Both skips require the missing private DW5 genuine copy. The procedural DW5 Tk workflow covers Apply, Review, Undo, manual-only Max, copied saving and backups. |
+| PSP inspector alone, with references | **15 passed, zero skips/failures:** 12 procedural boundary/privacy cases and three public-submission envelope cases. No secure hash authentication, decryption, gameplay layout, codec roundtrip or surgical edit is tested. |
+| PSP inspector without references | **12 procedural passes, 3 optional-reference skips.** A same-length altered encrypted payload deliberately remains structurally matchable with both verification flags false. Native file-list MAC/padding regressions protect the independently corrected boundary. |
+| Existing DW5 suites | **18 tests: 16 passed, 2 missing-genuine-fixture skips.** Historical 728-field genuine qualification belongs to the prepared base; no fresh regional genuine roundtrip/edit is claimed. |
+| Interface and inventory | All **29** registered interfaces initialize with themes and switching; generated inventory check passes unchanged. PSP candidates and regional aliases cannot select a writer. |
+| Build/source/privacy | Windows build configuration prints successfully; all **416** reviewed public source entries verify, version 1.6. No private saves, identifiers, game assets, downloaded source copies or binaries are packaged. Whitespace and modified-document local links pass. No Windows executable was built. |
+
+An independent source/fixture review found a secure-file declaration offset
+error in the first inspector and procedural generator. The corrected native
+13-byte filename / 16-byte hash / 3-byte padding rule has two adversarial
+regressions. An earlier full run was interrupted to apply the correction and is
+not counted above; the complete run uses the corrected implementation.
+
+Additional private data inspections establish PSP metadata for DW6/DW7/SW3 Z
+Special, two exact-length decoded PS2 CodeBreaker outer streams and matching
+additive stored values in three US PS2 DW6 payloads. These are narrower factual
+observations, not authenticated native gameplay or registered-adapter tests.
+The X-Port outer checksum remains unchecked. No genuine Orochi Special gameplay
+export or fresh DW5 regional control was acquired.
+
+**Zero new-edition gameplay roundtrips, surgical edits or actual edited
+game-load/re-save validations were performed.** PSP authentication/decryption
+and console re-encryption/import remain external and unqualified; payload
+identity/revision, integrity, semantic fields and controlled mechanic pairs
+remain blockers. DW6 PS2 additionally lacks complete native integrity/field
+proof; DW5 Japanese/Simplified-Chinese compatibility and regional text remain
+unproved. See [DW6](DW6_SPECIAL_REGIONAL_RESEARCH.md),
+[DW7](DW7_SPECIAL_PSP_RESEARCH.md), [PSP responsibilities](PSP_SPECIAL_RESEARCH.md),
+[DW5 regional qualification](DW5_SPECIAL.md),
+[additional regional scope](REGIONAL_EDITION_SCOPE.md) and
+[exact supplier inputs](REMAINING_INPUTS.md#regional-and-psp-special-inputs).
+
+## Earlier development checks
 
 A prior cloud run completed **486 tests: 236 passed, 250 skipped, no failures
 or errors**. Skips are predominantly private-fixture integration tests, plus
@@ -295,3 +623,372 @@ name. The test now compares canonical destination paths while retaining exact
 source, output and backup-byte checks. The unchanged runtime and corrected test
 passed 24 focused genuine-file/GUI/integrity checks locally; native verification
 must pass again before publication.
+
+## Console expansion on prepare-next-update
+
+The console-only pass adds qualified US PS3 WO3 Ultimate resource controls and
+US PS3 DW8 Empires SYSTEM custom-horse Body Type controls. Japanese PS3 SW2 HD,
+US PS3 Strikeforce and each legacy Xbox360 title retain separate research-only
+status and exact blockers; diagnostic fixtures do not qualify writable profiles.
+
+**96 focused tests passed with no skips**, using Python 3.12, Tk under Xvfb,
+the genuine DW8E SYSTEM export, both genuine WO3 Ultimate exports, both genuine
+Strikeforce exports and the extracted genuine Xbox360 base SW2 payload. These
+checks distinguish procedural corruption/dependency tests from genuine no-op
+roundtrips and surgical edits. Actual Tk workflows exercise Undo, Review,
+themes, backup, Save Copy As and restore. SW2 HD probes use procedural fixtures
+because its exact genuine Japanese native profile is still missing.
+
+Registered copied-save self-tests separately passed on genuine DW8E SYSTEM and
+both WO3 Ultimate exports, preserving source bytes, unchanged copies and
+restored backups. The narrow manual controls are deliberately excluded from
+Max. DW8E verifies its native checksum; WO3 records external integrity and does
+not authenticate arbitrary unknown-byte corruption or establish a global
+checksum-free format. Mandatory original PARAM.SFO context is copied opaquely
+only to private self-test outputs.
+
+Full discovery on the initial base `f7ca012` completed **1,158 tests in
+363.616 seconds: 828 passed, 327 skipped and three failed**. Two failures
+(DW7 XL GUI staging and the All-Stars Hero Card inspector expectation) also
+reproduced on an untouched copy of that base. The third was the support-catalog
+test's platform whitelist, extended here for research-only Xbox360 entries with
+an explicit no-writable-Xbox assertion. During validation the shared preparation
+branch advanced to `bdb3833`, resolving both existing GUI failures. This console
+branch was rebased onto that update with both instances' metadata preserved;
+**103 focused tests then passed with no skips**, including all three previously
+failing cases. A second complete discovery run after that rebase was not made.
+
+All **31 registered interfaces** passed application startup, theme and game
+switching checks. Generated support inventory and the **430-file reviewed
+public source manifest** verify. Windows build configuration includes both new
+adapters, but a native Windows EXE was not built or tested in this pass.
+
+**No edited console export was loaded and re-saved in an actual game.** PS3
+PFD reimport/resigning and Xbox360 STFS reimport/hash/signing remain external.
+No player saves, game/editor binaries, account identifiers or private analysis
+are included in Git or the reviewed public package.
+
+## Additional Musou PC branch
+
+The `codex/additional-musou-pc` work started at preparation commit `f7ca012`
+and integrated the subsequent `bdb3833` preparation changes without replacing
+other game lanes. On Linux/Python 3.12 with Tk/Xvfb and the optional development
+crypto provider, **34 focused tests passed with no skips**: SW4-II format,
+scalar contract, independent adversarial review and real Tk workflow; Sanada
+read-only framing; generated inventory and explicit support gates.
+
+The full integrated suite completed **1,174 tests: 839 passed, 335 skipped, no
+failures or errors**. Skips require other private fixtures or platform-specific
+checks; both genuine SW4-II copies and all three Sanada files were supplied.
+The generated inventory checks 30 registered adapters. Source packaging verifies
+423 explicitly reviewed public files at unchanged version **1.6**; no player
+files, downloaded binaries or private analysis enter the manifest.
+
+Two independently shared genuine SW4-II copies passed unchanged roundtrips and
+targeted all-field preservation checks. The Tk workflow used a genuine copy
+for named equipment selection, officer/weapon/mount edits, Review, Undo,
+themes, Save As, manual/automatic backups and Restore Backup dialogs. Native
+integrity, original headers/seeds, custom/unknown records and unusual values
+are preserved. Procedural cases additionally populate all six exact checksum
+sections, reject outer-repaired native corruption and protect existing-record
+ownership and dependencies. Three genuine Sanada files passed byte-exact outer
+framing reconstruction; this does not qualify inner integrity or gameplay edits.
+
+The registered SW4-II genuine copied-save CLI self-test passed, checking 817
+fields, native integrity, unchanged bytes, protected input and backup restoration.
+Its Max phase changed zero fields because natural limits are unqualified; actual
+targeted edits are covered by the genuine-file and Tk tests above. All registered
+interfaces initialized and switched successfully. Windows build configuration
+includes the new registered backend/editor automatically. No Windows EXE was
+built here, and no edited save was loaded or re-saved in an actual game.
+
+Original DW9 and optional Bladestorm files were acquired and inspected privately,
+but native identity/integrity and field ownership remain unqualified. Archive
+extraction is not a native roundtrip test. The original-only DW8 Windows lane
+has no separately established product/format; the acquired XL converter fixture
+checks the existing XL format only. Exact remaining inputs are recorded in each
+game note and [the supplier checklist](REMAINING_INPUTS.md).
+
+## Gust expansion development checks
+
+Before integration with the other instance's latest reviewed work, the complete
+Linux/Xvfb suite ran **1,182 tests in 328.210 seconds: 854 passed, 328 skipped,
+no failures or errors**. Missing private fixtures and platform-specific checks
+account for the skips. This is source validation, not a Windows executable run.
+
+After rebasing onto `bdb3833` from `codex/prepare-next-update`, **172 focused
+integration tests ran in 122.085 seconds: 165 passed, seven skipped, no failures
+or errors**. They include the three new format/contract/audit/GUI suites, genuine
+copied-save checks, read-only Arland checks, shared adapter/session contracts,
+Three Hopes and All-Stars integration, live-save guards and packaging. All
+**32 registered editors** passed application startup, theme and switching smoke
+checks. The generated inventory and source/privacy verifier passed with
+**442 reviewed public manifest entries**; both attributed codec notices are
+required and embedded. Independent integration review confirmed all primary
+registry/catalog records are preserved and Ayesha PS3/Sophie 2 adapters unchanged.
+
+Genuine-file qualification is separate from the procedural generators. Original
+Sophie has byte-exact roundtrips across 31 snapshots from one shared player
+archive, with independent surgical checking of 97,303 aggregate mapped fields.
+Its no-checksum support explicitly relies on original-PC community evidence;
+native loader/integrity confirmation remains an input. Ryza 2 uses a distinct
+native gameplay autosave with passing envelope integrity; mislabeled Ryza 1
+files are excluded. Fatal Frame II Remake qualifies native system/gameplay
+framing, both checksum layers and its distinct JSON schema, preserving the
+binary photo suffix. Native GUI edits, Undo, Review Changes, themes, Save As,
+backup and exact Restore passed for all three registered editors.
+
+Rorona/Meruru's 44 genuine PC gameplay snapshots support only read-only
+structural qualification and unchanged roundtrips. Totori's independently
+qualified PS4 title/Cole lead does not qualify PC gameplay or internal integrity.
+Other Gust/Blue Reflection profiles remain unregistered with exact per-mechanic
+blockers in [the research notes](README.md). Calendar/story/event dependencies
+are kept separate from resource edits.
+
+**No edited file was loaded or re-saved in an actual game.** Native Windows
+build/startup validation remains required before publication. Version 1.6 and
+release links are unchanged; this work creates no release, tag or merge.
+
+## Team Ninja expansion (unreleased)
+
+The Team Ninja branch adds two registered editing profiles without changing the
+release version: Nioh 3 Windows USER revisions `0x01030001` / `0x01040000`, and
+original Ninja Gaiden II Xbox 360/Xenia extracted revision-6 stories. It is based
+on the shared preparation branch and preserves the other instances' Three Hopes,
+All-Stars and Wo Long work.
+
+The final Linux/Xvfb public regression run completed **1,224 tests in
+348.728 seconds: 876 passed, 348 skipped, zero failures or errors**.
+Skips require unavailable private/platform inputs; separate opt-in genuine-file
+runs are recorded below. The run includes the other instances' integrations.
+An existing DW7 GUI fixture now explicitly reselects its field after Undo, and
+the catalog test recognises separate PS4 research and Xbox 360/Xenia profiles.
+
+Independent genuine-file audits exercised **29 editable fields across the two
+Nioh 3 revisions** and **76 fields across 22 original NGII stories** individually
+and in batches. Restoring the selected field and native checksum reproduces the
+complete original payload. Encrypted Nioh 3 Amrita/Gold deductions changed only
+the two eight-byte balance fields and checksum in plaintext and ciphertext;
+keys, header, seed, tail and every other byte remain exact. A genuine CON package
+corroborates original NGII title identity but is not accepted for editing.
+
+Separate private-input tests establish unchanged Nioh PC cipher roundtrips for
+two public USER copies with seven flags retained; Nioh 2 uses the retained-four-
+flag upstream reference and tests unchanged copy/backup/restore. These do not
+verify the unresolved native gameplay integrity algorithms. SOP FFO uses one
+Epic launch USER/SYSTEM pair and two Steam USER files plus SYSTEM, separately
+from upstream cipher references. Seven Sigma PC gameplay copies, 31 Sigma 2 PC
+stories and 19 Black Steam files qualify bounded research inspection, with no
+gameplay writes. Sigma's independent redistribution is byte-identical to the
+first corpus and is not counted as a second player.
+
+A focused **45-test native research run passed with zero skips**, covering
+Nioh 1/2, separate Epic/Steam SOP FFO and separate Sigma 2/Black inspection.
+The final integrated genuine GUI/Sigma inspection run passed **7 tests with
+zero skips**. Independent format, scalar-contract and surgical-edit checks
+cover the two new registered adapters.
+
+Real Tk workflows under Linux/Xvfb exercise both registered editors with
+procedural and genuine inputs: search, stack and balance edits, Review Changes,
+Undo, Max exclusions, inspection, Light/Dark themes, new-copy saving, exact
+backups/restore, destination collision and source replacement rejection. An
+independent Nioh 3 GUI check preserves unsigned 64-bit balance precision.
+Procedural generators, genuine files and actual game loading are separate
+evidence classes. No player files, downloaded source copies, binaries, owner
+identifiers or private analysis are included in the reviewed source manifest.
+
+**Actual edited game-load/re-save validation is unperformed for both new
+editors.** Linux checks do not replace the native Windows build/EXE workflow;
+no Windows executable was built or release published in this task. No game or
+third-party editor binary was executed and no integrity flag was cleared.
+See [Team Ninja research](TEAM_NINJA_RESEARCH.md) and its per-game coverage tables
+for the exact remaining integrity consumers, mechanic dependencies and inputs.
+
+## Licensed action RPG Windows qualification — blocked
+
+The 11 October 2026 investigation on `codex/licensed-action-rpg-expansion`
+adds no DQH I/II or Fate/Samurai Remnant adapter or gameplay field. See
+[the evidence and exact enabling inputs](LICENSED_ACTION_RPG_STATUS.md).
+
+Linux Python 3.12.14 / Tk 9.0 under the environment's existing Xvfb display ran
+the complete public suite: **1,148 tests in 245.878 seconds, 813 passed,
+335 skipped, zero failures or errors**. Unavailable private fixtures and
+platform-specific cases remain skipped. An initial headless run had five Tk
+display errors; the complete displayed run resolved them. No additional native
+fixture environment variables were supplied for this investigation.
+
+The source application smoke test initialized **all 29 existing registered
+game/platform interfaces**, both themes, platform selection and game switching.
+Those regression and GUI tests cover the existing editors and procedural
+workflows; they are not DQH or Fate gameplay-edit validation.
+
+After the documentation/research-metadata changes, **46 focused inventory,
+source packaging, universal packaging, dependency-review and release-preparation
+tests passed in 1.861 seconds with zero skips, failures or errors**. The generated
+inventory check still reports 29 adapters. The explicit source manifest verifies
+409 public files at unchanged version 1.6, including the new status document;
+no saves, owner identifiers, private reports, assets or downloaded binaries were
+added. `git diff --check` passes.
+
+Privately acquired DQH1 bytes passed a complete bounded compressed-stream
+decode (61,648 consumed; 642,716 produced). DQH2's complete 1,575,744-byte file
+was inspected/reacquired. These checks prove neither title's native checksum,
+unchanged serialization roundtrip, surgical edit, dependency enforcement,
+backup/restore workflow or edited game load. No native Fate file was acquired,
+so no Fate file test ran. No target-specific adapter, malformed-input test or
+GUI editing workflow could be qualified. No edited save was loaded/re-saved
+in any of these three games and no native Windows EXE build was validated.
+
+## Strategy expansion: original PC XIII
+
+Linux Python 3.12.14/Tk 9 under Xvfb completed **971 tests in 199.283 seconds:
+673 passed, 298 skipped, zero failures or errors**. `ROTK13_SAVE_COPIES` supplied
+all seven privately held genuine original-PC revision-14 TC campaign copies.
+The skips are existing private-fixture and Windows-specific cases; no skipped
+case is counted as passed. The unchanged base had 958 tests: 660 passed and 298
+skipped. All thirteen added format/contract/GUI cases pass without skips.
+
+Native tests establish seven byte-exact unchanged roundtrips, **84 targeted edits**
+(each of twelve quantities on each save), preview checksum/header preservation,
+field-only body changes, staging/unstaging and seven safe-save/backup/restore
+workflows with unchanged source hashes. Procedural checks cover identity,
+revision/section rejection, a frozen generator vector, unsigned 16-/32-bit
+boundaries, unusual higher values, separate population components, unknown
+district references, forged snapshots, changed sources, immutable destinations,
+foreign backups and live-directory/resolved-alias rejection.
+
+Actual Tk tests pass on both a genuine and a procedural campaign, covering search,
+manual edits, disabled bulk Max, Undo, Review Changes, inspection, retained edits
+across game/theme switching, Save As, backup restore and foreign-input rejection.
+Two existing selector checks initially rejected the new card's word
+"development"; naming commerce, farming and culture explicitly fixed the wording
+without weakening those tests, and the complete suite was repeated successfully.
+
+The genuine copied-save CLI self-test also passes: **720 fields checked, zero
+changed**, input preserved, byte-exact no-op roundtrip and backup restoration.
+No natural Max is established, so targeted manual edits are tested separately.
+Its checksum result describes native preview integrity, not a campaign-body
+checksum. All **23 registered interfaces** initialize in the startup smoke test.
+Generated inventories match; packaging verifies **339 reviewed public files**
+and includes all **120 required runtime files**. Windows build configuration
+includes the qualified XIII backend/editor; no new runtime dependency is added.
+
+**No edited save was loaded or re-saved in a game.** No native Windows EXE build
+or Windows CNG run was performed. Exact executable build/DLC provenance,
+additional regions, PK/console profiles and officer/relationship/equipment
+dependencies remain unqualified. The [format evidence](ROTK13_FORMAT.md) and
+[candidate review](STRATEGY_EXPANSION.md) record these and the XIV/Nobunaga blockers.
+This development branch changes no version, tag or release.
+
+## Original Windows PC SW2 and Warriors Orochi additions
+
+The expansion branch is based on `codex/prepare-next-update` at `bdb3833`.
+The full Python/Tk suite under Xvfb completed **1,189 tests in 273.674 seconds:
+854 passed, 335 skipped, no failures or errors**. Only the new original-PC
+fixture variables were configured; unrelated unavailable private fixtures and
+platform-specific cases remain skips. After the final SW2 malformed-Mapping
+guard and terminology clarification, the combined original-PC format/contract,
+actual Tk GUI, independent review and path-safety checks passed **42 tests in
+24.824 seconds, zero skips, no failures or errors**.
+
+Two independently acquired original Windows PC saves per game qualified the
+period title-specific disk-reader/writer facts. All four passed byte-exact
+unchanged roundtrips. Every exposed field was individually changed and reparsed
+surgically: **2,329 + 2,314 SW2 fields and 2,468 + 791 Orochi fields, 7,902 edits
+in total**. Independent simultaneous all-field edits also preserved every
+byte outside mapped fields and the native checksum. Originals remained intact.
+Procedural corruption, foreign-profile, malformed staging, eligibility,
+dependency, unknown-byte and unusual/higher-value tests are separate evidence.
+Actual Tk tests exercise the registered cards, retained sessions, both themes,
+search, staging, Review Changes, Undo, protected Max, inspection, automatic
+backup, Save As, validated restore, changed-source rejection and live-path
+protection. Neither game falls back to a related game's parser.
+
+The registered copied-save CLI self-tests passed for SW2 (2,329 fields) and
+Orochi (791 fields). All **31 registered interfaces** passed application startup,
+themes and game switching. Inventory generation/checking passed; the existing
+Windows build configuration includes both qualified editor/parser imports and
+runtime metadata without a build-core change.
+
+An independent private wheel build and isolated installation passed with zero
+repository import paths: **31 registrations, 31 inventory entries, 31 CLI
+listings, 92 module references / 61 distinct imports, 30 scalar formats and all
+14 runtime JSON resources**. The installed package additionally passed four
+genuine-file unchanged roundtrips, surgical edits, integrity reparses and
+source-preservation checks. No wheel or player data was published.
+
+**Actual edited game-load/re-save and native Windows EXE build/startup validation
+were not performed.** An installed original Windows release, exact language/build
+and player-run load/re-save of a surgical edit are still needed. Native natural
+caps/catalogs and controlled progression, acquisition/equipment, fusion,
+guard/mount and story/reward pairs are listed separately in
+[SW2](SW2_PC_FORMAT.md) and [Warriors Orochi](WO1_PC_FORMAT.md). Linux file,
+application and packaging tests do not establish those missing validations.
+Version 1.6 is unchanged; no merge, tag or release is part of this work.
+
+## Three Houses development branch — 2026-10-11
+
+The separately registered Nintendo Switch Three Houses adapter accepts exact
+main-campaign gameplay serialization v13 and v23 profiles. It is separate from
+Warriors and Three Hopes. Public extracted candidates establish framing and
+native payload-byte integrity, not authenticated title/region/build/DLC or clean
+unmodified gameplay controls. Exact prerequisites and missing inputs are in
+[THREE_HOUSES_FORMAT.md](THREE_HOUSES_FORMAT.md) and
+[THREE_HOUSES_MECHANICS.md](THREE_HOUSES_MECHANICS.md).
+
+Final focused `tests.test_three_houses` + `tests.test_three_houses_audit` results:
+**29 run, 28 passed, 1 skipped** with the optional private copied-file variables
+configured. The single skip is the real Tk workflow because no existing display
+was available. Without private inputs: **29 run, 26 passed, 3 skipped**. Two
+headless shared-GUI callback tests pass Apply Selected/atomic batch validation,
+Review Changes, Undo, new-destination Save As, source preservation and backup /
+restore. This exercises callbacks and native storage, not rendered Tk controls.
+
+Eight exact-length public extracted candidates (four v13, four v23) pass
+byte-exact unchanged roundtrips, native checksum validation, all **82 exposed
+field checks** and original-source preservation. Of those, **74 deliberately
+changed fields** have surgical byte differences confined to the declared scalar
+and checksum bytes 0–3; the remaining eight controls are already at their minimum
+and are verified no-ops. Ordinary equipment identities, unknown records,
+original flags, DLC owners, progression/mirrors and all other bytes survive.
+Eight shared copied-save self-tests additionally pass input preservation,
+native integrity, byte-exact roundtrip, backups and restores. Their automated
+bulk-Max edit count is **0**, because every field is excluded from Max; the
+independent explicit decrease tests provide edit evidence.
+
+Adversarial checks cover bad checksum, truncation/trailer, wrong native profile,
+foreign selected adapter, count/NPC structure mismatches, malformed staged
+batches, unknown/duplicate/unjoined/dead/DLC owners, unknown item IDs, unusual
+high values and prohibited unlimited-durability grants. Restores validate native
+integrity even when an attacker adjusts the backup manifest hash. Changed
+sources, resolved aliases and existing destinations cannot be overwritten.
+
+`python -m koei_editor --smoke-test` was attempted and returned exit 1 at Tk root
+creation: `TclError: no display name and no $DISPLAY environment variable`.
+Live GUI validation remains blocked. A downloaded distribution Xvfb runtime was
+briefly started during setup, contrary to the assignment's no-downloaded-binary
+constraint; it and that preliminary test run were stopped. Those results are not
+used as validation evidence. Subsequent checks use the existing Python/runtime
+packages and source code, without that display runtime. No downloaded save-editor
+or game executable was run.
+
+No edited save has been imported, loaded or re-saved on Nintendo Switch. No
+Windows EXE was built. This branch does not bump versions, tag, merge or release;
+the application/package version and latest-release links remain v1.6.
+
+The final full public regression run completed **1,177 tests: 760 passed,
+417 skipped, zero failures/errors** in 205.501 seconds. Skips report unavailable
+private fixtures/inputs, displays or native Windows prerequisites; they are not
+claimed as passes. Five previously unguarded Tk-only appearance/weapon-label
+tests now use the same no-display skip policy as other GUI tests, preserving
+their display-enabled behavior. The final integration group (adapter/audit,
+inventory, package/privacy, adapter contract and new-game integration) with
+private Three Houses copies completed **75 tests: 73 passed, 2 display skips**.
+The preliminary catalog-schema mismatch and stale in-progress inventory were
+corrected before that final full run; catalog validation remains strict.
+
+`tools.update_supported_games --check` passes for all 30 registered source
+adapters. `tools.package_release --verify-only` verifies all **417 public source
+files** at unchanged v1.6, and `tools.build_windows --print-config` includes the
+qualified Three Houses editor/parser imports. No native Windows executable or
+release artifact is produced by these checks.

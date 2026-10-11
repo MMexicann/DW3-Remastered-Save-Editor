@@ -12,7 +12,7 @@ from types import MappingProxyType
 from koei_editor.games.dw3.models import SaveError
 from koei_editor.shared.copy_storage import atomic_new, restore_snapshot, snapshot_backup
 from koei_editor.shared.save_safety import safe_path
-from koei_editor.games.hyrule_definitive.catalog import MATERIALS, FOOD, CHARACTERS, WEAPONS
+from koei_editor.games.hyrule_definitive.catalog import MATERIALS, FOOD, CHARACTERS, WEAPONS, SKILLS
 
 GAME_ID = 'hyrule_definitive'
 TITLE = 'Hyrule Warriors Definitive Edition'
@@ -77,7 +77,7 @@ def get_format(game_id=GAME_ID):
 
 def decode(raw, game_id=GAME_ID, source=Path('zmha.bin')):
     get_format(game_id)
-    if not isinstance(raw, (bytes, bytearray)) or len(raw) != SAVE_SIZE:
+    if type(raw) not in (bytes, bytearray) or len(raw) != SAVE_SIZE:
         raise SaveError(f'{TITLE} requires a complete {SAVE_SIZE:,}-byte decrypted native export.')
     raw = bytes(raw)
     if raw[:4] != LAYOUT_MARKER:
@@ -121,23 +121,27 @@ def _uint(payload, offset, size):
 WEAPON_BASE, WEAPON_STRIDE, WEAPON_COUNT = 0x337F4, 0x28, 1030
 
 
-def weapons(document):
-    validate_document(document)
+def _weapons(payload):
     rows = []
     for index in range(WEAPON_COUNT):
         offset = WEAPON_BASE + index * WEAPON_STRIDE
-        identity = _uint(document.payload, offset + 0x10, 2)
+        identity = _uint(payload, offset + 0x10, 2)
         if identity == 0xFFFF:
             continue
-        rows.append({'slot': index + 1, 'id': identity,
+        rows.append({'slot': index + 1, 'offset': offset, 'id': identity,
                      'name': WEAPONS.get(identity, f'Unknown weapon ID {identity}'),
-                     'power': _uint(document.payload, offset + 0x12, 2),
-                     'stars': _uint(document.payload, offset + 0x14, 2),
-                     'state': document.payload[offset + 0x1E],
-                     'skills': tuple((document.payload[offset + 0x16 + i],
-                                      _uint(document.payload, offset + i * 2, 2))
+                     'power': _uint(payload, offset + 0x12, 2),
+                     'stars': _uint(payload, offset + 0x14, 2),
+                     'state': payload[offset + 0x1E],
+                     'skills': tuple((payload[offset + 0x16 + i],
+                                      _uint(payload, offset + i * 2, 2))
                                      for i in range(8))})
     return tuple(rows)
+
+
+def weapons(document):
+    validate_document(document)
+    return _weapons(document.payload)
 
 
 def _inspection(payload):
@@ -170,6 +174,26 @@ def _field_index(payload):
         if 1 <= _uint(payload, offset, 2) <= 999:
             fields.append(Field(f'material_{offset:x}', name, offset, 2, 999,
                                 'Material inventory', index + 1, minimum=1))
+    # Independent Switch getters/setters qualify these exact scalar positions;
+    # observed native states match the separately documented normal/Legendary
+    # record states. Never change state, identity, base power or references.
+    for weapon in _weapons(payload):
+        if (weapon['id'] not in WEAPONS or weapon['id'] in (60, 108, 109)
+                or weapon['state'] not in (3, 19)):
+            continue
+        slot, offset = weapon['slot'], weapon['offset']
+        fields.append(Field(f'weapon_{slot}_stars', weapon['name'] + f' (slot {slot}): Stars',
+            offset + 0x14, 2, 5, 'Weapon stars', slot, maxable=True))
+        # Existing positive ordinary seals only; no collection-sensitive seals,
+        # new skill IDs, unused/open slots, counter increases or state changes.
+        # The 5,000 ceiling is a conservative admission bound, not a Max target.
+        if weapon['state'] == 3:
+            for index, (identity, remaining) in enumerate(weapon['skills']):
+                if identity in SKILLS and identity not in (0, 41, 42, 53) and 0 < remaining <= 5000:
+                    fields.append(Field(f'weapon_{slot}_skill_{index + 1}_kos',
+                        weapon['name'] + f' (slot {slot}), ' + SKILLS[identity] + ': Remaining KOs',
+                        offset + index * 2, 2, remaining, 'Ordinary skill seals',
+                        slot * 8 + index))
     return MappingProxyType({field.id: field for field in fields})
 
 
@@ -276,11 +300,18 @@ def record_label(slot, group='Resources'):
 
 def field_hint(document, key):
     if key not in field_map(document):
-        raise SaveError('This field is not qualified for edits.')
-    return ('Manual resource edit in the observed Switch zmha.bin profile. '
-            'Only existing ordinary named materials qualify; discovery, fairy food, '
-            'levels, EXP, equipment, rewards and story remain unchanged. '
-            'These controls are excluded from automatic Max; original values unstage.')
+        raise SaveError('This field or existing record is not qualified for edits.')
+    if key.endswith('_kos'):
+        return ('Existing ordinary skill seal: decrease remaining KOs only; zero removes its '
+                'KO requirement. Identity, state, base power and equipped references are preserved. '
+                "Evil's Bane, Legendary, Exorcism and Master Sword are excluded, as is Max.")
+    if key.endswith('_stars'):
+        return ('Existing recognized normal/Legendary weapon: stars 0–5. Base power is preserved; '
+                'displayed star-adjusted attack is derived. Master Sword, reserved IDs and '
+                'unknown states are read only. Max preserves unusual higher opened stars.')
+    return ('Manual existing resource quantity with published-editor bounds. Natural gameplay '
+            'cap and discovery dependencies remain unqualified; excluded from Max. '
+            'Ownership, unknown bytes, original higher values and story are preserved.')
 
 
 def inspection_rows(document):

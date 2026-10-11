@@ -43,6 +43,9 @@ Static evidence locations in the inspected image:
 | `0x140258CA0` | Packed officer serializer, not a raw runtime memory copy |
 | `0x14026C8C0` | Packed weapon serializer with eight ID bytes and eight ranks |
 | `0x14026CC90` | Weapon descriptor lookup and special IDs 1250..1394 |
+| `0x14026D4B0`..`0x14026D551`, `0x14026E290`..`0x14026E312` | Factory paths distinguish binary IDs 26..31 and 46..57 from ranked IDs 0..25 and 32..45 |
+| `0x1404080D5`, `0x140409724` | Blacksmith UI checks each of eight ranks: binary ranges have one rank; other native attributes reach rank ten |
+| `0x14026C8C0`, `0x14026CC90` | Serialize runtime reinforcement byte `+0xB` at packed weapon `+3`; total attack reads it separately from descriptor attack and u32 compatibility |
 
 The independent public native sample was acquired from an annotated
 [Steam save-sharing discussion](https://steamcommunity.com/app/1879330/discussions/0/592904528464062941/).
@@ -59,6 +62,13 @@ ID 31 at rank 1; the author's description of Verity on Samurai-type weapons
 corroborates that ID. The 58 orb and 295 crafting-resource bytes match the
 published spans, without adopting console container offsets or endianness by
 assumption.
+
+A later user-supplied `SAVEDATA.BIN`, initially unidentified by its filename,
+independently matches the same `0x2119CA` PC profile and every structural marker.
+It exposes 841 existing ranked effects beyond the previously named subset and
+31 ordinary nonzero reinforcement counters. All 872 additional controls were
+tested surgically on this copy. Its unusual balances and other unedited values
+remain intact; it does not establish natural resource caps or game-load results.
 
 Additional sources:
 
@@ -93,6 +103,8 @@ immutable original snapshot; pending edits cannot manufacture records.
 | Crafting materials | Seven spans defined in parser, 295 u8 values | Individual balances through 99 |
 | Existing weapon attribute slots | `0xC8012 + weapon*0x1C`, u8, 145*16 records | 0..8; decreasing cannot hide attributes; increasing cannot activate dormant IDs |
 | Existing attribute ranks | `0xC801C + weapon*0x1C + attr_slot`, u8 | Proven standard IDs 5..11 use 1..10; Verity ID31 is binary rank1 |
+| Other existing native ranked effects | Same rank span, native IDs 0..25 and 32..45 | Individual and Max through ten; new labels use native numeric IDs until the exact localization association is proved |
+| Existing reinforcement | `0xC8013 + weapon*0x1C`, u8 | Existing 1..99 only, manual decrease to 0..opened value; raising and bulk Max are disabled |
 
 Growth-point, gem, orb and material edit bounds come from public patch limits;
 their natural caps have not yet been recovered from native gameplay clamps.
@@ -102,6 +114,15 @@ values. No ID is assigned to an empty weapon or empty attribute slot; zero-rank
 and unknown attributes, unknown weapons and unsupported slot-count layouts
 remain inspection-only. Normal descriptor IDs end before special range
 1250..1394; IDs outside the qualified descriptor range are preserved read only.
+
+Native binary effects are IDs 26..31 and 46..57. They receive one rank rather
+than a guessed ten; the existing independently named Verity control retains its
+rank-one compatibility behavior, while the other binary IDs are inspected only.
+Zero ranks and dormant attributes are never activated. Reinforcement increases
+need the grade-specific ceilings, which are distinct from the native absolute
+99 clamp. Decreasing an already ordinary value cannot exceed its opened grade
+ceiling; the descriptor, grade, compatibility, costs and equipped references are
+preserved. The native total-attack getter reads reinforcement directly.
 
 The shared GUI provides search, grouped field controls, existing-weapon inspection,
 separate progression and resource tables, staged batch Undo, Review Changes,
@@ -121,8 +142,8 @@ path protections and source-change detection remain in force.
 | Proficiency and abilities | Public source separates multiple bytes/ranks; natural progression/skill prerequisites and packed semantics need controlled pairs |
 | Weapon ownership/types | Existing IDs inspected; no cloning, empty-record manufacture or guessed weapon names |
 | Weapon attribute slots | Safe existing-record expansion/reduction; reduction cannot hide owned attributes; expansion cannot activate dormant IDs |
-| Weapon attributes, elements and fusion | Existing proven ranks writable; unknown IDs and zero ranks preserved. Attribute acquisition/swap and full 58-name catalogue need native ID tables and fusion dependency pairs |
-| Weapon compatibility and reinforcement | Raw records preserved; compatibility is packed into a u32 and is not the unaligned console patch's apparent u16. Per-grade caps/derived attack need independent mapping |
+| Weapon attributes, elements and fusion | All existing native ranked IDs 0..25/32..45 writable through ten; binary/unknown/zero/dormant effects preserved. Attribute acquisition/swap and the full 58-name catalogue need native ID/name tables and fusion dependency pairs |
+| Weapon compatibility and reinforcement | Existing ordinary reinforcement decreases are writable. Increases need grade-specific caps. Compatibility is a preserved packed u32, distinct from reinforcement and descriptor attack; its progression clamp remains unqualified |
 | Attribute-orb inventory | 58 balances editable; ID-to-name catalogue and natural clamps pending |
 | Crafting inventory/recipes | 295 balances editable; materials' names, receipt/new flags, recipe unlocks and natural clamps pending |
 | Equipped items and item enhancement | Preserved; normal enhancement, special ownership and equipped references must be distinguished with controlled equip/upgrade pairs |
@@ -142,13 +163,15 @@ With `WO3U_SAVE_COPY` pointing to a reviewed copied native save outside the
 checkout:
 
 ```text
-python -m unittest tests.test_wo3u_format tests.test_wo3u_review tests.test_orochiz_candidate_codec -v
+python -m unittest tests.test_wo3u_format tests.test_wo3u_review tests.test_wo3u_expansion -v
 python -m unittest tests.test_wo3u_gui -v
 ```
 
-The first command passed 27 tests with the private fixture present, including the
-native no-op roundtrip and surgical native stat edit. Without the private fixture,
-one native test skips honestly. The second passed two GUI tests under Xvfb:
+The first command passed 29 tests with the user-supplied native fixture present,
+including the native no-op roundtrip, surgical stat edit, every newly exposed
+rank/reinforcement control, binary categories and malformed/empty layouts.
+Without the private fixture, two native tests skip honestly. The second passed
+three GUI tests under Xvfb, including the user-supplied copy:
 search, grouped controls, edit validation, review, Undo, backup, Save As, inspector
 and theme switching. Fixtures generated by `procedural_raw()` are explicitly
 synthetic. A native complete bulk action preserved all five internal records;
@@ -188,6 +211,7 @@ preserved and are never repaired to invented defaults.
 | `0x47C94F` | First-section marker 3000 |
 | `0x474AA0` | Set serialized stock EXP balance and clamp it to 99,999 |
 | `0x52B200`, `0x47A410` | Allocate stock EXP to officer, run level/stat progression |
+| `0x52B170`, table `0x6D5E90` | Within-level EXP display uses the current level's native threshold; all 99 threshold entries independently corroborated |
 | `0x52DB7A` | Store remaining stock EXP after weapon fusion |
 | `0x474FF0` | Read stored officer attack and add separate existing weapon base attack |
 | `0x4747A0`, `0x477A70` | Independent stored base-attack setter and per-officer growth clamp |
@@ -198,6 +222,7 @@ preserved and are never repaired to invented defaults.
 | `0x52E1D4`..`0x52E203` | Owned attribute level-minus-one byte clamped to nine |
 | `0x52DCF4` onward | Ranked-attribute list skips native enum five |
 | `0x475980` | Whole weapon assignment also updates collection bits; ID manufacture excluded |
+| `0x474880`, `0x474890`, `0x531800`, `0x531810` | Read/write the officer's serialized equipped-slot byte; duplicated equipment UI helpers use the same selector |
 | `0x474FD0` | Separate proficiency-like u16 divided by 1,000 |
 | `0x477DC0` / `0x47B162` | Increment the distinct playtime frame counter, not a currency |
 
@@ -220,6 +245,8 @@ The adapter edits the following independently identified save-backed systems:
 | --- | --- |
 | Stock EXP / Growth Points | u32 `0x5E30`, 0..99,999; shared balance used for leveling and fusion, not the playtime counter at `0x5E2C` or individual officer EXP |
 | Officer base attack | u16 `0xC + id*0xDC + 8`, 96 records; individual initial floors 70..120 and per-officer natural ceilings 400..480, preserved in the interpreted limits module; separate from weapon and skill effects |
+| EXP within current level | u32 officer `+0x10`; only already progressed stored levels 1..97 with EXP in that level's native band. Manual edits stay below the next threshold; excluded from bulk Max |
+| Equipped weapon choice | Byte officer `+1`, stored slots 0..7 displayed as 1..8; dropdown contains only qualified occupied records already in this officer's own pool. Original reference must qualify; excluded from bulk Max |
 | Existing weapon attack bonus | Officer `0xC + id*0xDC`, weapon `+0x14 + slot*0x18`, bonus byte `+7`, 0..20; identity/base weapon attack unchanged |
 | Existing weapon attribute capacity | Same weapon byte `+6`, at least the number of owned mask bits and at most eight; changing capacity cannot manufacture an attribute |
 | Existing owned ranked attribute levels | Mask u16 `+2`; byte `+8 + attributeID` stores level minus one; displayed/edited as 1..10; enum five excluded |
@@ -229,7 +256,8 @@ inspection. Weapons are recognized only when their existing native ID is below
 empty sentinel 414, their attribute mask uses the native fifteen bits, and their
 capacity can hold the owned mask. Unknown IDs, malformed mask/capacity pairs and
 empty records retain every byte. The separate alchemy mask `+4`, all fifteen
-attribute identities, equipment references and collection bits are untouched.
+attribute identities and collection bits are untouched. The explicit Equipment
+control changes only the selector; it cannot create, transfer or consume weapons.
 Increasing an existing ranked effect or capacity edits its value only; it does
 not simulate consuming a material weapon or acquiring a new effect.
 
@@ -239,6 +267,24 @@ The independent genuine save contains pre-existing hacked rank bytes of 19
 An explicit manual edit can lower a mapped value into its supported range, or
 return to the original unusual value to remove a pending edit.
 
+The native 99-entry EXP table is described independently by
+`20*L*L + 780*L` through stored level 49, then
+`86240 + 2720*(L-49)`. Every entry agrees with the supplied executable.
+`0x47A410` adds EXP, then runs threshold crossings and five growth-stat changes
+using a random state outside the serialized blocks. The editor therefore offers
+only coherent progressed records and stays inside their opened level band;
+unprogressed level zero, final level 98, unknown levels and inconsistent EXP
+remain read only. It never guesses the missing random progression or writes
+level/reward flags. The older genuine sample has eight qualifying progressed
+officers. The later uploaded save has all 96 at stored level 98/EXP 220,000 and
+correctly exposes no growth control; it supplies 96 existing equipment choices.
+
+Native total-attack `0x474FF0` reads the selector, indexes this officer's own
+eight-record pool and adds the selected weapon's descriptor attack to base
+attack. Equipment UI setters change the same byte directly. Consequently a
+qualified own-pool selection does not require rewriting a cached attack value.
+The native whole-weapon assignment and collection updates remain excluded.
+
 ### Coverage checklist and exact blockers
 
 | System | Implemented or precise remaining blocker |
@@ -247,10 +293,11 @@ return to the original unusual value to remove a pending edit.
 | Stock EXP / Growth Points | Individual editing and Max, native balance cap 99,999; playtime preserved separately |
 | Officer names/identity | ID-indexed records inspected. Full-name builder `0x58CEF0` uses external officer table at `0x9C8FD0`; embedded strings contain surname/given fragments and cannot be indexed directly as 96 names. Matching `/etc/unitbase.bin` from the installed LINKDATA archive is needed for exact ID/name association |
 | Officer base attack / other four stats | Base attack writable through its ID-specific ceiling, proven by independent setter/clamp and separate weapon-attack addition. Other four u16 values inspected only; their exact label-to-field and derived skill contributions are not independently qualified |
-| Level and EXP | Stored byte index and u32 EXP inspected; `0x47A410` updates level and five stats together using thresholds. Rebuilding the complete growth/reward effects is required before coupled writes |
+| Level and EXP | Manual EXP inside an already progressed, coherent opened level is writable; next-level thresholds and Max excluded. Full level transitions remain blocked by the coupled five-stat growth/rewards and nonserialized random state |
 | Proficiency, costumes and wallpapers | Raw proficiency inspected. Z rewards costumes at proficiency 10/20 and wallpapers at 25/35/45; reward/unlock flags and native progression units remain unqualified, so no isolated proficiency write |
 | Officer unlocks and special skills/talents | Native packed skill flags remain preserved. Skill acquisition prerequisites, legitimate rank identity and reward dependencies need labelled acquisition pairs and matching item/text metadata |
 | Existing weapon reinforcement | Attack bonus editable; weapon base grade/type and derived total attack remain unchanged |
+| Equipped weapons | Choose qualified existing records from the same officer's pool with an already valid reference. Empty/unknown/malformed/cross-officer choices are rejected; no transfer, manufacture or bulk Max |
 | Existing weapon attribute slots/ranks | Safe capacity and owned ranked levels editable; attribute names require native localization/enum association, enum five is excluded |
 | New weapons, attribute acquisition/swap, fusion transaction | Existing records inspected only. Whole assignment updates collection bits, so ID/family/collection/dependency relationships must be qualified before creation or consumption |
 | Alchemy abilities and crafted inventory | Separate mask preserved. Z has fifteen distinct abilities, max three equipped and stock up to 99; recipe prerequisite/crafted stock/equipped ability relationships and exact bit catalogue need native mapping |
@@ -269,7 +316,7 @@ rejection, every integrity byte, opaque-tail preservation, existing-only weapons
 rank encoding, capacity dependencies, ID-specific base-attack floors/ceilings, unusual values, surgical Max, immutable
 snapshots, backup/restore and source-change safety. `OROCHIZ_NATIVE_SAVE` can point
 to the privately copied public native fixture: its optional check performs an
-unchanged roundtrip and all 433 qualified individual field edits, verifies each
+unchanged roundtrip and every qualified individual field edit, verifies each
 edit changes only its field and checksum, reparses it and preserves the original.
 The public fixture generator is procedural; it is never claimed as game data.
 `tests/test_orochiz_gui.py` exercises search, Apply, Review Changes, Undo, safe Max,
@@ -283,8 +330,19 @@ mask/capacity constraints, enum-five preservation, unknown bits/tail, native
 field isolation and a GUI workflow using a private genuine-copy input. It also
 corroborates all 96 interpreted attack bounds against the attached executable.
 The combined format, contract, procedural GUI and independent review suites
-passed 23 tests with the private native fixture under Xvfb. This includes file
-and GUI validation of real save copies, but no edited in-game load validation.
+passed 29 tests with the later uploaded native fixture under Xvfb, including
+`tests/test_orochiz_equipment.py`: same-officer choices, empty/unknown references,
+surgical integrity updates and the genuine dropdown/Undo/Review/Save As workflow.
+The older progressed native copy separately qualifies the growth controls via
+`tests/test_orochiz_growth.py`, selected with `OROCHIZ_GROWTH_SAVE`; five focused
+tests cover every legitimate progressed band, malformed EXP/levels, preserved
+dependencies, individual genuine surgery and genuine GUI/source-backup saving.
+A further independent `tests/test_orochiz_progression_review.py` audit passes
+five checks covering combined selection/EXP/weapon edits, invalid pending changes,
+unusual-layout preservation, genuine progressed combinations and final-level
+exclusion. Its reviewer also independently compared all 99 native EXP thresholds.
+The complete current Orochi Z native/adversarial/Tk suite passes 39 checks.
+All are file and GUI validation, with no edited in-game load validation.
 
 No matching DLL or save-owner secret is indicated by the qualified native save
 path. Further rich controls require the matching installed game's LINKDATA

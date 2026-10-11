@@ -91,11 +91,49 @@ class UniversalPackagingTests(fixture.PackagingTests):
         with self.assertRaisesRegex(ValueError, 'Required public sources.*atelier-sophie2-save-editor-MIT'):
             release.verified_sources(self.root)
 
+    def test_native_team_ninja_cipher_requires_its_embedded_mit_notice(self):
+        codec = BASE + 'research/katana/katana_codec.py'
+        notice = 'licenses/katana-save-data-resigner-MIT.txt'
+        self.add_sources({codec: b'# MIT-attributed native cipher\n',
+                          notice: b'MIT cipher notice\n'})
+        self.write_manifest()
+        archive, blobs, _module = self.archive_fixture()
+        release.verify_executable(self.root, lambda _: archive)
+        del archive.toc[notice]
+        with self.assertRaisesRegex(ValueError, 'missing from executable'):
+            release.verify_executable(self.root, lambda _: archive)
+        archive.toc[notice] = (0, 0, 0, 0, 'x')
+        blobs[notice] = b'Changed notice'
+        with self.assertRaisesRegex(ValueError, 'differs from manifest'):
+            release.verify_executable(self.root, lambda _: archive)
+        self.sources.pop(notice)
+        self.write_manifest()
+        with self.assertRaisesRegex(ValueError, 'Required public sources.*katana-save-data-resigner-MIT'):
+            release.verified_sources(self.root)
+
     def test_failed_bundle_validation_prevents_creating_any_downloads(self):
         with patch.object(release, 'verify_executable', side_effect=ValueError('Private artifact')):
             with self.assertRaisesRegex(ValueError, 'Private artifact'):
                 release.package(self.root)
         self.assertFalse((self.root / 'release').exists())
+
+    def test_katana_dependency_requires_its_exact_embedded_license(self):
+        codec = BASE + 'research/katana/katana_codec.py'
+        notice = 'licenses/katana-save-data-resigner-MIT.txt'
+        self.add_sources({codec: b'# Attributed native cipher primitive\n', notice: b'MIT Katana notice\n'})
+        self.write_manifest()
+        archive, blobs, _module = self.archive_fixture()
+        release.verify_executable(self.root, lambda _: archive)
+        blobs[notice] = b'Incorrect notice'
+        with self.assertRaisesRegex(ValueError, 'differs from manifest'):
+            release.verify_executable(self.root, lambda _: archive)
+        del archive.toc[notice]
+        with self.assertRaisesRegex(ValueError, 'missing from executable'):
+            release.verify_executable(self.root, lambda _: archive)
+        self.sources.pop(notice)
+        self.write_manifest()
+        with self.assertRaisesRegex(ValueError, 'Required public sources.*katana-save-data-resigner-MIT'):
+            release.verified_sources(self.root)
 
     def test_reviewed_research_documents_ship_byte_exactly_in_both_downloads(self):
         names = {'docs/GAME_MECHANICS.md', 'docs/KOEI_FORMATS.md', 'docs/PC_EDITOR_ATTEMPTS.md', 'docs/PC_RESEARCH_RETRY.md'}

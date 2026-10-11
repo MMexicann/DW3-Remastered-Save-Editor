@@ -171,11 +171,15 @@ class DW7XLTests(unittest.TestCase):
                          document.payload[backend.OFFICER_BASE + backend.OFFICER_COUNT * backend.OFFICER_STRIDE:])
 
     def test_forged_snapshots_and_platforms_rejected(self):
+        class EqualFormat:
+            def __eq__(self, other):
+                return True
+
         d = self.document
         for forged in (replace(d, raw=bytearray(d.raw)), replace(d, payload=bytearray(d.payload)),
                        replace(d, payload=d.payload[:-1] + bytes([d.payload[-1] ^ 1])),
                        replace(d, seed=True), replace(d, seed=d.seed ^ 1),
-                       replace(d, format=replace(d.format, id='dw7_ps3'))):
+                       replace(d, format=replace(d.format, id='dw7_ps3')), replace(d, format=EqualFormat())):
             with self.subTest(type=type(forged.raw)), self.assertRaises(SaveError):
                 backend.serialize(forged, {})
         with self.assertRaises(FrozenInstanceError):

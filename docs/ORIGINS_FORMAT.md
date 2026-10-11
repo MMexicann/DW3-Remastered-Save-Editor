@@ -323,3 +323,15 @@ refuse existing destinations, including races. Comparison shows byte counts and
 up to 128 changed regions; totals include all regions. Reports use
 `.changes.json`, contain fingerprints and sizes but no file payloads or absolute
 paths, and are excluded by the repository's privacy rules.
+
+
+## Unreleased named inventory inspection
+
+The shared inspector now exposes existing qualified weapon records as searchable
+rows: native slot, weapon ID, stored upgrade, six trait IDs and their individual
+stored levels. The already established 27-byte stride and occupied pool are
+reused; reserved records are excluded. Unknown IDs and unusual upgrade/trait
+levels remain unchanged. This is inspection, not an ownership grant or a new
+trait writer. Other tabs keep resources, provincial peace, bonds, training and
+battle history separate. A complete public DLC save passed unchanged inspection;
+procedural tests also cover high and reserved values.

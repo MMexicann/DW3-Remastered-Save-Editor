@@ -2,8 +2,8 @@
 
 Reference: talkative-platano/dw4xl-save-editor, commit
 b3ea895c6e854accd6860fd51ce69aeb024f53e9 (README.md). No third-party code or
-sample saves are included. The documented editor reports lossless testing;
-independent validation against a genuine game save remains pending here.
+sample saves are included. Two independent publicly shared USA game saves were
+privately archive-converted and qualified; console loading remains untested.
 Only the USA BASLUS-20812 inner file in a PSU export is accepted. Metadata,
 icons, directory records, file padding and unknown inner bytes are preserved.
 """
@@ -87,7 +87,7 @@ class Format:
     size: int
     fields: tuple
     note: str
-    sample_verified: bool = False
+    sample_verified: bool = True
     inner_size: int = INNER_SIZE
 
 
@@ -103,6 +103,10 @@ for _index, _name in enumerate(OFFICER_NAMES):
                              _size, _maximum, 'Officers', _index + 1, maxable=False))
     _fields.append(Field(f'officer_{_index}_weapon_experience', f'{_name}: Weapon EXP',
                          WEAPON_EXP_BASE + 2 * _index, 2, 36002, 'Weapons', _index + 1))
+    for _key, _label, _relative in (('harness', 'Harness', 8), ('orb', 'Orb', 9)):
+        _fields.append(Field(f'officer_{_index}_{_key}', f'{_name}: {_label}',
+                             OFFICER_BASE + OFFICER_STRIDE * _index + _relative,
+                             1, 41, 'Equipment', _index + 1, maxable=False))
 for _index, _name in enumerate(ITEM_NAMES):
     _maximum = 20 if _index < 13 else 4 if _index < 19 else 1
     _label = _name + (' ownership (0 locked / 1 owned)' if _index >= 19 else ' level (0 locked)')
@@ -117,10 +121,10 @@ FORMAT = Format(
     GAME_ID, 'Dynasty Warriors 4: Xtreme Legends (PS2, USA)', MAX_CONTAINER_SIZE, tuple(_fields),
     'Published PS2 USA SLUS-20812 format, opened only through a .psu export. '
     'The gameplay file is BASLUS-20812, exactly 34,064 bytes; its offset depends on '
-    'the export contents. Independent genuine-save and in-game edit validation '
-    'remain pending. Standard officer stats/points, weapon EXP, items, bodyguard '
-    'points and difficulty are editable; equipment and names are inspected without '
-    'changing them. PSU metadata/icons/padding and unrelated gameplay bytes are '
+    'the export contents. Export and import through a suitable PS2 memory-card tool. '
+    'Standard officer stats/points, weapon EXP, items, bodyguard '
+    'points, difficulty and owned harness/orb assignments are editable; general '
+    'equipment slots and names are inspected without changing them. PSU metadata/icons/padding and unrelated gameplay bytes are '
     'preserved. The 8 MiB container limit is an input read cap, not the save size.'
 )
 FIELD_MAP = MappingProxyType({field.id: field for field in FORMAT.fields})
@@ -246,7 +250,10 @@ def read_save(path, game_id=GAME_ID):
 
 
 def validate_document(document):
-    if not isinstance(document, Document) or document.format != FORMAT:
+    if (type(document) is not Document or document.format is not FORMAT
+            or type(document.raw) is not bytes or type(document.payload) is not bytes
+            or type(document.seed) is not int or type(document.payload_offset) is not int
+            or type(document.entries) is not tuple):
         raise SaveError('Unregistered DW4 XL PS2 document.')
     original = decode(document.raw, GAME_ID, document.source)
     if (original.payload != document.payload or original.payload_offset != document.payload_offset
@@ -265,7 +272,7 @@ def fields_for(document):
 
 
 def record_label(slot, group='Officers'):
-    if group in ('Officers', 'Weapons') and type(slot) is int and 1 <= slot <= OFFICER_COUNT:
+    if group in ('Officers', 'Weapons', 'Equipment') and type(slot) is int and 1 <= slot <= OFFICER_COUNT:
         return OFFICER_NAMES[slot - 1]
     if group == 'Bodyguards' and type(slot) is int and 1 <= slot <= 4:
         return f'Bodyguard team {slot}'
@@ -280,6 +287,17 @@ def changed_payload(document, changes):
             raise SaveError('The requested field is not mapped for PS2 USA DW4 XL.')
         field = FIELD_MAP[key]
         result[field.offset:field.offset + field.size] = field.encoded(value)
+    for key, value in changes.items():
+        if key.endswith(('_harness', '_orb')) and value != 41:
+            allowed = range(19, 24) if key.endswith('_harness') else range(13, 19)
+            if value not in allowed or result[ITEM_BASE + value] == 0xFF:
+                raise SaveError('Equip an owned item of the correct category, or choose 41 for Empty.')
+        if key.startswith('item_') and value == 0 and FIELD_MAP[key].value(document.payload) > 0:
+            identity = int(key.split('_')[1])
+            for index in range(OFFICER_COUNT):
+                base = OFFICER_BASE + OFFICER_STRIDE * index
+                if identity in result[base + 8:base + 16]:
+                    raise SaveError('Unequip this item from every officer before locking it.')
     result[:2] = (sum(result[4:]) & 0xFFFF).to_bytes(2, 'little')
     return bytes(result)
 
@@ -307,18 +325,20 @@ def stage(document, changes, key, value):
     else:
         field.validate(value)
         result[key] = value
+    if field.group in ('Equipment', 'Items'):
+        changed_payload(document, result)
     return result
 
 
 def limit_values(document, changes, keys):
-    validate_document(document)
+    changed_payload(document, changes)
     result = {}
     for key in keys:
         if key not in FIELD_MAP:
             raise SaveError('The requested field is not mapped for PS2 USA DW4 XL.')
         field = FIELD_MAP[key]
         current = changes.get(key, field.value(document.payload))
-        if field.maxable and type(current) is int and current <= field.maximum:
+        if field.maxable and type(current) is int and field.minimum <= current <= field.maximum:
             result[key] = field.maximum
     return result
 
@@ -362,8 +382,8 @@ def save_as(document, changes, destination):
 
 def restore(backup_path, destination, game_id=GAME_ID):
     get_format(game_id)
-    read_save(backup_path, game_id)
-    return restore_snapshot(backup_path, destination, GAME_ID, '.psu', MAX_CONTAINER_SIZE)
+    return restore_snapshot(backup_path, destination, GAME_ID, '.psu', MAX_CONTAINER_SIZE,
+                            validate_raw=lambda raw: decode(raw, game_id))
 
 
 def _name(payload, offset):
@@ -407,6 +427,11 @@ def field_hint(document, field):
     if key not in FIELD_MAP:
         raise SaveError('The requested field is not mapped for PS2 USA DW4 XL.')
     mapped = FIELD_MAP[key]
+    if mapped.group == 'Equipment':
+        return ('Equip owned items only: harness IDs 19 Red Hare, 20 Hex Mark, 21 Storm, '
+                '22 Shadow, 23 Elephant; orb IDs 13 Fire, 14 Lightning, 15 Vorpal, '
+                '16 Ice, 17 Blast, 18 Poison. 41 means Empty. Grant ownership in Items '
+                'before equipping. General slot availability remains unchanged. Bulk Max is disabled.')
     if key == 'difficulty':
         return 'Novice=0, Easy=1, Normal=2, Hard=3, Expert=4. Difficulty is excluded from bulk Max.'
     if mapped.group == 'Weapons':
@@ -425,3 +450,15 @@ def field_hint(document, field):
 
 # Integrity validated by this backend, separately from sample qualification.
 INTEGRITY_KIND = 'checksum'
+
+
+def field_options(document, key):
+    field = field_map(document).get(key)
+    if field is None:
+        raise SaveError('Choose a qualified field for this export.')
+    if key == 'difficulty':
+        return tuple(enumerate(('Novice', 'Easy', 'Normal', 'Hard', 'Expert')))
+    if field.group == 'Equipment':
+        identities = range(19, 24) if key.endswith('_harness') else range(13, 19)
+        return ((41, 'Empty'),) + tuple((index, ITEM_NAMES[index]) for index in identities)
+    return ()

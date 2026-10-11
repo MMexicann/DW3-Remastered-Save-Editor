@@ -131,7 +131,7 @@ The remaining bytes use AES-256-CBC with IV
 `e1c1c49f9a3019341ea820f99fd09a83`. Decrypted bytes first contain the second
 16-byte marker `a1423bc7d48e148b`, followed by serialization beginning with
 little-endian revision `0xA4`. The native AES tables match standard AES; they
-are not evidence of a custom cipher. CBC validation is at `0x14041A330`;
+are not evidence of a custom cipher. CBC decryption is at `0x14041A330`;
 encryption/decryption primitives are at `0x140418010`/`0x1404191B0`.
 
 Key setup at `0x14041A952` obtains an unsigned 64-bit platform save-owner value,
@@ -142,8 +142,10 @@ does not retain or return it. It does not guess accounts or reassign ownership.
 
 No genuine freely shared Abyss save with its necessary original-owner context
 was located. GitHub queries located mechanics/build planners, not a qualifying
-PC save editor or native fixture. Public Steam guides were reviewed; Reddit
-and Nexus requests were denied by those sites during this investigation.
+PC save editor or native fixture. Public Steam guides were reviewed. Nexus
+initially denied requests; the later follow-up accessed its public game/mod
+listing successfully but located no qualifying native save or save codec.
+The earlier Reddit access failure is not treated as evidence that saves do not exist.
 Gameplay serialization subroutines and inner integrity coverage remain
 unqualified. CBC and known markers do not authenticate arbitrary body changes;
 the tests demonstrate that limitation and keep `integrity_verified` and
@@ -205,3 +207,36 @@ regions/owners, checksum/marker failures, immutable snapshots and forged/edited
 snapshot rejection. Abyss body changes are deliberately not accepted as
 integrity-verified. Optional `ABYSS_SAVE_COPY`/`ABYSS_SAVE_OWNER_CONTEXT` remain
 local and are never published. Neither title has actual game-load validation.
+
+## Unreleased follow-up research (2026-10-10)
+
+The attached Abyss image was decoded again entirely as static analysis: adjacent
+DWORD SteamStub header XOR, AES-ECB IV decoding, and CBC transformation of the
+explicit code section into a private analysis image. No binary was executed and
+no unpacked image or unpacker is distributed. Native save service confirms system
+versus game capacities and chooses registered save objects through callbacks.
+`0x1403F96E0` reads/writes the four-byte revision and rejects unsupported newer
+low-byte revisions; `0x1403F9620` serializes selected registered objects using
+their virtual `+0x10` handlers and category bytes. These functions are not a
+field map or checksum proof: the category-selected object list, each object's
+serialization, and gameplay integrity coverage still require qualification.
+There is no justified scalar-writing fallback around the owner-dependent key.
+
+Fresh GitHub title queries find mechanical planners, translations and purported
+trainers rather than a source-backed disk-save editor. The additional
+[Suyukn/warriors-abyss-tool](https://github.com/Suyukn/warriors-abyss-tool) describes
+v1.8 data, 141 heroes, 54 emblems, transcendence costs and 18 Origins DLC heroes.
+Its localStorage/exported JSON stores **planner teams**, not `SYSTEMDATA.BIN` or
+`GAMEDATA##.BIN`. Steam save-crash/modding discussions and save-guide searches,
+Nexus's game listing, and public save-site title searches did not supply a genuine
+PC save plus its original unsigned owner context. No planner/translation/trainer
+was executed or packaged.
+
+The concrete prerequisite remains a complete genuine PC `SYSTEMDATA.BIN` and/or
+`GAMEDATA00.BIN` (or another exact two-digit game slot) from the same original
+export context, with that save's original unsigned platform owner value. The
+owner value is supplied privately through the opt-in candidate interface, never
+guessed from an unrelated profile. Controlled recruitment/spend/growth/run pairs
+would then separate persistent progression, run resume data and reward claims.
+Decryption alone cannot qualify body edits; until inner integrity and the chosen
+object schema are proven the candidate stays read-only and unregistered.

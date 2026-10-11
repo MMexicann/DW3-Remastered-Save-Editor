@@ -1,7 +1,7 @@
 # Dynasty Warriors 6 — original Windows PC
 
 The adapter implements named playable-officer unlocks, existing horse combat
-stats, and searchable read-only officer/weapon/horse inspection. This is the
+stats, existing weapon element choices, and searchable officer/weapon/horse inspection. This is the
 original Windows game, not DW6 Empires, PS2 Special, PS3 or Xbox 360.
 
 ## Provenance and qualification
@@ -63,7 +63,7 @@ descriptors, model, names and all other bytes are preserved.
 The weapon inspector recognizes 123 known weapon IDs, shows eight existing
 slots per officer, and omits the documented empty ID 174. Unknown IDs and masks
 remain visible as numeric/raw values. Damage is a **bonus over weapon base
-damage**, not total attack. No weapon field is writable.
+damage**, not total attack. Existing known weapon elements now support deliberate individual edits. The native reader maps each 16-byte record to four independent u32 values: ID, damage bonus, element and skill mask. Its explicit enum is 0 Fire, 1 Ice, 2 Lightning and 3 Standard (no element). Element is a choice rather than an ordered upgrade and is excluded from every Max action. Only an original known weapon ID with an original known element qualifies; empty ID 174, unknown IDs and unknown element values remain read only. An element edit preserves identity, damage bonus, skill mask, inventory, officer progression and every other byte. This does not establish damage limits or skill acquisition dependencies.
 
 ## Coverage and exact remaining inputs
 
@@ -74,8 +74,8 @@ damage**, not total attack. No weapon field is writable.
 | Officer level/EXP and derived stats | Read-only stored values. Level changes alter Life/Musou/Attack/Defense; EXP alone does not immediately level. Need controlled level-up/EXP pairs or the native PC executable's level/reward routines before exposing progression edits. |
 | Officer identity, title, outfit and kills | Read-only. Identity can redirect inventories/progression; title affects stat distribution. Need independently identified title/outfit domains, eligibility and update dependencies. Identity replacement is deliberately unavailable. |
 | Officer skill trees | Read-only raw eight-byte data. Per-officer nodes/counts differ; broad FF writes in old research do not identify every valid node or reserved bit. Need node maps, level/prerequisite rules and controlled allocation pairs. |
-| Weapons and equipment | Named read-only inventory, raw damage bonus, element and skill mask. The proposed “32” damage maximum is tentative and the display limit is not a natural cap. Need native bonus bounds, equipped references, rank/weapon-type eligibility and controlled acquisition/equip pairs. |
-| Weapon skills/elements | Read-only. Published lists describe skills but do not prove every bit, valid combinations or five-slot enforcement in disk records. Need exact masks, enum/slot limits and acquisition/write-path proof. |
+| Weapons and equipment | Named inventory and manual existing-element choices; raw damage bonus and skill mask remain read only. The proposed “32” damage maximum is tentative and the display limit is not a natural cap. Need native bonus bounds, equipped references, rank/weapon-type eligibility and controlled acquisition/equip pairs. |
+| Weapon elements / skills | Existing known element enum writable individually, excluded from Max; native sample contains all four valid choices. Skill masks remain read only: published lists describe skills but do not prove every bit, valid combinations or five-slot enforcement in disk records. Need exact masks, enum/slot limits and acquisition/write-path proof. |
 | Horse EXP/level/growth, names, type and model | Read-only. Growth descriptors and model transformation are interdependent. Red Hare requires the relevant coat, eyes/physique, level and Wind Spirit conditions; changing a type/model alone does not create a legitimate horse. Need complete descriptor offsets/enums and controlled growth/transform pairs. |
 | Horse skills/elements | Read-only. Skills are a combined mask with a four-skill limit. Need complete bit semantics and native mutation/slot rules before writing masks. |
 | Stages, difficulty records, objectives, challenges and leaderboards | Preserved. Public runtime identity changes also affected challenge results, showing dependencies. Need native disk field maps and controlled clear/objective/reward pairs, separate from playable unlocks. |
@@ -98,3 +98,9 @@ Public author game-reload evidence supports the mappings. **This project has
 not performed an edited in-game load or re-save.** Such validation requires the
 original Windows game plus controlled saves from a player; it remains distinct
 from successful parser and GUI tests.
+
+## Unreleased weapon-element expansion checks
+
+`tests/test_dw6_elements.py` adds named existing-record selection, all four valid choices, surgical single-word writes, unknown/empty records, invalid values, choice exclusion from Max, review/unstage and guarded new-copy/backup/reopen checks. With `DW6_SAVE` pointing to the privately held independent native sample, all **202 qualified existing weapon element fields** passed individual surgical edits and reparsing; the sample contains Fire, Ice, Lightning and no-element records. The combined existing format/contract and new element checks passed **19 tests** with the native fixture. No player save, source parser code or asset is included, and no new edited in-game load is claimed.
+
+The underlying public research remains pinned to `f2152f67b031091a0268154203d25fa9f65d2664`; the independent implementation uses its factual enum and record positions. Its lack of an explicit project licence still precludes copying its implementation.

@@ -1,4 +1,4 @@
-"""Existing native Orochi Z weapons and shared stock EXP.
+"""Native Orochi Z existing weapons, attack and bounded EXP.
 
 Offsets come from the native serialized blocks and weapon-fusion mutation path;
 no console offsets, new weapon identities or story/reward flags are inferred.
@@ -11,7 +11,8 @@ from types import MappingProxyType
 
 from koei_editor.games.dw3.models import SaveError
 from koei_editor.games.orochiz import orochiz_codec as codec
-from koei_editor.games.orochiz.orochiz_limits import BASE_ATTACK_MINIMUMS, BASE_ATTACK_MAXIMUMS
+from koei_editor.games.orochiz.orochiz_limits import (
+    BASE_ATTACK_MINIMUMS, BASE_ATTACK_MAXIMUMS, LEVEL_EXP_THRESHOLDS)
 from koei_editor.shared.copy_storage import atomic_new, restore_snapshot, snapshot_backup
 from koei_editor.shared.save_safety import safe_path
 
@@ -61,7 +62,8 @@ class Format:
 
 FORMAT = Format(GAME_ID, 'Warriors Orochi Z (PC)', SAVE_SIZE, (),
                 'Stock EXP, officer base attack and existing weapon attack bonus, attribute capacity and '
-                'owned ranked attributes. Character EXP, proficiency, alchemy '
+                'owned ranked attributes. Switch between qualified existing weapons in an officer\'s own pool. '
+                'Adjust EXP inside a progressed officer\'s current level; levels, proficiency, alchemy '
                 'abilities, unlocks and story records remain read only.')
 
 
@@ -83,9 +85,16 @@ def get_format(game_id=GAME_ID):
     return FORMAT
 
 
+@lru_cache(maxsize=4)
+def _validated_snapshot(raw):
+    return codec.decode(raw)
+
+
 def decode(raw, game_id=GAME_ID, source=Path('orochiz-copy.dat')):
     layout = get_format(game_id)
-    payload = codec.decode(raw)
+    # Freeze before caching: writable input and forged Document buffers must
+    # never share the immutable validated snapshot cache.
+    payload = _validated_snapshot(codec._profile(raw))
     return Document(layout, Path(source), payload, payload)
 
 
@@ -103,12 +112,30 @@ def validate_document(document):
     if (type(document) is not Document or document.format != FORMAT
             or type(document.raw) is not bytes or type(document.payload) is not bytes):
         raise SaveError('A frozen native Warriors Orochi Z document is required.')
-    if codec.decode(document.raw) != document.payload:
+    if _validated_snapshot(document.raw) != document.payload:
         raise SaveError('The opened Warriors Orochi Z snapshot was changed externally.')
 
 
 def _weapon_offset(officer, weapon):
     return OFFICER_BASE + officer * OFFICER_STRIDE + WEAPON_BASE + weapon * WEAPON_STRIDE
+
+
+def _qualified_weapon(payload, officer, weapon):
+    start = _weapon_offset(officer, weapon)
+    identity = int.from_bytes(payload[start:start + 2], 'little')
+    mask = int.from_bytes(payload[start + 2:start + 4], 'little')
+    return (0 <= identity < EMPTY_WEAPON and not mask & 0x8000
+            and mask.bit_count() <= payload[start + 6] <= 8)
+
+
+def _equipped_options(payload, officer):
+    options = []
+    for weapon in range(WEAPON_COUNT):
+        if _qualified_weapon(payload, officer, weapon):
+            start = _weapon_offset(officer, weapon)
+            identity = int.from_bytes(payload[start:start + 2], 'little')
+            options.append((weapon + 1, f'Weapon slot {weapon + 1} (ID {identity})'))
+    return tuple(options)
 
 
 @lru_cache(maxsize=4)
@@ -119,15 +146,33 @@ def _mapped_fields(payload):
                             OFFICER_BASE + officer * OFFICER_STRIDE + 8, 2,
                             BASE_ATTACK_MAXIMUMS[officer], 'Officer attack', officer + 1,
                             BASE_ATTACK_MINIMUMS[officer]))
+        start = OFFICER_BASE + officer * OFFICER_STRIDE
+        level = payload[start]
+        experience = int.from_bytes(payload[start + 16:start + 20], 'little')
+        # Only already progressed records with coherent native EXP qualify.
+        # Stay strictly below the next threshold: level/stat/reward changes
+        # need the native level-up path and its nonserialized random state.
+        if (1 <= level < 98 and LEVEL_EXP_THRESHOLDS[level] <= experience
+                < LEVEL_EXP_THRESHOLDS[level + 1]):
+            fields.append(Field(f'officer_{officer}_exp_within_level',
+                                f'Officer {officer + 1} (level {level + 1}): EXP within current level',
+                                start + 16, 4, LEVEL_EXP_THRESHOLDS[level + 1] - 1,
+                                'Officer growth', officer + 1, LEVEL_EXP_THRESHOLDS[level],
+                                maxable=False))
+        equipped_offset = OFFICER_BASE + officer * OFFICER_STRIDE + 1
+        options = _equipped_options(payload, officer)
+        # Do not repair an unknown/empty equipped reference. A choice only selects
+        # a qualified record already present in this officer's own eight-slot pool.
+        if payload[equipped_offset] + 1 in dict(options) and len(options) > 1:
+            fields.append(Field(f'officer_{officer}_equipped_weapon',
+                                f'Officer {officer + 1}: Equipped weapon slot',
+                                equipped_offset, 1, 8, 'Equipment', officer + 1, 1,
+                                maxable=False, display_bias=1))
         for weapon in range(WEAPON_COUNT):
             start = _weapon_offset(officer, weapon)
-            identity = int.from_bytes(payload[start:start + 2], 'little')
-            if not 0 <= identity < EMPTY_WEAPON:
-                continue
             mask = int.from_bytes(payload[start + 2:start + 4], 'little')
-            slots = payload[start + 6]
             # Preserve structurally unusual weapons; never repair masks or rank bytes.
-            if mask & 0x8000 or not mask.bit_count() <= slots <= 8:
+            if not _qualified_weapon(payload, officer, weapon):
                 continue
             prefix = f'officer_{officer}_weapon_{weapon}'
             label = f'Officer {officer + 1}, weapon {weapon + 1}'
@@ -152,7 +197,26 @@ def fields_for(document):
 
 
 def field_map(document):
-    return MappingProxyType({field.id: field for field in fields_for(document)})
+    validate_document(document)
+    return _field_index(document.payload)
+
+
+@lru_cache(maxsize=4)
+def _field_index(payload):
+    return MappingProxyType({field.id: field for field in _mapped_fields(payload)})
+
+
+def field_options(document, key):
+    field = field_map(document).get(key)
+    if field is None:
+        raise SaveError('The requested Warriors Orochi Z field is not editable.')
+    return _equipped_options(document.payload, field.slot - 1) if key.endswith('_equipped_weapon') else ()
+
+
+def _validate_equipped(document, field, value):
+    field.validate(value)
+    if value not in dict(_equipped_options(document.payload, field.slot - 1)):
+        raise SaveError('Select a qualified existing weapon from this officer\'s own pool.')
 
 
 def changed_payload(document, changes):
@@ -164,6 +228,8 @@ def changed_payload(document, changes):
         field = mapping[key]
         if type(value) is int and value == field.value(document.payload):
             continue
+        if key.endswith('_equipped_weapon'):
+            _validate_equipped(document, field, value)
         result[field.offset:field.offset + field.size] = field.encoded(value)
     return codec.encode(result) if changes else document.payload
 
@@ -187,6 +253,8 @@ def stage(document, changes, key, value):
         result.pop(key, None)
     else:
         field.validate(value)
+        if key.endswith('_equipped_weapon'):
+            _validate_equipped(document, field, value)
         result[key] = value
     return result
 
@@ -249,7 +317,7 @@ def restore(backup_path, destination, game_id=GAME_ID):
 
 
 def record_label(slot, group='Resources'):
-    if group == 'Officer attack' and type(slot) is int and 1 <= slot <= OFFICER_COUNT:
+    if group in ('Officer attack', 'Officer growth', 'Equipment') and type(slot) is int and 1 <= slot <= OFFICER_COUNT:
         return f'Officer {slot}'
     if type(slot) is int and 1 <= slot <= OFFICER_COUNT * WEAPON_COUNT:
         officer, weapon = divmod(slot - 1, WEAPON_COUNT)
@@ -297,6 +365,14 @@ def field_hint(document, field):
     if key.endswith('_base_attack'):
         return (f'Stored base attack, range {value.minimum}..{value.maximum} for this officer. '
                 'Weapon and skill effects are separate; level and EXP remain unchanged.')
+    if key.endswith('_exp_within_level'):
+        return (f'EXP within the opened level, {value.minimum:,}..{value.maximum:,}. '
+                'The next level threshold is excluded. Level, growth stats, rewards, '
+                'unlock flags and shared Stock EXP remain unchanged. Bulk Max excludes this control.')
+    if key.endswith('_equipped_weapon'):
+        return ('Select an existing qualified weapon in this officer\'s own pool. '
+                'Displayed slots are 1..8; no weapon is created, moved or consumed. '
+                'Base attack, weapon contents, collections and progression remain unchanged.')
     if key.endswith('_attribute_slots'):
         return f'Weapon attribute capacity. Retains all owned attributes; range {value.minimum}..8.'
     if '_attribute_' in key and key.endswith('_level'):

@@ -4,9 +4,10 @@ Scalar backends retain the existing module API. BoundScalarAdapter checks the
 selected identity before delegating, without probing another parser. DW3 uses
 only EditorSession and keeps its tagged document and patch workflow.
 """
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Mapping, Protocol, Sequence
+from typing import Protocol, Sequence
 
 from koei_editor.games.dw3.models import SaveError
 
@@ -21,8 +22,8 @@ class ScalarField(Protocol):
     group: str
     slot: int
 
-    def value(self, payload: bytes) -> int: ...
-    def validate(self, value: int) -> None: ...
+    def value(self, payload: bytes) -> int | str: ...
+    def validate(self, value: int | str) -> None: ...
 
 
 class ScalarFormat(Protocol):
@@ -47,7 +48,7 @@ class ScalarBackend(Protocol):
     def validate_document(self, document: ScalarDocument) -> None: ...
     def fields_for(self, document: ScalarDocument) -> Sequence[ScalarField]: ...
     def field_map(self, document: ScalarDocument) -> Mapping[str, ScalarField]: ...
-    def stage(self, document, changes, key: str, value: int) -> dict: ...
+    def stage(self, document, changes, key: str, value: int | str) -> dict: ...
     def limit_values(self, document, changes, keys) -> dict: ...
     def maximums(self, document, changes, group=None) -> dict: ...
     def review(self, document, changes) -> Sequence[tuple]: ...
@@ -122,7 +123,7 @@ class BoundScalarAdapter:
 
     def _document_identity(self, document):
         layout = getattr(document, 'format', None)
-        if getattr(layout, 'id', None) != self.game_id or layout != self.get_format():
+        if getattr(layout, 'id', None) != self.game_id or layout is not self.get_format():
             raise SaveError('This document belongs to a different game/platform adapter.')
 
     def validate_document(self, document):
@@ -157,13 +158,44 @@ class BoundScalarAdapter:
     def field_map(self, document):
         return self._call('field_map', document)
 
+    @staticmethod
+    def _pending_value(document, field, value):
+        opened = field.value(document.payload)
+        if type(value) in (int, str) and type(value) is type(opened) and value == opened:
+            return  # Unusual opened values remain safe to preserve or unstage.
+        field.validate(value)
+
+    def _pending_fields(self, document, changes):
+        self._document_identity(document)
+        if not isinstance(changes, Mapping):
+            raise SaveError('Pending edits must be a mapping of verified fields and values.')
+        fields = self.backend.field_map(document)
+        for key, value in changes.items():
+            if type(key) is not str or key not in fields:
+                raise SaveError('A requested field is not verified for this game.')
+            self._pending_value(document, fields[key], value)
+        return fields
+
     def stage(self, document, changes, key, value):
+        fields = self._pending_fields(document, changes)
+        if type(key) is not str or key not in fields:
+            raise SaveError('A requested field is not verified for this game.')
+        self._pending_value(document, fields[key], value)
         return self._call('stage', document, changes, key, value)
 
     def limit_values(self, document, changes, keys):
+        fields = self._pending_fields(document, changes)
+        try:
+            keys = tuple(keys)
+        except TypeError as error:
+            raise SaveError('Choose verified field IDs for the Max action.') from error
+        for key in keys:
+            if type(key) is not str or key not in fields:
+                raise SaveError('A requested field is not verified for this game.')
         return self._call('limit_values', document, changes, keys)
 
     def maximums(self, document, changes, group=None):
+        self._pending_fields(document, changes)
         return self._call('maximums', document, changes, group)
 
     def review(self, document, changes):

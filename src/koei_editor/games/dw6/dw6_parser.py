@@ -23,6 +23,8 @@ OFFICER_BASE, OFFICER_STRIDE, OFFICER_COUNT = 2904, 168, 41
 HORSE_BASE, HORSE_STRIDE, HORSE_COUNT = 10784, 60, 8
 HORSE_STATS = (('speed', 'Speed', 16), ('attack', 'Attack', 24),
                ('jump', 'Jump', 28), ('destruction', 'Destruction', 32))
+WEAPON_COUNT, WEAPON_STRIDE, WEAPON_RELATIVE_BASE = 8, 16, 8
+WEAPON_ELEMENT_CHOICES = ((0, 'Fire'), (1, 'Ice'), (2, 'Lightning'), (3, 'No element'))
 
 
 def _u32(payload, offset):
@@ -51,7 +53,8 @@ _HORSE_FIELDS = tuple(
 FORMAT = Format(GAME_ID, 'Dynasty Warriors 6 (PC)', SAVE_SIZE,
                 _UNLOCK_FIELDS + _HORSE_FIELDS,
                 'Observed 212,248-byte native PC profile with canonical officer identities. '
-                'One-way playable unlocks and qualified existing horse combat stats. '
+                'One-way playable unlocks, qualified existing horse combat stats and '
+                'individual element choices on existing known weapons. '
                 'Officer progression, equipment and story remain read only. '
                 'Genuine sample parsing is verified; edited game-load validation has not '
                 'been performed by this project.')
@@ -123,9 +126,20 @@ def _horse_qualified(payload, index):
 
 @lru_cache(maxsize=8)
 def _fields(payload):
+    elements = []
+    for officer in range(OFFICER_COUNT):
+        base = OFFICER_BASE + officer * OFFICER_STRIDE + WEAPON_RELATIVE_BASE
+        for weapon in range(WEAPON_COUNT):
+            offset = base + weapon * WEAPON_STRIDE
+            identity, element = _u32(payload, offset), _u32(payload, offset + 8)
+            if identity < len(WEAPON_NAMES) and element in (0, 1, 2, 3):
+                elements.append(Field(f'officer_{officer}_weapon_{weapon}_element',
+                                      f'{WEAPON_NAMES[identity]}: Element', offset + 8,
+                                      4, 3, 'Weapon elements', officer * WEAPON_COUNT + weapon + 1,
+                                      maxable=False))
     return tuple(field for field in _UNLOCK_FIELDS
                  if field.value(payload) in (0, 1)) + tuple(
-        field for field in _HORSE_FIELDS if _horse_qualified(payload, field.slot - 1))
+        field for field in _HORSE_FIELDS if _horse_qualified(payload, field.slot - 1)) + tuple(elements)
 
 
 def fields_for(document):
@@ -246,7 +260,21 @@ def restore(backup_path, destination, game_id=GAME_ID):
 def record_label(slot, group='Unlocks'):
     if group in ('Unlocks', 'Officers') and 1 <= slot <= OFFICER_COUNT:
         return OFFICER_NAMES[slot - 1]
+    if group == 'Weapon elements' and type(slot) is int and 1 <= slot <= OFFICER_COUNT * WEAPON_COUNT:
+        officer, weapon = divmod(slot - 1, WEAPON_COUNT)
+        return f'{OFFICER_NAMES[officer]} / weapon {weapon + 1}'
     return f'Horse slot {slot}' if group == 'Horses' else group
+
+
+def field_options(document, field):
+    """Optional choice metadata; the backend validates every value independently."""
+    key = field.id if isinstance(field, Field) else field
+    if type(key) is not str:
+        raise SaveError('Choose a mapped DW6 field name.')
+    mapped = field_map(document).get(key)
+    if mapped is None:
+        raise SaveError('The requested DW6 field is not editable.')
+    return WEAPON_ELEMENT_CHOICES if mapped.group == 'Weapon elements' else ()
 
 
 def field_hint(document, field):
@@ -256,6 +284,10 @@ def field_hint(document, field):
         return ('Set 1 to unlock this playable officer. Use the separate content-unlock '
                 'action for all qualified officers. Story completion, level, EXP, '
                 'skill tree and existing weapon inventory are preserved.')
+    if mapped.group == 'Weapon elements':
+        return ('Existing weapon element: 0 Fire, 1 Ice, 2 Lightning, 3 no element. '
+                'This is a choice, so Max leaves it unchanged. Weapon identity, damage '
+                'bonus, skill mask, inventory and officer progression are preserved.')
     return ('Existing horse combat stat; 500 is the documented effective upper limit. '
             'Max preserves higher existing values. EXP, growth descriptors, model, '
             'element, skill mask and the unqualified adjacent stat are preserved.')

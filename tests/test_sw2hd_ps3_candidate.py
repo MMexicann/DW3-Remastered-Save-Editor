@@ -1,4 +1,5 @@
 """Synthetic diagnostic tests; not genuine-file or gameplay qualification."""
+from dataclasses import FrozenInstanceError
 import unittest
 
 from koei_editor.games.dw3.models import SaveError
@@ -32,3 +33,54 @@ class SW2HDSourceCandidateTests(unittest.TestCase):
                     bytearray(inspection.MIN_CANDIDATE_SIZE)):
             with self.assertRaises(SaveError):
                 inspection.inspect(raw)
+
+    def test_published_record_anchors_are_raw_unqualified_immutable_probes(self):
+        raw = bytearray(inspection.MIN_CANDIDATE_SIZE)
+        for ordinal, (offset, _label) in enumerate(inspection.EXP_ANCHORS):
+            raw[offset:offset + 4] = (0xFFFFFFFE - ordinal).to_bytes(4, 'big')
+        for ordinal, (offset, _position) in enumerate(inspection.WEAPON_ANCHORS):
+            raw[offset:offset + 0x13] = bytes(range(200 + ordinal, 219 + ordinal))
+        before = bytes(raw)
+        result = inspection.inspect(before)
+        self.assertEqual([probe.stored_value for probe in result.experience_probes],
+                         [0xFFFFFFFE, 0xFFFFFFFD, 0xFFFFFFFC])
+        for probe, (offset, position) in zip(result.weapon_probes, inspection.WEAPON_ANCHORS):
+            record = before[offset:offset + 0x13]
+            self.assertEqual(probe.raw_record, record)
+            self.assertEqual(probe.published_position, position)
+            self.assertEqual(probe.stored_type, record[0])
+            self.assertEqual(probe.stored_element, record[1])
+            self.assertEqual(probe.stored_effect_ids, tuple(record[2:10]))
+            self.assertEqual(probe.stored_effect_values, tuple(record[10:18]))
+            self.assertEqual(probe.stored_effect_count, record[18])
+            self.assertFalse(probe.ownership_qualified)
+            with self.assertRaises(FrozenInstanceError):
+                probe.stored_type = 0
+        self.assertTrue(all(not probe.identity_qualified for probe in result.experience_probes))
+        self.assertFalse(result.qualified_game_profile)
+        self.assertEqual(bytes(raw), before)
+
+    def test_partial_checksum_match_never_establishes_profile_or_full_integrity(self):
+        raw = bytearray(inspection.MIN_CANDIDATE_SIZE)
+        raw[8] = 17
+        raw[9] = 23
+        for offset in inspection.CHECKSUM_OFFSETS:
+            raw[offset:offset + 4] = (40).to_bytes(4, 'big')
+        self.assertTrue(inspection.inspect(bytes(raw)).checksums_match)
+        # Header and later sections are outside the only published sum range.
+        for offset in (0, 7, 0x36E4, 0x10000):
+            changed = bytearray(raw)
+            changed[offset] ^= 1
+            result = inspection.inspect(bytes(changed))
+            self.assertTrue(result.checksums_match)
+            self.assertFalse(result.editable)
+            self.assertFalse(result.qualified_game_profile)
+        # Additive collisions inside the covered range are also possible.
+        raw[8] -= 1
+        raw[9] += 1
+        self.assertTrue(inspection.inspect(bytes(raw)).checksums_match)
+        # Each duplicate must independently match, including its endian encoding.
+        for offset in inspection.CHECKSUM_OFFSETS:
+            changed = bytearray(raw)
+            changed[offset:offset + 4] = (40).to_bytes(4, 'little')
+            self.assertFalse(inspection.inspect(bytes(changed)).checksums_match)

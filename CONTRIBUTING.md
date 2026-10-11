@@ -78,12 +78,26 @@ be excluded from bulk Max, such as historical counters or dependency-sensitive
 choices. The backend's `limit_values` and `maximums` must honor that metadata,
 preserve higher existing values and use validated original records to select fields.
 
+When native title identity requires a companion file, qualify that context on
+file reads and safe saves. The optional backend hook
+`prepare_self_test_copy(document, destination)` can create only the minimal
+identity companion required for the copied-save CLI. Use bounded selective
+metadata parsing and atomic new-file storage; never copy account or signing
+fields into that generated context. In-memory `decode` remains a profile parser.
+
 Optional backend `record_label`, `field_hint` and `inspection_rows` hooks supply
 data for the standard inspector. Richer read-only views subclass
 `ScalarPresentation` in [scalar_presentation.py](src/koei_editor/shared/scalar_presentation.py), returning
 `InspectionTable` objects and field guidance. The game's editor declares its
 `presentation_type`, summary and subtitle. Keep game-specific presentation in
 adapter modules; adding a game should require no shared GUI or CLI ID branches.
+
+For independently proved enumerations, an optional `field_options(document,
+field_id)` hook returns `(native_integer, display_name)` choices. Backend
+validation remains authoritative; choices are excluded from Max unless a
+meaningful natural maximum exists. Proven fixed-width names may declare
+`kind='text'`, with byte/encoding validation in the game backend and
+`maxable=False`. The shared GUI keeps mixed text/numeric bulk edits separate.
 
 Subclass [tests/scalar_contract.py](tests/scalar_contract.py)'s
 `ScalarContractTests` alongside `unittest.TestCase`, providing `game_id` and
@@ -187,6 +201,8 @@ Optional copied real saves are selected locally:
 | `DW7XL_SAVE_COPY` | Native PC DW7 XL Definitive gameplay `.dat` copy |
 | `WO3U_SAVE_COPY` | Native PC WO3 Ultimate Definitive `SAVEDATA.BIN` copy |
 | `SW4DX_SAVE_COPY` | Current-revision SW4 DX gameplay `.dat` copy |
+| `SW2_PC_SAVE_COPY` | Original 2008 Windows PC Samurai Warriors 2 revision-2 gameplay `.dat` copy; not HD/XL/console |
+| `WO1_NATIVE_SAVES` | Folder of reviewed flat original 2008 Windows PC Warriors Orochi revision-2 `.dat` copies; not Z/later/console |
 | `PW3_SAVE_COPY` | Native PC Pirate Warriors 3 `.dat` |
 | `PW4_SAVE_COPY` | Native revision-15 one-step-region PW4 gameplay `.dat` copy |
 | `DW4HYPER_SAVE_COPY` | Native PC Hyper `save.dat` copy |
@@ -194,8 +210,14 @@ Optional copied real saves are selected locally:
 | `SOPHIE2_SAVE_COPY` | Native Steam 1.08 Atelier Sophie 2 `data.dat` copy |
 | `ORIGINS_SAVE_COPIES` | Folder of copied native Steam `SLOT*.dat` Origins saves |
 | `NIOH2_SAVE_COPY` | PC Nioh 2 user `.bin` copy for read-only inspection |
-| `NIOH3_NATIVE_DIR` | Reviewed native Nioh 3 USER copies for codec qualification |
+| `NIOH_SAVE_COPY` | Native PC Nioh USER copy for strict read-only codec checks |
+| `NIOH3_NATIVE_DIR` | Reviewed native Nioh 3 USER copies for codec and surgical edit checks |
 | `NIOH3_ENCRYPTED_COPY` / `NIOH3_DECRYPTED_COPY` | Matching reviewed Nioh 3 native USER reference pair |
+| `NIOH3_SAVE_COPY` / `NGII_SAVE_COPY` | Native copies for real Tk editor save/backup/restore workflows |
+| `NGII_NATIVE_DIR` | Extracted original Xbox 360/Xenia Ninja Gaiden II revision-6 story copies |
+| `SIGMA_PC_NATIVE_DIR` / `SIGMA2_PC_NATIVE_DIR` | Separate Master Collection PC research-inspection copies |
+| `NG2_BLACK_STEAM_NATIVE_DIR` | Black Steam native GVAS copies for research inspection |
+| `SOPFFO_NATIVE_DIR` / `SOPFFO_STEAM_NATIVE_DIR` | Separate Epic launch / Steam native USER and SYSTEM research copies |
 | `DW6_SAVE` | Native original Windows DW6 `save.dat` copy |
 | `DW9EMP_SYSTEM_COPY` | Current native PC DW9 Empires SYSTEMDATA `SAVEDATA.BIN`; a missing genuine fixture skips |
 | `DW7_PS3_US_COPY` / `DW7_PS3_EU_COPY` | Copied decrypted PS3 DW7 US/EU `APP.BIN` exports |
@@ -209,6 +231,7 @@ Optional copied real saves are selected locally:
 | `OROCHIZ_NATIVE_SAVE` | Native Orochi Z revision2 `save.dat` for unchanged/surgical field and GUI checks |
 | `DW8E_SAVE_FOLDER` | Reviewed native DW8 Empires system/campaign/quick copies for codec checks |
 | `KATANA_GOLDEN_DIR` | Locally reviewed upstream encrypted/decrypted reference-pair directory |
+| `ROTK13_SAVE_COPIES` | Private folder of reviewed original PC revision-14 TC XIII campaign `.s13` copies |
 | `DW3_TEST_REPORTED_SAVE` | Explicit DW3 regression copy used by `test_save_variants.py` |
 
 For example:

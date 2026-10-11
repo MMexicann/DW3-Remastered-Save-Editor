@@ -1,6 +1,7 @@
 """Fresh-save counter regression uses supplied copies and actual GUI callbacks."""
 from pathlib import Path
 import hashlib
+import os
 import shutil
 import sys
 import tempfile
@@ -25,6 +26,8 @@ FIXTURE=PROJECT/'work/original-upload/GameStatusData.sav'
 AREA=PROJECT/'work/gui-v11-tests'
 
 
+@unittest.skipUnless(os.name == 'nt' or os.environ.get('DISPLAY'),
+                     'A graphical display is required.')
 class AppearanceGuiTests(unittest.TestCase):
     """Appearance switches must leave forms, selection and disabled actions intact."""
     def setUp(self):

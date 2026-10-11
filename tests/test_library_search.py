@@ -1,0 +1,82 @@
+"""Exercise finding and opening real library entries without losing sessions."""
+import tempfile
+import tkinter as tk
+import unittest
+from pathlib import Path
+
+from koei_editor.application import Application
+from koei_editor.game_registry import GAMES
+from koei_editor.shared.library_catalog import ALL_PLATFORMS, ALL_SERIES, matching_games
+
+
+class CatalogSearchTests(unittest.TestCase):
+    def test_short_name_and_platform_disambiguate_editions(self):
+        self.assertEqual([game.id for game in matching_games(GAMES, 'dw7')],
+                         ['dw7_ps3', 'dw7xl', 'dw7e_ps3'])
+        self.assertEqual([game.id for game in matching_games(GAMES, 'dw7 pc')], ['dw7xl'])
+        self.assertEqual([game.id for game in matching_games(GAMES, 'sóphie 2')], ['atelier_sophie2'])
+
+    def test_filters_combine_and_features_are_searchable(self):
+        games = matching_games(GAMES, 'horse', 'Windows PC', 'Dynasty Warriors')
+        self.assertEqual([game.id for game in games], ['dw6', 'dw8e'])
+        self.assertFalse(matching_games(GAMES, 'hyrule', 'Windows PC'))
+        self.assertEqual({game.id for game in matching_games(GAMES, 'hyrule')},
+                         {'hyrule_warriors', 'hyrule_definitive', 'hyrule_legends', 'age_of_calamity'})
+        self.assertFalse(matching_games(GAMES, 'game that does not exist'))
+
+
+class LibrarySearchGuiTests(unittest.TestCase):
+    def setUp(self):
+        try:
+            self.root = tk.Tk()
+        except tk.TclError as error:
+            self.skipTest(str(error))
+        self.directory = tempfile.TemporaryDirectory()
+        self.app = Application(self.root, preferences_path=Path(self.directory.name) / 'prefs.json',
+                               persist_preferences=False)
+        self.root.geometry('1080x820')
+        self.root.update()
+
+    def tearDown(self):
+        if hasattr(self, 'root'):
+            self.root.destroy()
+            self.directory.cleanup()
+
+    def test_cross_platform_search_and_enter_retain_existing_session(self):
+        editor = self.app.select_game('dw7xl')
+        self.app.show_library()
+        self.assertEqual(self.app.game_buttons['dw7xl'].cget('text'), 'Resume Editor')
+        self.app.focus_library_search()
+        self.app.library_search.set('dw7 pc')
+        self.root.update()
+        self.assertEqual(self.app.platform_choice.get(), ALL_PLATFORMS)
+        self.assertEqual([game.id for game in self.app.library_matches], ['dw7xl'])
+        self.assertTrue(self.app.library_buttons[ALL_PLATFORMS]['dw7xl'].winfo_ismapped())
+        self.assertFalse(self.app.library_buttons[ALL_PLATFORMS]['dw7_ps3'].winfo_ismapped())
+        self.app.open_library_match()
+        self.assertIs(self.app.sessions['dw7xl'][1], editor)
+        self.assertEqual(self.app.active_game, 'dw7xl')
+
+    def test_no_match_clear_filters_and_compact_toggle(self):
+        self.app.series_choice.set('Hyrule Warriors')
+        self.app.platform_choice.set(ALL_PLATFORMS)
+        self.app.library_search.set('no matching title')
+        self.root.update()
+        self.assertTrue(self.app.library_empty[ALL_PLATFORMS].winfo_ismapped())
+        self.app.open_library_match()
+        self.assertIsNone(self.app.active_game)
+        self.app.clear_library_filters()
+        self.root.update()
+        self.assertEqual(self.app.series_choice.get(), ALL_SERIES)
+        self.assertEqual(len(self.app.library_matches), len(GAMES))
+        self.assertFalse(self.app.library_empty[ALL_PLATFORMS].winfo_ismapped())
+        self.assertFalse(self.app.library_banners[ALL_PLATFORMS]['dw7xl'].winfo_manager())
+        self.app.compact_library.set(False)
+        self.app.update_library_density()
+        self.root.update()
+        self.assertEqual(self.app.library_banners[ALL_PLATFORMS]['dw7xl'].winfo_manager(), 'pack')
+        self.assertTrue(self.app.contact_button.winfo_ismapped())
+
+
+if __name__ == '__main__':
+    unittest.main()

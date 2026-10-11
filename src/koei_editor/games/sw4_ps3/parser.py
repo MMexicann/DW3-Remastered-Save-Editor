@@ -65,6 +65,18 @@ TITLE_IDS = ('NPUB31564',)
 SAVE_SIZE = 0x64000
 REVISION = bytes.fromhex('00002118')
 CHECKSUM_OFFSETS = (4, 0xA8, 0xC16, 0x58532)
+WEAPON_BASE, WEAPON_STRIDE, WEAPON_POOLS, WEAPON_SLOTS = 0x3882, 0x22, 60, 8
+# Factual skill names/IDs in the public PS3 patch, corroborated by the PC native
+# structure. PS3 progression flags remain raw inspection values, not writable.
+SKILL_NAMES = (
+    'Potency', 'Range', 'Courage', 'Impact', 'Fury', 'Underdog', 'Momentum',
+    'Clarity', 'Verity', 'Concentration', 'Fortitude', 'Stability', 'Elasticity',
+    'Bravery', 'Determination', 'Resolve', 'Nullification', 'Zeal', 'Conviction',
+    'Resurrection', 'Alacrity', 'Blaze', 'Shock', 'Frost', 'Wind', 'Diamond',
+    'Reaper', 'Rampage', 'Impulse', 'Awakening', 'Cavalry', 'Equestrian',
+    'Connoisseur', 'Collector', 'Hoarder', 'Constitution', 'Expert', 'Endurance',
+    'Paladin', 'Stimulus',
+)
 _fields = [Field('gold', 'Gold', 0x7842, 4, 999999)]
 for i in range(8):
     _fields.append(Field(f'gem_{i}', f'Gem slot {i + 1}', 0x78BC + i, 1, 99, 'Gems', i + 1))
@@ -245,7 +257,7 @@ def record_label(slot, group='Officers'):
 
 def field_hint(document, field):
     validate_document(document)
-    return ('Manual source-backed editing bound; automatic Max is disabled. '
+    return ('These quantity controls are manual; automatic Max is disabled. '
             'Unknown/higher original values remain unchanged. Export a decrypted '
             'copy with Apollo; after editing, reimport and resign it with Apollo. '
             'Encrypted console files, PARAM.PFD signing and PC saves are not handled.')
@@ -267,7 +279,36 @@ def inspection_rows(document):
                      'value': 'Stored proficiency level / EXP: '
                               + ', '.join(f'{level} / {exp:,}' for level, exp in zip(levels, experience))
                               + ' (read only)'})
+    for weapon in weapon_records(document):
+        if weapon['id'] == 180:
+            continue
+        details = []
+        for skill in weapon['skills']:
+            name = SKILL_NAMES[skill['id']] if skill['id'] < 40 else f"Unknown skill ID {skill['id']}"
+            details.append(f"{name}: stored rank {skill['rank']}, ceiling {skill['ceiling']}, "
+                           f"flags 0x{skill['flags']:02X}")
+        rows.append({'group': 'Weapon inspection',
+                     'label': f"Pool {weapon['pool']}, slot {weapon['slot']}: weapon ID {weapon['id']}",
+                     'value': '; '.join(details) + ' (read only)'})
     return tuple(rows)
 
-# Native gameplay checksums are validated and regenerated.
-INTEGRITY_KIND = 'checksum'
+
+def weapon_records(document):
+    """Inspect the existing source-documented PS3 arrays without importing PC data.
+
+    Owner names, rarity fabrication and rank/reward/activation writes are not
+    qualified by the patch's placeholder values. Every unknown ID/flag is kept.
+    """
+    validate_document(document)
+    records = []
+    for pool in range(WEAPON_POOLS):
+        for slot in range(WEAPON_SLOTS):
+            base = WEAPON_BASE + (pool * WEAPON_SLOTS + slot) * WEAPON_STRIDE
+            records.append({'pool': pool + 1, 'slot': slot + 1,
+                            'id': int.from_bytes(document.payload[base:base + 2], 'big'),
+                            'skills': tuple({'id': document.payload[base + 10 + index],
+                                             'rank': document.payload[base + 18 + index],
+                                             'ceiling': document.payload[base + 2 + index],
+                                             'flags': document.payload[base + 26 + index]}
+                                            for index in range(8))})
+    return tuple(records)

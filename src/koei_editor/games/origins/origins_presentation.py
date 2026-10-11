@@ -1,0 +1,27 @@
+"""Searchable views of independently mapped Origins inventory records."""
+from koei_editor.games.origins.origins_weapons import weapon_records
+from koei_editor.shared.scalar_presentation import InspectionTable, ScalarPresentation
+
+
+class OriginsPresentation(ScalarPresentation):
+    def inspection_tables(self, document):
+        self.backend.validate_document(document)
+        weapons = tuple(
+            (record.index + 1, record.weapon_id, record.upgrade,
+             ', '.join(str(value) for value in record.traits),
+             ', '.join(str(value) for value in record.trait_levels),
+             'Editable' if record.upgrade_qualified else 'Inspection only')
+            for record in weapon_records(document.payload, document.revision)
+        )
+        tables = [InspectionTable(
+            'Weapons', ('Inventory slot', 'Weapon ID', 'Reinforcement', 'Six trait IDs',
+                        'Six trait levels', 'Reinforcement editing'), weapons,
+            'Existing inventory records. Search any column. Trait IDs/levels, equipment references '
+            'and progression are preserved; weapon IDs without mapped names remain numeric.')]
+        grouped = {}
+        for row in self.backend.inspection_rows(document):
+            if row['group'] != 'Weapons':
+                grouped.setdefault(row['group'], []).append((row['group'], row['label'], row['value']))
+        for group, rows in grouped.items():
+            tables.append(InspectionTable(group, ('Group', 'Record / field', 'Opened value'), tuple(rows)))
+        return tuple(tables)

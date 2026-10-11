@@ -6,6 +6,7 @@ from koei_editor.shared.appearance import Appearance
 from koei_editor.shared.copy_storage import atomic_new
 from koei_editor.shared.adapter_contract import BoundScalarAdapter
 from koei_editor.shared.scalar_presentation import ScalarPresentation
+from koei_editor.shared.table_tools import attach_sorting, sort_table, copy_selected
 import koei_editor.shared.verified_editor as backend
 
 
@@ -65,7 +66,15 @@ class Editor(Appearance):
         select.bind('<<ComboboxSelected>>', lambda _event: self.refresh())
         ttk.Label(tools, text='Value').pack(side='left', padx=(18, 8))
         self.value = tk.StringVar(root)
-        ttk.Entry(tools, textvariable=self.value, width=15).pack(side='left')
+        value_frame = ttk.Frame(tools)
+        value_frame.pack(side='left')
+        self.value_entry = ttk.Entry(value_frame, textvariable=self.value, width=15)
+        self.value_entry.pack(side='left')
+        self.choice_value = tk.StringVar(root)
+        self.value_choice = ttk.Combobox(value_frame, textvariable=self.choice_value,
+                                         width=18, state='readonly')
+        self._choice_values = {}
+        self.value_choice.bind('<<ComboboxSelected>>', self.selected_choice)
         self.edit_buttons = []
         for label, callback in (('Apply Selected', self.apply_selected),
                                 ('Max Selected', self.max_selected), ('Max Visible Fields', self.max_visible)):
@@ -98,6 +107,7 @@ class Editor(Appearance):
         scroll = ttk.Scrollbar(frame, orient='vertical', command=self.fields.yview)
         scroll.pack(side='right', fill='y')
         self.fields.configure(yscrollcommand=scroll.set)
+        attach_sorting(self.fields)
         self.fields.bind('<<TreeviewSelect>>', self.selected)
         self.search.trace_add('write', lambda *_args: self.refresh())
         if parent is None:
@@ -141,6 +151,9 @@ class Editor(Appearance):
         selected = self.fields.selection()
         self.fields.delete(*self.fields.get_children())
         self.selection_info.set('Select a record to inspect its values.')
+        self.value_choice.pack_forget()
+        self.value_entry.pack(side='left')
+        self._choice_values = {}
         if self.document is None:
             return
         fields = self.adapter.fields_for(self.document)
@@ -154,20 +167,54 @@ class Editor(Appearance):
                 continue
             original = field.value(self.document.payload)
             record = self.record_name(field)
-            searchable = f'{field.label} {field.group} {record} {field.id}'.casefold()
+            opened = self.display_value(field, original)
+            searchable = f'{field.label} {field.group} {record} {field.id} {opened}'.casefold()
             if any(token not in searchable for token in tokens):
                 continue
-            pending = str(self.changes[field.id]) if field.id in self.changes else '-'
+            pending = self.display_value(field, self.changes[field.id]) if field.id in self.changes else '-'
             self.fields.insert('', 'end', iid=field.id,
-                               values=(record, field.label, f'{original:,}', pending, f'{field.maximum:,}'))
+                               values=(record, field.label, opened, pending,
+                                       f'{field.maximum:,} bytes' if getattr(field, 'kind', 'int') == 'text'
+                                       else f'{field.maximum:,}'))
         self.fields.selection_set([key for key in selected if self.fields.exists(key)])
+        sort_table(self.fields)
+        self.selected()
+
+    def field_options(self, field):
+        if self.document is not None and hasattr(self.backend, 'field_options'):
+            return tuple(self.backend.field_options(self.document, field.id))
+        return ()
+
+    def display_value(self, field, value):
+        if type(value) is not int:
+            return str(value)
+        label = dict(self.field_options(field)).get(value)
+        return f'{value:,} · {label}' if label is not None else f'{value:,}'
+
+    def selected_choice(self, _event=None):
+        if self.choice_value.get() in self._choice_values:
+            self.value.set(str(self._choice_values[self.choice_value.get()]))
 
     def selected(self, _event=None):
         keys = self.fields.selection()
         if keys and self.document:
             field = self.adapter.field_map(self.document)[keys[0]]
-            self.value.set(str(self.changes.get(field.id, field.value(self.document.payload))))
+            value = self.changes.get(field.id, field.value(self.document.payload))
+            self.value.set(str(value))
             self.selection_info.set(self.presentation.field_hint(self.document, field))
+            options = self.field_options(field)
+            fields = self.adapter.field_map(self.document)
+            if options and all(self.field_options(fields[key]) == options for key in keys):
+                self._choice_values = {f'{number} · {label}': number for number, label in options}
+                self.value_choice.configure(values=tuple(self._choice_values))
+                self.choice_value.set(next((label for label, number in self._choice_values.items()
+                                           if number == value), ''))
+                self.value_entry.pack_forget()
+                self.value_choice.pack(side='left')
+            else:
+                self._choice_values = {}
+                self.value_choice.pack_forget()
+                self.value_entry.pack(side='left')
 
     def record_name(self, field):
         return self.presentation.record_name(field)
@@ -199,6 +246,8 @@ class Editor(Appearance):
             for column in columns:
                 view.heading(column, text=column)
                 view.column(column, width=180)
+            attach_sorting(view)
+            ttk.Button(tools, text='Copy Selected', command=lambda: copy_selected(view)).pack(side='left', padx=(8, 0))
             view.grid(row=0, column=0, sticky='nsew')
             body.rowconfigure(0, weight=1)
             body.columnconfigure(0, weight=1)
@@ -216,6 +265,7 @@ class Editor(Appearance):
                         view.move(identity, '', 'end')
                     else:
                         view.detach(identity)
+                sort_table(view)
             query.trace_add('write', filter_rows)
             return view
         for content in self.presentation.inspection_tables(document):
@@ -239,12 +289,23 @@ class Editor(Appearance):
             messagebox.showerror('Cannot Stage Edit', str(error))
 
     def apply_selected(self):
+        keys = self.fields.selection()
+        if not keys or self.document is None:
+            return
+        fields = self.adapter.field_map(self.document)
+        kinds = {getattr(fields[key], 'kind', 'int') for key in keys}
+        if kinds == {'text'}:
+            self.stage_values({key: self.value.get() for key in keys})
+            return
+        if 'text' in kinds:
+            messagebox.showerror('Mixed Field Types', 'Select text fields or numeric fields separately for a bulk edit.')
+            return
         try:
             value = int(self.value.get())
         except ValueError:
             messagebox.showerror('Invalid Value', 'Enter a whole number.')
             return
-        self.stage_values({key: value for key in self.fields.selection()})
+        self.stage_values({key: value for key in keys})
 
     def max_selected(self):
         if self.document:
@@ -269,12 +330,30 @@ class Editor(Appearance):
         dialog.title('Review Changes')
         dialog.geometry('700x480')
         ttk.Label(dialog, text=f'{self.layout.title}\n{len(rows)} staged field edits', padding=15).pack(anchor='w')
-        tree = ttk.Treeview(dialog, columns=('field', 'before', 'after'), show='headings')
+        body = ttk.Frame(dialog)
+        body.pack(fill='both', expand=True, padx=15)
+        body.rowconfigure(0, weight=1)
+        body.columnconfigure(0, weight=1)
+        tree = ttk.Treeview(body, columns=('field', 'before', 'after'), show='headings')
         for column, label in (('field', 'Field / slot'), ('before', 'Before'), ('after', 'After')):
             tree.heading(column, text=label)
+        attach_sorting(tree)
+        from tkinter.font import Font
+        label_font = Font(root=dialog, font=self.style.lookup('Treeview', 'font') or 'TkDefaultFont')
+        label_width = 300
         for field, before, after in rows:
-            tree.insert('', 'end', values=(field.label + (f' / {self.record_name(field)}' if field.slot else ''), before, after))
-        tree.pack(fill='both', expand=True, padx=15)
+            label = field.label + (f' / {self.record_name(field)}' if field.slot else '')
+            label_width = max(label_width, label_font.measure(label) + 24)
+            tree.insert('', 'end', values=(label, before, after))
+        tree.column('field', width=label_width, minwidth=300, stretch=False)
+        tree.column('before', width=140, minwidth=100)
+        tree.column('after', width=140, minwidth=100)
+        tree.grid(row=0, column=0, sticky='nsew')
+        vertical = ttk.Scrollbar(body, orient='vertical', command=tree.yview)
+        vertical.grid(row=0, column=1, sticky='ns')
+        horizontal = ttk.Scrollbar(body, orient='horizontal', command=tree.xview)
+        horizontal.grid(row=1, column=0, sticky='ew')
+        tree.configure(yscrollcommand=vertical.set, xscrollcommand=horizontal.set)
         def export():
             path = filedialog.asksaveasfilename(title='Export Change Review', defaultextension='.changes.json')
             if path:

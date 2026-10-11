@@ -20,7 +20,9 @@
     "https://github.com/zarroboogs/p5spc.saveutil",
     "https://github.com/marcrobledo/savegame-editors",
     "https://github.com/BtEtta/save-editors",
-    "https://github.com/bucanero/apollo-lib"
+    "https://github.com/bucanero/apollo-lib",
+    "https://github.com/imouto1994/fe3h-editor/tree/5e4a73b71f28feb271ccdbc614ea934517c235b5",
+    "https://github.com/hashcade/feth-save-editor/tree/b9f53f0e01a3dd2cd24c96f97f1a829e51a1f00d"
   ],
   "games": [
     {
@@ -63,9 +65,9 @@
       "id": "berserk",
       "title": "Berserk and the Band of the Hawk",
       "platform": "Windows PC",
-      "status": "PC mechanics evidence; sample missing",
-      "evidence": "PC tutorials/guides distinguish character progression, accessory enhancement +9, skill rank and per-character/global Eclipse rewards. No native PC save or disk codec verified.",
-      "needed": "Copied native PC save, build labels, checksums and controlled character/accessory/Eclipse pairs.",
+      "status": "Native PC ciphertext qualified; gameplay map missing",
+      "evidence": "Reproducible read-only diagnostics qualify the genuine public BKSAVEDATA0000.dat outer three-advance cipher/u16 sum and exact unchanged reconstruction. Literal title text is observed; gameplay revision, records and full integrity remain unqualified. Official manual distinguishes persistent growth, accessory enhancement/amalgamation and Eclipse checkpoints/rewards. No gameplay adapter.",
+      "needed": "Matching Windows serializer/getters or source-backed Windows save editor and labelled unchanged/action pairs for funds, materials, existing accessories, growth and separate Eclipse rewards; exact revision/build and additional integrity proof. Vita editors/runtime trainers do not qualify Windows offsets.",
       "editing_verified": false
     },
     {
@@ -82,26 +84,26 @@
       "title": "Dynasty Warriors 6",
       "platform": "Windows PC (legacy edition)",
       "status": "Native PC editor",
-      "evidence": "Genuine 212248-byte native PC save with all 41 officer identities; original one-way officer unlocks and four qualified existing horse combat stats, with read-only named weapons/officers/horses. Byte-exact and surgical tests plus real Tk workflow.",
+      "evidence": "Genuine 212248-byte native PC save with all 41 officer identities; original one-way officer unlocks and four qualified existing horse combat stats, with read-only named weapons/officers/horses. Byte-exact and surgical tests plus real Tk workflow. Existing weapon element choices are independently mapped and surgically verified on genuine records.",
       "needed": "Edited game-load validation and controlled progression, equipment, horse growth/skills and dependency pairs.",
       "editing_verified": true
     },
     {
-      "id": "dw8_empires",
-      "title": "Dynasty Warriors 8: Empires",
+      "id": "dw8e",
+      "title": "Dynasty Warriors 8 Empires",
       "platform": "Windows PC",
-      "status": "Native PC codec qualified; gameplay maps blocked",
-      "evidence": "Five genuine native SystemSave/EmpireSave/QuickSave files qualify exact sizes, title revision 0x140828F1, checksum/cipher profiles and unchanged roundtrips. No gameplay writer is registered.",
-      "needed": "Proven native gameplay field identities, legitimate bounds and dependency maps; console and runtime fields do not establish a fixed disk shift.",
-      "editing_verified": false
+      "status": "Native-file editor implemented",
+      "evidence": "Complete genuine SystemSave files qualify both cipher and checksum. Existing occupied custom-horse body type is independently mapped; six other appearance sliders, stats and abilities remain inspected.",
+      "needed": "Controlled appearance-slider ranges, custom identity/name encoding, campaign resource-owner mappings and edited game reload.",
+      "editing_verified": true
     },
     {
       "id": "dw9_original",
       "title": "Dynasty Warriors 9",
       "platform": "Windows PC",
-      "status": "PC save link; download blocked",
-      "evidence": "Steam users confirm a public PC save and describe unlock/story coverage; savegame.pro blocked here. PC gem guide maps runtime taxonomy, not serialized fields.",
-      "needed": "Copied gameplay files from Dynasty Warriors 9 for Steam, full/trial/build/DLC labels, gem/resource/story pairs; actual gameplay basename remains unknown.",
+      "status": "Genuine PC bundle acquired; native integrity unqualified",
+      "evidence": "One public bundle provides PLAYERDATA and thirteen STORYDATA SAVEDATA.BIN files. Their distinct sizes and header observations are documented; no qualified native serializer, checksum model, record ownership or gameplay writer. Original DW9 remains separate from Empires.",
+      "needed": "Exact matching original Windows executable or public native serializer/integrity research; build/full-versus-trial/region/DLC-labelled native controls and single-action resource, growth, gem/equipment, horse, relationship, exploration and reward pairs.",
       "editing_verified": false
     },
     {
@@ -125,11 +127,11 @@
     {
       "id": "sw2",
       "title": "Samurai Warriors 2",
-      "platform": "Windows PC (legacy edition)",
-      "status": "Save search unresolved",
-      "evidence": "Located PC Sugoroku tool modifies SW2.exe map properties rather than saves. It is not a save decoder; no native PC sample or integrity evidence verified.",
-      "needed": "Unchanged copied native PC save, checksum/identity evidence and single-value character/weapon pairs.",
-      "editing_verified": false
+      "platform": "Windows PC (original 2008 edition)",
+      "status": "Original PC revision-2 editor",
+      "evidence": "Two independent native PC saves and period original PC disk-editor reader/writer qualify exact size, revision, byte-sum integrity, owned officer growth, acquired ordinary skill ranks and existing weapon bonus amounts. Unknown bytes, higher values, skill flags, ownership, level/EXP and story are preserved.",
+      "needed": "Edited original-PC game-load/re-save validation; native stat/growth caps and controlled progression, rare-skill, weapon identity/equip, guard/mount ownership and Survival/story reward pairs.",
+      "editing_verified": true
     },
     {
       "id": "sw5",
@@ -144,10 +146,10 @@
       "id": "sw4ii",
       "title": "Samurai Warriors 4-II",
       "platform": "Windows PC",
-      "status": "Sample link blocked; platform check pending",
-      "evidence": "Steam PC discussion links a Dropbox save; download blocked and uploaded filename still needs platform verification. PC runtime maps weapons, mounts and strategy tomes without proving disk offsets.",
-      "needed": "Copied native Windows save, edition/build labels, integrity checks and weapon/tome/progression pairs.",
-      "editing_verified": false
+      "status": "Native PC revision0x31A4 editor",
+      "evidence": "Two independent genuine PC saves and static English v1.0 native-editor inspection qualify the three-step envelope, exact six checksum spans, four polynomial checksums and record ownership. Manual current gold, five held strategy-tome resources, existing standard-officer stored base stats, qualified existing own-pool weapon selection and attached attribute magnitudes, and occupied-mount stored combat stats are implemented. Unknown bytes and original seeds are preserved; growth, skill purchases, acquisition and rewards remain separate.",
+      "needed": "Build/language/DLC-labelled controlled resource/stat pairs and natural limits; growth/skill-count dependencies, weapon growth/fusion/acquisition, mount training/abilities/equipment, customization, friendship, collections and reward prerequisites; actual edited game loading.",
+      "editing_verified": true
     },
     {
       "id": "samurai4dx",
@@ -162,19 +164,19 @@
       "id": "sw_sanada",
       "title": "Samurai Warriors: Spirit of Sanada",
       "platform": "Windows PC",
-      "status": "PC path identified; no codec",
-      "evidence": "Published PC backup manifest identifies the Windows save location and Steam edition. No native PC decoder or gameplay edit was verified.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "status": "Genuine PC copies; read-only outer framing",
+      "evidence": "Two gameplay copies and one system companion from one public PC bundle qualify distinct native lengths, original-seed three-step DWORD framing, outer word sum and byte-exact unchanged reconstruction. Shared prefix does not authenticate title/build or inner gameplay integrity. No gameplay writer or library card.",
+      "needed": "Matching SWSanada.exe native serializer or equivalent public PC format research; exact build/region/DLC, inner integrity, existing-record identities and controlled gold/clan EXP, level, weapon/equipment, materials, mount, relationship, exploration and reward pairs.",
       "editing_verified": false
     },
     {
       "id": "wo1",
       "title": "Warriors Orochi",
-      "platform": "Windows PC (legacy edition)",
-      "status": "Save search unresolved",
-      "evidence": "Bounded native PC decoder/sample search found no applicable disk reader. This is a missing-evidence blocker, not a demonstrated decryption failure.",
-      "needed": "Unchanged copied native PC save and controlled progression, weapon and resource pairs.",
-      "editing_verified": false
+      "platform": "Windows PC (original 2008 edition)",
+      "status": "Original PC revision-2 editor",
+      "evidence": "Two independent native PC saves and period original PC disk-editor reader/writer qualify exact size, revision, additive byte integrity, shared Growth Points and existing weapon bonus/capacity/owned effect ranks. Modified higher ranks, unknown effects, ownership, character growth, ability acquisition, rewards and story remain preserved.",
+      "needed": "Edited original-PC game-load/re-save validation; qualified named character/weapon catalogs and controlled level/EXP, proficiency, ability acquisition/equipment, fusion, unique-item and story reward pairs.",
+      "editing_verified": true
     },
     {
       "id": "wo3u",
@@ -199,7 +201,7 @@
       "title": "Warriors All-Stars",
       "platform": "Windows PC",
       "status": "Native PC campaign-gold editor",
-      "evidence": "Independent native revision F4 AES reconstruction and genuine ten-block save qualification. Nine existing active campaign balances use the native 9,999,999 bound; existing positive quantities in 45 material IDs use manual 1..9,999 controls. Lifetime earnings, acquisition and story remain unchanged. Encrypted fingerprints are structural sentinels, not a payload checksum.",
+      "evidence": "Independent native revision F4 AES reconstruction and genuine ten-block save qualification. Nine existing active campaign balances use the native 9,999,999 bound; existing positive quantities in 45 material IDs use manual 1..9,999 controls. Lifetime earnings, acquisition and story remain unchanged. Encrypted fingerprints are structural sentinels, not a payload checksum. Existing valid ordinary Hero Card selectors now switch only between occupied cards in the original hero-owned twenty-record pool; all eligible choices have surgical genuine-file tests and independent native/GUI review.",
       "needed": "Edited game-load checks and controlled hero EXP, cards, regard, requests, routes, rewards and currency-spend pairs.",
       "editing_verified": true
     },
@@ -216,27 +218,27 @@
       "id": "aot1",
       "title": "Attack on Titan: Wings of Freedom",
       "platform": "Windows PC",
-      "status": "Candidate only",
-      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "status": "Native PC ciphertext qualified; gameplay map missing",
+      "evidence": "Reproducible read-only diagnostics qualify the genuine public atwin0000.dat outer three-advance cipher/u16 sum and exact unchanged reconstruction. Decimal-text metadata does not qualify title/revision. Official first-game mechanics distinguish funds/materials, owned gear/fortification, horses and Regiment/Soldier Skills. Vita patches and LINKDATA modding tools provide no Windows save map; no gameplay adapter.",
+      "needed": "Matching original Windows serializer/getters or source-backed Windows editor; labelled unchanged/action pairs for funds/materials, existing gear develop/upgrade/fortify/equip, horses, growth/skills and separate mission rewards; native title/revision/region and all integrity qualification.",
       "editing_verified": false
     },
     {
       "id": "aot2",
       "title": "Attack on Titan 2 / Final Battle",
       "platform": "Windows PC",
-      "status": "Candidate only",
-      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "status": "Native PC PK ciphertext qualified; gameplay map missing",
+      "evidence": "Reproducible read-only diagnostics qualify the genuine public PK-profile file outer one-advance cipher/u16 sum and exact unchanged reconstruction. PK naming/decimal-text metadata do not prove native revision, Final Battle entitlement or full integrity. LINKDATA equipment and Katsuki/Gokon tools edit assets rather than player records. Customization, camaraderie and Territory Recovery remain distinct unqualified save systems; no gameplay adapter.",
+      "needed": "Matching base/Final Battle Windows serializer/getters or source-backed Windows save editor; exact build/region/DLC and labelled unchanged/action pairs for resources, owned equipment/reinforcement, customization, camaraderie/rewards and Territory Recovery; native identity and every integrity layer.",
       "editing_verified": false
     },
     {
       "id": "fate",
       "title": "Fate/Samurai Remnant",
       "platform": "Windows PC",
-      "status": "Candidate only",
-      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "status": "Windows mechanics researched; native save missing",
+      "evidence": "Publisher documentation and distinct full-game/demo cloud profiles reviewed. No complete genuine Windows save, native serializer, integrity contract or safe gameplay map acquired; asset tools and runtime trainers do not qualify disk edits.",
+      "needed": "Complete original full-game save folder, exact build/DLC, unchanged control and matching Windows serialization/integrity evidence; separate resource, Iori/Servant growth/skill, mounting and workshop action pairs. Retain owner context privately and distinguish demo files.",
       "editing_verified": false
     },
     {
@@ -250,21 +252,21 @@
     },
     {
       "id": "nioh",
-      "title": "Nioh series (PC editions)",
+      "title": "Nioh: Complete Edition",
       "platform": "Windows PC",
-      "status": "Native PC codec evidence; gameplay checksums unresolved",
-      "evidence": "MIT Katana source supplies native PC decryption pairs. Nioh editor references disable unreversed gameplay checksum checks; no writable gameplay editor is registered.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "status": "Native PC decoding; active gameplay integrity unresolved",
+      "evidence": "Multiple genuine PC NIOHUSR revision 0x17091200 files retain seven active integrity flags and roundtrip exactly. Published tools clear those flags; this project preserves them and does not enable gameplay writes.",
+      "needed": "Native active integrity/update routines or trustworthy independent implementation, intact controlled-action pairs and current/lifetime/storage dependencies; actual edited game loading.",
       "editing_verified": false
     },
     {
       "id": "wolong",
       "title": "Wo Long: Fallen Dynasty",
       "platform": "Windows PC",
-      "status": "PC cipher vector; supplied fixture integrity invalid",
-      "evidence": "MIT Katana source provides PC cipher and complete checksum algorithms. Published dummy pair demonstrates encryption but decrypted JSON and data checksum are invalid; no gameplay editor is registered.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
-      "editing_verified": false
+      "status": "Native-file editor implemented",
+      "evidence": "Complete genuine USERDATA qualifies both native checksums. Three available currencies and qualified existing ordinary stack reductions use lexical JSON token edits, preserving owner/header, unknown keys and padding. Named game item catalogs are not yet qualified.",
+      "needed": "Edited game loading; native item-name catalogs and controlled skill, equipment, Virtue/level, flag and reward pairs.",
+      "editing_verified": true
     },
     {
       "id": "stranger",
@@ -285,17 +287,8 @@
       "editing_verified": false
     },
     {
-      "id": "ninjagaiden",
-      "title": "Ninja Gaiden series (PC editions)",
-      "platform": "Windows PC",
-      "status": "Candidate only",
-      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
-      "editing_verified": false
-    },
-    {
       "id": "rotk",
-      "title": "Romance of the Three Kingdoms / Nobunagaâ€™s Ambition",
+      "title": "Romance of the Three Kingdoms / Nobunaga\u00e2\u20ac\u2122s Ambition",
       "platform": "Windows PC",
       "status": "Candidate only",
       "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
@@ -305,46 +298,46 @@
     {
       "id": "dw4hyper",
       "title": "Dynasty Warriors 4 Hyper",
-      "platform": "Windows PC (legacy edition)",
-      "status": "Available PC editor; sample check pending",
-      "evidence": "Published native PC editor independently implemented: 331 bounded fields, named officers, semantic items and surgical copy serialization. Main PC library entry; procedural tests pass, independent genuine-file and in-game checks pending.",
-      "needed": "Unchanged native PC save.dat (69,568 bytes), build/region, displayed values and controlled in-game reload.",
-      "editing_verified": false
+      "platform": "Windows PC",
+      "status": "Native-file editor implemented",
+      "evidence": "Independent genuine native file qualifies all 435 available fields and checksum. Owned harness/orb assignments and guarded existing custom cosmetics supplement stats/items/bodyguards. Custom progression writes require already matching original mirrors.",
+      "needed": "Edited game loading; controlled custom progression/mirror, story and reward pairs.",
+      "editing_verified": true
     },
     {
-      "id": "dw5_special",
-      "title": "Dynasty Warriors 5 Special (Asian PC release)",
-      "platform": "Windows PC (legacy edition)",
-      "status": "Candidate only",
-      "evidence": "Native Windows edition requires its own save layout; no applicable PC adapter verified.",
-      "needed": "Edition/region-labelled PC save copies, controlled value pairs and checksum verification.",
-      "editing_verified": false
+      "id": "dw5special",
+      "title": "Dynasty Warriors 5 Special / Shin Sangokumusou 4 Special",
+      "platform": "Windows PC",
+      "status": "Native-file editor implemented",
+      "evidence": "Independent static native save-guide/editor I/O facts and a prior genuine revision3 player file qualify plaintext byte-sum integrity. The public sample listing labels Traditional Chinese; its executable locale/build and native locale discriminator remain unqualified. Manual existing item ranks and own-family weapon attack adjustment, weight and attributes preserve acquisition, growth, story and Shura dependencies.",
+      "needed": "Unmodified Japanese/Traditional-Chinese/Simplified-Chinese region/build-labelled native controls and action pairs before regional interchange or name encoding claims; catalogs and item/weapon/equip/growth/bodyguard/Shura pairs; edited game loading.",
+      "editing_verified": true
     },
     {
-      "id": "p5s",
+      "id": "p5strikers_pc",
       "title": "Persona 5 Strikers",
       "platform": "Windows PC",
-      "status": "PC stream vector verified; integrity pending",
-      "evidence": "Independent byte-stream recovery reproduces a published 32-byte PC vector without an account ID. Read-only structural inspection implemented; no complete sample/checksum/gameplay writer verified.",
-      "needed": "Copied native PC SAVEDATA.BIN with build and displayed slot values; incoming integrity rules and controlled gameplay pairs.",
-      "editing_verified": false
+      "status": "Native-file editor implemented",
+      "evidence": "Two independent full native encrypted PC saves qualify original-stream preservation and plaintext checksum. Occupied slots expose three resource balances and existing named ordinary consumable/cooking stacks.",
+      "needed": "Edited game loading; controlled BOND purchase, growth, Persona, acquisition and quest/reward dependency pairs.",
+      "editing_verified": true
     },
     {
       "id": "dqh1",
       "title": "Dragon Quest Heroes",
       "platform": "Windows PC",
-      "status": "PC runtime evidence only",
-      "evidence": "PC progression runtime tables describe level, EXP, skill points and skill trees. No native save decoder or serialized offsets verified.",
-      "needed": "Copied native PC save and controlled skill/resource/progression pairs.",
+      "status": "Genuine compressed PC save acquired; integrity/map missing",
+      "evidence": "One complete 102400-byte public SAVEDATA.BIN independently decodes its LZP2 stream to 642716 bytes. Wrapper framing is qualified, but game title/revision, native integrity, owner/slot context, serialization roundtrip and safe gameplay fields are not; no adapter.",
+      "needed": "Matching Windows loader/serializer/integrity evidence, exact build/edition and unchanged original control; separate currency, existing material, character growth, skill, equip and accessory-alchemy pairs. Preserve owner context and unusual values.",
       "editing_verified": false
     },
     {
       "id": "dqh2",
       "title": "Dragon Quest Heroes II",
       "platform": "Windows PC",
-      "status": "PC path identified; no codec",
-      "evidence": "Native PC backup path identified; no usable sample, disk codec or editable schema verified.",
-      "needed": "Copied native sequel save, build labels and independent integrity/field evidence.",
+      "status": "Genuine PC save acquired; integrity/map missing",
+      "evidence": "Complete 1575744-byte public SAVEDATA.BIN reacquired with observed unwrapped framing; uploader progression claims are not native semantic proof. Header/revision, integrity, slot boundaries and safe gameplay fields remain unqualified. Console patches and server-only checksum tools do not qualify Windows edits; no adapter.",
+      "needed": "Matching Windows loader/serializer/integrity evidence, exact build/edition and original control; distinguish protagonist vocation growth, companion growth and weapon proficiency in separate pairs, alongside resources, skills, equipment, accessory enhancement and rewards.",
       "editing_verified": false
     },
     {
@@ -360,10 +353,10 @@
       "id": "dw4xl_ps2",
       "title": "Dynasty Warriors 4: Xtreme Legends (SLUS-20812)",
       "platform": "PlayStation 2",
-      "status": "Available published-format editor; sample check pending",
-      "evidence": "Dedicated USA PS2 PSU parser and surgical payload checksum updates based on the supplied published editor. Separate from PC Hyper; exported memory-card container and metadata preserved. Independent genuine-file validation pending.",
-      "needed": "Unchanged SLUS-20812 .psu export, displayed values and controlled game reload; other wrappers/regions unsupported.",
-      "editing_verified": false
+      "status": "Native-file editor implemented",
+      "evidence": "Two independently shared genuine USA exports qualify payload integrity, 382 surgical fields and Tk save/backup/restore. Owned harness/orb assignments supplement stats/items/bodyguards. Other regions are rejected.",
+      "needed": "Edited game loading; other regions require separate profiles and dependencies.",
+      "editing_verified": true
     },
     {
       "id": "atelier_sophie2",
@@ -387,10 +380,10 @@
       "id": "nioh3",
       "title": "Nioh 3",
       "platform": "Windows PC",
-      "status": "Native PC integrity qualified; gameplay maps blocked",
-      "evidence": "Two genuine native USER revisions and an encrypted partner qualify native body checksum and unchanged inspection. Source-only; no gameplay writer.",
-      "needed": "Revision-specific record identities/offsets and dependency pairs; published inventory offsets do not qualify these native files; edited game-load validation.",
-      "editing_verified": false
+      "status": "Native PC balance and existing-stack editor; two exact USER revisions",
+      "evidence": "Genuine USER revisions 0x01030001 and 0x01040000 qualify native encryption/body checksum, revision-specific eight-byte Amrita/Gold tags and structurally tagged equipment, item-box and storehouse arrays. Balances may decrease through zero; existing positive quantities of seven known common items may decrease. Equipment level, pre-forge level and reinforcement remain separate read-only values. No integrity flags are cleared.",
+      "needed": "Per-item carry/storage capacities and acquisition/transfer dependencies before increases; currency purchase/increase dependencies, native stat/proficiency/skill maps and controlled forging/equipment/scroll/reward pairs; actual edited game-load/re-save validation.",
+      "editing_verified": true
     },
     {
       "id": "hyrule_warriors",
@@ -434,8 +427,8 @@
       "platform": "Nintendo Switch",
       "status": "Native export resource editor",
       "editing_verified": true,
-      "evidence": "Publicly shared complete modified native export qualifies exact size, marker and stored size. Independently implemented rupees/existing named materials; searchable read-only character and fairy-food records, unchanged and surgical/GUI checks.",
-      "needed": "Edited game loading; natural Max caps, progression/stat coupling, discovery flags and weapon/fairy/story dependencies."
+      "evidence": "Publicly shared complete modified native export qualifies exact size, marker and stored size. Independently implemented rupees/existing named materials; searchable read-only character and fairy-food records, unchanged and surgical/GUI checks. Existing qualified generic weapon stars and ordinary seal KO reductions now surgically tested on a genuine export.",
+      "needed": "Edited game loading; natural resource Max caps, progression/stat coupling, discovery flags and weapon/fairy/story dependencies."
     },
     {
       "id": "dw7e_ps3",
@@ -461,8 +454,458 @@
       "platform": "Windows PC",
       "status": "Native PC weapon-fusion and stock-EXP editor",
       "editing_verified": true,
-      "evidence": "Genuine native revision-2 save qualifies exact layout and byte-sum integrity. Stock EXP, 96 independently bounded officer base-attack fields, existing weapon attack bonus, capacity and already-owned normal attribute ranks are mapped from native setters. Unknown attributes, alchemy, acquisition, level/EXP, proficiency and story are preserved.",
-      "needed": "Edited game loading; matching officer/weapon name assets and controlled officer EXP, proficiency, alchemy, treasure and campaign dependency pairs."
+      "evidence": "Genuine native revision-2 save qualifies exact layout and byte-sum integrity. Stock EXP, 96 independently bounded officer base-attack fields, existing weapon attack bonus, capacity and already-owned normal attribute ranks are mapped from native setters. Unknown attributes, alchemy, acquisition, level/EXP, proficiency and story are preserved. Existing own-pool equipped references and coherent progressed within-level EXP now have guarded manual writers.",
+      "needed": "Edited game loading; matching named catalogs and controlled level/stat RNG, proficiency, alchemy, treasure and campaign dependencies."
+    },
+    {
+      "id": "hyrule_legends",
+      "title": "Hyrule Warriors Legends",
+      "platform": "Nintendo 3DS",
+      "status": "Native-file editor implemented",
+      "editing_verified": true,
+      "evidence": "Genuine public modified native export qualifies size/header. Original implementation edits rupees, existing materials/map cards, generic weapon stars, ordinary seal decreases and owned printable ASCII My Fairy names.",
+      "needed": "Edited game loading; unmodified controls, growth, discovery, fusion, fairy skill/food, DLC map and stage/reward dependencies."
+    },
+    {
+      "id": "ayesha_ps3",
+      "title": "Atelier Ayesha: The Alchemist of Dusk",
+      "platform": "PlayStation 3",
+      "status": "Native decrypted-export editor implemented",
+      "editing_verified": true,
+      "evidence": "Three genuine US/Japanese decrypted exports qualify exact framing/capacity markers; two independently advertised Japanese Cole values corroborate the money field. Manual Cole and conservative existing stack reductions preserve float qualities/properties/effects and distinct memory words.",
+      "needed": "Apollo PFD reimport/resigning and actual game loading; controlled synthesis, use, memory purchase and calendar/event pairs. Other platforms/regions need separate profiles."
+    },
+    {
+      "id": "three_hopes",
+      "title": "Fire Emblem Warriors: Three Hopes",
+      "platform": "Nintendo Switch",
+      "status": "Native export editor implemented",
+      "editing_verified": true,
+      "evidence": "Six independently shared complete native SlotData exports qualify 143 top-level plus one nested own-body checksum. Manual gold reductions and qualified original owned/deployed character names update exact header/body mirrors; all other game systems remain byte-identical. Searchable named character and weapon inspection.",
+      "needed": "Edited game loading; controlled growth/EXP/class/mastery, materials/acquisition, weapon forging/equipment, support and route/reward action pairs. Other revisions/Unicode name encoding require independent profiles."
+    },
+    {
+      "id": "sw2hd_ps3",
+      "title": "Samurai Warriors 2 HD (Japanese NPJB00439)",
+      "platform": "PlayStation 3",
+      "status": "Unregistered checksum and record research",
+      "editing_verified": false,
+      "evidence": "Published Japanese money and duplicated first-section additive checksum facts; separately reported growth and weapon anchors are read-only candidates, not a complete native profile. No matching genuine complete export acquired.",
+      "needed": "Complete decrypted NPJB00439 DATA.BIN with exact title, edition, revision and full integrity coverage; controlled growth/skills/weapon/guard/horse/Survival and reward pairs."
+    },
+    {
+      "id": "strikeforce_ps3",
+      "title": "Dynasty Warriors: Strikeforce (US BLUS30471)",
+      "platform": "PlayStation 3",
+      "status": "Unregistered genuine-file structural inspection",
+      "editing_verified": false,
+      "evidence": "Two genuine publicly shared modified exports qualify exact directory/length and anonymous occupied player/officer/storehouse records. Correct item-ID array begins eight bytes after the published broad patch range. Existing direct-payload writers do not establish native integrity behavior.",
+      "needed": "Native PS3 loader/serializer integrity evidence or credible controlled edited US game-load proof; item acquisition/ownership, growth/ability, equipment and mission-reward pairs before gameplay writes."
+    },
+    {
+      "id": "dw8e_ps3",
+      "title": "Dynasty Warriors 8 Empires (US NPUB31656 SYSTEM)",
+      "platform": "PlayStation 3",
+      "status": "Native SYSTEM custom-horse editor",
+      "editing_verified": true,
+      "evidence": "Genuine decrypted US SYSTEM export independently qualifies console size/revision, game-layer cipher and byte checksum, and all 150 custom-horse identities at PS3-specific table 0x39B94. Manual existing Body Type positions 0..4 preserve ownership/model/stats/abilities; official console-inclusive Edit Mode documentation corroborates the mechanic.",
+      "needed": "Apollo reimport/resigning and actual console loading; controlled PS3 appearance pairs before additional sliders, horse growth/equipment or SYSTEM unlocks. Campaign resource order and owner bridge remain unresolved."
+    },
+    {
+      "id": "dw5e_xbox360",
+      "title": "Dynasty Warriors 5 Empires",
+      "platform": "Xbox 360",
+      "status": "Legacy editor leads; no qualified adapter",
+      "editing_verified": false,
+      "evidence": "Public binary-editor descriptions are leads, not reusable licensed source or independently qualified native gameplay mappings. No editor/game binary executed.",
+      "needed": "No reusable native source, genuine extracted profile or checksum/record map; resource and shop/turn/Delegate dependencies require controlled pairs. External STFS reimport/hash rebuilding/resigning remains necessary for any future extracted-payload editor."
+    },
+    {
+      "id": "dw6e_xbox360",
+      "title": "Dynasty Warriors 6 Empires",
+      "platform": "Xbox 360",
+      "status": "Legacy editor leads; no qualified adapter",
+      "editing_verified": false,
+      "evidence": "Public binary-editor descriptions are leads, not reusable licensed source or independently qualified native gameplay mappings. No editor/game binary executed.",
+      "needed": "Genuine ruler/officer campaign exports, native revision/checksum and independently proved funds/gems ownership/order and forging dependencies. External STFS reimport/hash rebuilding/resigning remains necessary for any future extracted-payload editor."
+    },
+    {
+      "id": "dw7_xbox360",
+      "title": "Dynasty Warriors 7",
+      "platform": "Xbox 360",
+      "status": "Legacy editor leads; no qualified adapter",
+      "editing_verified": false,
+      "evidence": "Public binary-editor descriptions are leads, not reusable licensed source or independently qualified native gameplay mappings. No editor/game binary executed.",
+      "needed": "Genuine Xbox Conquest exports and native checksum/revision; money, skills, weapon/seal acquisition and growth pairs. An old download listing now returns a sunset page. External STFS reimport/hash rebuilding/resigning remains necessary for any future extracted-payload editor."
+    },
+    {
+      "id": "sw2_xbox360",
+      "title": "Samurai Warriors 2 (base game)",
+      "platform": "Xbox 360",
+      "status": "Unregistered native research",
+      "editing_verified": false,
+      "evidence": "Genuine base-game CON entry Samurai2.dat independently extracted at declared 0xAF000 length with STFS block/hash relationships checked privately. Three observed additive relationships are read-only diagnostics; RSA and complete native integrity remain unqualified.",
+      "needed": "Native region/revision, complete integrity including ambiguous second checksum endpoint, money ownership and controlled shop/growth/weapon/guard/horse pairs. External STFS reimport/hash rebuilding/resigning remains necessary for any future extracted-payload editor."
+    },
+    {
+      "id": "sw2xl_xbox360",
+      "title": "Samurai Warriors 2 Xtreme Legends",
+      "platform": "Xbox 360",
+      "status": "Legacy editor leads; no qualified adapter",
+      "editing_verified": false,
+      "evidence": "Public binary-editor descriptions are leads, not reusable licensed source or independently qualified native gameplay mappings. No editor/game binary executed.",
+      "needed": "Distinct genuine XL payload, title update/revision/region and full native integrity; base SW2 and advertised container basenames do not qualify XL. External STFS reimport/hash rebuilding/resigning remains necessary for any future extracted-payload editor."
+    },
+    {
+      "id": "wo1_xbox360",
+      "title": "Warriors Orochi",
+      "platform": "Xbox 360",
+      "status": "Legacy editor leads; no qualified adapter",
+      "editing_verified": false,
+      "evidence": "Public binary-editor descriptions are leads, not reusable licensed source or independently qualified native gameplay mappings. No editor/game binary executed.",
+      "needed": "Genuine Xbox extracted gameplay file, complete integrity and Growth Points versus officer EXP/equipment ownership. Xbox GameFAQs page aggregates other-platform saves. External STFS reimport/hash rebuilding/resigning remains necessary for any future extracted-payload editor."
+    },
+    {
+      "id": "wo2_xbox360",
+      "title": "Warriors Orochi 2",
+      "platform": "Xbox 360",
+      "status": "Legacy editor leads; no qualified adapter",
+      "editing_verified": false,
+      "evidence": "Public binary-editor descriptions are leads, not reusable licensed source or independently qualified native gameplay mappings. No editor/game binary executed.",
+      "needed": "Freely accessible genuine Xbox OROCHI_EX gameplay export, native integrity/identity and growth/proficiency/fusion/skills/stage dependencies; listed save download requires login. External STFS reimport/hash rebuilding/resigning remains necessary for any future extracted-payload editor."
+    },
+    {
+      "id": "wo3u_ps3",
+      "title": "Warriors Orochi 3 Ultimate (US NPUB31505)",
+      "platform": "PlayStation 3",
+      "status": "Native decrypted-export resource editor",
+      "editing_verified": true,
+      "evidence": "Two genuine US Ultimate exports independently qualify exact length/revision and all 150 officer/2320 weapon PS3 markers; mandatory original NPUB31505-SAVEDATA SFO distinguishes region/edition. A firsthand US PS3 direct-edit success report corroborates growth/gems at 0x1378/0x137C. Only these two balances are writable manually; richer systems remain inspected without progression/ownership changes.",
+      "needed": "External Apollo reimport/PFD resigning and our own actual console load/re-save; full native integrity/source evidence and controlled growth/fusion/equipment/reward pairs before additional field writes. Unknown-byte corruption is not globally authenticated by the structure checks."
+    },
+    {
+      "id": "atelier_sophie",
+      "title": "Atelier Sophie: The Alchemist of the Mysterious Book",
+      "platform": "Windows PC",
+      "status": "Original native PC gameplay editor",
+      "evidence": "31 gameplay snapshots from one independently shared player archive qualify the complete original Steam plaintext tagged profile. Cole, Tess tickets and existing integral basket/container quality are surgically editable; numeric inventory and alchemy level/EXP are inspected. Equipment, potentials/effects, recipes and other progression remain preserved. Community original-PC sources report no internal checksum; native loader analysis remains separate. DX is rejected.",
+      "needed": "Edited in-game load/re-save; independent loader/integrity confirmation; controlled item applicability, synthesis, recipes, growth, friendship, exploration and collection pairs; DX codec/revision qualification.",
+      "editing_verified": true
+    },
+    {
+      "id": "fatal_frame2_remake",
+      "title": "Fatal Frame II: Crimson Butterfly Remake",
+      "platform": "Windows PC",
+      "status": "Native Steam system Photo Point editor and gameplay inspection",
+      "evidence": "Independently shared complete system and gameplay saves qualify revision 0x24121300, both native checksum layers and title-specific schema. Shared system Photo Point reductions preserve JSON token widths, unknown fields and binary photo suffixes; gameplay inventory, Camera Obscura and collections are read only. Katana dummy examples are excluded from genuine evidence.",
+      "needed": "Edited in-game load/re-save; natural Photo Point cap/increase rules, named film/consumable/bead/charm catalog and controlled acquisition/quantity/equip pairs; enhancement and collection dependencies.",
+      "editing_verified": true
+    },
+    {
+      "id": "atelier_ryza2",
+      "title": "Atelier Ryza 2: Lost Legends & the Secret Fairy",
+      "platform": "Windows PC",
+      "status": "Original native PC bounded quality editor",
+      "evidence": "A distinct independently shared native original Ryza 2 gameplay autosave passes XOR/additive integrity, complete title-specific tagged framing, 100-byte item records and owned Party equipment. Existing ordinary quality is edited surgically from 1\u2013100; important/empty records, adjacent words, identities, original seeds and unknown state are preserved. Several other files in the advertised Ryza 2 archive are byte-identical Ryza 1 files and excluded.",
+      "needed": "Edited game load/re-save, further build-labelled saves, higher quality-cap skill dependencies, currency and growth limits, item names/applicability, synthesis/traits/effects, recipes, exploration/collections and controlled acquisition/equip pairs. Original Ryza 1 and Ryza 3 are not registered.",
+      "editing_verified": true
+    },
+    {
+      "id": "atelier_totori_dx",
+      "title": "Atelier Totori DX",
+      "platform": "Windows PC / PlayStation 4",
+      "status": "Title-qualified PS4 lead; no writer",
+      "evidence": "PS4 CUSA14014 native title preview corroborates Cole 189067 at LE32 offset 0xB3FC in a distinct 22-chunk layout. Advertised PC archives contain only system data; app936160 Rorona is excluded.",
+      "needed": "Native PS4 internal integrity/loader evidence and a controlled currency pair; actual app936180 PC gameplay plus companion system/build control. See ARLAND_DX_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_rorona_dx",
+      "title": "Atelier Rorona DX",
+      "platform": "Windows PC",
+      "status": "Read-only native chunk candidate",
+      "evidence": "27 gameplay snapshots qualify exact unchanged chunk/trailer inspection. Published Rorona PLUS early fields partially match, but late fields differ.",
+      "needed": "Native PC integrity/loader evidence and controlled currency, item, synthesis, growth and event pairs. See ARLAND_DX_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_meruru_dx",
+      "title": "Atelier Meruru DX",
+      "platform": "Windows PC",
+      "status": "Read-only native chunk candidate",
+      "evidence": "17 gameplay copies from two public sources qualify exact unchanged chunk/trailer inspection. Calendar-transfer source reports broken timer/event dependencies.",
+      "needed": "Native internal integrity and named resource/item records; controlled growth/synthesis pairs and complete timer dependencies before calendar changes. See ARLAND_DX_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_ryza",
+      "title": "Atelier Ryza: Ever Darkness & the Secret Hideout",
+      "platform": "Windows PC",
+      "status": "Checksum-valid incomplete native tail; unregistered",
+      "evidence": "Two PC archive slots pass envelope checks but omit a declared final plant array. Complete independently shared Switch profiles do not qualify the PC revision.",
+      "needed": "Independent complete original Steam gameplay or native serializer/loader proof for the exact omitted tail. See RYZA_FORMATS.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_ryza3",
+      "title": "Atelier Ryza 3: Alchemist of the End & the Secret Key",
+      "platform": "Windows PC",
+      "status": "Gameplay fixture missing",
+      "evidence": "Public system files and runtime/asset tooling do not establish gameplay records.",
+      "needed": "Complete original Steam gameplay, native integrity/title/revision and controlled resource, item, synthesis and growth pairs. See RYZA_FORMATS.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_sophie_dx",
+      "title": "Atelier Sophie DX",
+      "platform": "Windows PC",
+      "status": "Native gameplay acquired; codec unqualified",
+      "evidence": "A genuine 177040-byte DX gameplay file differs from original Sophie and has an opaque body after 0x800.",
+      "needed": "Title-specific decoder/integrity/schema and controlled mechanic pairs. See SOPHIE_PC_FORMAT.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_firis",
+      "title": "Atelier Firis: The Alchemist and the Mysterious Journey",
+      "platform": "Windows PC",
+      "status": "Native gameplay acquired; integrity unqualified",
+      "evidence": "Original 1228800-byte gameplay has distinct revision-3 and 52-byte item records, not Sophie records.",
+      "needed": "Firis-specific loader/integrity proof, field semantics and controlled pairs. See SOPHIE_PC_FORMAT.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_firis_dx",
+      "title": "Atelier Firis DX",
+      "platform": "Windows PC",
+      "status": "Native gameplay acquired; codec unqualified",
+      "evidence": "A genuine 200608-byte DX gameplay file has an opaque body after 0x400.",
+      "needed": "Native DX codec/integrity/schema and controlled mechanic pairs. See SOPHIE_PC_FORMAT.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_ayesha_dx",
+      "title": "Atelier Ayesha DX",
+      "platform": "Windows PC",
+      "status": "Native gameplay acquired; no writer",
+      "evidence": "813056-byte little-endian gameplay differs from the implemented big-endian PS3 adapter. The PS3 adapter is unchanged.",
+      "needed": "Native PC loader/integrity and named field maps; controlled resource/item/synthesis/memory pairs. See DUSK_DX_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_escha_logy_dx",
+      "title": "Atelier Escha & Logy DX",
+      "platform": "Windows PC",
+      "status": "Native gameplay acquired; codec unqualified",
+      "evidence": "Sixteen gameplay slots have a plaintext 0x100 prefix and opaque body; the existing Gust decoder rejects them.",
+      "needed": "Title-specific native codec/checksums and resource/item/growth/assignment dependencies. See DUSK_DX_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "atelier_shallie_dx",
+      "title": "Atelier Shallie DX",
+      "platform": "Windows PC",
+      "status": "System-only evidence",
+      "evidence": "Acquired system data is not a gameplay fixture.",
+      "needed": "Complete gameplay plus title-specific codec/integrity and Life Task, synthesis and growth dependencies. See DUSK_DX_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "nelke",
+      "title": "Nelke & the Legendary Alchemists",
+      "platform": "Windows PC",
+      "status": "Native title-qualified gameplay; codec unqualified",
+      "evidence": "A public Proton reproducer has a native title/version summary but its gameplay body remains opaque.",
+      "needed": "Native codec/integrity/schema; controlled money, production, facility, research and relationship pairs. See DUSK_DX_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "blue_reflection",
+      "title": "Blue Reflection",
+      "platform": "Windows PC",
+      "status": "Native gameplay acquired; no writer",
+      "evidence": "Original tagged native gameplay snapshots are available; first word is a serializer date, not an inferred checksum.",
+      "needed": "Title-specific native integrity and controlled item/growth pairs. See BLUE_REFLECTION_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "blue_reflection_second_light",
+      "title": "Blue Reflection: Second Light",
+      "platform": "Windows PC",
+      "status": "Genuine envelope qualified; semantics blocked",
+      "evidence": "Two gameplay files pass both native checksum layers and exact envelope re-encoding. Inherited money is not established as currency; crafted Coin and linked TP progression are distinct.",
+      "needed": "Native final Guide-node omission proof, ordinary item eligibility and controlled quantity/TP/fragment/facility pairs. See BLUE_REFLECTION_RESEARCH.md.",
+      "editing_verified": false
+    },
+    {
+      "id": "ninjagaiden2_x360",
+      "title": "Ninja Gaiden II (original Xbox 360 / Xenia)",
+      "platform": "Xbox 360 / Xenia",
+      "status": "Native extracted revision-6 story editor",
+      "evidence": "Twenty-two genuine 31,744-byte story files and a matching Xbox 360 title-ID container establish exact native revision-6 framing, Dragon Sword record identity, big-endian word checksum and item records. Yellow Essence and existing unique ordinary stack reductions are implemented; CON/STFS and other editions are rejected.",
+      "needed": "Edited original Xbox 360/Xenia game-load and re-save; signed container reintegration remains external. Controlled health/Ninpo, weapon/upgrade, ownership, Karma/reward and progression pairs before expanding writes.",
+      "editing_verified": true
+    },
+    {
+      "id": "nioh_ps4",
+      "title": "Nioh (original edition)",
+      "platform": "PlayStation 4",
+      "status": "Separate console edition; no adapter",
+      "evidence": "PC framing and flag offsets do not qualify original PS4 data.",
+      "needed": "Legally decrypted original-edition USER/SYSTEM exports with exact title ID/build, native integrity and record/dependency proof.",
+      "editing_verified": false
+    },
+    {
+      "id": "nioh_complete_ps4",
+      "title": "Nioh: Complete Edition",
+      "platform": "PlayStation 4",
+      "status": "Separate console edition; no adapter",
+      "evidence": "Original PS4, Complete Edition PC and remastered editions are not interchangeable profiles.",
+      "needed": "Complete Edition decrypted exports and exact title/build, native framing/integrity and controlled mechanics pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "sopffo_epic",
+      "title": "Stranger of Paradise: Final Fantasy Origin (Epic)",
+      "platform": "Windows PC",
+      "status": "Genuine launch-revision framing; gameplay integrity unresolved",
+      "evidence": "Genuine Epic USER/SYSTEM copies establish AES-CBC native framing at revision 0x22020200. They differ from the newer upstream 0x23013100 SYSTEM cipher fixture; no gameplay writer is qualified.",
+      "needed": "Native gameplay integrity/update routines and controlled resource, job/EXP, inventory/equipment, rift/reward pairs; actual edited game loading.",
+      "editing_verified": false
+    },
+    {
+      "id": "sopffo_steam",
+      "title": "Stranger of Paradise: Final Fantasy Origin (Steam)",
+      "platform": "Windows PC",
+      "status": "Genuine Steam USER/SYSTEM framing; gameplay integrity unresolved",
+      "evidence": "Two genuine Steam USER files and SYSTEM at revision 0x23013100 establish exact AES-CBC native framing. They are separate from Epic launch revision 0x22020200. Neither the source cipher nor console patches qualifies native gameplay integrity or writable records.",
+      "needed": "Native active gameplay integrity/update routines and controlled resource, job/EXP/limit-break, equipment/affinity/synthesis and rift/reward pairs; actual edited game loading.",
+      "editing_verified": false
+    },
+    {
+      "id": "ninja_gaiden_sigma_pc",
+      "title": "Ninja Gaiden Sigma (Master Collection)",
+      "platform": "Windows PC",
+      "status": "Genuine PC gameplay framing; native identity/integrity unresolved",
+      "evidence": "Seven genuine PC gameplay files establish exact 240976-byte descriptive framing. Their bounded read-only inspector preserves all native bytes. PS3 fixed offsets do not match PC; independent redistribution is byte-identical and is not a second player corpus.",
+      "needed": "Exact native PC revision/title/integrity qualification and controlled resource, weapon/Ninpo, inventory, hidden-scroll and reward dependencies; actual edited game loading.",
+      "editing_verified": false
+    },
+    {
+      "id": "ninja_gaiden_sigma_ps3",
+      "title": "Ninja Gaiden Sigma",
+      "platform": "PlayStation 3",
+      "status": "Separate console format; no adapter",
+      "evidence": "PC Master Collection files do not qualify PS3 exports or console signing.",
+      "needed": "Decrypted PS3 native exports with title ID/build, complete framing/integrity and controlled mechanic pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "ninja_gaiden_sigma2_pc",
+      "title": "Ninja Gaiden Sigma 2 (Master Collection)",
+      "platform": "Windows PC",
+      "status": "Genuine story corpus; second native integrity rule unresolved",
+      "evidence": "Thirty-one genuine PC stories and a public-domain record description establish separate little-endian profile, essence/items and one checksum; the second native checksum remains unresolved.",
+      "needed": "Second integrity algorithm and complete native profile qualification, equipment/upgrade/ownership dependencies and actual edited game loading.",
+      "editing_verified": false
+    },
+    {
+      "id": "ninja_gaiden_sigma2_ps3",
+      "title": "Ninja Gaiden Sigma 2",
+      "platform": "PlayStation 3",
+      "status": "Separate console format; no adapter",
+      "evidence": "The Master Collection little-endian PC profile does not qualify PS3 data or console signing.",
+      "needed": "Decrypted PS3 title/build-specific USER/SYSTEM exports, native identity/integrity and controlled mechanics pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "ninjagaiden2_black_pc",
+      "title": "Ninja Gaiden 2 Black (Steam)",
+      "platform": "Windows PC",
+      "status": "Genuine Unreal GVAS corpus; no qualified writer",
+      "evidence": "Nineteen genuine Steam GVAS files qualify exact class/revision/property/byte-array framing. Eighteen stories share the separate little-endian native block with Sigma 2 and one metadata CRC; the second body-integrity rule remains unresolved. A public editor alone does not qualify writes.",
+      "needed": "Second native story integrity algorithm, SYSTEM integrity qualification, controlled resource/equipment/ownership/action pairs and actual edited game loading.",
+      "editing_verified": false
+    },
+    {
+      "id": "kens_rage2_ps3",
+      "title": "Fist of the North Star: Ken's Rage 2",
+      "platform": "PlayStation 3",
+      "status": "EU decrypted-export collection editor",
+      "evidence": "Two genuine BLES01801 exports qualify the version-2 section layout and six CRC32 checks with byte-exact unchanged roundtrips. Manual locked-to-unlocked music/movie/event transitions and state preservation pass procedural and real Tk tests. Both genuine samples have all mapped galleries unlocked, so edited-field qualification remains procedural.",
+      "needed": "Incomplete genuine BLES01801 DATA.BIN with locked gallery entries, controlled growth/scroll/mission pairs, and actual console load after Apollo reimport/resign. Other regions/platforms need separate profiles.",
+      "editing_verified": false
+    },
+    {
+      "id": "gundam1_ps3",
+      "title": "Dynasty Warriors: Gundam",
+      "platform": "PlayStation 3",
+      "status": "US/EU decrypted-export pilot skill editor",
+      "evidence": "Four genuine US/EU complete exports qualify exact 0x89000-byte framing and all three native byte sums. Learned skill bits correlate with equipped native references. Manual learning on six individually mapped existing level-30 pilots preserves EXP, levels, equipment and all unknown mask bits; native unchanged and surgical file tests.",
+      "needed": "Actual edited console load after Apollo reimport/resign; EXP thresholds and derived stats, lower-level skill prerequisites, other pilot/mobile suit/part records, mission/reward and collection pairs. Gundam2/3/Reborn and other platforms require separate native profiles.",
+      "editing_verified": true
+    },
+    {
+      "id": "kens_rage1_ps3",
+      "title": "Fist of the North Star: Ken's Rage",
+      "platform": "PlayStation 3",
+      "status": "US/EU decrypted-export skill-point editor",
+      "evidence": "Two publicly shared genuine US/EU DATA.BIN copies qualify exact 0xC0000-byte 32-byte header profile. Independently implemented published low-u16 skill-point patches for eight base fighters with positive original balance and zero candidate-word high bytes; existing unusual/higher values preserved. No native gameplay checksum algorithm is established; published patches use direct writes and external PFD authentication.",
+      "needed": "Actual console edited load after Apollo reimport/resign; native serializer/integrity confirmation, fighter ownership and controlled skill-point spend/Meridian Chart, equipped skill, growth and mission/reward pairs. DLC and other platforms need separately qualified profiles.",
+      "editing_verified": false
+    },
+    {
+      "id": "rotk13_pc",
+      "title": "Romance of the Three Kingdoms XIII",
+      "platform": "Windows PC",
+      "status": "Original revision-14 city-resource and development editor",
+      "editing_verified": true,
+      "evidence": "Seven public native TC original PC campaign copies independently decoded with matching preview checksums and native tagged city records. Original native serialization and field getters qualify city money, supplies, separate population components, wounded troops, fealty, commerce/farming/culture and spear/horse/bow proficiency. Surgical edits preserve district/force references, preview and unrelated bytes; no invented gameplay Max.",
+      "needed": "Edited in-game load/re-save; exact executable build provenance, independent additional regional fixtures, Power Up Kit profiles, officer attribute serialization, relationships/equipment and other dependencies."
+    },
+    {
+      "id": "dw6special_psp",
+      "title": "Dynasty Warriors 6 Special / Shin Sangokumusou 5 Special",
+      "platform": "PlayStation Portable",
+      "status": "Japanese and Chinese PSP products verified; encrypted Japanese envelope observed",
+      "evidence": "Publisher distinguishes PS2/PSP Special from ordinary Chinese Windows DW6. One public Japanese PSP package has matching bounded title metadata, DATA.BIN 168592 bytes and declared secure parameters; hashes and inner gameplay remain unauthenticated.",
+      "needed": "Matching authenticated decrypted export and region/build provenance; title-key/mode, payload revision/layout/integrity and controlled growth, Meng Huo, equipment, horse and reward pairs. Chinese PSP and PS2 need their own native qualification.",
+      "editing_verified": false
+    },
+    {
+      "id": "dw7special_psp",
+      "title": "Dynasty Warriors 7 Special / Shin Sangokumusou 6 Special",
+      "platform": "PlayStation Portable",
+      "status": "Japanese PSP product verified; encrypted envelope observed",
+      "evidence": "Publisher verifies two-UMD PSP and Vita-compatible PSP download, not a native Vita edition. Taiwan catalog branding does not prove Chinese localization. One public package has DATA.BIN 297481 bytes and matching PSP title/secure metadata; no authenticated gameplay decoder.",
+      "needed": "Matching authenticated decrypted export, exact region/build/tool; native revision/layout/integrity and money-purchase, officer-growth/reset, owned weapon/equip and Story/Chronicle pairs. PS3-save bonus is not cross-platform format compatibility.",
+      "editing_verified": false
+    },
+    {
+      "id": "wo3special_psp",
+      "title": "Warriors Orochi 3 Special / Musou Orochi 2 Special",
+      "platform": "PlayStation Portable",
+      "status": "Japanese PSP product and added mechanics verified; native sample missing",
+      "evidence": "Publisher verifies PSP Special with Rachel and Abe no Seimei, growth reset, four-player battle royal and PS3-save character bonus. PC/PS3 Ultimate and other Orochi numbering are separate products; no genuine native Special save inspected.",
+      "needed": "Complete encrypted PSP folder and matched authenticated decrypted export, exact title/build/region/tool; native identity/revision/layout/integrity and growth-reset, weapons/fusion, bonds, resources and reward pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "sw3zspecial_psp",
+      "title": "Samurai Warriors 3 Z Special / Sengoku Musou 3 Z Special",
+      "platform": "PlayStation Portable",
+      "status": "Japanese PSP product verified; encrypted envelopes observed",
+      "evidence": "Publisher verifies 40-character PSP product and separate custom-officer/creation/history/challenge systems. Three public archives expose matching PSP title and declared secure DATA.BIN; one includes foreign PS3 artifacts and is not a clean PSP export. No authenticated plaintext or native gameplay map.",
+      "needed": "Clean complete encrypted PSP package and matched authenticated decrypted export; exact build/region/tool, payload identity/revision/integrity and growth, existing weapons/equip, custom officers, history/creation/challenge and reward pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "three_houses",
+      "title": "Fire Emblem: Three Houses",
+      "platform": "Nintendo Switch",
+      "status": "Native gameplay export editor; save-format v13/v23",
+      "editing_verified": true,
+      "evidence": "Independent implementation of public format facts, checked against eight genuine publicly shared extracted gameplay candidates. Exact separate v13/v23 lengths and native payload byte-sum integrity; surgical gold reductions, twelve identified ordinary weapon types\u2019 existing convoy quantity and durability reductions. Held equipment requires an original unique living/available/joined base owner ID0\u201334; DLC/unknown owners and items stay read-only. Progression, mastery, proficiency, abilities, combat arts, battalions and supports are inspected separately. No guessed Max or ownership grants.",
+      "needed": "Edited Switch load/re-save; exact-build/region/DLC-labelled clean controls and action pairs for progression/rewards, item repair/transfer, battalion assignment and supports. Precise patch/DLC entitlement is not encoded by the accepted save-format version. v12, padded exports, system/suspend and Cindered Shadows side-story saves need separate qualification; structurally matching side-story payloads cannot yet be distinguished. See docs/THREE_HOUSES_FORMAT.md for exact inputs."
     }
   ],
   "scope": "Windows application with explicitly selected game/platform parsers and separate backup identities.",
@@ -470,10 +913,10 @@
   "qualification_reference": "docs/PC_EDITOR_ATTEMPTS.md",
   "pursuit_policy": "Implement only evidenced platform-specific save formats. Published-format availability is labelled separately from independent genuine-file and in-game verification.",
   "retry_reference": "docs/PC_RESEARCH_RETRY.md",
-  "console_scope": "Separate PS2 PSU, Wii U APP.BIN, Switch svdt and decrypted PS3 APP.BIN/DATA.BIN adapters; PS3 signing remains external.",
+  "console_scope": "Separate PS2 PSU, Wii U APP.BIN, Switch svdt and decrypted PS3 APP.BIN/DATA.BIN adapters; PS3 signing remains external. PSP Special encrypted-envelope research is unregistered; decrypted gameplay and console authentication/re-encryption remain unqualified.",
   "pc_scope_exclusions": [
-    "Dynasty Warriors 1â€“3 original console editions and console-only expansions",
-    "Dynasty Warriors 4â€“7 Empires",
+    "Dynasty Warriors 1\u00e2\u20ac\u201c3 original console editions and console-only expansions",
+    "Dynasty Warriors 4\u00e2\u20ac\u201c7 Empires",
     "Dynasty Warriors: Gundam series",
     "One Piece: Pirate Warriors 1 and 2",
     "Berserk PS Vita",

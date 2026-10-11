@@ -1,12 +1,13 @@
-"""Candidate native PC DW4 Hyper layout, independently implemented from facts.
+"""Native PC DW4 Hyper layout, independently implemented from facts.
 
 Reference: talkative-platano/dw4hyper-save-editor, commit
 3638c8dc23d2607b862a1105bfc9806e69d9e871 (README.md). No third-party code or
-save is included. The reference author reports game testing; a genuine PC
-sample has not yet been independently validated in this project. The format
+save is included. A publicly shared native PC save qualifies identity and
+integrity; edited game loading remains untested. The format
 is unencrypted, with a byte-sum checksum, and is distinct from PS2 DW4 XL.
 """
 from dataclasses import dataclass
+from functools import lru_cache
 import hashlib
 from pathlib import Path
 from types import MappingProxyType
@@ -61,6 +62,7 @@ class Field:
     storage: str = 'unsigned'
     maxable: bool = True
     kind: str = 'int'
+    mirrors: tuple = ()
 
     def value(self, payload):
         value = int.from_bytes(payload[self.offset:self.offset + self.size], 'little')
@@ -86,7 +88,7 @@ class Format:
     size: int
     fields: tuple
     note: str
-    sample_verified: bool = False
+    sample_verified: bool = True
 
 
 _fields = [Field('difficulty', 'Difficulty (0 Easy / 1 Normal / 2 Hard)',
@@ -103,6 +105,10 @@ for _index, _name in enumerate(OFFICER_NAMES):
                              maxable=_key == 'unlocked'))
     _fields.append(Field(f'officer_{_index}_weapon_experience', f'{_name}: Weapon EXP',
                          WEAPON_EXP_BASE + 2 * _index, 2, 36001, 'Weapons', _index + 1))
+    for _key, _label, _relative in (('harness', 'Harness', 8), ('orb', 'Orb', 9)):
+        _fields.append(Field(f'officer_{_index}_{_key}', f'{_name}: {_label}',
+                             OFFICER_BASE + OFFICER_STRIDE * _index + _relative,
+                             1, 32, 'Equipment', _index + 1, maxable=False))
 for _index, _name in enumerate(ITEM_NAMES):
     _maximum = 20 if _index < 13 else 4 if _index < 19 else 1
     _label = _name + (' ownership (0 locked / 1 owned)' if _index >= 19 else ' level (0 locked)')
@@ -115,10 +121,12 @@ for _index in range(4):
 
 FORMAT = Format(
     GAME_ID, 'Dynasty Warriors 4 Hyper (PC)', SAVE_SIZE, tuple(_fields),
-    'Candidate; genuine PC save sample validation pending. '
+    'Open a separate native PC save.dat copy. '
     'Standard officers, character/weapon EXP, playable flags, items, bodyguard '
-    'points and difficulty. Item level 0 means locked; rare items use ownership 0/1. '
-    'Equipped items, custom characters, suspended battles and rankings remain read only.'
+    'points, difficulty and existing custom-character stats and appearance. '
+    'Item level 0 means locked; rare items use ownership 0/1. '
+    'Owned harnesses and orbs can be equipped. General equipment slots, custom '
+    'creation/model/moveset/gender, suspended battles and rankings remain read only.'
 )
 FIELD_MAP = MappingProxyType({field.id: field for field in FORMAT.fields})
 
@@ -138,7 +146,7 @@ class Document:
 
 def get_format(game_id=GAME_ID):
     if game_id != GAME_ID:
-        raise SaveError('This candidate parser handles native PC DW4 Hyper only.')
+        raise SaveError('This parser handles native PC DW4 Hyper only.')
     return FORMAT
 
 
@@ -171,8 +179,10 @@ def read_save(path, game_id=GAME_ID):
 
 
 def validate_document(document):
-    if not isinstance(document, Document) or document.format != FORMAT:
-        raise SaveError('Unregistered DW4 Hyper candidate document.')
+    if (type(document) is not Document or document.format is not FORMAT
+            or type(document.raw) is not bytes or type(document.payload) is not bytes
+            or type(document.seed) is not int):
+        raise SaveError('A frozen registered DW4 Hyper document is required.')
     original = decode(document.raw, GAME_ID, document.source)
     if original.payload != document.payload or document.seed != 0:
         raise SaveError('The opened DW4 Hyper snapshot was changed outside the edit workflow.')
@@ -180,31 +190,101 @@ def validate_document(document):
 
 def field_map(document):
     validate_document(document)
-    return FIELD_MAP
+    return MappingProxyType({field.id: field for field in _fields_for_payload(document.payload)})
 
 
 def fields_for(document):
     validate_document(document)
-    return FORMAT.fields
+    return _fields_for_payload(document.payload)
+
+
+def _qualified_custom(payload, slot):
+    """Require an existing identified appearance; never create a record."""
+    appearance = CUSTOM_BASE + CUSTOM_STRIDE * slot
+    record = payload[appearance:appearance + CUSTOM_STRIDE]
+    return (record[0] == 1 and record[0x18] == 0x60 + slot
+            and record[0x1B] == record[0x1C] and record[0x1B] in (0x2A, 0x2B))
+
+
+def _qualified_custom_pair(payload, slot):
+    """Do not reconcile an appearance template with different grown roster data."""
+    appearance = CUSTOM_BASE + CUSTOM_STRIDE * slot
+    roster = OFFICER_BASE + OFFICER_STRIDE * (OFFICER_COUNT + slot)
+    record = payload[appearance:appearance + CUSTOM_STRIDE]
+    return (_qualified_custom(payload, slot)
+            and record[:24] == payload[roster:roster + 24]
+            and record[5] == record[0x2D] and record[5] in (0x2A, 0x2B, 0x2C, 0x2E)
+            and record[3:5] == record[0x20:0x22])
+
+
+@lru_cache(maxsize=4)
+def _fields_for_payload(payload):
+    fields = list(FORMAT.fields)
+    for slot in range(4):
+        if not _qualified_custom(payload, slot):
+            continue
+        appearance = CUSTOM_BASE + CUSTOM_STRIDE * slot
+        roster = OFFICER_BASE + OFFICER_STRIDE * (OFFICER_COUNT + slot)
+        for key, label, relative, size, ceiling in (
+                ('life', 'Life', 1, 1, 255), ('musou', 'Musou', 2, 1, 255),
+                ('attack', 'Attack', 3, 1, 255), ('defense', 'Defense', 4, 1, 255),
+                ('experience', 'Character EXP', 16, 2, 65535)):
+            if not _qualified_custom_pair(payload, slot):
+                continue
+            mirrors = (roster + relative,)
+            if key in ('attack', 'defense'):
+                mirrors += (appearance + (0x20 if key == 'attack' else 0x21),)
+            fields.append(Field(f'custom_{slot}_{key}', f'Custom slot {slot + 1}: {label}',
+                                appearance + relative, size, ceiling, 'Custom characters',
+                                slot + 1, maxable=False, mirrors=mirrors))
+        for key, label, relative, ceiling in (
+                ('color', 'Color (0 Blue / 1 Red / 2 Green / 3 Purple / 4 White / 5 Yellow)', 0x1D, 5),
+                ('head', 'Head', 0x30, 2), ('chest', 'Chest', 0x31, 2),
+                ('arms', 'Arms and legs', 0x32, 2), ('hip', 'Hip', 0x33, 2)):
+            # Unusual cosmetics are inspected without interpreting unknown enums.
+            if payload[appearance + relative] <= ceiling:
+                fields.append(Field(f'custom_{slot}_{key}', f'Custom slot {slot + 1}: {label}',
+                                    appearance + relative, 1, ceiling, 'Custom characters',
+                                    slot + 1, maxable=False))
+    return tuple(fields)
 
 
 def record_label(slot, group='Officers'):
     """Published names for UI labels, without guessing custom or scenario IDs."""
     if group in ('Officers', 'Weapons') and type(slot) is int and 1 <= slot <= OFFICER_COUNT:
         return OFFICER_NAMES[slot - 1]
+    if group == 'Equipment' and type(slot) is int and 1 <= slot <= OFFICER_COUNT:
+        return OFFICER_NAMES[slot - 1]
     if group == 'Bodyguards' and type(slot) is int and 1 <= slot <= 4:
         return f'Bodyguard team {slot}'
+    if group == 'Custom characters' and type(slot) is int and 1 <= slot <= 4:
+        return f'Custom slot {slot}'
     return group if not slot else f'{group} record {slot}'
 
 
 def changed_payload(document, changes):
-    validate_document(document)
+    mapped = field_map(document)
     result = bytearray(document.payload)
     for key, value in changes.items():
-        if key not in FIELD_MAP:
-            raise SaveError('The requested field is not mapped for this PC candidate.')
-        field = FIELD_MAP[key]
-        result[field.offset:field.offset + field.size] = field.encoded(value)
+        if key not in mapped:
+            raise SaveError('The requested field is not mapped for this native PC save.')
+        field = mapped[key]
+        encoded = field.encoded(value)
+        for offset in (field.offset, *field.mirrors):
+            result[offset:offset + field.size] = encoded
+    for key, value in changes.items():
+        if key.endswith(('_harness', '_orb')) and value != 32:
+            allowed = range(19, 24) if key.endswith('_harness') else range(13, 19)
+            if value not in allowed or result[ITEM_BASE + value] == 0xFF:
+                raise SaveError('Equip an owned item of the correct category, or choose 32 for Empty.')
+        if key.startswith('item_') and value == 0 and mapped[key].value(document.payload) > 0:
+            identity = int(key.split('_')[1])
+            for index in range(OFFICER_COUNT + 4):
+                base = OFFICER_BASE + OFFICER_STRIDE * index
+                if index >= OFFICER_COUNT and not result[base]:
+                    continue
+                if identity in result[base + 8:base + 16]:
+                    raise SaveError('Unequip this item from every officer before locking it.')
     return bytes(result)
 
 
@@ -219,28 +299,31 @@ def serialize(document, changes):
 
 
 def stage(document, changes, key, value):
-    validate_document(document)
-    if key not in FIELD_MAP:
-        raise SaveError('The requested field is not mapped for this PC candidate.')
-    field = FIELD_MAP[key]
+    mapped = field_map(document)
+    if key not in mapped:
+        raise SaveError('The requested field is not mapped for this native PC save.')
+    field = mapped[key]
     result = dict(changes)
     if type(value) is int and value == field.value(document.payload):
         result.pop(key, None)
     else:
         field.validate(value)
         result[key] = value
+    if field.group in ('Equipment', 'Items'):
+        changed_payload(document, result)
     return result
 
 
 def limit_values(document, changes, keys):
-    validate_document(document)
+    changed_payload(document, changes)
+    mapped = field_map(document)
     result = {}
     for key in keys:
-        if key not in FIELD_MAP:
-            raise SaveError('The requested field is not mapped for this PC candidate.')
-        field = FIELD_MAP[key]
+        if key not in mapped:
+            raise SaveError('The requested field is not mapped for this native PC save.')
+        field = mapped[key]
         current = changes.get(key, field.value(document.payload))
-        if field.maxable and type(current) is int and current <= field.maximum:
+        if field.maxable and type(current) is int and field.minimum <= current <= field.maximum:
             result[key] = field.maximum
     return result
 
@@ -256,7 +339,7 @@ def maximums(document, changes, group=None):
 def review(document, changes):
     changed_payload(document, changes)
     return [(field, field.value(document.payload), changes[field.id])
-            for field in FORMAT.fields if field.id in changes]
+            for field in fields_for(document) if field.id in changes]
 
 
 def backup(document):
@@ -284,8 +367,8 @@ def save_as(document, changes, destination):
 
 def restore(backup_path, destination, game_id=GAME_ID):
     get_format(game_id)
-    read_save(backup_path, game_id)
-    return restore_snapshot(backup_path, destination, GAME_ID, '.dat', SAVE_SIZE)
+    return restore_snapshot(backup_path, destination, GAME_ID, '.dat', SAVE_SIZE,
+                            validate_raw=lambda raw: decode(raw, game_id))
 
 
 def _name(payload, offset):
@@ -333,18 +416,68 @@ def inspection_rows(document):
                     for guard in range(8))
     for slot in range(4):
         offset = CUSTOM_BASE + CUSTOM_STRIDE * slot
+        record = document.payload[offset:offset + CUSTOM_STRIDE]
+        qualified = _qualified_custom_pair(document.payload, slot)
         rows.append({'group': 'Custom characters', 'label': f'Custom slot {slot + 1}',
-                     'value': f'Created byte {document.payload[offset]}; '
-                              f'name {_name(document.payload, offset + 0x34)} (read only)'})
+                     'value': f'Created byte {record[0]}; '
+                              f'name {_name(document.payload, offset + 0x34)}; '
+                              + ('paired stats qualified' if qualified else 'differing stats templates preserved')})
+        if record[0] == 1:
+            gender = {0x2A: 'Male', 0x2B: 'Female'}.get(record[0x1B], f'Unknown {record[0x1B]}')
+            motion = record[0x1E]
+            moveset = (OFFICER_NAMES[motion] if motion < OFFICER_COUNT else
+                       {42: 'Great Sword', 43: 'Rapier'}.get(motion, f'Unknown {motion}'))
+            rows.append({'group': 'Custom characters', 'label': f'Custom slot {slot + 1}: Appearance',
+                         'value': f'{gender}; moveset {moveset}; color ID {record[0x1D]}; '
+                                  f'head/chest/arms/hip IDs {tuple(record[0x30:0x34])}. '
+                                  'Gender, moveset and model are read only.'})
+    for challenge, label in enumerate(('Endurance', 'Time Attack', 'Bridge Melee', 'Demolition')):
+        for rank in range(10):
+            index = challenge * 10 + rank
+            identity = document.payload[0xBA0 + index]
+            name = (OFFICER_NAMES[identity] if identity < OFFICER_COUNT else
+                    f'Custom slot {identity - 41}' if identity < 46 else f'Unknown roster ID {identity}')
+            score = int.from_bytes(document.payload[0xBC8 + 4 * index:0xBCC + 4 * index], 'little')
+            value = f'{name}; {score:,} ' + ('frames at 60 fps' if challenge == 1 else 'points')
+            rows.append({'group': 'Challenge rankings', 'label': f'{label}, rank {rank + 1}', 'value': value})
+    total = int.from_bytes(document.payload[0xB170:0xB174], 'little')
+    if total:
+        elapsed = int.from_bytes(document.payload[0xB16C:0xB170], 'little')
+        mirror = int.from_bytes(document.payload[0xD888:0xD88C], 'little')
+        rows.append({'group': 'Suspended battle', 'label': 'Timer snapshot (read only)',
+                     'value': f'Elapsed {elapsed:,}; total {total:,} frames at 60 fps; '
+                              f'elapsed mirror {mirror:,}. Phase byte {document.payload[0xB17C]} '
+                              'can change within a battle; it is not a story-clear flag.'})
     return tuple(rows)
 
 
 def field_hint(document, field):
-    validate_document(document)
+    fields = field_map(document)
     key = field.id if isinstance(field, Field) else field
-    if key not in FIELD_MAP:
-        raise SaveError('The requested field is not mapped for this PC candidate.')
-    mapped = FIELD_MAP[key]
+    if key not in fields:
+        raise SaveError('The requested field is not mapped for this native PC save.')
+    mapped = fields[key]
+    if mapped.group == 'Equipment':
+        return ('Equip owned items only: harness IDs 19 Red Hare, 20 Hex Mark, 21 Storm, '
+                '22 Shadow, 23 Elephant; orb IDs 13 Fire, 14 Lightning, 15 Vorpal, '
+                '16 Ice, 17 Blast, 18 Poison. 32 means Empty. Grant ownership in Items '
+                'before equipping. General slot availability remains unchanged. Bulk Max is disabled.')
+    if mapped.group == 'Custom characters':
+        if key.endswith(('_life', '_musou', '_attack', '_defense', '_experience')):
+            return ('Only an existing consistent custom record is editable. Stats/EXP keep '
+                    'the roster and appearance copies synchronized, including duplicate Attack/Defense. '
+                    '255 and 65535 are manual storage bounds; bulk Max is disabled. '
+                    'Gender, moveset, model, names and creation metadata are preserved.')
+        if key.endswith('_color'):
+            return 'Color: 0 Blue, 1 Red, 2 Green, 3 Purple, 4 White, 5 Yellow. Bulk Max is disabled.'
+        slot = mapped.slot - 1
+        female = document.payload[CUSTOM_BASE + CUSTOM_STRIDE * slot + 0x1B] == 0x2B
+        middle = {'head': ('Turban', 'Ponytail'), 'chest': ('Chest Plate', 'Dancer Garb'),
+                  'arms': ('Leather Guards', 'Dancer Garb'), 'hip': ('Sash', 'Dancer Garb')}
+        part = key.rsplit('_', 1)[1]
+        first = {'head': 'Short Hair', 'chest': 'Battle Garb',
+                 'arms': 'Cloth Guards', 'hip': 'Battle Garb'}[part]
+        return f'0 {first}, 1 {middle[part][female]}, 2 ' + ('Helmet' if part == 'head' else 'Armor') + '. Bulk Max is disabled.'
     if key == 'difficulty':
         return 'Easy=0, Normal=1, Hard=2. Difficulty is excluded from bulk Max.'
     if mapped.group == 'Weapons':
@@ -357,9 +490,31 @@ def field_hint(document, field):
         return ('Bodyguard team stats and unlocked guard count derive from points. '
                 '65535 is the storage bound. '
                 'Points are excluded from bulk Max. Names and other team bytes remain unchanged.')
-    return ('Standard officer stats, EXP and playable flags only. Stat 255 and character EXP '
+    return ('Standard officer stats, EXP and playable flags. Stat 255 and character EXP '
             '65535 are storage bounds; those fields are excluded from bulk Max. '
             'Equipped items, identity and unknown bytes are preserved.')
+
+
+def field_options(document, key):
+    """Named categorical choices; numeric validation still belongs to the writer."""
+    field = field_map(document).get(key)
+    if field is None:
+        raise SaveError('Choose a qualified field for this save copy.')
+    if key == 'difficulty':
+        return tuple(enumerate(('Easy', 'Normal', 'Hard')))
+    if field.group == 'Equipment':
+        identities = range(19, 24) if key.endswith('_harness') else range(13, 19)
+        return ((32, 'Empty'),) + tuple((index, ITEM_NAMES[index]) for index in identities)
+    if field.group == 'Custom characters' and key.endswith('_color'):
+        return tuple(enumerate(('Blue', 'Red', 'Green', 'Purple', 'White', 'Yellow')))
+    if field.group == 'Custom characters' and key.rsplit('_', 1)[-1] in ('head', 'chest', 'arms', 'hip'):
+        female = document.payload[CUSTOM_BASE + CUSTOM_STRIDE * (field.slot - 1) + 0x1B] == 0x2B
+        names = {'head': ('Short Hair', 'Ponytail' if female else 'Turban', 'Helmet'),
+                 'chest': ('Battle Garb', 'Dancer Garb' if female else 'Chest Plate', 'Armor'),
+                 'arms': ('Cloth Guards', 'Dancer Garb' if female else 'Leather Guards', 'Armor'),
+                 'hip': ('Battle Garb', 'Dancer Garb' if female else 'Sash', 'Armor')}
+        return tuple(enumerate(names[key.rsplit('_', 1)[-1]]))
+    return ()
 
 # Integrity validated by this backend, separately from sample qualification.
 INTEGRITY_KIND = 'checksum'

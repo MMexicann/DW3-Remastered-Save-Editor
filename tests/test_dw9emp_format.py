@@ -121,11 +121,15 @@ class DW9EmpFormatTests(unittest.TestCase):
             backend.maximums(doc, {'item_1_quantity': 999})
 
     def test_frozen_snapshot_integrity_and_boolean_seed(self):
+        class EqualFormat:
+            def __eq__(self, other):
+                return True
+
         doc = self.document
         forged = (replace(doc, raw=bytearray(doc.raw)),
                   replace(doc, payload=bytearray(doc.payload)),
                   replace(doc, seed=False), replace(doc, seed=1),
-                  replace(doc, format=replace(doc.format, id='dw9')),
+                  replace(doc, format=replace(doc.format, id='dw9')), replace(doc, format=EqualFormat()),
                   replace(doc, payload=doc.payload[:-1] + bytes([doc.payload[-1] ^ 1])))
         for candidate in forged:
             with self.subTest(seed=candidate.seed), self.assertRaises(SaveError):

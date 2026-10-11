@@ -283,6 +283,8 @@ class VerifiedEditorTests(unittest.TestCase):
                      r'C:\Users\Player\Documents\KoeiTecmo\Dynasty Warriors 9 for Steam\save.dat',
                      r'C:\Users\Player\Documents\KoeiTecmo\Dynasty Warriors 9 Empires\save.dat',
                      'Steam/userdata/123/456/remote/save.dat',
+                     'AppData/Roaming/SEGA/Steam/P5S/example/SAVEDATA.BIN',
+                     'Documents/KOEI/Shin Sangokumusou 4 Special/Savedata/save.dat',
                      'KoeiTecmo/BERSERK and the Band of the Hawk/SAVEDATA/save.dat'):
             with self.assertRaises(SaveError):
                 safe_path(self.folder/name)
@@ -310,14 +312,17 @@ class SupportGateTests(unittest.TestCase):
     def test_catalog_cannot_add_an_unverified_editor(self):
         entries = load_catalog()
         self.assertGreater(len(entries), 30)
-        self.assertTrue(all(entry['platform'].startswith('Windows PC') or entry['platform'] in {'PlayStation 2', 'PlayStation 3', 'Wii U', 'Nintendo Switch'} for entry in entries))
+        self.assertTrue(all(entry['platform'].startswith('Windows PC') or entry['platform'] in {'PlayStation 2', 'PlayStation 3', 'Xbox 360', 'PlayStation 4', 'PlayStation Portable', 'Xbox 360 / Xenia', 'Wii U', 'Nintendo Switch', 'Nintendo 3DS'} for entry in entries))
+        self.assertTrue(all(not entry['editing_verified'] for entry in entries if entry['platform'] == 'Xbox 360'))
         self.assertEqual({entry['id'] for entry in entries if entry['editing_verified']}, {game.id for game in GAMES if game.editing_verified})
         catalog = {entry['id']:entry for entry in entries}
         self.assertEqual(catalog['sw5']['status'], 'Static PC cipher candidate; native qualification blocked')
         self.assertTrue(catalog['dw6']['editing_verified'])
         self.assertEqual(get_game('dw6').platform, 'Windows PC')
+        self.assertTrue(catalog['sw4ii']['editing_verified'])
+        self.assertEqual(get_game('sw4ii').get_scalar_adapter().get_format().id, 'sw4ii')
         for game_id in ('berserk','dw8_empires','dw9_original','dw9_empires',
-                        'dw7_definitive','sw4','sw4dx','sw5','sw_sanada','sw4ii','wo3','wo4',
+                        'dw7_definitive','sw4','sw4dx','sw5','sw_sanada','wo3','wo4',
                         'p5s','dqh1','dqh2','abyss', 'dw6_original'):
             with self.assertRaises(SaveError):get_game(game_id)
 

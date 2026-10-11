@@ -462,7 +462,8 @@ class UniversalGuiTests(unittest.TestCase):
                 error.assert_not_called()
             self.assertEqual(editor.backup.read_bytes(), raw)
             self.assertEqual(editor.status.get(), 'Opened save copy. Automatic backup: ' + editor.backup.name)
-            self.assertEqual(len(editor.fields.get_children()), 331)
+            self.assertEqual(set(editor.fields.get_children()), set(editor.adapter.field_map(editor.document)))
+            self.assertIn('officer_0_harness', editor.fields.get_children())
             self.assertEqual(editor.fields.item('officer_0_attack')['values'][0], 'Zhao Yun')
             editor.fields.selection_set('officer_0_weapon_experience')
             editor.selected()
@@ -622,7 +623,7 @@ class UniversalGuiTests(unittest.TestCase):
             self.assertEqual(restored.read_bytes(), raw)
             self.assertEqual(source.read_bytes(), raw)
 
-    def test_candidate_self_test_reports_pending_qualification(self):
+    def test_self_test_reports_native_profile_without_claiming_game_load(self):
         from tests.test_dw4hyper_format import procedural_raw
         from koei_editor.shared.verified_self_test import run
         with tempfile.TemporaryDirectory() as folder:
@@ -630,11 +631,11 @@ class UniversalGuiTests(unittest.TestCase):
             raw = procedural_raw()
             source.write_bytes(raw)
             report = run('dw4hyper', source, Path(folder) / 'test-output')
-            self.assertEqual(report['fields_checked'], 331)
+            self.assertEqual(report['fields_checked'], 415)
             self.assertTrue(report['checksum_verified'])
             self.assertTrue(report['input_preserved'])
-            self.assertFalse(report['format_sample_verified'])
-            self.assertFalse(report['native_integrity_verified'])
+            self.assertTrue(report['format_sample_verified'])
+            self.assertTrue(report['native_integrity_verified'])
             self.assertFalse(report['in_game_load_tested'])
             self.assertEqual(source.read_bytes(), raw)
 
@@ -675,7 +676,8 @@ class UniversalGuiTests(unittest.TestCase):
                     patch.object(verified_gui.messagebox, 'showerror') as error:
                 editor.open()
                 error.assert_not_called()
-            self.assertEqual(len(editor.fields.get_children()), 298)
+            self.assertEqual(set(editor.fields.get_children()), set(editor.adapter.field_map(editor.document)))
+            self.assertIn('officer_0_harness', editor.fields.get_children())
             self.assertEqual(editor.status.get(), 'Opened save copy. Automatic backup: ' + editor.backup.name)
             editor.stage_values({'officer_0_attack': 99, 'item_19': 1})
             editor.undo()
@@ -692,7 +694,7 @@ class UniversalGuiTests(unittest.TestCase):
             self.assertEqual(dw4xl_parser.field_map(editor.document)['officer_0_attack'].value(editor.document.payload), 99)
             self.assertEqual(source.read_bytes(), raw)
             report = run('dw4xl_ps2', source, Path(folder) / 'self-test')
-            self.assertFalse(report['format_sample_verified'])
+            self.assertTrue(report['format_sample_verified'])
             self.assertTrue(report['backup_restored'])
             self.assertTrue((Path(folder) / 'self-test' / 'edited.psu').is_file())
             foreign = Path(folder) / 'wrong.psu'
