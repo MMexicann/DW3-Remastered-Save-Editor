@@ -22,6 +22,9 @@ validation artifacts, not a new GitHub release.
 | Atelier Ryza 2: Lost Legends & the Secret Fairy | Original Steam PC | Existing ordinary inventory/equipment quality 1–100 with native checksum preservation. Higher skill caps are not mapped; Max is disabled. |
 | Fatal Frame II: Crimson Butterfly Remake | Steam PC | Shared system Photo Point reductions; gameplay inventory, camera and collection inspection. Native checksums, lexical JSON and binary photos are preserved. |
 
+| Nioh 3 | Windows PC, USER revisions 0x01030001 / 0x01040000 | Existing known common-item quantity reductions in native tagged pools; equipment current level, pre-forge level and reinforcement inspection. |
+| Ninja Gaiden II | Original Xbox 360 / Xenia, extracted revision-6 story | Manual Yellow Essence and existing unique ordinary consumable/ammunition reductions; searchable inventory and separate Karma inspection. CON/STFS signing remains external. |
+
 Each has its own parser and explicit identity/revision gates. Resource ceilings
 without natural-cap proof are manual editing limits and are excluded from Max.
 Unknown items, unrelated regions, empty records, acquisitions and dependent
@@ -70,6 +73,9 @@ and SW4 DX respectively; the file described as DW7 is an Orochi Z file.
 [The supplier table](REMAINING_INPUTS.md) lists exact remaining inputs.
 [Additional research](ADDITIONAL_EDITOR_SURVEY.md) and game notes distinguish
 real save editors, asset tools, runtime trainers and unsupported platform leads.
+The [Team Ninja coverage](TEAM_NINJA_RESEARCH.md) records native integrity and
+mechanic blockers for Nioh 1/2, Stranger of Paradise, Sigma/Sigma 2 and Black.
+Each edition/platform stays separate; active integrity flags are retained.
 
 Native shared player exports qualify unchanged roundtrips, targeted byte edits,
 checksums where present, malformed inputs, GUI workflows and backups. Procedural

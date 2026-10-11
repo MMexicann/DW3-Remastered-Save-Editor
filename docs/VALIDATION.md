@@ -570,3 +570,58 @@ are kept separate from resource edits.
 **No edited file was loaded or re-saved in an actual game.** Native Windows
 build/startup validation remains required before publication. Version 1.6 and
 release links are unchanged; this work creates no release, tag or merge.
+
+## Team Ninja expansion (unreleased)
+
+The Team Ninja branch adds two registered editing profiles without changing the
+release version: Nioh 3 Windows USER revisions `0x01030001` / `0x01040000`, and
+original Ninja Gaiden II Xbox 360/Xenia extracted revision-6 stories. It is based
+on the shared preparation branch and preserves the other instances' Three Hopes,
+All-Stars and Wo Long work.
+
+The final Linux/Xvfb public regression run completed **1,224 tests in
+348.728 seconds: 876 passed, 348 skipped, zero failures or errors**.
+Skips require unavailable private/platform inputs; separate opt-in genuine-file
+runs are recorded below. The run includes the other instances' integrations.
+An existing DW7 GUI fixture now explicitly reselects its field after Undo, and
+the catalog test recognises separate PS4 research and Xbox 360/Xenia profiles.
+
+Independent genuine-file audits exercised **29 editable fields across the two
+Nioh 3 revisions** and **76 fields across 22 original NGII stories** individually
+and in batches. Restoring the selected field and native checksum reproduces the
+complete original payload. Encrypted Nioh 3 Amrita/Gold deductions changed only
+the two eight-byte balance fields and checksum in plaintext and ciphertext;
+keys, header, seed, tail and every other byte remain exact. A genuine CON package
+corroborates original NGII title identity but is not accepted for editing.
+
+Separate private-input tests establish unchanged Nioh PC cipher roundtrips for
+two public USER copies with seven flags retained; Nioh 2 uses the retained-four-
+flag upstream reference and tests unchanged copy/backup/restore. These do not
+verify the unresolved native gameplay integrity algorithms. SOP FFO uses one
+Epic launch USER/SYSTEM pair and two Steam USER files plus SYSTEM, separately
+from upstream cipher references. Seven Sigma PC gameplay copies, 31 Sigma 2 PC
+stories and 19 Black Steam files qualify bounded research inspection, with no
+gameplay writes. Sigma's independent redistribution is byte-identical to the
+first corpus and is not counted as a second player.
+
+A focused **45-test native research run passed with zero skips**, covering
+Nioh 1/2, separate Epic/Steam SOP FFO and separate Sigma 2/Black inspection.
+The final integrated genuine GUI/Sigma inspection run passed **7 tests with
+zero skips**. Independent format, scalar-contract and surgical-edit checks
+cover the two new registered adapters.
+
+Real Tk workflows under Linux/Xvfb exercise both registered editors with
+procedural and genuine inputs: search, stack and balance edits, Review Changes,
+Undo, Max exclusions, inspection, Light/Dark themes, new-copy saving, exact
+backups/restore, destination collision and source replacement rejection. An
+independent Nioh 3 GUI check preserves unsigned 64-bit balance precision.
+Procedural generators, genuine files and actual game loading are separate
+evidence classes. No player files, downloaded source copies, binaries, owner
+identifiers or private analysis are included in the reviewed source manifest.
+
+**Actual edited game-load/re-save validation is unperformed for both new
+editors.** Linux checks do not replace the native Windows build/EXE workflow;
+no Windows executable was built or release published in this task. No game or
+third-party editor binary was executed and no integrity flag was cleared.
+See [Team Ninja research](TEAM_NINJA_RESEARCH.md) and its per-game coverage tables
+for the exact remaining integrity consumers, mechanic dependencies and inputs.

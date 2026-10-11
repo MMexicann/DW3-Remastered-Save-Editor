@@ -40,4 +40,7 @@ Generated from `koei_editor.game_registry.GAMES`. Run `python -m tools.update_su
 | DYNASTY WARRIORS 8 EMPIRES — US · decrypted SYSTEM APP.BIN | PlayStation 3 | Existing custom-horse Body Type; searchable appearance, stats and ability records. |
 | WARRIORS OROCHI 3 ULTIMATE — US · decrypted APP.BIN · NPUB31505 | PlayStation 3 | Manual unallocated growth points and gems; searchable officer, weapon and inventory inspection. |
 
+| NIOH 3 — Windows PC · USER revisions 0x01030001 / 0x01040000 | Windows PC | Amrita and Gold deductions, existing common-item quantity reductions; separate equipment level, pre-forge and reinforcement inspection. |
+| NINJA GAIDEN II — Original Xbox 360 / Xenia · extracted revision-6 story | Xbox 360 / Xenia | Yellow Essence, existing consumable and ammunition reductions; searchable inventory and separate Karma inspection. |
+
 Scope is specific to each edition and supported save revision. File-level qualification and actual game loading are separate; see [coverage and blockers](EXPANSION_COVERAGE.md) and [validation](VALIDATION.md). Research-only codecs are excluded.

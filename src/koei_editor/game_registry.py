@@ -198,6 +198,14 @@ GAMES = (
          'Manual unallocated growth points and gems; searchable officer, weapon and inventory inspection.',
          '', '.bin', '#775c82', 'koei_editor.games.wo3u_ps3.editor', 'koei_editor.games.wo3u_ps3.parser',
          True, 'WO3U PS3', True, 'PlayStation 3', scalar_backend='koei_editor.games.wo3u_ps3.parser'),
+    Game('nioh3', 'NIOH 3', 'Windows PC · USER revisions 0x01030001 / 0x01040000',
+         'Amrita and Gold deductions, existing common-item quantity reductions; separate equipment level, pre-forge and reinforcement inspection.',
+         '', '.bin', '#806126', 'koei_editor.games.nioh3.editor', 'koei_editor.games.nioh3.parser',
+         True, 'NIOH 3', True, scalar_backend='koei_editor.games.nioh3.parser'),
+    Game('ninjagaiden2_x360', 'NINJA GAIDEN II', 'Original Xbox 360 / Xenia · extracted revision-6 story',
+         'Yellow Essence, existing consumable and ammunition reductions; searchable inventory and separate Karma inspection.',
+         '', '.dat', '#92353b', 'koei_editor.games.ninja_gaiden_ii.editor', 'koei_editor.games.ninja_gaiden_ii.parser',
+         True, 'NG II', True, 'Xbox 360 / Xenia', scalar_backend='koei_editor.games.ninja_gaiden_ii.parser'),
 
 )
 

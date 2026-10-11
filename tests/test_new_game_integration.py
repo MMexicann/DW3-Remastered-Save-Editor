@@ -64,6 +64,7 @@ class NewGameGuiTests(unittest.TestCase):
                 self.assertEqual(editor.changes, {})
                 self.assertEqual(int(editor.value.get()),
                                  backend.field_map(editor.document)['gold'].value(editor.document.payload))
+                editor.fields.selection_set('gold')
                 editor.value.set('12345')
                 editor.apply_selected()
                 app.select_game('dw3')

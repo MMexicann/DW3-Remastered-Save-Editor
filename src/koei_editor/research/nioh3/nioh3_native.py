@@ -4,8 +4,9 @@ Independently implemented format facts from alfizari/Nioh-3-Save-Editor
 (Apache-2.0), corroborated by Master-Bayesian/Nioh3-Scroll-Generator (GPL-3.0).
 No source implementation, game assets or player saves are distributed.
 
-This module deliberately has no gameplay field writer, file I/O or library card:
-current published inventory offsets do not qualify the acquired native files.
+This inspection API deliberately has no gameplay writer or file I/O. Separate
+revision-qualified common-item editing now lives in koei_editor.games.nioh3;
+its native tagged arrays replace the inapplicable published fixed pool bases.
 """
 from dataclasses import dataclass
 import struct
