@@ -14,7 +14,8 @@ class DW8EmpiresPresentation(ScalarPresentation):
         return (InspectionTable('Custom horses',
                                 ('Slot', 'Name preview', 'Occupied flag', 'Record ID', 'Appearance sliders (7)',
                                  'Type ID', 'Model byte', 'Speed', 'Power', 'Ability IDs (4)'), rows,
-                                'Search by horse name or slot. Existing body type can be edited; '
+                                'Search by horse name or slot. Seven appearance members can be edited '
+                                'using qualified original positions; '
                                 'identity, names, ownership, type, model, stats and abilities remain unchanged.'),)
 
 
@@ -24,7 +25,7 @@ class Editor(ScalarEditor):
     backend = backend
     presentation_type = DW8EmpiresPresentation
     subtitle = 'Windows PC SYSTEM custom-horse editor'
-    summary = 'Existing custom-horse body type and searchable records in SystemSave.dat.'
+    summary = 'Seven existing-horse appearance members with qualified original choices in SystemSave.dat.'
 
 
 def read_save(path):

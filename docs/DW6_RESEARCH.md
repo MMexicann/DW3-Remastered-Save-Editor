@@ -1,8 +1,11 @@
 # Dynasty Warriors 6 — original Windows PC
 
 The adapter implements named playable-officer unlocks, existing horse combat
-stats, existing weapon element choices, and searchable officer/weapon/horse inspection. This is the
-original Windows game, not DW6 Empires, PS2 Special, PS3 or Xbox 360.
+stats, existing weapon element choices, manual stored weapon damage bonuses and
+searchable officer/weapon/horse inspection. This is the original Windows game,
+not DW6 Empires, PS2 Special, PS3 or Xbox 360. The latest independent bonus
+expansion and native/GUI checks are documented in
+[Samurai / classic Dynasty editor depth](SAMURAI_DYNASTY_DEPTH.md).
 
 ## Provenance and qualification
 
@@ -27,7 +30,7 @@ original Windows game, not DW6 Empires, PS2 Special, PS3 or Xbox 360.
 The strict observed profile requires exactly 212,248 bytes and officer IDs
 0–40 in their 41 canonical rows. No independent build/revision marker or native
 checksum algorithm was identified. Public successful direct-file reloads
-support the two implemented write categories without checksum repair. The
+support the original unlock/horse write categories without checksum repair. The
 adapter leaves all other bytes untouched; it does not invent a checksum, owner
 secret or encryption wrapper. Structural qualification is not cryptographic
 authentication, and other sizes/reassigned officer identities are rejected.
@@ -65,6 +68,13 @@ slots per officer, and omits the documented empty ID 174. Unknown IDs and masks
 remain visible as numeric/raw values. Damage is a **bonus over weapon base
 damage**, not total attack. Existing known weapon elements now support deliberate individual edits. The native reader maps each 16-byte record to four independent u32 values: ID, damage bonus, element and skill mask. Its explicit enum is 0 Fire, 1 Ice, 2 Lightning and 3 Standard (no element). Element is a choice rather than an ordered upgrade and is excluded from every Max action. Only an original known weapon ID with an original known element qualifies; empty ID 174, unknown IDs and unknown element values remain read only. An element edit preserves identity, damage bonus, skill mask, inventory, officer progression and every other byte. This does not establish damage limits or skill acquisition dependencies.
 
+Stored damage bonuses are now individually editable on the same qualified
+existing known weapon records. The bonus is the independent u32 at weapon `+4`,
+not total attack; identity, element, mask, inventory and officer growth remain
+unchanged. Its manual unsigned 32-bit bound is a storage limit, excluded from
+Max. The published tentative value 32 and displayed attack limit do not prove
+a natural bonus maximum. No weapon acquisition or skill-mask writes are added.
+
 ## Coverage and exact remaining inputs
 
 | System | Implemented or precise blocker |
@@ -74,7 +84,7 @@ damage**, not total attack. Existing known weapon elements now support deliberat
 | Officer level/EXP and derived stats | Read-only stored values. Level changes alter Life/Musou/Attack/Defense; EXP alone does not immediately level. Need controlled level-up/EXP pairs or the native PC executable's level/reward routines before exposing progression edits. |
 | Officer identity, title, outfit and kills | Read-only. Identity can redirect inventories/progression; title affects stat distribution. Need independently identified title/outfit domains, eligibility and update dependencies. Identity replacement is deliberately unavailable. |
 | Officer skill trees | Read-only raw eight-byte data. Per-officer nodes/counts differ; broad FF writes in old research do not identify every valid node or reserved bit. Need node maps, level/prerequisite rules and controlled allocation pairs. |
-| Weapons and equipment | Named inventory and manual existing-element choices; raw damage bonus and skill mask remain read only. The proposed “32” damage maximum is tentative and the display limit is not a natural cap. Need native bonus bounds, equipped references, rank/weapon-type eligibility and controlled acquisition/equip pairs. |
+| Weapons and equipment | Named inventory, manual existing-element choices and independent stored damage bonuses on qualified existing weapons. Bonus edits use u32 storage bounds with no Max; the proposed “32” maximum and display limit remain unproven natural caps. Skill mask and equipment references stay read only. Need native natural bonus bounds, equipped references, rank/weapon-type eligibility and controlled acquisition/equip pairs. |
 | Weapon elements / skills | Existing known element enum writable individually, excluded from Max; native sample contains all four valid choices. Skill masks remain read only: published lists describe skills but do not prove every bit, valid combinations or five-slot enforcement in disk records. Need exact masks, enum/slot limits and acquisition/write-path proof. |
 | Horse EXP/level/growth, names, type and model | Read-only. Growth descriptors and model transformation are interdependent. Red Hare requires the relevant coat, eyes/physique, level and Wind Spirit conditions; changing a type/model alone does not create a legitimate horse. Need complete descriptor offsets/enums and controlled growth/transform pairs. |
 | Horse skills/elements | Read-only. Skills are a combined mask with a four-skill limit. Need complete bit semantics and native mutation/slot rules before writing masks. |

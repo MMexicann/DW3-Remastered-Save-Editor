@@ -83,7 +83,7 @@ FORMAT = Format(
     'Qualified native PC revision 0x11080200. Gold and 65 playable officer '
     'health, attack, defense, power, speed and skill points. '
     'Switch between already equipped owned weapons; inspect inventory, '
-    'purchased skill bits and guardian beast references. '
+    'purchased skill bits and guardian beast references; reduce existing unlearned seal meters. '
     'Progression, story and rewards are preserved. '
     'Genuine PC file roundtrips verified; edited game loading remains untested.'
 )
@@ -144,21 +144,45 @@ def validate_document(document):
 
 def fields_for(document):
     validate_document(document)
-    return FORMAT.fields
+    return _mapped_fields(document.payload)
+
+
+@lru_cache(maxsize=4)
+def _mapped_fields(payload):
+    fields = list(FORMAT.fields)
+    for weapon in range(WEAPON_COUNT):
+        offset = WEAPON_BASE + weapon * WEAPON_STRIDE
+        flags = int.from_bytes(payload[offset + 4:offset + 6], 'little')
+        meter = int.from_bytes(payload[offset + 6:offset + 8], 'little')
+        # Native negative learning adjustment changes the meter alone. Keep
+        # already learned records and unknown flag bits out of this writer:
+        # the system seal acquisition/reward path is a separate transaction.
+        if flags == 1 and 1 <= meter <= 1000:
+            fields.append(Field(f'weapon_{weapon}_seal_meter',
+                                f'Weapon record {weapon + 1}: Seal learning meter (decrease only)',
+                                offset + 6, 2, meter, 'Seal learning', weapon + 1,
+                                maxable=False))
+    return tuple(fields)
+
+
+@lru_cache(maxsize=4)
+def _field_index(payload):
+    return MappingProxyType({field.id: field for field in _mapped_fields(payload)})
 
 
 def field_map(document):
     validate_document(document)
-    return FIELD_MAP
+    return _field_index(document.payload)
 
 
 def changed_payload(document, changes):
     validate_document(document)
+    mapping = field_map(document)
     result = bytearray(document.payload)
     for key, value in changes.items():
-        if key not in FIELD_MAP:
+        if key not in mapping:
             raise SaveError('The requested field is not mapped for DW7 XL PC.')
-        field = FIELD_MAP[key]
+        field = mapping[key]
         # An existing unusual value may be unstaged and preserved unchanged.
         if type(value) is int and value == field.value(document.payload):
             continue
@@ -179,10 +203,11 @@ def serialize(document, changes):
 
 
 def stage(document, changes, key, value):
-    validate_document(document)
-    if key not in FIELD_MAP:
+    mapping = field_map(document)
+    changed_payload(document, changes)
+    if key not in mapping:
         raise SaveError('The requested field is not mapped for DW7 XL PC.')
-    field = FIELD_MAP[key]
+    field = mapping[key]
     result = dict(changes)
     if type(value) is int and value == field.value(document.payload):
         result.pop(key, None)
@@ -191,6 +216,7 @@ def stage(document, changes, key, value):
         if key.endswith('_active_weapon'):
             _validate_active_weapon(document, field, value)
         result[key] = value
+    changed_payload(document, result)
     return result
 
 
@@ -208,13 +234,13 @@ def _validate_active_weapon(document, field, value):
 
 
 def limit_values(document, changes, keys):
-    validate_document(document)
+    mapping = field_map(document)
     changed_payload(document, changes)
     result = {}
     for key in keys:
-        if key not in FIELD_MAP:
+        if key not in mapping:
             raise SaveError('The requested field is not mapped for DW7 XL PC.')
-        field = FIELD_MAP[key]
+        field = mapping[key]
         current = changes.get(key, field.value(document.payload))
         original = field.value(document.payload)
         if (field.maxable and field.minimum <= original <= field.maximum
@@ -234,7 +260,7 @@ def maximums(document, changes, group=None):
 def review(document, changes):
     changed_payload(document, changes)
     return [(field, field.value(document.payload), changes[field.id])
-            for field in FORMAT.fields if field.id in changes]
+            for field in fields_for(document) if field.id in changes]
 
 
 def backup(document):
@@ -306,10 +332,15 @@ def weapons(document):
 
 
 def field_hint(document, field):
-    validate_document(document)
+    mapping = field_map(document)
     key = field.id if isinstance(field, Field) else field
-    if key not in FIELD_MAP:
+    if key not in mapping:
         raise SaveError('The requested field is not mapped for DW7 XL PC.')
+    if key.endswith('_seal_meter'):
+        return ("Decrease an existing owned, unlearned weapon's learning meter, "
+                '0 through its opened value. No threshold is crossed upward and no seal '
+                'is acquired. Ownership, learned bits and system seal rewards remain '
+                'unchanged. Unknown flags and learned records stay read only; excluded from Max.')
     if key == 'gold':
         return 'Gold cap 999,999 is checked by the native PC save reader. Story and rewards stay separate.'
     if key.endswith('_active_weapon'):
@@ -326,15 +357,15 @@ def field_hint(document, field):
 
 def field_options(document, field):
     """Existing equipped choices, with the same ownership guard as staging."""
-    validate_document(document)
+    mapping = field_map(document)
     key = field.id if isinstance(field, Field) else field
     if type(key) is not str:
         raise SaveError('Choose a mapped DW7 XL field name.')
-    if key not in FIELD_MAP:
+    if key not in mapping:
         raise SaveError('The requested field is not mapped for DW7 XL PC.')
     if not key.endswith('_active_weapon'):
         return ()
-    mapped = FIELD_MAP[key]
+    mapped = mapping[key]
     start = OFFICER_BASE + (mapped.slot - 1) * OFFICER_STRIDE
     options = []
     for value, name in ((0, 'First equipped weapon'), (1, 'Second equipped weapon')):

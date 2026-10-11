@@ -7,7 +7,7 @@ class Editor(ScalarEditor):
     game_id = 'dw4hyper'
     backend = dw4hyper_parser
     subtitle = 'Windows PC save editor'
-    summary = 'Officers, weapons, items, bodyguards and existing custom characters.'
+    summary = 'Officers, weapons, items, existing general-item equipment, bodyguards and custom characters.'
 
 
 def read_save(path):

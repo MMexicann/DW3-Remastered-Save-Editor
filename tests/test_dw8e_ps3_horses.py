@@ -31,7 +31,8 @@ def procedural_raw():
         start = backend.HORSE_BASE + identity * backend.HORSE_STRIDE
         payload[start] = 1
         payload[start + 2:start + 2 + len(name)] = name
-        payload[start + 16:start + 23] = bytes([0, 1, 2, 3, 4, 0, 2])
+        payload[start + 16:start + 23] = bytes([0, 1, 2, 3, 4, 0, 2] if identity == 0
+                                             else [0, 3, 4, 0, 1, 4, 3])
         payload[start + 15] = 7
         payload[start + 30] = 0x9D
         struct.pack_into('<H', payload, start + 0x24, 275)
@@ -71,11 +72,11 @@ class DW8EmpiresHorseTests(unittest.TestCase):
 
     def test_named_existing_body_choices_seven_inspected_sliders_and_native_boundaries(self):
         fields = backend.field_map(self.document)
-        self.assertEqual(len(fields), 2)
+        self.assertEqual(len(fields), 14)
         self.assertEqual(fields['horse_0_body'].offset, 0x39BA4)
         self.assertEqual(fields['horse_149_body'].offset,
                          backend.HORSE_BASE + 149 * 76 + 16)
-        self.assertNotIn('horse_0_head', fields)
+        self.assertEqual(fields['horse_0_head'].offset, backend.HORSE_BASE + 0x11)
         self.assertIn('Test Horse', fields['horse_0_body'].label)
         rows = backend.horses(self.document)
         self.assertEqual(len(rows), 150)
@@ -86,7 +87,8 @@ class DW8EmpiresHorseTests(unittest.TestCase):
     def test_each_body_field_surgical_all_stats_names_models_abilities_and_seed_retained(self):
         before = self.document
         for field in backend.fields_for(before):
-            value = (field.value(before.payload) + 1) % 5
+            value = next(value for value, _ in backend.field_options(before, field.id)
+                         if value != field.value(before.payload))
             result = backend.decode(backend.serialize(before, {field.id: value}))
             self.assertEqual(result.seed, before.seed)
             self.assertEqual(field.value(result.payload), value)
@@ -106,7 +108,7 @@ class DW8EmpiresHorseTests(unittest.TestCase):
         with self.assertRaises(SaveError):
             backend.stage(self.document, {}, 'horse_1_body', 4)
         for key in ('horse_0_used', 'horse_0_model', 'horse_0_speed', 'horse_0_name',
-                    'horse_0_abilities', 'horse_0_head', 'horse_0_muscle'):
+                    'horse_0_abilities'):
             with self.subTest(key=key), self.assertRaises(SaveError):
                 backend.stage(self.document, {}, key, 1)
 
@@ -170,7 +172,8 @@ class DW8EmpiresHorseTests(unittest.TestCase):
         self.assertEqual(len(backend.horses(doc)), 150)
         self.assertGreater(len(backend.fields_for(doc)), 0)
         for field in backend.fields_for(doc):
-            value = (field.value(doc.payload) + 1) % 5
+            value = next(value for value, _ in backend.field_options(doc, field.id)
+                         if value != field.value(doc.payload))
             result = backend.decode(backend.serialize(doc, {field.id: value}))
             self.assertEqual(result.payload[:field.offset], doc.payload[:field.offset])
             self.assertEqual(result.payload[field.offset + 1:], doc.payload[field.offset + 1:])

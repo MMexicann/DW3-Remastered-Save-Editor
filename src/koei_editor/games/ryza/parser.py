@@ -46,9 +46,10 @@ class Field:
     size: int = 2
     minimum: int = 1
     kind: str = 'int'
+    byteorder: str = 'little'
 
     def value(self, payload):
-        return int.from_bytes(payload[self.offset:self.offset + self.size], 'little')
+        return int.from_bytes(payload[self.offset:self.offset + self.size], self.byteorder)
 
     def validate(self, value):
         if type(value) is not int or not self.minimum <= value <= self.maximum:
@@ -73,6 +74,7 @@ FORMATS = {
     'atelier_ryza2': Format('atelier_ryza2', 'Atelier Ryza 2: Lost Legends & the Secret Fairy (Steam PC)',
                            'Original native 100-byte-item layout. Existing ordinary item/equipment '
                            'quality 1–100; excluded from Max until higher skill caps are mapped. '
+                           'Qualified unspent skill-tree SP reductions; learned skills preserved. '
                            'Genuine early-game autosave checked; game loading remains untested.'),
 }
 
@@ -295,7 +297,41 @@ def _fields(payload, game_id):
         field = Field(f'{key}_{slot - 1}_quality', title + ': Quality', offset + quality_offset,
                       maximum, label, slot, game_id == GAME_ID)
         result[field.id] = field
+    if game_id == 'atelier_ryza2':
+        field = _skill_point_field(payload)
+        if field is not None:
+            result[field.id] = field
     return MappingProxyType(result)
+
+
+def _skill_point_field(payload):
+    """Observed Ryza 2 AlchemyTree tag/four-byte unspent SP scalar.
+
+    Unknown tree revisions/absent scalar remain preserved without a control.
+    SkillState is separate ownership data and is never rewritten. Reductions
+    only avoid claiming an unproved acquisition/cap or unlocking any skill.
+    """
+    tree = _unique(_nodes(payload, 32, len(payload)), b'AlchemyTree')
+    try:
+        children = _nodes(payload, tree.body, tree.end)
+    except SaveError:
+        return None  # The old item profile did not qualify tree child framing.
+    versions = [node for node in children if node.name == b'ver']
+    points = [node for node in children if node.name == b'SkillPoint']
+    if (len(versions) != 1 or len(points) != 1
+            or payload[versions[0].body:versions[0].end] != bytes.fromhex('000000020004')):
+        return None
+    scalar = points[0]
+    if (scalar.end - scalar.body != 8
+            or payload[scalar.body:scalar.body + 4] != b'\0\0\0\4'):
+        return None
+    offset = scalar.body + 4
+    original = int.from_bytes(payload[offset:offset + 4], 'big', signed=True)
+    if original < 0:
+        return None
+    return Field('skill_points', 'Unspent skill-tree SP (reduce only)', offset,
+                 original, 'Skill-tree resources', 0, maxable=False, size=4,
+                 minimum=0, byteorder='big')
 
 
 def field_map(document):
@@ -335,7 +371,7 @@ def changed_payload(document, changes):
         if type(value) is int and value == field.value(document.payload):
             continue
         field.validate(value)
-        struct.pack_into('<H', output, field.offset, value)
+        output[field.offset:field.offset + field.size] = value.to_bytes(field.size, field.byteorder)
     return bytes(output)
 
 
@@ -426,6 +462,9 @@ def item_records(document):
 def field_hint(document, key):
     if type(key) is not str or key not in field_map(document):
         raise SaveError('Unmapped Ryza field.')
+    if key == 'skill_points':
+        return ('Reduce the opened unspent skill-tree SP balance only. Max is disabled. '
+                'Learned recipes/skills, prerequisite nodes, quality caps and quest rewards remain unchanged.')
     note = 'Existing item quality only; adjacent synthesis data, traits, effects, ownership and equipment remain intact.'
     if document.format.id != GAME_ID:
         note += ' Ryza 2 edits stop at its initial cap of 100; higher skill caps are unmapped. Excluded from Max.'

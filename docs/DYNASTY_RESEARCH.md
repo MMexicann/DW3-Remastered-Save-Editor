@@ -21,7 +21,11 @@ Implemented `src/koei_editor/games/dw7xl/dw7xl_codec.py`, `src/koei_editor/games
 shared scalar contract regressions. The explicit PC adapter accepts only the
 470,307-byte native revision `0x11080200`. It exposes gold, health, attack,
 defense, power, speed and spendable skill points for 65 playable record slots,
-plus switching between their already equipped owned weapons: 456 fields.
+plus switching between their already equipped owned weapons: 456 static fields.
+Qualified owned, unlearned weapon records additionally permit manual seal-meter
+reduction to 0..the opened meter, excluded from Max. See the
+[existing-editor depth review](OROCHI_DYNASTY_DEPTH.md) for native negative-operation
+proof and the genuine complete fixture's absence of eligible unlearned records.
 Officer identity names are not inferred from an unverified roster order.
 
 The GUI retains Undo, Review Changes, copied-source backups, immutable source
@@ -120,7 +124,7 @@ fixture uses `DW7XL_SAVE_COPY`. No edited save was loaded in the game.
 | Spendable officer skill points | Implemented; native cap 9,999; purchased flags kept separate |
 | Active equipped weapon | Implemented; only existing equipped owned references; no bulk Max |
 | Weapon inventory ownership | Searchable read-only physical records; granting requires native weapon classification and acquisition dependencies |
-| Seal learning / weapon seals | Read-only meter; external weapon-to-seal table, required meter and system seal reward flags are missing; changing meter alone would bypass reward dependencies |
+| Seal learning / weapon seals | Original exact owned/unlearned flags and meter 1..1000 permit decrease only, with no Max or reward changes. Increasing, acquiring or revoking a learned seal still requires external weapon-to-seal thresholds and system reward dependencies |
 | Weapon names, types, attack and seal slots | Need weapon parameter/localization data; five native short fields have unproven semantics and are preserved |
 | Officer names / slot identities | Need native playable roster identity table or controlled named saves; standard roster order is not proof |
 | Purchased skills / EX unlocks | Read-only masks; need officer-specific definitions, available bit counts, costs, prerequisites and any stat rewards from game parameter data |
@@ -154,14 +158,18 @@ unchanged. They are five files from a single public save bundle, not five
 independent players. Private tests use `DW8E_SAVE_FOLDER`. Raw-byte surgical
 serialization tests establish codec behavior only, without gameplay claims.
 
-The development SystemSave adapter adds one carefully qualified field per
-already occupied custom horse: Body Type, manually 0–4. The table begins at
+The development SystemSave adapter edits seven appearance members in qualified
+already occupied custom horses. Body Type remains manually 0–4; the six other
+members admit only original same-member positions witnessed in qualified ordinary
+PC horses, with no values imported from PS3. The table begins at
 decoded `0x38104`, contains 150 records of `0x4C` bytes, and each fixed
-record identifier at `+0x44` must equal `30 + slot`. Body Type is `+0x10`;
-all six other appearance positions, actual model identity, movement speed,
+record identifier at `+0x44` must equal `30 + slot`. The seven appearance bytes
+are `+0x10`..`+0x16`; actual model identity, movement speed,
 power, abilities, ownership and names remain unchanged. Max does not alter
 this category. Searchable inspection shows all 150 records. See
 [custom-horse proof, tests and limitations](DW8E_CUSTOM_HORSES.md).
+The [depth review](OROCHI_DYNASTY_DEPTH.md) records the additional six controls,
+independent native PC witnesses and GUI/backup/restore tests.
 The genuine system sample roundtrips unchanged and qualified body edits are
 surgical; this does not establish an edited game-load test.
 
@@ -182,7 +190,8 @@ No runtime pointer from a Cheat Engine table is used as a file offset.
 | Officer merit, level, health, attack, defense, leadership | Plausible 0x5C-stride records observed; starting identity and field limits not independently proved |
 | Weapon aptitude and stratagem slots | Repeated byte arrays resemble runtime layouts; precise enum semantics, prerequisites and ownership remain unproven |
 | Existing custom horse Body Type | Registered development SystemSave editor: occupied, known original 0–4 only; manual 0–4, no Max or new horses |
-| Other horse sliders, models, speed, power and abilities | Read-only inspection; natural bounds and effect/ownership dependencies remain unqualified |
+| Other six horse sliders | Qualified original ordinary horses only; choices restricted to original same-member PC witnesses, no Max; universal natural domains remain unqualified |
+| Horse models, speed, power and abilities | Read-only inspection; effect/ownership dependencies remain unqualified |
 | Weapons, items and reinforcement | Need native inventory schemas, named records, limits, ownership and equipment dependencies |
 | Relationships, marriage, children and recruitment | Need campaign record identities and relationship/offspring dependencies |
 | Custom officers, units, scenarios, flags and bases | Separate custom officer files observed; serialization and legitimate bounds not recovered |

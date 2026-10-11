@@ -2,7 +2,7 @@
 
 The published inventory bases are deliberately not used. Each qualified profile
 requires the actual native tag, both lengths and its adjacent pool boundary.
-Item names/IDs below are seven factual corroborations, not an imported catalog.
+Item names/IDs below are factual corroborations, not an imported catalog.
 """
 from dataclasses import dataclass
 from functools import lru_cache
@@ -21,6 +21,17 @@ COMMON_ITEMS = {
     0xF8DD: 'Ochoko Cup',
     0x8A41: 'Salt',
     0x79CF: 'Rifle Ammunition',
+    0x6514: 'Antidote',
+    0xFA6E: 'Antiparalytic Needle',
+    0x96A7: 'Arrowproof Amulet',
+    0x4E22: "Daion-Jin's Sake",
+    0xE7D3: 'Dung Ball',
+    0x4D66: 'Fireproof Amulet',
+    0xFC7A: 'Sacred Ash',
+    0x5A51: 'Smoke Ball',
+    0x4C5F: 'Throwing Stone',
+    0x5943: 'Travel Amulet',
+    0x304E: 'Water Amulet',
 }
 
 

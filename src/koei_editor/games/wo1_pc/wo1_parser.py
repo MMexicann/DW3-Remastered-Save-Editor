@@ -64,7 +64,7 @@ class Format:
 
 
 FORMAT = Format(GAME_ID, 'Warriors Orochi (original PC)', SAVE_SIZE, (),
-                'Manual shared Growth Points and qualified existing weapon properties. '
+                'Manual shared Growth Points, qualified existing weapon properties and existing owned-weapon selection. '
                 'Character growth, skills, ownership and story progression remain read only.')
 
 
@@ -131,11 +131,25 @@ def _qualified_weapon(payload, officer, weapon):
             and mask.bit_count() <= payload[start + 4] <= 8)
 
 
+def _equipped_options(payload, officer):
+    return tuple((weapon + 1, f'Weapon slot {weapon + 1} (ID '
+                  f'{int.from_bytes(payload[_weapon_offset(officer, weapon):_weapon_offset(officer, weapon) + 2], "little")})')
+                 for weapon in range(WEAPON_COUNT)
+                 if _qualified_weapon(payload, officer, weapon))
+
+
 @lru_cache(maxsize=4)
 def _mapped_fields(payload):
     fields = [Field('stock_exp', 'Stock EXP / Growth Points', STOCK_EXP_OFFSET, 4,
                     STOCK_EXP_MAXIMUM, maxable=False)]
     for officer in range(OFFICER_COUNT):
+        equipped_offset = OFFICER_BASE + officer * OFFICER_STRIDE + 1
+        options = _equipped_options(payload, officer)
+        if payload[equipped_offset] + 1 in dict(options) and len(options) > 1:
+            fields.append(Field(f'officer_{officer}_equipped_weapon',
+                                f'Officer record {officer}: Equipped weapon slot',
+                                equipped_offset, 1, 8, 'Equipment', officer + 1,
+                                minimum=1, maxable=False, display_bias=1))
         for weapon in range(WEAPON_COUNT):
             start = _weapon_offset(officer, weapon)
             mask = int.from_bytes(payload[start + 2:start + 4], 'little')
@@ -186,6 +200,9 @@ def _checked_changes(document, changes):
         field = mapping[key]
         if type(value) is not int or value != field.value(document.payload):
             field.validate(value)
+            if key.endswith('_equipped_weapon') and value not in dict(
+                    _equipped_options(document.payload, field.slot - 1)):
+                raise SaveError("Select a qualified existing weapon from this officer's own pool.")
     return mapping
 
 
@@ -220,6 +237,7 @@ def stage(document, changes, key, value):
     else:
         field.validate(value)
         result[key] = value
+        _checked_changes(document, result)
     return result
 
 
@@ -282,6 +300,8 @@ def restore(backup_path, destination, game_id=GAME_ID):
 
 
 def record_label(slot, group='Resources'):
+    if group == 'Equipment' and type(slot) is int and 1 <= slot <= OFFICER_COUNT:
+        return f'Officer record {slot - 1}'
     if type(slot) is int and 1 <= slot <= OFFICER_COUNT * WEAPON_COUNT:
         officer, weapon = divmod(slot - 1, WEAPON_COUNT)
         return f'Officer record {officer}: Weapon {weapon + 1}'
@@ -321,6 +341,10 @@ def field_hint(document, field):
     value = field_map(document).get(key) if type(key) is str else None
     if value is None:
         raise SaveError('The requested original Warriors Orochi PC field is not editable.')
+    if key.endswith('_equipped_weapon'):
+        return ("Select an existing qualified weapon from this officer's own eight-slot pool. "
+                'Slots display 1..8 and store 0..7. Ownership, weapon IDs, effect masks, '
+                'growth, collection and rewards are preserved; excluded from Max.')
     if key == 'stock_exp':
         return ('Shared Growth Points used for character growth and weapon fusion. '
                 'Individual edits use the u32 storage range; no natural maximum is claimed. '
@@ -335,3 +359,10 @@ def field_hint(document, field):
 
 
 INTEGRITY_KIND = 'checksum'
+
+
+def field_options(document, key):
+    field = field_map(document).get(key)
+    if field is None:
+        raise SaveError('The requested original Warriors Orochi PC field is not editable.')
+    return _equipped_options(document.payload, field.slot - 1) if key.endswith('_equipped_weapon') else ()

@@ -125,7 +125,7 @@ FORMAT = Format(
     'Standard officers, character/weapon EXP, playable flags, items, bodyguard '
     'points, difficulty and existing custom-character stats and appearance. '
     'Item level 0 means locked; rare items use ownership 0/1. '
-    'Owned harnesses and orbs can be equipped. General equipment slots, custom '
+    'Owned harnesses/orbs can be equipped; occupied known-owned general slots allow replacement/unequip. Empty general slots, custom '
     'creation/model/moveset/gender, suspended battles and rankings remain read only.'
 )
 FIELD_MAP = MappingProxyType({field.id: field for field in FORMAT.fields})
@@ -220,6 +220,15 @@ def _qualified_custom_pair(payload, slot):
 @lru_cache(maxsize=4)
 def _fields_for_payload(payload):
     fields = list(FORMAT.fields)
+    for officer in range(OFFICER_COUNT):
+        base = OFFICER_BASE + officer * OFFICER_STRIDE
+        for slot in range(2, 8):
+            identity = payload[base + 8 + slot]
+            if identity in _general_items() and payload[ITEM_BASE + identity] != 255:
+                fields.append(Field(f'officer_{officer}_general_item_{slot}',
+                                    f'{OFFICER_NAMES[officer]}: Existing general slot {slot - 1}',
+                                    base + 8 + slot, 1, 32, 'General equipment',
+                                    officer + 1, maxable=False))
     for slot in range(4):
         if not _qualified_custom(payload, slot):
             continue
@@ -249,11 +258,15 @@ def _fields_for_payload(payload):
     return tuple(fields)
 
 
+def _general_items():
+    return (*range(13), *range(24, 32))
+
+
 def record_label(slot, group='Officers'):
     """Published names for UI labels, without guessing custom or scenario IDs."""
     if group in ('Officers', 'Weapons') and type(slot) is int and 1 <= slot <= OFFICER_COUNT:
         return OFFICER_NAMES[slot - 1]
-    if group == 'Equipment' and type(slot) is int and 1 <= slot <= OFFICER_COUNT:
+    if group in ('Equipment', 'General equipment') and type(slot) is int and 1 <= slot <= OFFICER_COUNT:
         return OFFICER_NAMES[slot - 1]
     if group == 'Bodyguards' and type(slot) is int and 1 <= slot <= 4:
         return f'Bodyguard team {slot}'
@@ -273,6 +286,18 @@ def changed_payload(document, changes):
         for offset in (field.offset, *field.mirrors):
             result[offset:offset + field.size] = encoded
     for key, value in changes.items():
+        field = mapped[key]
+        if field.group == 'General equipment' and value != field.value(document.payload):
+            if value != 32 and (value not in _general_items() or document.payload[ITEM_BASE + value] == 255
+                               or result[ITEM_BASE + value] == 255):
+                raise SaveError('Replace with an originally owned general item, or choose Empty.')
+            officer = field.slot - 1
+            base = OFFICER_BASE + officer * OFFICER_STRIDE
+            if result[WEAPON_EXP_BASE + officer * 2:WEAPON_EXP_BASE + officer * 2 + 2] != document.payload[WEAPON_EXP_BASE + officer * 2:WEAPON_EXP_BASE + officer * 2 + 2]:
+                raise SaveError('Preserve weapon EXP while replacing an existing general equipment slot.')
+            equipped = [item for item in result[base + 10:base + 16] if item != 32]
+            if len(equipped) != len(set(equipped)):
+                raise SaveError('An officer cannot equip the same general item in multiple slots.')
         if key.endswith(('_harness', '_orb')) and value != 32:
             allowed = range(19, 24) if key.endswith('_harness') else range(13, 19)
             if value not in allowed or result[ITEM_BASE + value] == 0xFF:
@@ -299,6 +324,7 @@ def serialize(document, changes):
 
 
 def stage(document, changes, key, value):
+    changed_payload(document, changes)
     mapped = field_map(document)
     if key not in mapped:
         raise SaveError('The requested field is not mapped for this native PC save.')
@@ -309,8 +335,7 @@ def stage(document, changes, key, value):
     else:
         field.validate(value)
         result[key] = value
-    if field.group in ('Equipment', 'Items'):
-        changed_payload(document, result)
+    changed_payload(document, result)
     return result
 
 
@@ -457,6 +482,10 @@ def field_hint(document, field):
     if key not in fields:
         raise SaveError('The requested field is not mapped for this native PC save.')
     mapped = fields[key]
+    if mapped.group == 'General equipment':
+        return ('Replace or unequip an originally occupied known-owned general slot. Empty '
+                'slots cannot be filled; weapon EXP must remain unchanged in this batch. '
+                'Targets must already be owned and cannot duplicate another general slot. Max excludes choices.')
     if mapped.group == 'Equipment':
         return ('Equip owned items only: harness IDs 19 Red Hare, 20 Hex Mark, 21 Storm, '
                 '22 Shadow, 23 Elephant; orb IDs 13 Fire, 14 Lightning, 15 Vorpal, '
@@ -505,6 +534,12 @@ def field_options(document, key):
     if field.group == 'Equipment':
         identities = range(19, 24) if key.endswith('_harness') else range(13, 19)
         return ((32, 'Empty'),) + tuple((index, ITEM_NAMES[index]) for index in identities)
+    if field.group == 'General equipment':
+        base = OFFICER_BASE + (field.slot - 1) * OFFICER_STRIDE
+        other = {document.payload[base + relative] for relative in range(10, 16)
+                 if base + relative != field.offset}
+        return ((32, 'Empty'),) + tuple((index, ITEM_NAMES[index]) for index in _general_items()
+                                       if document.payload[ITEM_BASE + index] != 255 and index not in other)
     if field.group == 'Custom characters' and key.endswith('_color'):
         return tuple(enumerate(('Blue', 'Red', 'Green', 'Purple', 'White', 'Yellow')))
     if field.group == 'Custom characters' and key.rsplit('_', 1)[-1] in ('head', 'chest', 'arms', 'hip'):

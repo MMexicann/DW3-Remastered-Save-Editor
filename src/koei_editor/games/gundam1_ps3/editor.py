@@ -14,8 +14,8 @@ class Editor(ScalarEditor):
     save_extension = '.bin'
     presentation_type = Presentation
     subtitle = 'PS3 US/EU decrypted DATA.BIN + original PARAM.SFO; Apollo resign required'
-    summary = ('Learn native skills for six qualified existing level-30 pilots. Pilot/mobile suit '
-               'EXP and levels and equipped skill IDs are read only. Existing learned '
+    summary = ('Learn native skills and equip originally learned skills for six qualified level-30 pilots. '
+               'Pilot/mobile suit EXP, levels and inherent skills stay unchanged. Existing learned '
                'skills cannot be removed; automatic Max is disabled.')
 
 

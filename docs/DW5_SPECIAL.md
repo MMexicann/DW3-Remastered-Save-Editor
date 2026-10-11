@@ -1,4 +1,4 @@
-# Dynasty Warriors 5 Special — Windows equipment editor
+# Dynasty Warriors 5 Special — Windows equipment and stored-stat editor
 
 This is **Shin Sangokumusou 4 Special / 真・三國無双4 Special**, the Windows
 Special edition. **Dynasty Warriors 5 Special** is the corresponding Western
@@ -36,10 +36,11 @@ exercise surgical edits through this adapter. An edited load and subsequent
 native re-save are needed to establish game acceptance; a product page or
 unchanged file roundtrip cannot establish that result.
 
-## Implemented equipment
+## Implemented controls
 
 The editor offers named records for all 48 playable officers and their four
-physical weapon slots. It writes only qualified **already existing** equipment:
+physical weapon slots. It writes qualified **already existing** equipment and
+stored officer stats:
 
 - Ten ordinary item ranks: stored 0–19 means level 1–20. Empty sentinel `0xFF`
   and unusual higher values remain read-only and unchanged.
@@ -50,6 +51,13 @@ physical weapon slots. It writes only qualified **already existing** equipment:
   equals that byte. Weapon identity and its base parameters stay unchanged.
 - Existing named weapon attribute ranks, stored 0–19. No empty attribute slot
   is populated, no attribute ID replaced, and no new weapon is created.
+- Stored base Attack and Defense bytes on already playable officer records.
+  Individual 0–255 edits use byte storage bounds, with no natural stat cap or
+  Max. Equipment-derived battle totals, Life/Musou, merit, title, ownership and
+  rewards remain separate and unchanged.
+
+The latest field proof, native surgical matrix and GUI checks are documented in
+[Samurai / classic Dynasty editor depth](SAMURAI_DYNASTY_DEPTH.md).
 
 These controls are manual-only; Max does not alter them. Unknown weapon IDs,
 nonzero identity high bytes, cross-family records, unoccupied officer records,
@@ -70,7 +78,7 @@ mapping is:
 | Data | Decoded/native file position | Qualified write |
 | --- | --- | --- |
 | Ordinary items | `0x1534 + ID`, IDs 0–9 | Existing stored rank 0–19 |
-| Officer records | `0xEC + ID * 88`, IDs 0–47 | Inspection only |
+| Officer records | `0xEC + ID * 88`, IDs 0–47 | Stored Attack `+6` and Defense `+7`, manual byte edits only when opened playable byte `+0` is 1; other progression inspected |
 | Four weapon slots | Officer `+20 + slot * 16` | Existing own-family records only |
 | Weapon ID | Weapon `+0`, high byte `+1` | Inspection; IDs `officer*4..officer*4+3` qualify that owner |
 | Weight | Weapon `+2` | Manual 0/1/2 |
@@ -108,7 +116,7 @@ mapping guide supplies the native PC addresses and limits.
 | Ordinary item levels | Tested existing-rank manual edits; no ownership grants. |
 | Weapon weight, attack adjustment, existing attribute levels | Tested manual edits preserving weapon IDs, evolution state and unused slots. |
 | Weapon acquisition, fourth weapons, evolution attack, new effects | No writer. Native acquisition/reward flags, rarity requirements and effect-slot rules need static game code or controlled pairs. |
-| Officer Life/Musou/Attack/Defense | Named inspection. Natural per-officer limits and item/weapon-derived totals are not proven by the already modified sample. |
+| Officer Life/Musou/Attack/Defense | Stored Attack/Defense bytes manually editable on already playable records; Life/Musou inspected. Natural per-officer limits and item/weapon-derived totals remain unproven, so no automatic stat Max or effective-stat writes. |
 | Officer merit, rank/title, levels and KO totals | Inspection. Merit thresholds, title transitions and growth/reward recalculation require native rules; no independent rank/EXP action. |
 | Officer unlocks, outfits and equipment selections | Inspection. Correct reward/ownership/prerequisite relationships and unused-state initialization remain unresolved. |
 | Bodyguards, talents, stats, skills, title and name | Inspection. Talent-growth formula, natural skill-slot limits, title dependencies and regional text encoding remain missing. |
@@ -134,18 +142,23 @@ new-destination saving and source mutation rejection. No player saves, editor
 binaries, names/account values or personal paths are published. Actual edited
 **game loading has not been performed**.
 
-Validation includes procedural profile/corruption/bounds/snapshot/staging checks,
-a genuine unchanged roundtrip and surgical edits of all 728 qualified fields,
+The original equipment qualification included procedural profile/corruption/bounds/snapshot/staging checks,
+a genuine unchanged roundtrip and surgical edits of all 728 qualified equipment fields,
 plus independent procedural and genuine Tk workflows for named choices,
 Apply, Review, Undo, manual-only Max, inspection, copied saves, backup and restore.
 No original sample was changed and no edited save was loaded in the game.
 
-The regional follow-up reran the unchanged DW5 suites with Tk/Xvfb: **18 tests
+The earlier regional follow-up reran the then-current DW5 suites with Tk/Xvfb: **18 tests
 discovered, 16 passed, 2 skipped** (both private-native cases). The procedural
 GUI case exercises Apply, Review, Undo, manual-only Max, copied saving and
 backups. The historical genuine/GUI results above belong to the
 prepared adapter's earlier qualification, not a new cross-region validation.
-No 46,000-byte DW5 native copy was present in the current private research
+No 46,000-byte DW5 native copy was present in that regional follow-up's private
 inputs. Reacquiring the previously documented CG-save download was blocked by
-an HTTP timeout and HTTPS 502 from its legacy download host. No region-specific
-genuine edits or actual game loads were performed in this follow-up.
+an HTTP timeout and HTTPS 502 from its legacy download host. No new region-specific
+genuine qualification or actual game loads were performed in that follow-up.
+The latest depth work used the privately held previously qualified source-labeled
+native copy to verify all 96 new stored Attack/Defense fields, totaling 824
+qualified fields in that opened state; it adds no
+Japanese/Simplified Chinese compatibility claim or edited game-load result.
+See the linked depth report for current checks.

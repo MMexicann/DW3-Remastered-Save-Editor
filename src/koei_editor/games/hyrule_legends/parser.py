@@ -192,7 +192,7 @@ def _inspection(payload):
         rows.extend((
             {'group': 'My Fairy', 'label': f'Fairy slot {slot + 1}: Name', 'value': name},
             {'group': 'My Fairy', 'label': f'Fairy slot {slot + 1}: Level (read only)', 'value': payload[offset + 0x1B]},
-            {'group': 'My Fairy', 'label': f'Fairy slot {slot + 1}: Trust (read only)', 'value': payload[offset + 0x24]},
+            {'group': 'My Fairy', 'label': f'Fairy slot {slot + 1}: Trust', 'value': payload[offset + 0x24]},
             {'group': 'My Fairy', 'label': f'Fairy slot {slot + 1}: Refreshes (read only)', 'value': _uint(payload, offset + 0x6C, 2)},
         ))
     for offset, name in FOOD:
@@ -222,6 +222,14 @@ def _field_index(payload):
             fields.append(Field(f'fairy_{slot + 1}_name', f'Fairy slot {slot + 1}: Name',
                 name_offset, FAIRY_NAME_SIZE, FAIRY_NAME_SIZE, 'My Fairy', slot + 1,
                 minimum=1, kind='text'))
+        # Trust affects existing fairy-skill potency, distinct from personality
+        # thresholds, level and refresh rewards. Admit reductions only; no new
+        # growth/skill threshold, reward, feeding or refresh action is asserted.
+        if (payload[offset] == 1 and 1 <= payload[offset + 0x1B] <= 99
+                and 1 <= payload[offset + 0x24] <= 100):
+            fields.append(Field(f'fairy_{slot + 1}_trust',
+                f'Fairy slot {slot + 1}: Trust (decrease only)', offset + 0x24,
+                1, payload[offset + 0x24], 'Fairy trust', slot + 1, minimum=1))
     # Original 3DS getters/setters qualify these exact scalar positions;
     # observed native states match the separately documented normal/Legendary
     # record states. Never change state, identity, base power or references.
@@ -365,6 +373,11 @@ def field_hint(document, key):
                 'Only its eight-byte name field changes; shorter names are zero padded. '
                 'Assigning the opened name restores the original bytes. Ownership, stats, '
                 'clothing and trust are preserved; names are excluded from Max.')
+    if key.startswith('fairy_') and key.endswith('_trust'):
+        return ('Decrease this owned fairy\'s opened Trust only, down to 1. Existing skill potency '
+                'can decrease; personality traits, learned skills, level, refresh count and reward flags '
+                'remain unchanged. No feeding, ownership, growth reward or natural Max is asserted. '
+                'Unusual trust/level/ownership states remain read only.')
     if key.endswith('_kos'):
         return ('Existing ordinary skill seal: decrease remaining KOs only; zero removes its '
                 'KO requirement. Identity, state, base power and equipped references are preserved. '

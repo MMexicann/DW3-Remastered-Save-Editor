@@ -17,7 +17,7 @@ class DW7Presentation(ScalarPresentation):
                                 tuple((row['label'], row['value']) for row in rows if row['group'] == 'Purchased skills'),
                                 'Read only. Officer-specific skill definitions and prerequisites require game parameter data.'),
                 InspectionTable('Weapon inventory', ('Physical record', 'Ownership', 'Seal learning meter', 'Stored flags'),
-                                inventory, 'Read only. Weapon names and seal rewards require game parameter data; meter maxima depend on the weapon.'))
+                                inventory, 'Existing owned, unlearned meters permit manual reduction only. Names, increasing progress and seal rewards require game parameter data.'))
 
 
 class Editor(ScalarEditor):
@@ -25,7 +25,7 @@ class Editor(ScalarEditor):
     backend = dw7xl_parser
     presentation_type = DW7Presentation
     subtitle = 'Windows PC save editor'
-    summary = 'Gold, officer stats, skill points and active equipment; searchable weapon and skill inspection.'
+    summary = 'Gold, officer stats, skill points, active equipment and unlearned seal-meter reduction.'
 
 
 def read_save(path):

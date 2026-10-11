@@ -22,6 +22,34 @@ No downloaded trainer or Cheat Engine script was executed. No downloaded save,
 account data, tutorial text, copyrighted asset or third-party implementation is
 distributed. Notes and in-app explanations are independently authored.
 
+Current scoped expansions are documented separately from the historical
+research leads below. The full overview is in
+[RICH_EDITOR_EXPANSION.md](RICH_EDITOR_EXPANSION.md); selected controls include:
+
+| Existing editor | Latest qualified control and preserved dependencies |
+| --- | --- |
+| Persona 5 Strikers PC | Seven incense, nine remedy and 24 selected skill-card existing positive stack quantities; item application, learned skills, stats and ownership remain under game control. [Evidence and limits](PERSONA_GUST_DEPTH.md). |
+| Atelier Ryza 2 PC | Reductions of the qualified original unspent skill-tree SP scalar; learned skills, recipes, quality caps and rewards remain unchanged. [Evidence and limits](PERSONA_GUST_DEPTH.md). |
+| DW8 Empires PC SYSTEM | Seven occupied-horse appearance members; Body Type 0–4, remaining members use original same-member witnessed positions and qualified ordinary type/model IDs. No creation, stats, ability or campaign changes. [Independent PC evidence](OROCHI_DYNASTY_DEPTH.md). |
+| SW4-II PC | Equipped mount selection for initialized standard officers, choosing only qualified originally occupied known mounts. Growth, stats, acquisition and abilities remain unchanged. [Evidence and limits](SAMURAI_DYNASTY_DEPTH.md). |
+| Original SW2 PC | Owned-officer weapon selection within that officer's qualified existing own-family pool; no identity, bonus or acquisition changes. [Evidence and limits](SAMURAI_DYNASTY_DEPTH.md). |
+| DW5 Special PC | Playable officers' stored Attack/Defense bytes; manual storage bounds, no natural Max or growth/reward changes. [Evidence and limits](SAMURAI_DYNASTY_DEPTH.md). |
+| DW6 PC | Qualified existing weapon damage-bonus u32; distinct from base/total attack, with no natural Max or identity/element/skill changes. [Evidence and limits](SAMURAI_DYNASTY_DEPTH.md). |
+| DW4 Hyper PC | Replace or unequip an originally occupied general-item position using originally owned qualified items; duplicate checks and unchanged weapon EXP preserve the admitted position boundary. [Evidence and limits](SAMURAI_DYNASTY_DEPTH.md). |
+| WO3 Ultimate Definitive PC | Qualified promoted officers' unallocated upgrade stones and original active non-mount item slots; allocation totals, growth, ownership, ranks and rewards remain unchanged. [Evidence and limits](OROCHI_DYNASTY_DEPTH.md). |
+| Original WO1 PC | Equipped-weapon selection within each officer's qualified existing own-family eight-record pool; no new ownership or weapon properties. [Evidence and limits](OROCHI_DYNASTY_DEPTH.md). |
+| DW8 XL PC | Reorder the two qualified weapons already equipped by an officer, preserving the original pair; broader equip/acquisition remains unqualified. [Exact controls](DW8_COMPATIBILITY.md). |
+| Wo Long PC | Enabled existing battle-set names using bounded printable ASCII; loadouts and ownership remain unchanged. Positive enabled-set native and game-load qualification remain missing. [Evidence and limits](TEAM_NINJA_DEPTH.md). |
+
+The separate console expansions, including Gundam equipped skills, DW8 Empires
+PS3 appearance, Three Houses motivation/ability loadouts and Legends fairy trust,
+are detailed in [CONSOLE_PIRATE_STRATEGY_DEPTH.md](CONSOLE_PIRATE_STRATEGY_DEPTH.md)
+and [HYRULE_FIRE_EMBLEM_DEPTH.md](HYRULE_FIRE_EMBLEM_DEPTH.md). New choices are
+excluded from Max; storage widths and witnessed positions do not establish
+universal natural gameplay caps. All retain staged Undo, Review Changes,
+backups, native validation and new-destination saving. No edited game-load
+claim follows from procedural, native-file or GUI checks.
+
 ## DW3 Complete Edition Remastered
 
 The original project already contains substantial game-specific evidence. It is
@@ -80,8 +108,8 @@ male/female bonds. Ambition facilities and allies distinguish material balances,
 invested materials, facility rank/unlock, supervisors, roster/count, fame and
 capacity. Filling all bytes with a maximum would damage these relationships.
 
-Before those editors can be enabled, obtain PC save pairs for one weapon
-acquisition/fusion, one skill unlock/rank increase, one bodyguard strengthening,
+Broader acquisition, fusion, skill and ally progression controls still need PC
+save pairs for one weapon acquisition/fusion, one skill unlock/rank increase, one bodyguard strengthening,
 one facility upgrade and one ally acquisition. For stat behavior, re-save an
 edited copy after load, equipment change, battle entry and level-up, keeping
 untouched controls. The implemented field layout is separately corroborated by
@@ -171,8 +199,10 @@ differs from raw deltas (289–333). Soul reward fields are explicitly unresolve
 
 These provide a resource/dependency model, not a disk-save schema. Do not equate
 reward deltas with persistent totals or reuse old memory addresses. Build/DLC-
-specific growth and Soul Map caps still need independent verification. PW4 remains
-outside the editor selector until a genuine PC save decoder/writer is validated.
+specific growth and Soul Map caps still need independent verification. The
+current revision-15 PC adapter independently qualifies spendable Beli and
+already obtained coin quantities while preserving lifetime counters, ownership
+flags and growth/story state; see [PIRATE_ABYSS_RESEARCH.md](PIRATE_ABYSS_RESEARCH.md).
 
 ## Berserk and the Band of the Hawk
 
@@ -220,7 +250,12 @@ PC runtime references from the same Hexorg commit:
   flags; five colored strategy-tome balances are separate resources. Original 4,
   4-II and 4 DX require independent verification.
 
-No applicable PC serialized layout or normal-cap proof was established. Also,
+Those runtime references alone established no PC serialized layout or natural
+cap. The current independently qualified DW8 Empires SYSTEM appearance and
+SW4-II resource/attribute/mount controls are described in
+[OROCHI_DYNASTY_DEPTH.md](OROCHI_DYNASTY_DEPTH.md) and
+[SAMURAI_DYNASTY_DEPTH.md](SAMURAI_DYNASTY_DEPTH.md); campaign/growth dependencies
+remain separate. Also,
 Apollo's DW8 Empires console patches titled “999999” actually encode 90,000
 materials and 99,999 money. Patch titles must not be used as numeric evidence.
 
@@ -231,14 +266,21 @@ operate on LINKDATA and stage scripts. Their `unit_set_courage` signed `level`
 argument controls a stage unit, not player rank/proficiency. Demo/full-game and
 patch differences reinforce version-specific research. No player cap, skill-tree
 dependency or save-progress equation was established. Needed samples are listed
-in [ORIGINS_FORMAT.md](ORIGINS_FORMAT.md), starting with a verified save decoder.
+in [ORIGINS_FORMAT.md](ORIGINS_FORMAT.md). The current native slot adapter
+independently implements its envelope and scoped resource, existing-bond,
+provincial-peace and qualified reinforcement fields for revisions 16/17/29;
+revision 29 has a separately qualified DLC skill-point pool. Asset-script
+semantics do not establish those disk mappings.
 
 DW9's available console patches are explicitly untested and distinguish
 version-dependent accessory IDs/modifiers. Orochi 3 console references distinguish
 level/EXP/proficiency/transmigration, growth-jade allocation, equipped slots and
-attribute display/effect values. These are research leads only, not PC support.
-The other PC candidates in `src/koei_editor/data/support_catalog.json` likewise remain unavailable
-until their own native PC files and rules are established.
+attribute display/effect values. These console/runtime facts remain research
+leads; current PC Orochi profiles and their independently qualified controls
+are recorded in [OROCHI_DYNASTY_DEPTH.md](OROCHI_DYNASTY_DEPTH.md).
+Unregistered PC catalog candidates remain unavailable until their own native
+files and rules are established; the explicit registry determines implemented
+support.
 
 ## Research access and remaining work
 
@@ -269,18 +311,23 @@ vary by type/rank, so attack and identity are inspected without new writes.
 
 DW8 PC officer records start at 0x7FC9, stride 0x48. Read-only fields are stored
 level-minus-one byte +0x17, leadership-minus-one uint32 +0x18, EXP uint32 +0x1C,
-leadership EXP uint32 +0x20 and two uint16 equipped zero-based weapon references
-at +0x30/+0x32. These positions are corroborated by the native PC table described
-above and the actual PC sample. A published EXP patch begins one byte earlier;
-it must not be interpreted as one aligned four-byte XP value.
+and leadership EXP uint32 +0x20. Two uint16 equipped zero-based weapon references
+at +0x30/+0x32 now support atomic reordering of their qualified original pair;
+no third weapon can be selected. See [DW8_COMPATIBILITY.md](DW8_COMPATIBILITY.md)
+and the [weapon-order proof](RICH_EDITOR_EXPANSION.md#dw8-xl-weapon-order-proof).
+These positions are corroborated by the native PC table described above and the
+actual PC sample. A published EXP patch begins one byte earlier; it must not be
+interpreted as one aligned four-byte XP value.
 
 DW8 physical weapons start at 0xE715, stride 0x18, count 1,830 (not a claim about
 user inventory capacity). ID is uint16 +2; affinity +4; stored attack +5; six IDs
 +6 and six ranks +12. The shared published patch layout and PC sample corroborate
 these positions. Observed populated flags 1/3 are the editing subset: flag-zero
 records contain stale nonempty data and must be preserved. Only observed variable
-rank IDs receive 1–10 writes. Empty ID255, consistently-one attributes and unknown
-IDs remain untouched. Native PC instructions independently name ID7 Velocity and
+rank IDs receive 1–10 writes. **Empty attribute ID 255**, consistently-one
+attributes and unknown attribute IDs remain untouched. This is the attribute
+byte sentinel, not a change to weapon identity/occupancy qualification. Native
+PC instructions independently name ID7 Velocity and
 ID41 Comet. In-game loading remains untested.
 
 PW3 [PC asset guide](https://steamcommunity.com/sharedfiles/filedetails/?id=2306008901)
@@ -311,8 +358,11 @@ level-plus-one, normal levels 1–20, orbs 1–4 and rare-item ownership. Weapon
 36,001 selects its special level-10 weapon; Hyper has no level-11 weapon.
 Character EXP, permanent stats and bodyguard points are independently bounded
 by storage width, with natural maxima/growth thresholds unresolved. Bulk Max
-therefore excludes those fields and difficulty. Equipped-item references, names,
-custom characters, rankings and suspended battle data remain read only.
+therefore excludes those fields and difficulty. Existing occupied general-item
+positions now accept qualified originally owned item choices or Unequipped,
+with duplicate checks and unchanged weapon EXP. Broader equipment grants,
+names, custom characters, rankings and suspended battle data remain read only;
+see [SAMURAI_DYNASTY_DEPTH.md](SAMURAI_DYNASTY_DEPTH.md).
 Published author game tests are recorded as external evidence; this project's
 procedural fixtures are never described as genuine PC saves.
 
@@ -326,14 +376,17 @@ child inheritance must be mapped separately. Public CAW export/hex tools work
 on process memory and can be followed by game recalculation; they are not
 serialized save editors.
 
-The DW6 plaintext-reader lead provides substantive native disk observations but
-no complete fixture, accepted size or integrity model. P5S's reproduced PC
-stream vector and DW8 Empires' procedural cipher tests similarly do not prove
-gameplay serialization or native platform identity. Their source-only research
-primitives expose no gameplay adapter.
+The original DW6 reader, P5S stream vector and DW8 Empires procedural cipher
+tests were initially research leads, insufficient by themselves to qualify
+gameplay editing. Subsequent independent native/profile evidence now qualifies
+registered scoped adapters: [DW6_RESEARCH.md](DW6_RESEARCH.md),
+[PERSONA_GUST_DEPTH.md](PERSONA_GUST_DEPTH.md) and
+[DW8E_CUSTOM_HORSES.md](DW8E_CUSTOM_HORSES.md). That later qualification does not
+turn a stream vector or procedural fixture into genuine-file evidence.
 
 Both supplied DW4 formats are now available in separate platform libraries.
 The PC and USA PS2 implementations use distinct item/equipment identifiers,
 weapon maxima, difficulties and checksums; see DW4_PLATFORM_FORMATS.md.
-Availability follows their published editors, while independent genuine-file
-and in-game validation remain pending.
+Independent genuine-file checks are recorded in the current platform documents
+and depth review; edited game-load validation remains a separate unperformed
+check.

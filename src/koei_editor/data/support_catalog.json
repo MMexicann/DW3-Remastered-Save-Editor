@@ -39,7 +39,7 @@
       "title": "Dynasty Warriors 8: Xtreme Legends Complete Edition",
       "platform": "Windows PC",
       "status": "File editing verified",
-      "evidence": "Genuine PC sample passes both integrity layers. Resources, 82 officer stat records, four weapon-action compatibility ratings, existing weapon attribute ranks and individual affinity IDs are editable. Unusual values, equipment identities and progression remain intact; ally records are inspected.",
+      "evidence": "Genuine PC sample passes both integrity layers. Resources, 82 officer stat records, four weapon-action compatibility ratings, existing weapon attribute ranks and individual affinity IDs are editable. Unusual values, equipment identities and progression remain intact; ally records are inspected. Development expansion: Existing qualified first/second equipped weapon pairs can be reordered atomically without changing their multiset, properties or ownership.",
       "needed": "In-game load checks on copies; controlled attribute/progression pairs and version-labelled samples.",
       "editing_verified": true
     },
@@ -84,7 +84,7 @@
       "title": "Dynasty Warriors 6",
       "platform": "Windows PC (legacy edition)",
       "status": "Native PC editor",
-      "evidence": "Genuine 212248-byte native PC save with all 41 officer identities; original one-way officer unlocks and four qualified existing horse combat stats, with read-only named weapons/officers/horses. Byte-exact and surgical tests plus real Tk workflow. Existing weapon element choices are independently mapped and surgically verified on genuine records.",
+      "evidence": "Genuine 212248-byte native PC save with all 41 officer identities; original one-way officer unlocks and four qualified existing horse combat stats, with read-only named weapons/officers/horses. Byte-exact and surgical tests plus real Tk workflow. Existing weapon element choices are independently mapped and surgically verified on genuine records. Development expansion: Existing qualified weapon damage-bonus words are manually editable without changing identity, skills, rarity, ownership or equipment.",
       "needed": "Edited game-load validation and controlled progression, equipment, horse growth/skills and dependency pairs.",
       "editing_verified": true
     },
@@ -93,8 +93,8 @@
       "title": "Dynasty Warriors 8 Empires",
       "platform": "Windows PC",
       "status": "Native-file editor implemented",
-      "evidence": "Complete genuine SystemSave files qualify both cipher and checksum. Existing occupied custom-horse body type is independently mapped; six other appearance sliders, stats and abilities remain inspected.",
-      "needed": "Controlled appearance-slider ranges, custom identity/name encoding, campaign resource-owner mappings and edited game reload.",
+      "evidence": "Complete genuine SystemSave files qualify both cipher and checksum. Existing occupied custom-horse body type is independently mapped; six other appearance sliders, stats and abilities remain inspected. Development expansion: Body Type plus six additional appearance members use qualified occupied ordinary records; extra members offer only same-member positions witnessed in the opened original.",
+      "needed": "Controlled native appearance ranges before offering unobserved positions; custom identity/name encoding, campaign resource-owner mappings and edited game reload.",
       "editing_verified": true
     },
     {
@@ -120,7 +120,7 @@
       "title": "Dynasty Warriors 7: Xtreme Legends Definitive Edition",
       "platform": "Windows PC",
       "status": "Native PC file editor",
-      "evidence": "Genuine PC save qualifies exact title, two-step stream and odd-tail checksum. Gold, 65 officers base stats/skill points and active selection between existing owned equipped weapons are mapped. Inventory and skill bits are inspected read only.",
+      "evidence": "Genuine PC save qualifies exact title, two-step stream and odd-tail checksum. Gold, 65 officers base stats/skill points and active selection between existing owned equipped weapons are mapped. Inventory and skill bits are inspected read only. Development expansion: Qualified owned unlearned weapon seal meters can be reduced; learning flags and earned rewards remain separate. Positive native unlearned-meter qualification is still missing.",
       "needed": "Matching LINKDATA parameter/name assets or controlled skill/seal/roster/progression pairs; edited game-load validation.",
       "editing_verified": true
     },
@@ -129,7 +129,7 @@
       "title": "Samurai Warriors 2",
       "platform": "Windows PC (original 2008 edition)",
       "status": "Original PC revision-2 editor",
-      "evidence": "Two independent native PC saves and period original PC disk-editor reader/writer qualify exact size, revision, byte-sum integrity, owned officer growth, acquired ordinary skill ranks and existing weapon bonus amounts. Unknown bytes, higher values, skill flags, ownership, level/EXP and story are preserved.",
+      "evidence": "Two independent native PC saves and period original PC disk-editor reader/writer qualify exact size, revision, byte-sum integrity, owned officer growth, acquired ordinary skill ranks and existing weapon bonus amounts. Unknown bytes, higher values, skill flags, ownership, level/EXP and story are preserved. Development expansion: Existing known weapons from the same officer pool may be equipped without altering acquisition, upgrades or rewards.",
       "needed": "Edited original-PC game-load/re-save validation; native stat/growth caps and controlled progression, rare-skill, weapon identity/equip, guard/mount ownership and Survival/story reward pairs.",
       "editing_verified": true
     },
@@ -147,7 +147,7 @@
       "title": "Samurai Warriors 4-II",
       "platform": "Windows PC",
       "status": "Native PC revision0x31A4 editor",
-      "evidence": "Two independent genuine PC saves and static English v1.0 native-editor inspection qualify the three-step envelope, exact six checksum spans, four polynomial checksums and record ownership. Manual current gold, five held strategy-tome resources, existing standard-officer stored base stats, qualified existing own-pool weapon selection and attached attribute magnitudes, and occupied-mount stored combat stats are implemented. Unknown bytes and original seeds are preserved; growth, skill purchases, acquisition and rewards remain separate.",
+      "evidence": "Two independent genuine PC saves and static English v1.0 native-editor inspection qualify the three-step envelope, exact six checksum spans, four polynomial checksums and record ownership. Manual current gold, five held strategy-tome resources, existing standard-officer stored base stats, qualified existing own-pool weapon selection and attached attribute magnitudes, and occupied-mount stored combat stats are implemented. Unknown bytes and original seeds are preserved; growth, skill purchases, acquisition and rewards remain separate. Development expansion: Standard officers can select a qualified occupied original mount; no new mount, type, growth or ability is granted.",
       "needed": "Build/language/DLC-labelled controlled resource/stat pairs and natural limits; growth/skill-count dependencies, weapon growth/fusion/acquisition, mount training/abilities/equipment, customization, friendship, collections and reward prerequisites; actual edited game loading.",
       "editing_verified": true
     },
@@ -174,7 +174,7 @@
       "title": "Warriors Orochi",
       "platform": "Windows PC (original 2008 edition)",
       "status": "Original PC revision-2 editor",
-      "evidence": "Two independent native PC saves and period original PC disk-editor reader/writer qualify exact size, revision, additive byte integrity, shared Growth Points and existing weapon bonus/capacity/owned effect ranks. Modified higher ranks, unknown effects, ownership, character growth, ability acquisition, rewards and story remain preserved.",
+      "evidence": "Two independent native PC saves and period original PC disk-editor reader/writer qualify exact size, revision, additive byte integrity, shared Growth Points and existing weapon bonus/capacity/owned effect ranks. Modified higher ranks, unknown effects, ownership, character growth, ability acquisition, rewards and story remain preserved. Development expansion: Existing known weapons from the same officer pool may be equipped; level/EXP, acquisition, fusion and rewards are preserved.",
       "needed": "Edited original-PC game-load/re-save validation; qualified named character/weapon catalogs and controlled level/EXP, proficiency, ability acquisition/equipment, fusion, unique-item and story reward pairs.",
       "editing_verified": true
     },
@@ -183,7 +183,7 @@
       "title": "Warriors Orochi 3 Ultimate Definitive Edition",
       "platform": "Windows PC",
       "status": "Native Steam PC file editor",
-      "evidence": "Supplied executable serializer and genuine shared native PC save qualify packed revision, 145 playable officer stat records, growth points/gems, attribute orbs, crafting and existing weapon attribute slots/ranks. ASLR-dependent record markers and unknown bytes are preserved.",
+      "evidence": "Supplied executable serializer and genuine shared native PC save qualify packed revision, 145 playable officer stat records, growth points/gems, attribute orbs, crafting and existing weapon attribute slots/ranks. ASLR-dependent record markers and unknown bytes are preserved. Development expansion: Already promoted coherent officers have unallocated upgrade-stone controls; ordinary-item equipment uses original ownership/ranks, active slots and duplicate checks.",
       "needed": "Actual edited game loads, roster/material ID names, controlled promotion/progression/bonds/story rewards and remaining weapon descriptors.",
       "editing_verified": true
     },
@@ -264,8 +264,8 @@
       "title": "Wo Long: Fallen Dynasty",
       "platform": "Windows PC",
       "status": "Native-file editor implemented",
-      "evidence": "Complete genuine USERDATA qualifies both native checksums. Three available currencies and qualified existing ordinary stack reductions use lexical JSON token edits, preserving owner/header, unknown keys and padding. Named game item catalogs are not yet qualified.",
-      "needed": "Edited game loading; native item-name catalogs and controlled skill, equipment, Virtue/level, flag and reward pairs.",
+      "evidence": "Complete genuine USERDATA qualifies both native checksums. Three available currencies and qualified existing ordinary stack reductions use lexical JSON token edits, preserving owner/header, unknown keys and padding. Named game item catalogs are not yet qualified. Development expansion: Enabled existing battle-set custom names have conservative ASCII editing with lexical JSON preservation. Native corpus confirms framing but has no enabled named sets; positive native-name qualification remains missing.",
+      "needed": "Positive native enabled battle-set rename control and edited game loading; native item catalogs and controlled skill, equipment, Virtue/level, flag and reward pairs.",
       "editing_verified": true
     },
     {
@@ -288,7 +288,7 @@
     },
     {
       "id": "rotk",
-      "title": "Romance of the Three Kingdoms / Nobunaga\u00e2\u20ac\u2122s Ambition",
+      "title": "Romance of the Three Kingdoms / Nobunagaâ€™s Ambition",
       "platform": "Windows PC",
       "status": "Candidate only",
       "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
@@ -300,7 +300,7 @@
       "title": "Dynasty Warriors 4 Hyper",
       "platform": "Windows PC",
       "status": "Native-file editor implemented",
-      "evidence": "Independent genuine native file qualifies all 435 available fields and checksum. Owned harness/orb assignments and guarded existing custom cosmetics supplement stats/items/bodyguards. Custom progression writes require already matching original mirrors.",
+      "evidence": "Independent genuine native file qualifies all 435 available fields and checksum. Owned harness/orb assignments and guarded existing custom cosmetics supplement stats/items/bodyguards. Custom progression writes require already matching original mirrors. Development expansion: Originally occupied known-owned general-item slots allow replacement or unequip, with duplicates rejected and weapon EXP preserved in the same batch.",
       "needed": "Edited game loading; controlled custom progression/mirror, story and reward pairs.",
       "editing_verified": true
     },
@@ -309,7 +309,7 @@
       "title": "Dynasty Warriors 5 Special / Shin Sangokumusou 4 Special",
       "platform": "Windows PC",
       "status": "Native-file editor implemented",
-      "evidence": "Independent static native save-guide/editor I/O facts and a prior genuine revision3 player file qualify plaintext byte-sum integrity. The public sample listing labels Traditional Chinese; its executable locale/build and native locale discriminator remain unqualified. Manual existing item ranks and own-family weapon attack adjustment, weight and attributes preserve acquisition, growth, story and Shura dependencies.",
+      "evidence": "Independent static native save-guide/editor I/O facts and a prior genuine revision3 player file qualify plaintext byte-sum integrity. The public sample listing labels Traditional Chinese; its executable locale/build and native locale discriminator remain unqualified. Manual existing item ranks and own-family weapon attack adjustment, weight and attributes preserve acquisition, growth, story and Shura dependencies. Development expansion: Stored Attack/Defense bytes on originally playable officers are manually editable; merit, title, equipment, bodyguards and rewards remain unchanged.",
       "needed": "Unmodified Japanese/Traditional-Chinese/Simplified-Chinese region/build-labelled native controls and action pairs before regional interchange or name encoding claims; catalogs and item/weapon/equip/growth/bodyguard/Shura pairs; edited game loading.",
       "editing_verified": true
     },
@@ -318,7 +318,7 @@
       "title": "Persona 5 Strikers",
       "platform": "Windows PC",
       "status": "Native-file editor implemented",
-      "evidence": "Two independent full native encrypted PC saves qualify original-stream preservation and plaintext checksum. Occupied slots expose three resource balances and existing named ordinary consumable/cooking stacks.",
+      "evidence": "Two independent full native encrypted PC saves qualify original-stream preservation and plaintext checksum. Occupied slots expose three resource balances and existing named ordinary consumable/cooking stacks. Development expansion: Forty additional factual stack mappings cover seven incenses, nine remedies and twenty-four selected skill cards, retaining existing record/cap and no-Max guards.",
       "needed": "Edited game loading; controlled BOND purchase, growth, Persona, acquisition and quest/reward dependency pairs.",
       "editing_verified": true
     },
@@ -354,7 +354,7 @@
       "title": "Dynasty Warriors 4: Xtreme Legends (SLUS-20812)",
       "platform": "PlayStation 2",
       "status": "Native-file editor implemented",
-      "evidence": "Two independently shared genuine USA exports qualify payload integrity, 382 surgical fields and Tk save/backup/restore. Owned harness/orb assignments supplement stats/items/bodyguards. Other regions are rejected.",
+      "evidence": "Two independently shared genuine USA exports qualify payload integrity, 382 surgical fields and Tk save/backup/restore. Owned harness/orb assignments supplement stats/items/bodyguards. Other regions are rejected. Development expansion: Originally occupied known-owned general-item slots allow replacement or unequip, with duplicates rejected and weapon EXP preserved in the same batch.",
       "needed": "Edited game loading; other regions require separate profiles and dependencies.",
       "editing_verified": true
     },
@@ -381,7 +381,7 @@
       "title": "Nioh 3",
       "platform": "Windows PC",
       "status": "Native PC balance and existing-stack editor; two exact USER revisions",
-      "evidence": "Genuine USER revisions 0x01030001 and 0x01040000 qualify native encryption/body checksum, revision-specific eight-byte Amrita/Gold tags and structurally tagged equipment, item-box and storehouse arrays. Balances may decrease through zero; existing positive quantities of seven known common items may decrease. Equipment level, pre-forge level and reinforcement remain separate read-only values. No integrity flags are cleared.",
+      "evidence": "Genuine USER revisions 0x01030001 and 0x01040000 qualify native encryption/body checksum, revision-specific eight-byte Amrita/Gold tags and structurally tagged equipment, item-box and storehouse arrays. Balances may decrease through zero; existing positive quantities of seven known common items may decrease. Equipment level, pre-forge level and reinforcement remain separate read-only values. No integrity flags are cleared. Development expansion: Eleven additional independently corroborated ordinary consumable identities extend existing reduction controls to eighteen; both native revisions retain original-record guards.",
       "needed": "Per-item carry/storage capacities and acquisition/transfer dependencies before increases; currency purchase/increase dependencies, native stat/proficiency/skill maps and controlled forging/equipment/scroll/reward pairs; actual edited game-load/re-save validation.",
       "editing_verified": true
     },
@@ -463,7 +463,7 @@
       "platform": "Nintendo 3DS",
       "status": "Native-file editor implemented",
       "editing_verified": true,
-      "evidence": "Genuine public modified native export qualifies size/header. Original implementation edits rupees, existing materials/map cards, generic weapon stars, ordinary seal decreases and owned printable ASCII My Fairy names.",
+      "evidence": "Genuine public modified native export qualifies size/header. Original implementation edits rupees, existing materials/map cards, generic weapon stars, ordinary seal decreases and owned printable ASCII My Fairy names. Development expansion: Original owned fairies with qualified level/trust profiles allow trust reductions without changing personality, growth, refresh or skill rewards.",
       "needed": "Edited game loading; unmodified controls, growth, discovery, fusion, fairy skill/food, DLC map and stage/reward dependencies."
     },
     {
@@ -508,8 +508,8 @@
       "platform": "PlayStation 3",
       "status": "Native SYSTEM custom-horse editor",
       "editing_verified": true,
-      "evidence": "Genuine decrypted US SYSTEM export independently qualifies console size/revision, game-layer cipher and byte checksum, and all 150 custom-horse identities at PS3-specific table 0x39B94. Manual existing Body Type positions 0..4 preserve ownership/model/stats/abilities; official console-inclusive Edit Mode documentation corroborates the mechanic.",
-      "needed": "Apollo reimport/resigning and actual console loading; controlled PS3 appearance pairs before additional sliders, horse growth/equipment or SYSTEM unlocks. Campaign resource order and owner bridge remain unresolved."
+      "evidence": "Genuine decrypted US SYSTEM export independently qualifies console size/revision, game-layer cipher and byte checksum, and all 150 custom-horse identities at PS3-specific table 0x39B94. Manual existing Body Type positions 0..4 preserve ownership/model/stats/abilities; official console-inclusive Edit Mode documentation corroborates the mechanic. Development expansion: Body Type plus six additional appearance members use qualified occupied ordinary records; extra members offer only same-member positions witnessed in the opened original.",
+      "needed": "Apollo reimport/resigning and actual console loading; controlled appearance pairs and native ranges before offering unobserved slider positions, horse growth/equipment or SYSTEM unlocks. Campaign resource order and owner bridge remain unresolved."
     },
     {
       "id": "dw5e_xbox360",
@@ -606,7 +606,7 @@
       "title": "Atelier Ryza 2: Lost Legends & the Secret Fairy",
       "platform": "Windows PC",
       "status": "Original native PC bounded quality editor",
-      "evidence": "A distinct independently shared native original Ryza 2 gameplay autosave passes XOR/additive integrity, complete title-specific tagged framing, 100-byte item records and owned Party equipment. Existing ordinary quality is edited surgically from 1\u2013100; important/empty records, adjacent words, identities, original seeds and unknown state are preserved. Several other files in the advertised Ryza 2 archive are byte-identical Ryza 1 files and excluded.",
+      "evidence": "A distinct independently shared native original Ryza 2 gameplay autosave passes XOR/additive integrity, complete title-specific tagged framing, 100-byte item records and owned Party equipment. Existing ordinary quality is edited surgically from 1–100; important/empty records, adjacent words, identities, original seeds and unknown state are preserved. Several other files in the advertised Ryza 2 archive are byte-identical Ryza 1 files and excluded. Development expansion: Exact qualified AlchemyTree/SkillPoint framing permits unspent SP reductions only; big-endian scalar storage and separate SkillState ownership are preserved.",
       "needed": "Edited game load/re-save, further build-labelled saves, higher quality-cap skill dependencies, currency and growth limits, item names/applicability, synthesis/traits/effects, recipes, exploration/collections and controlled acquisition/equip pairs. Original Ryza 1 and Ryza 3 are not registered.",
       "editing_verified": true
     },
@@ -840,7 +840,7 @@
       "title": "Dynasty Warriors: Gundam",
       "platform": "PlayStation 3",
       "status": "US/EU decrypted-export pilot skill editor",
-      "evidence": "Four genuine US/EU complete exports qualify exact 0x89000-byte framing and all three native byte sums. Learned skill bits correlate with equipped native references. Manual learning on six individually mapped existing level-30 pilots preserves EXP, levels, equipment and all unknown mask bits; native unchanged and surgical file tests.",
+      "evidence": "Four genuine US/EU complete exports qualify exact 0x89000-byte framing and all three native byte sums. Learned skill bits correlate with equipped native references. Manual learning on six individually mapped existing level-30 pilots preserves EXP, levels, equipment and all unknown mask bits; native unchanged and surgical file tests. Development expansion: Four selected skill references exclude inherent skills, require original learned ownership and support atomic occupied-slot swaps; native inherent references and acquisition remain unchanged.",
       "needed": "Actual edited console load after Apollo reimport/resign; EXP thresholds and derived stats, lower-level skill prerequisites, other pilot/mobile suit/part records, mission/reward and collection pairs. Gundam2/3/Reborn and other platforms require separate native profiles.",
       "editing_verified": true
     },
@@ -904,7 +904,7 @@
       "platform": "Nintendo Switch",
       "status": "Native gameplay export editor; save-format v13/v23",
       "editing_verified": true,
-      "evidence": "Independent implementation of public format facts, checked against eight genuine publicly shared extracted gameplay candidates. Exact separate v13/v23 lengths and native payload byte-sum integrity; surgical gold reductions, twelve identified ordinary weapon types\u2019 existing convoy quantity and durability reductions. Held equipment requires an original unique living/available/joined base owner ID0\u201334; DLC/unknown owners and items stay read-only. Progression, mastery, proficiency, abilities, combat arts, battalions and supports are inspected separately. No guessed Max or ownership grants.",
+      "evidence": "Independent implementation of public format facts, checked against eight genuine publicly shared extracted gameplay candidates. Exact separate v13/v23 lengths and native payload byte-sum integrity; surgical gold reductions, twelve identified ordinary weapon types’ existing convoy quantity and durability reductions. Held equipment requires an original unique living/available/joined base owner ID0–34; DLC/unknown owners and items stay read-only. Progression, mastery, proficiency, abilities, combat arts, battalions and supports are inspected separately. No guessed Max or ownership grants. Development expansion: Unique living joined base units have motivation choices; original equipped-and-learned abilities can be moved or unequipped on undeployed qualified loadouts, with no duplicates or ownership grants.",
       "needed": "Edited Switch load/re-save; exact-build/region/DLC-labelled clean controls and action pairs for progression/rewards, item repair/transfer, battalion assignment and supports. Precise patch/DLC entitlement is not encoded by the accepted save-format version. v12, padded exports, system/suspend and Cindered Shadows side-story saves need separate qualification; structurally matching side-story payloads cannot yet be distinguished. See docs/THREE_HOUSES_FORMAT.md for exact inputs."
     }
   ],
@@ -915,8 +915,8 @@
   "retry_reference": "docs/PC_RESEARCH_RETRY.md",
   "console_scope": "Separate PS2 PSU, Wii U APP.BIN, Switch svdt and decrypted PS3 APP.BIN/DATA.BIN adapters; PS3 signing remains external. PSP Special encrypted-envelope research is unregistered; decrypted gameplay and console authentication/re-encryption remain unqualified.",
   "pc_scope_exclusions": [
-    "Dynasty Warriors 1\u00e2\u20ac\u201c3 original console editions and console-only expansions",
-    "Dynasty Warriors 4\u00e2\u20ac\u201c7 Empires",
+    "Dynasty Warriors 1â€“3 original console editions and console-only expansions",
+    "Dynasty Warriors 4â€“7 Empires",
     "Dynasty Warriors: Gundam series",
     "One Piece: Pirate Warriors 1 and 2",
     "Berserk PS Vita",

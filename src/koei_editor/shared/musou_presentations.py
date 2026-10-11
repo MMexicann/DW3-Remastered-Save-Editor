@@ -4,14 +4,20 @@ from koei_editor.shared.scalar_presentation import InspectionTable, ScalarPresen
 
 
 class DW8Presentation(ScalarPresentation):
-    extra_groups = ('Weapon attributes', 'Weapon affinity')
+    extra_groups = ('Weapon attributes', 'Weapon affinity', 'Weapon order')
 
     def record_name(self, field):
         if field.group == 'Weapon affinity':
             return f'Weapon slot {field.slot:04}'
+        if field.group == 'Weapon order':
+            return record_label(self.game_id, field.slot, 'Officers')
         return record_label(self.game_id, field.slot, field.group) if field.slot else field.group
 
     def field_hint(self, document, field):
+        if field.group == 'Weapon order':
+            return ('Choose which of the two already equipped weapons comes first. '
+                    'The other moves to the second slot automatically. '
+                    'This keeps the same weapons and their properties; Max excludes ordering.')
         if field.group == 'Weapon affinity':
             record = self.backend.weapon(document, field.slot)
             return (f"Weapon slot {field.slot}: ID {record['id']}; choose affinity ID 0, 1 or 2. "

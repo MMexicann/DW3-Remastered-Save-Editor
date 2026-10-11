@@ -3,7 +3,8 @@
 This addition uses the already qualified native Windows PC DW8 XL layout. It
 adds individual and grouped edits for the four stored weapon-action aptitudes
 of all 82 officer records, individual affinity edits for qualified existing weapons,
-and read-only inspection of physical ally records.
+reordering of each qualified officer's two already equipped weapons, and
+read-only inspection of physical ally records.
 It does not introduce another game, change progression or unlock recruitment.
 
 ## Weapon compatibility
@@ -36,6 +37,11 @@ independently describes the corresponding identity, affinity, attack and six
 attribute-ID/rank fields in the same order. All 1,165 qualified populated
 weapons in the public native PC sample use affinity IDs 0, 1 or 2.
 
+Weapon occupancy and attribute emptiness are separate. The existing weapon
+record selector retains its native state and uint16 weapon-ID qualification.
+**Empty ID 255 refers to an attribute ID byte**, not a newly introduced weapon
+identity sentinel; this documentation clarification changes no parser behavior.
+
 Only existing populated records (observed state 1/3, non-sentinel weapon ID)
 whose opened affinity is 0/1/2 get this field. Unknown affinity rows remain
 read-only. Individual edits accept 0/1/2; affinity is excluded from every Max
@@ -51,6 +57,23 @@ attack, attributes, acquisition state, inventory size and officer equipped
 references. The editor does not manufacture a fusion transaction or claim an
 in-game load check. Type/rank-dependent attack ceilings remain unmapped, so
 weapon attack remains read-only.
+
+## Existing two-weapon order
+
+Officer records at `0x7FC9 + officer*0x48` contain two little-endian u16
+zero-based weapon-pool references at `+0x30/+0x32`. When the opened references
+are distinct, both resolve inside the 1,830-record pool, and both target existing
+qualified populated weapons, a First Equipped Weapon choice offers those two
+original slots. Selecting the other slot swaps both references together.
+It preserves their multiset, weapon state, identities, properties and ownership;
+it cannot select a third weapon or create a pool record. Unknown, duplicate,
+empty or invalid original references stay unchanged. This choice is excluded
+from Max, and Undo reverses the complete reorder. The original record map above
+supplies the storage facts; [test_dw8_weapon_order.py](../tests/test_dw8_weapon_order.py)
+covers pair preservation, qualification, surgical writes and original restoration.
+Source corroboration and validation scope are detailed in the
+[weapon-order proof](RICH_EDITOR_EXPANSION.md#dw8-xl-weapon-order-proof).
+Edited game loading remains untested.
 
 ## Ally progression inspection
 
@@ -82,7 +105,7 @@ bulk ally action is exposed. Unknown bytes and padding remain unchanged.
 | Existing weapon attribute ranks | Existing edits for mapped ranked IDs only; unknown/unranked IDs retained |
 | Weapon affinity | New individual 0/1/2 edits on qualified existing records; excluded from Max; Heaven/Earth/Man numeric names and in-game reload untested |
 | Weapon identity and attack | Read-only inspection; type/rank-specific attack limits and valid identity relationships need independent corroboration |
-| Equipped weapon references | Read-only inspection; ownership/type compatibility and equip validation need controlled equip pairs |
+| Equipped weapon references | Qualified existing two-weapon pairs may be reordered atomically; selecting a third weapon still needs ownership/type compatibility and controlled equip evidence |
 | Skills and rankable/enabled state | Published skill-pair patch exists; native sample has only enabled/maxed pairs, so unlock/rank dependency controls are missing |
 | Ally skill/EXP/support IDs/bonds | New read-only inspection; recruitment, identity, maximum-level and reward dependencies need controlled native pairs |
 | Mounts/support beasts | Published speed/breakthrough patches use cheat limits and conflicting maxima; native identities, legitimate limits and acquisition/equip dependencies remain unmapped |

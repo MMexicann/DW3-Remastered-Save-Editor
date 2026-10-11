@@ -221,6 +221,8 @@ class Gundam1PS3Tests(unittest.TestCase):
             document = parser.decode(source.read_bytes(), source=source)
             self.assertEqual(parser.serialize(document, {}), document.raw)
             for field in parser.fields_for(document):
+                if isinstance(field, parser.EquippedField):
+                    continue  # Native equipment dependencies have their own tests.
                 if not field.value(document.raw):
                     output = parser.serialize(document, {field.id: 1})
                     self.assertEqual(field.value(output), 1)

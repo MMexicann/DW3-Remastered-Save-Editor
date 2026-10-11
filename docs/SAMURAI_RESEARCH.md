@@ -6,6 +6,13 @@ SW4-II's revision, stream and exact native checksum profile are independent of
 DX. Sanada's tested outer framing remains unregistered research without
 gameplay writes or a claim of qualified inner integrity.
 
+The latest SW4-II/original SW2 equipment expansions and renewed SW4 DX native
+dependency review are recorded in
+[Samurai / classic Dynasty editor depth](SAMURAI_DYNASTY_DEPTH.md). DX's existing
+functional controls below retain their scope: external proficiency conversion,
+growth and mount-ownership rules remain unresolved rather than becoming
+independent writes.
+
 ## Samurai Warriors 4 DX: implemented native PC adapter
 
 The adapter accepts gameplay `SAVEDATA0000.dat`–`SAVEDATA0004.dat` copies,

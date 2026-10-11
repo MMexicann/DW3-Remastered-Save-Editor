@@ -6,6 +6,7 @@ JSON, owner context, identity keys and mission/reward history are preserved.
 from dataclasses import dataclass
 from functools import lru_cache
 import hashlib
+import json
 from pathlib import Path
 from types import MappingProxyType
 
@@ -27,6 +28,25 @@ class JsonField(Field):
     def value(self, payload):
         return int(payload[self.offset:self.offset + self.size])
 
+    def token(self, value):
+        return str(value).encode('ascii')
+
+
+@dataclass(frozen=True)
+class JsonTextField(Field):
+    kind: str = 'text'
+
+    def value(self, payload):
+        return json.loads(payload[self.offset:self.offset + self.size].decode('utf-8'))
+
+    def validate(self, value):
+        if (type(value) is not str or not 1 <= len(value) <= self.maximum
+                or any(not 32 <= ord(character) <= 126 for character in value)):
+            raise SaveError(f'{self.label} requires 1..{self.maximum} printable ASCII characters.')
+
+    def token(self, value):
+        return json.dumps(value, ensure_ascii=True).encode('ascii')
+
 
 @dataclass(frozen=True)
 class Format:
@@ -44,6 +64,8 @@ FORMAT = Format(GAME_ID, 'Wo Long: Fallen Dynasty (PC)', SAVE_SIZE, (),
                 'checksums are verified. Available currencies use a conservative '
                 'manual range, not a claimed natural cap; Max is disabled. Existing '
                 'ordinary stacks can only be reduced while retaining at least one. '
+                'Enabled existing battle sets may receive a custom printable ASCII '
+                'name of up to 16 bytes (a conservative editor limit). '
                 'Equipment, skills, level, stored Qi and story are inspected without '
                 'changing their identities, dependencies or history. Genuine parsing '
                 'and no-op reconstruction are verified; edited game-load testing '
@@ -145,6 +167,7 @@ def read_save(path, game_id=GAME_ID):
 def validate_document(document):
     if (type(document) is not Document or document.format is not FORMAT
             or type(document.raw) is not bytes or type(document.payload) is not bytes
+            or not isinstance(document.source, Path)
             or _qualify(document.raw)[0] != document.payload):
         raise SaveError('An unchanged immutable Wo Long USER snapshot is required.')
 
@@ -177,6 +200,21 @@ def _fields(raw):
                                     f'Item key 0x{record["key"]:08X}: Reduce quantity',
                                     JSON_OFFSET + start, end - start, record['num'], label,
                                     slot_base + index + 1, minimum=1, maxable=False))
+    names = root['UIData'].get('ui_battleset_slot_data_info')
+    sets = root['PlayerData'].get('battleset_data_list')
+    if type(names) is list and type(sets) is list and len(names) == len(sets) == 50:
+        for index, (name_wrapper, set_wrapper) in enumerate(zip(names, sets)):
+            if type(name_wrapper) is not dict or type(set_wrapper) is not dict:
+                continue
+            name = name_wrapper.get('UiBattleSetSlotInfo')
+            battle_set = set_wrapper.get('BattleSetData')
+            if (type(name) is not dict or type(name.get('str')) is not str
+                    or type(battle_set) is not dict or battle_set.get('enable_flag') is not True):
+                continue
+            start, end = spans[('UIData', 'ui_battleset_slot_data_info', index, 'UiBattleSetSlotInfo', 'str')]
+            fields.append(JsonTextField(f'battle_set_{index}_name', 'Custom name',
+                                       JSON_OFFSET + start, end - start, 16,
+                                       'Battle set names', index + 1, maxable=False))
     return tuple(fields)
 
 
@@ -196,12 +234,13 @@ def changed_payload(document, changes):
     replacements = []
     for key, value in changes.items():
         field = mapping.get(key)
-        if field is None or type(value) is not int:
-            raise SaveError('Only qualified integer currencies and existing-stack reductions are writable.')
+        if (type(key) is not str or field is None
+                or type(value) is not (str if getattr(field, 'kind', 'int') == 'text' else int)):
+            raise SaveError('Choose a qualified currency, existing stack or battle-set name with the correct value type.')
         original = field.value(document.payload)
         if value != original:
             field.validate(value)
-            replacements.append((field.offset, field.offset + field.size, str(value).encode('ascii')))
+            replacements.append((field.offset, field.offset + field.size, field.token(value)))
     if not replacements:
         return document.payload
     length = _qualify(document.raw)[3]
@@ -217,6 +256,8 @@ def changed_payload(document, changes):
 
 def stage(document, changes, key, value):
     changed_payload(document, changes)
+    if type(key) is not str:
+        raise SaveError('Choose a mapped Wo Long field name.')
     proposed = dict(changes)
     proposed[key] = value
     changed_payload(document, proposed)
@@ -238,7 +279,13 @@ def serialize(document, changes):
 def limit_values(document, changes, keys):
     changed_payload(document, changes)
     mapping = field_map(document)
-    if any(key not in mapping for key in keys):
+    if isinstance(keys, (str, bytes)):
+        raise SaveError('Choose a sequence of mapped Wo Long field names.')
+    try:
+        keys = tuple(keys)
+    except TypeError as error:
+        raise SaveError('Choose a sequence of mapped Wo Long field names.') from error
+    if any(type(key) is not str or key not in mapping for key in keys):
         raise SaveError('Unknown Wo Long field selection.')
     return {}
 
@@ -267,13 +314,19 @@ def save_as(document, changes, destination):
     if destination.exists():
         raise FileExistsError('Choose a new file; existing files are never replaced.')
     validate_document(document)
+    _check_source(document)
+    raw = serialize(document, changes)
+    _check_source(document)
+    backup(document)
+    _check_source(document)
+    atomic_new(raw, destination)
+    return decode(raw, GAME_ID, destination)
+
+
+def _check_source(document):
     with safe_path(document.source).open('rb') as stream:
         if stream.read(SAVE_SIZE + 1) != document.raw:
             raise SaveError('The opened copy changed on disk. Reopen it before saving.')
-    raw = serialize(document, changes)
-    backup(document)
-    atomic_new(raw, destination)
-    return decode(raw, GAME_ID, destination)
 
 
 def restore(backup_path, destination, game_id=GAME_ID):
@@ -283,6 +336,8 @@ def restore(backup_path, destination, game_id=GAME_ID):
 
 
 def record_label(slot, group='Available currencies'):
+    if group == 'Battle set names':
+        return f'Battle set {slot}'
     if group == 'Carried stacks':
         return f'Carried slot {slot}'
     if group == 'Stored stacks':
@@ -292,6 +347,12 @@ def record_label(slot, group='Available currencies'):
 
 def field_hint(document, key):
     field = field_map(document)[key if isinstance(key, str) else key.id]
+    if field.group == 'Battle set names':
+        return ('Rename this enabled existing battle set using 1..16 printable ASCII bytes. '
+                'This is a conservative editor limit, not a recovered game maximum. '
+                'The official update history warns that unsupported characters may not '
+                'save. Gear, Virtues, spells and enable flags stay intact. Max is disabled; '
+                'assigning the opened name restores even an unusual original unchanged.')
     if field.group == 'Available currencies':
         return ('Manual balance range 0..2,147,483,647 is a conservative editor limit, '
                 'not a proven natural cap. Max is disabled. Stored Qi, lifetime/history '

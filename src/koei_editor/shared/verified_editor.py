@@ -133,6 +133,8 @@ def _weapon_record(payload, index):
 def _field_index(game_id, payload):
     fields = {field.id:field for field in get_format(game_id).fields}
     if game_id == 'dw8xl':
+        from koei_editor.games.dw8xl.equipment import fields_for_payload
+        fields.update((field.id, field) for field in fields_for_payload(payload, _weapon_record, DW8_WEAPON_COUNT))
         for index in range(DW8_WEAPON_COUNT):
             record = _weapon_record(payload, index)
             if record is None:
@@ -156,6 +158,15 @@ def _field_index(game_id, payload):
 def fields_for(document):
     """Editable fields for this immutable snapshot, including existing weapons."""
     return tuple(field_map(document).values())
+
+
+def field_options(document, key):
+    from koei_editor.games.dw8xl.equipment import WeaponOrderField
+    field = field_map(document).get(key)
+    if isinstance(field, WeaponOrderField):
+        return tuple((slot, f'Weapon slot {slot:04} (ID {_weapon_record(document.payload, slot - 1)["id"]})')
+                     for slot in field.opened_slots)
+    return ()
 
 
 def weapons(document):
@@ -364,7 +375,10 @@ def changed_payload(document, changes):
     result = bytearray(document.payload)
     for key, value in changes.items():
         field = fields[key]
-        result[field.offset:field.offset + field.size] = value.to_bytes(field.size, 'little')
+        if hasattr(field, 'write'):
+            field.write(result, value)
+        else:
+            result[field.offset:field.offset + field.size] = value.to_bytes(field.size, 'little')
     return bytes(result)
 
 

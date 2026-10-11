@@ -1,5 +1,43 @@
 # Universal development validation
 
+## Existing-editor expansion — 2026-10-11
+
+The [current expansion checklist](RICH_EDITOR_EXPANSION.md) extends 19 existing
+profiles while retaining 44 registered game/platform profiles and version 1.6.
+Six parallel implementation lanes reviewed all 43 profiles other than DW3
+Remastered. Independent cross-lane reviews checked mapping evidence, original
+eligibility, staged dependencies, integrity, unusual-value preservation and
+new controls; no supplied game or external editor executable was run.
+
+Focused results from this pass:
+
+| Check | Result and evidence boundary |
+| --- | --- |
+| Samurai/early Dynasty | 175 tests passed, no skips; 761 new native fields exercised surgically, including own-pool equipment and occupied mount references. |
+| Orochi/modern Dynasty | 269 distinct tests passed; one current DW9 Empires SYSTEM fixture unavailable. Genuine WO3/WO1/PC DW8E editing and Tk save/backup/restore passed. |
+| Hyrule/Fire Emblem | 145 checks passed across the main run and separately enabled native Three Hopes check; includes both Three Houses revisions and native Legends. |
+| Team Ninja | 24 focused native/GUI checks passed, including both Nioh 3 revisions and original NGII story regression. Enabled Wo Long naming has source/schema, procedural and Tk evidence; the genuine corpus has no enabled named set. |
+| Persona/Gust | Nine new depth checks passed, including genuine P5/Ryza 2 and Tk; broader 66-check lane had 65 passes and one unavailable Sophie 2 native fixture. |
+| Console/Pirate/strategy | 53 core checks plus three PC horse checks passed. Four genuine Gundam exports cover 20 eligible pilots/80 equipped slots; native PS3 DW8E covers four ordinary horses/28 fields. |
+| Shared actions and DW8 weapon order | Root targeted native/GUI checks passed; independent 53-check review and all 82 qualified native DW8 pairs passed. Real minimum-window Light/Dark checks covered DW8, Three Houses, Gundam and DW8E. |
+| Whole application startup | All 44 registered interfaces, themes and retained switching initialized successfully. |
+
+These focused sets overlap and must not be summed as a distinct full-suite
+count. The integration pull request records the combined Linux/Tk regression
+result with available private native fixtures and the native Windows run.
+The Windows workflow checks the public suite, standalone EXE startup, embedded
+metadata/privacy and archive/hash consistency before its preview artifact is
+accepted and the ordinary PR is merged. Release jobs are disabled for this
+non-publishing branch; no release marker, tag or version bump is introduced.
+
+Positive eligible native coverage remains missing for enabled Wo Long battle-set
+renaming and owned unlearned DW7 seal meters. Native files validate their older
+controls but do not exercise those new positive edit cases. Missing private
+fixtures and platform-specific checks are reported as skips rather than passes.
+No edited save was imported, loaded or re-saved in a game during this pass.
+The linked lane checklists retain exact further mechanic/input blockers.
+
+
 ## Independent development-branch validation — 2026-10-11
 
 This review started at remote `codex/prepare-next-update`, commit

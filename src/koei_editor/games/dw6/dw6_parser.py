@@ -54,7 +54,7 @@ FORMAT = Format(GAME_ID, 'Dynasty Warriors 6 (PC)', SAVE_SIZE,
                 _UNLOCK_FIELDS + _HORSE_FIELDS,
                 'Observed 212,248-byte native PC profile with canonical officer identities. '
                 'One-way playable unlocks, qualified existing horse combat stats and '
-                'individual element choices on existing known weapons. '
+                'individual element choices and manual stored damage bonuses on existing known weapons. '
                 'Officer progression, equipment and story remain read only. '
                 'Genuine sample parsing is verified; edited game-load validation has not '
                 'been performed by this project.')
@@ -133,6 +133,10 @@ def _fields(payload):
             offset = base + weapon * WEAPON_STRIDE
             identity, element = _u32(payload, offset), _u32(payload, offset + 8)
             if identity < len(WEAPON_NAMES) and element in (0, 1, 2, 3):
+                elements.append(Field(f'officer_{officer}_weapon_{weapon}_damage_bonus',
+                                      f'{WEAPON_NAMES[identity]}: Stored damage bonus (manual)',
+                                      offset + 4, 4, 0xffffffff, 'Weapon bonuses',
+                                      officer * WEAPON_COUNT + weapon + 1, maxable=False))
                 elements.append(Field(f'officer_{officer}_weapon_{weapon}_element',
                                       f'{WEAPON_NAMES[identity]}: Element', offset + 8,
                                       4, 3, 'Weapon elements', officer * WEAPON_COUNT + weapon + 1,
@@ -260,7 +264,7 @@ def restore(backup_path, destination, game_id=GAME_ID):
 def record_label(slot, group='Unlocks'):
     if group in ('Unlocks', 'Officers') and 1 <= slot <= OFFICER_COUNT:
         return OFFICER_NAMES[slot - 1]
-    if group == 'Weapon elements' and type(slot) is int and 1 <= slot <= OFFICER_COUNT * WEAPON_COUNT:
+    if group in ('Weapon elements', 'Weapon bonuses') and type(slot) is int and 1 <= slot <= OFFICER_COUNT * WEAPON_COUNT:
         officer, weapon = divmod(slot - 1, WEAPON_COUNT)
         return f'{OFFICER_NAMES[officer]} / weapon {weapon + 1}'
     return f'Horse slot {slot}' if group == 'Horses' else group
@@ -288,6 +292,11 @@ def field_hint(document, field):
         return ('Existing weapon element: 0 Fire, 1 Ice, 2 Lightning, 3 no element. '
                 'This is a choice, so Max leaves it unchanged. Weapon identity, damage '
                 'bonus, skill mask, inventory and officer progression are preserved.')
+    if mapped.group == 'Weapon bonuses':
+        return ('Stored damage bonus over this existing weapon\'s base damage; not total attack. '
+                'Manual unsigned 32-bit storage bounds only: the tentative published value 32 '
+                'is not a proven natural cap. Max leaves it unchanged. Identity, element, '
+                'skills, inventory, level and rewards are preserved.')
     return ('Existing horse combat stat; 500 is the documented effective upper limit. '
             'Max preserves higher existing values. EXP, growth descriptors, model, '
             'element, skill mask and the unqualified adjacent stat are preserved.')

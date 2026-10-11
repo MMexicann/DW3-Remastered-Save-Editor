@@ -4,6 +4,8 @@ This is the original 2008 Windows PC game, native disk save revision 2. It is
 not SW2 HD, Xtreme Legends, Empires, a console export or a later Samurai Warriors
 game. The `sw2` adapter uses the existing scalar GUI, staged Undo, Review Changes,
 automatic original backups and guarded atomic Save As to a new copied-save path.
+The latest own-pool equipment expansion and checks are documented in
+[Samurai / classic Dynasty editor depth](SAMURAI_DYNASTY_DEPTH.md).
 
 ## Evidence and licence boundary
 
@@ -64,7 +66,7 @@ hidden behind invented fingerprint markers.
 | Stored growth | Eight unsigned 32-bit values at officer `+0`: Life, Musou, Attack, Defense, Riding, Speed, Dexterity / Jump, Luck |
 | EXP and level | Unsigned 32-bit EXP `+0x20`, zero-index level byte `+0x24`; read only |
 | Weapons | Eight 19-byte existing records at officer `+0x28`; byte identity, element, eight attribute IDs, eight amounts and occupied-slot count |
-| Equipment | Equipped weapon index `+0xC0`; read only |
+| Equipment | Equipped weapon byte index `+0xC0`; existing qualified own-pool selection on already owned officers |
 | Skills | 40 rank bytes at `+0xC1`; low seven bits are rank, high bit is preserved separately |
 | Unique ability | Byte `+0xE9`; read only, as are adjoining unqualified bytes |
 | Officer ownership | Bitset at `0x214C`; never changed by money/growth/skill/weapon edits |
@@ -75,9 +77,17 @@ widths, EXP, byte-level level encoding, skill mask and weapon fields. Weapon ID
 `0x7F` is empty; IDs below 104 follow four weapon tiers for each of 26 officers.
 Bonus IDs 0–7 refer to the eight stats, 8 to Musou charge and 9 to range; 10
 is no attribute. Unknown identities and unqualified slot/type/count combinations
-stay opaque. Only an occupied attribute on a known weapon belonging to its
+stay opaque. Within weapon records, only an occupied attribute on a known weapon belonging to its
 original officer record is writable. Identity, element, attribute IDs, slot
-count, inventory and equipped reference are not changed.
+count, inventory and equipped reference are not changed by bonus edits.
+
+Equipped weapon selection is a separate control. It accepts only existing
+known own-family weapons from that owned officer's eight-slot pool with
+occupied bonus counts 1–8. Empty ID 127, unknown/foreign families and unusual
+count-zero records stay unavailable as targets. Selection writes only `+0xC0`;
+identity, element, bonuses, count, inventory and ownership remain unchanged.
+It is excluded from Max, and an unusual original reference can be restored
+through unstaging.
 
 The seventh stat is labeled `跳跃` (Jump) in the period PC editor. The
 [original English game guide](https://gamefaqs.gamespot.com/ps2/930941-samurai-warriors-2/faqs/44990)
@@ -111,8 +121,10 @@ controlled shop/Survival unlock and acquisition pair establishing prerequisites.
 Progression needs controlled original-PC Story/Free/Survival clear and interim
 save pairs mapping history, completion, unlocks and rewards separately. Level
 and EXP need controlled level-up pairs proving threshold/derived dependencies.
-Equipment references require owned-record/equip pairs. These precise inputs are
-missing; their bytes remain untouched by the functioning resource/growth editor.
+Own-pool weapon references are implemented without acquisition or new records.
+Other equipment references, including guards and mounts, still require
+owned-record/equip pairs. These precise inputs are missing; those bytes remain
+untouched by the functioning resource/growth/equipment editor.
 
 ## Validation distinctions
 

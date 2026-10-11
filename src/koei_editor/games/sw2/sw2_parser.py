@@ -57,9 +57,9 @@ class Format:
 
 FORMAT = Format(GAME_ID, 'Samurai Warriors 2 (original Windows PC)', SAVE_SIZE, (),
                 'Native revision-2 original Windows PC save.dat. Money, stored officer '
-                'growth stats, acquired ordinary skill ranks and existing weapon bonuses. '
+                'growth stats, acquired ordinary skill ranks, existing weapon bonuses and own-pool weapon selection. '
                 'Individual numeric edits use storage bounds; bulk Max is unavailable '
-                'where natural limits are unproven. Level/EXP, ownership, equipped '
+                'where natural limits are unproven. Level/EXP, ownership, other equipped '
                 'references, rare skills, mounts, guards, rewards and story are preserved. '
                 'Two genuine-file roundtrips qualified; edited game loading is untested.')
 
@@ -130,6 +130,10 @@ def _fields(payload):
         # Ownership is a separate bitset. Never expose locked officers' growth.
         if not payload[0x214C + officer // 8] & (1 << (officer % 8)):
             continue
+        if _weapon_choices(payload, officer):
+            fields.append(Field(f'officer_{officer}_equipped_weapon', 'Equipped existing own-pool weapon',
+                                base + 0xC0, 1, WEAPON_COUNT - 1, 'Equipment',
+                                officer + 1, maxable=False))
         for stat, label in enumerate(STAT_NAMES):
             fields.append(Field(f'officer_{officer}_stat_{stat}', f'{label} (stored growth)',
                                 base + stat * 4, 4, 0xFFFFFFFF, 'Officer growth',
@@ -158,6 +162,14 @@ def _fields(payload):
                                     offset + 10 + attribute, 1, 255, 'Weapon bonuses',
                                     officer + 1, maxable=False))
     return tuple(fields)
+
+
+def _weapon_choices(payload, officer):
+    base = OFFICER_BASE + officer * OFFICER_STRIDE + WEAPON_RELATIVE_BASE
+    return tuple(slot for slot in range(WEAPON_COUNT)
+                 if payload[base + slot * WEAPON_STRIDE] < 104
+                 and payload[base + slot * WEAPON_STRIDE] // 4 == officer
+                 and 1 <= payload[base + slot * WEAPON_STRIDE + 18] <= 8)
 
 
 def fields_for(document):
@@ -190,6 +202,7 @@ def stage(document, changes, key, value):
         result.pop(key, None)
     else:
         result[key] = value
+    changed_payload(document, result)
     return result
 
 
@@ -205,6 +218,9 @@ def changed_payload(document, changes):
         if field is None:
             raise SaveError('This SW2 PC field/owned record is not qualified for editing.')
         _validate_edit(field, value, field.value(document.payload))
+        if (field.group == 'Equipment' and value != field.value(document.payload)
+                and value not in _weapon_choices(document.payload, field.slot - 1)):
+            raise SaveError('Equip an existing known weapon belonging to this owned officer.')
         if isinstance(field, SkillField):
             result[field.offset] = (document.payload[field.offset] & 0x80) | value
         else:
@@ -273,8 +289,23 @@ def record_label(slot, group='Officer growth'):
     return OFFICER_NAMES[slot - 1] if 1 <= slot <= OFFICER_COUNT else group
 
 
+def field_options(document, field):
+    key = field.id if isinstance(field, Field) else field
+    mapped = field_map(document).get(key)
+    if mapped is None:
+        raise SaveError('Choose a qualified original SW2 PC field.')
+    if mapped.group == 'Equipment':
+        return tuple((slot, f'Existing own-pool weapon {slot + 1}')
+                     for slot in _weapon_choices(document.payload, mapped.slot - 1))
+    return ()
+
+
 def field_hint(document, field):
     mapped = field_map(document)[field.id if isinstance(field, Field) else field]
+    if mapped.group == 'Equipment':
+        return ('Choose an existing known weapon in this already owned officer\'s eight-slot pool. '
+                'This changes only the equipped reference; no acquisition, identity, element, '
+                'bonus or reward is changed. Max leaves choices unchanged.')
     if mapped.group == 'Acquired skills':
         return ('Changes only the rank of an acquired ordinary skill, preserving its high flag bit. '
                 'Rare and unacquired skills stay unchanged. Level, EXP and reward prerequisites are separate.')

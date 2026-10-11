@@ -1,10 +1,13 @@
 # Dynasty Warriors 8 Empires — native PC SYSTEM custom horses
 
-This adapter opens a separate Windows `SystemSave.dat` copy. It edits **Body Type
-of an already occupied custom-horse slot**, manually from 0 (left) to 4 (right).
-Appearance is a choice: Max never changes it. Empty slots, unusual existing
-values, horse names, menu type, model, abilities, speed, power and campaign
-progression are preserved.
+This adapter opens a separate Windows `SystemSave.dat` copy. It edits **seven
+appearance members of already occupied custom-horse slots**. Body Type accepts
+0–4. Head Size, Neck Length, Torso Length, Leg Length, Tail Length and Muscle
+Volume use only same-member positions witnessed in qualified original ordinary
+horses in the opened PC snapshot. Appearance choices never receive Max.
+Empty slots, unusual member values, names, type/model, abilities, speed, power
+and campaign progression are preserved. See the independently qualified PC
+expansion in [CONSOLE_PIRATE_STRATEGY_DEPTH.md](CONSOLE_PIRATE_STRATEGY_DEPTH.md).
 
 ## Evidence and native profile
 
@@ -31,7 +34,7 @@ profiles and are rejected by this gameplay adapter.
 | Mechanic | Status and exact limitation |
 | --- | --- |
 | Existing custom-horse Body Type | Manual 0–4; original occupied flag must be exactly 1 and opened value 0–4. |
-| Head, neck, torso, legs, tail and muscle sliders | Named read-only positions. Adjacent mappings are published, but their own legitimate bounds have not been independently qualified. |
+| Head, neck, torso, legs, tail and muscle sliders | Bytes `+0x11..+0x16`; original occupied flag 1, ordinary menu type 0–7/model `0x96`–`0x9D`, and original member value 0–4 required. Choices are same-member positions witnessed in this original PC snapshot, never borrowed from PS3 or treated as full natural ranges. |
 | Horse name, identity, type and model | Read-only. Menu type and actual model are distinct stored bytes; genuine records already contain mismatches, which are preserved. Name encoding and model/category prerequisites block writes. |
 | Speed, power and four abilities | Read-only. The original report explicitly does not know speed/power maxima; natural category limits and ability-slot dependencies remain missing. |
 | Horse creation, ownership and record IDs | No manufacture. Unoccupied or unusual flags are preserved; fixed row identities are validated. |
@@ -46,6 +49,9 @@ both checksum failures, first/last ordinals, immutable snapshots, every writable
 body position, unknown/unoccupied records, choice Max exclusion, backup,
 restore and changed-source rejection. Optional private fixture variable
 `DW8E_SYSTEM_COPY` tests same-byte native roundtrip and surgical edits of every
-qualified occupied body field. No game executable is run. The original forum
+qualified occupied appearance field. The two ordinary native horses provide
+four alternative Body Type choices per horse, one alternative per Head/Neck/Tail
+member and single-position Torso/Leg/Muscle members: fourteen distinct surgical
+native edits. No game executable is run. The original forum
 author distinguished menu observation from battle validation; this project
 likewise claims **no actual game-load or battle validation**.

@@ -12,6 +12,9 @@ executable build, region and DLC purchase entitlement are not supplied. Support
 therefore names the serialized revision, not an unverified Steam build or all
 language/DLC variants. The adapter does not grant DLC ownership or create files.
 
+The latest equipment expansion and native/GUI checks are recorded in
+[Samurai / classic Dynasty editor depth](SAMURAI_DYNASTY_DEPTH.md).
+
 ## Implemented mechanics
 
 - Manual current gold and five held strategy-tome counters: red, green, blue,
@@ -34,7 +37,12 @@ language/DLC variants. The adapter does not grant DLC ownership or create files.
 - Manual positive power, stamina and speed on existing occupied known mount
   records with native type IDs 0–12 and valid stored level/ceiling. Empty type
   26, unknown types and unusual progression remain preserved and read only.
-  Mount ownership, equipment, growth, abilities and story rewards are separate.
+  Mount ownership, growth, abilities and story rewards are separate.
+- Equipped mount selection on initialized standard officers, restricted to
+  qualified existing occupied mount slots in the opened inventory. This changes
+  the officer reference only, preserving mount identity, ownership, growth,
+  abilities and combat stats. Unknown/empty targets are unavailable; assigning
+  an unusual opened reference restores it through Undo.
 - Read-only progression, own-pool weapons/attributes, equipment references,
   mount levels/stats and adjacent unqualified gold history inspection.
 - Shared themes, staged Undo, Review Changes, named equipment choices,
@@ -114,6 +122,7 @@ header/seed and opaque bytes, and reparse output. No-edit output is byte exact.
 | Equipped primary weapon | officer byte `+0x3B` | Existing known own-pool targets only; four genuine unusual empty references are preserved instead of rejecting or repairing their file |
 | Attached attributes | IDs `+0xC`–`+0x13`; magnitudes `+0x14`–`+0x1B` | Known IDs 0–16 only; empty ID 255 and unknown IDs remain untouched. All 20 physical positions can have their existing known attributes edited in place |
 | Mount records | `0xCA42`, 20 × `0x10`, ending at gold | Known occupied native types 0–12; native empty sentinel 26 is statically validated; manual stats are bytes `+0xA`/`+0xB`/`+0xC` |
+| Equipped mount | Officer byte `+0x3D` | Existing qualified occupied mount slots only; a reference selects inventory position rather than replacing its type. Initialized standard officers only; unusual opened references are preserved |
 | Current gold | u32 `0xCB82` | Separate adjacent history retained without asserting its unknown meaning |
 | Five current tomes | u16 `0xCC16` + two bytes per color | Native saved gold-to-tome gap `0x94` exactly matches independent PC memory schema; current held resources, not lifetime purchases |
 
@@ -167,7 +176,7 @@ serialization nor GUI saving claims that an edited file was loaded in-game.
 | Weapons / attributes | Existing primary normal/rare magnitudes implemented. Need native generation/fusion rules, attribute exclusions and dictionary for other/DLC identities before replacement, ceiling edits or creation |
 | Equipped weapons | Existing own-pool known targets implemented in positions 0–14. Need native selection limit/translation or displayed equip pairs for positions 15–19 before offering those targets |
 | Weapon rank / level / EXP / attack | Inspected, preserved. Need forging thresholds and attack growth tables/pairs before independent writes or simulated upgrades |
-| Mount stats / inventory | Known occupied types 0–12 manual combat stats implemented. Need qualified identities/entitlement for unknown/DLC types, rank/EXP/growth tables and unlock/equip pairs for other controls |
+| Mount stats / inventory / equipment | Known occupied types 0–12 manual combat stats and existing mount-slot selection implemented. Ownership, growth and abilities stay separate. Need qualified identities/entitlement for unknown/DLC types, rank/EXP/growth tables and acquisition/ability pairs for other controls |
 | Equipment, consumables, abilities | Attached weapon magnitudes are separate from the personal grid. Need native item/ability dictionary, existing ownership and equip prerequisites for remaining records |
 | Customization / custom characters | Custom records/cosmetics/names retained. Need full identity/occupancy mapping, enum/name encoding and controlled appearance pairs; no private names are emitted in test reports |
 | Relationships / exploration / collections | No separate relationship or exploration system inferred from other games. Need game-specific mechanics plus serialized one-action pairs for any collection flags |

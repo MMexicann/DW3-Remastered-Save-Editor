@@ -20,6 +20,7 @@ class Editor(ScalarEditor):
     presentation_type = WolongPresentation
     subtitle = 'Windows PC resources and inventory inspection'
     summary = ('Edit available currencies manually; reduce existing ordinary stacks; '
+               'rename enabled existing battle sets; '
                'search inventory, equipment and companion records. Max is disabled.')
 
 

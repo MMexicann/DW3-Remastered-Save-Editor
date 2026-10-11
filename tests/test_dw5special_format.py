@@ -63,7 +63,7 @@ class SpecialFormatTests(unittest.TestCase):
 
     def test_named_item_weapons_bounds_and_inspection_every_record(self):
         fields = backend.field_map(self.document)
-        self.assertEqual(len(fields), 12)
+        self.assertEqual(len(fields), 108)
         self.assertEqual(fields['item_0_rank'].offset, 0x1534)
         self.assertIn('Peacock', fields['item_0_rank'].label)
         self.assertIn('Zuo Ci', fields['officer_47_weapon_3_attribute_2'].label)

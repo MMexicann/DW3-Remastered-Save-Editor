@@ -84,8 +84,8 @@ class Format:
 
 
 FORMAT = Format(GAME_ID, 'Dynasty Warriors 5 Special (native Windows)', SAVE_SIZE, (),
-                'Existing ordinary item and weapon attribute ranks, stored attack adjustment and weight choices. '
-                'Growth, ownership, equipment identity and story progression remain unchanged.')
+                'Existing ordinary item and weapon attribute ranks, stored attack adjustment, weight choices and stored officer Attack/Defense. '
+                'Merit/title growth, ownership, equipment identity and story progression remain unchanged.')
 
 
 @dataclass(frozen=True)
@@ -142,6 +142,11 @@ def _mapped_fields(payload):
         officer = OFFICER_BASE + identity * OFFICER_STRIDE
         if payload[officer] != 1:
             continue
+        for key, label, relative in (('attack', 'Stored base attack', 6),
+                                     ('defense', 'Stored base defense', 7)):
+            fields.append(Field(f'officer_{identity}_{key}', f'{name}: {label}',
+                                officer + relative, maximum=255, group='Officer base stats',
+                                slot=identity + 1))
         for weapon in range(WEAPON_COUNT):
             start = officer + WEAPON_RELATIVE + weapon * WEAPON_STRIDE
             # Restrict identity to this officer's four native weapon IDs. Unknown,
@@ -264,6 +269,8 @@ def restore(backup_path, destination, game_id=GAME_ID):
 
 
 def record_label(slot, group='Items'):
+    if group == 'Officer base stats' and type(slot) is int and 1 <= slot <= OFFICER_COUNT:
+        return OFFICER_NAMES[slot - 1]
     if group == 'Items' and type(slot) is int and 1 <= slot <= len(ITEM_NAMES):
         return ITEM_NAMES[slot - 1]
     if type(slot) is int and 1 <= slot <= OFFICER_COUNT * WEAPON_COUNT:
@@ -285,6 +292,10 @@ def field_hint(document, field):
     key = field.id if isinstance(field, Field) else field
     if key not in field_map(document):
         raise SaveError('The requested Special field is not editable.')
+    if field_map(document)[key].group == 'Officer base stats':
+        return ('Stored base stat on an already playable officer; displayed battle totals also '
+                'include equipment. Manual byte storage bounds only, excluded from Max. '
+                'Merit, title, Life/Musou, ownership, weapons and rewards are preserved.')
     return ('Existing equipment only. Weapon attack is the stored adjustment byte; '
             'base/battle total is separate. Stored rank 0 means level 1; rank 19 means level 20. '
             'Weight is a choice. Max leaves these fields unchanged. '

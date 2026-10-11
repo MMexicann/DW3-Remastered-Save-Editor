@@ -12,6 +12,7 @@ from types import MappingProxyType
 
 from koei_editor.shared.copy_storage import atomic_new, restore_snapshot, snapshot_backup
 from koei_editor.games.dw3.models import SaveError
+from koei_editor.games.wo3u import wo3u_equipment as equipment
 from koei_editor.shared.save_safety import safe_path
 
 GAME_ID = 'wo3u'
@@ -29,6 +30,7 @@ ATTRIBUTE_NAMES = {5: 'Agility', 6: 'Reach', 7: 'Multi', 8: 'Brawn',
 ATTRIBUTE_COUNT = 58
 BINARY_ATTRIBUTE_IDS = frozenset(range(26, 32)) | frozenset(range(46, 58))
 RANKED_ATTRIBUTE_IDS = frozenset(range(ATTRIBUTE_COUNT)) - BINARY_ATTRIBUTE_IDS
+UPGRADE_STONE_OFFSET, UPGRADE_STONE_MAXIMUM = 52, 891
 MATERIAL_SPANS = ((0xE9A8, 16), (0xE9C8, 16), (0xE9E8, 16),
                   (0xEA08, 34), (0xEA3A, 34), (0xEA6C, 34), (0xEAA8, 145))
 
@@ -93,7 +95,7 @@ FORMAT = Format(GAME_ID, 'Warriors Orochi 3 Ultimate Definitive Edition (Steam P
                 SAVE_SIZE, tuple(_static),
                 'Native copied-file validation; edited game loading remains untested. '
                 'Stats, growth points, gems, attribute orbs, crafting materials and '
-                'existing weapon slots/ranked attributes and reinforcement reduction. Story, unlocks and promotions '
+                'existing weapon slots/ranked attributes, reinforcement reduction, unallocated upgrade stones and owned ordinary-item equipment. Story, unlocks and promotions '
                 'remain unchanged. Five internal officer records are read only.')
 
 
@@ -168,6 +170,28 @@ def validate_document(document):
 @lru_cache(maxsize=4)
 def _fields(payload):
     result = list(FORMAT.fields)
+    for officer in range(OFFICER_COUNT):
+        offset = OFFICER_BASE + officer * OFFICER_STRIDE
+        promotions = payload[offset + 62]
+        stones = int.from_bytes(payload[offset + UPGRADE_STONE_OFFSET:
+                                        offset + UPGRADE_STONE_OFFSET + 2], 'little')
+        # Native promotion/allocation UI treats this as a separate spendable
+        # balance and clamps it to 891. Do not enable promotion or normalize an
+        # unpromoted or unusual record merely to expose this resource.
+        if 1 <= promotions <= 9 and stones <= UPGRADE_STONE_MAXIMUM:
+            result.append(Field(f'officer_{officer}_upgrade_stones',
+                                f'Officer {officer + 1}: Unallocated upgrade stones',
+                                offset + UPGRADE_STONE_OFFSET, 2,
+                                UPGRADE_STONE_MAXIMUM, 'Upgrade stones', officer + 1,
+                                maxable=False))
+    for officer in range(OFFICER_COUNT):
+        offset = OFFICER_BASE + officer * OFFICER_STRIDE
+        for item_slot in range(equipment.qualified_slots(payload, offset)):
+            result.append(Field(f'officer_{officer}_equipped_item_{item_slot}',
+                                f'Officer {officer + 1}: Equipped item slot {item_slot + 1}',
+                                offset + equipment.EQUIPPED_ITEM_OFFSET + item_slot,
+                                1, equipment.EMPTY_ITEM, 'Equipment', officer + 1,
+                                maxable=False))
     for index in range(WEAPON_COUNT):
         offset = WEAPON_BASE + index * WEAPON_STRIDE
         identity = int.from_bytes(payload[offset:offset + 2], 'little')
@@ -220,6 +244,8 @@ def field_map(document):
 
 
 def record_label(slot, group='Officers'):
+    if group in ('Upgrade stones', 'Equipment') and slot:
+        return f'Officer {slot}'
     if group == 'Weapons' and slot:
         return f'Officer {(slot - 1) // 16 + 1}, weapon {(slot - 1) % 16 + 1}'
     return f'Officer {slot}' if group == 'Officers' and slot else group
@@ -246,7 +272,17 @@ def changed_payload(document, changes):
                                         document.payload[base + 4 + original:base + 4 + value]):
                 raise SaveError('Attribute slots cannot activate dormant weapon attributes.')
         result[field.offset:field.offset + field.size] = field.encoded(value)
+    for officer in {mapped[key].slot - 1 for key in changes if '_equipped_item_' in key}:
+        equipment.validate_selectors(document.payload, result,
+                                     OFFICER_BASE + officer * OFFICER_STRIDE)
     return bytes(result)
+
+
+def field_options(document, key):
+    mapped = field_map(document)
+    if key not in mapped:
+        raise SaveError('The requested WO3 Ultimate Definitive field is not mapped.')
+    return equipment.options(document.payload) if '_equipped_item_' in key else ()
 
 
 def serialize(document, changes):
@@ -261,6 +297,7 @@ def serialize(document, changes):
 
 def stage(document, changes, key, value):
     mapped = field_map(document)
+    changed_payload(document, changes)
     if key not in mapped:
         raise SaveError('The requested WO3 Ultimate Definitive field is not mapped.')
     result = dict(changes)
@@ -269,12 +306,13 @@ def stage(document, changes, key, value):
     else:
         mapped[key].validate(value)
         result[key] = value
-        changed_payload(document, result)
+    changed_payload(document, result)
     return result
 
 
 def limit_values(document, changes, keys):
     mapped = field_map(document)
+    changed_payload(document, changes)
     result = {}
     for key in keys:
         if key not in mapped:
@@ -288,6 +326,7 @@ def limit_values(document, changes, keys):
 
 def maximums(document, changes, group=None):
     mapped = field_map(document)
+    changed_payload(document, changes)
     result = dict(changes)
     for key, field in mapped.items():
         if group is not None and field.group != group:
@@ -346,6 +385,7 @@ def inspection_rows(document):
                      'value': f'Stored level {document.payload[offset + 17] + 1}; '
                               f'EXP {int.from_bytes(document.payload[offset + 26:offset + 30], "little"):,}; '
                               f'promotions {document.payload[offset + 62]}; '
+                              f'unallocated upgrade stones {int.from_bytes(document.payload[offset + 52:offset + 54], "little")}; '
                               f'item slots {document.payload[offset + 44]} (read only)'})
     for index in range(WEAPON_COUNT):
         offset = WEAPON_BASE + index * WEAPON_STRIDE
@@ -369,6 +409,16 @@ def field_hint(document, field):
     mapped = field_map(document)
     if key not in mapped:
         raise SaveError('The requested WO3 Ultimate Definitive field is not mapped.')
+    if mapped[key].group == 'Equipment':
+        return ('Choose an already owned ordinary item with a positive existing rank, '
+                'or Unequipped. Duplicate items on the same officer are rejected. '
+                'Item ownership/ranks, locked slots, mounts, promotions and rewards '
+                'are preserved. Item IDs retain numeric labels; excluded from Max.')
+    if mapped[key].group == 'Upgrade stones':
+        return ('Spendable upgrade stones for an already promoted officer, 0..891. '
+                'This changes only the unallocated balance. Promotion count, level, EXP, '
+                'allocated stones, item slots, stats and rewards are preserved. '
+                'Use the game to allocate stones or perform a promotion. Excluded from Max.')
     if mapped[key].group == 'Officers':
         return ('Stored stat only. Level, EXP, promotion, upgrade-stone allocation, unlocks '
                 'and story are preserved. Stat growth may later change this value. '

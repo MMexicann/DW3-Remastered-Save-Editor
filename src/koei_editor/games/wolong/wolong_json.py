@@ -1,4 +1,4 @@
-"""Bounded JSON parsing with exact integer token spans.
+"""Bounded JSON parsing with exact mapped scalar token spans.
 
 Own implementation: preserve native JSON spelling, whitespace and unknown data
 instead of reserializing the complete object. Duplicate keys fail closed.
@@ -51,7 +51,11 @@ def parse(data):
         start = position
         ch = data[position]
         if ch == 34:
-            return string()
+            result = string()
+            if (len(path) == 5 and path[:2] == ('UIData', 'ui_battleset_slot_data_info')
+                    and path[3:] == ('UiBattleSetSlotInfo', 'str')):
+                spans[path] = (start, position)
+            return result
         if ch in (123, 91):
             is_object = ch == 123
             result = {} if is_object else []

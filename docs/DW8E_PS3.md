@@ -1,10 +1,13 @@
 # Dynasty Warriors 8 Empires: US PS3 SYSTEM custom horses
 
-The `dw8e_ps3` adapter edits **Body Type of an already occupied custom-horse
-record**, manually from 0 (leftmost position) to 4 (rightmost position). The
+The `dw8e_ps3` adapter edits **seven appearance members of already occupied
+custom-horse records**. Body Type accepts 0–4; Head Size, Neck Length, Torso
+Length, Leg Length, Tail Length and Muscle Volume accept only positions already
+witnessed for that same member in qualified original records. The
 standard GUI provides searchable fields and horse inspection, Apply, Undo,
 Review Changes, automatic backups, safe Save As and validated backup restore.
-Body Type is an appearance choice and is excluded from automatic Max.
+Every appearance choice is excluded from automatic Max. The scoped expansion
+and its proof limits are in [CONSOLE_PIRATE_STRATEGY_DEPTH.md](CONSOLE_PIRATE_STRATEGY_DEPTH.md).
 
 Open a separate **decrypted** US PS3 SYSTEM `APP.BIN` copy. Keep the matching
 `PARAM.SFO` beside it; its save-directory identity must be exactly
@@ -25,8 +28,8 @@ Keep the original console directory and export separately.
 | Decoded revision / length | Little-endian `0x140828F1`; 251,035 bytes |
 | Console horse table | Payload `0x39B94`, 150 records, stride `0x4C` |
 | Record identity | Little-endian DWORD `+0x44` must equal row ordinal + 30 for every row, 30 through 179 |
-| Writable selector | Original occupied byte `+0` equals 1, Body Type byte `+0x10` is 0–4, menu type `+0x0F` is 0–7, model byte `+0x1E` is `0x96`–`0x9D` |
-| Allowed writes | One selected original Body Type byte per field, plus the outer game byte checksum |
+| Writable selector | Original occupied byte `+0` equals 1, menu type `+0x0F` is 0–7, model byte `+0x1E` is `0x96`–`0x9D`; each original selected member `+0x10..+0x16` must be 0–4 |
+| Allowed writes | Selected appearance bytes only; Body Type 0–4, other members limited to same-member positions witnessed in the opened snapshot; outer game byte checksum recomputed |
 
 The genuinely shared [US PS3 GameFAQs export 30046](https://gamefaqs.gamespot.com/ps3/806920-dynasty-warriors-8-empires/saves/30046)
 contains both SYSTEM and an EMPIRE3 campaign. Console encryption was removed
@@ -34,7 +37,7 @@ privately without executing a game/editor binary. SYSTEM's game checksum and
 revision match, its independently located console horse table contains all
 150 expected native identities, and five existing occupied records contain
 varied appearance positions. Four have ordinary documented horse types/models
-and expose Body Type; one has an unusual type/model and stays inspection-only.
+and expose all seven appearance members; one has an unusual type/model and stays inspection-only.
 The console table is **not the PC table address**
 (`0x38104`), and the complete console envelope is not the PC envelope.
 
@@ -72,7 +75,7 @@ original bytes; edits are re-encoded and reparsed without repairing bad input.
 | System | Implemented result / exact remaining blocker |
 | --- | --- |
 | Existing custom-horse Body Type | Manual 0–4 for original occupied, in-range rows with qualified ordinary type/model IDs; no horse creation or ownership changes. |
-| Remaining six horse appearance sliders | Named read-only values. Per-slider legitimate console bounds and controlled action pairs are needed before writes. |
+| Remaining six horse appearance sliders | Individual same-member witnessed-position choices on qualified ordinary occupied rows; no inferred complete 0–4 range, natural Max or creation. Unknown member values are preserved independently. Full slider endpoints and edited console loading remain untested. |
 | Horse names, menu type, model and record identity | Read-only. Type and actual model are distinct; unusual/DLC records are excluded from writes, and existing ordinary-type/model mismatches are preserved. Exact name encoding and model/category dependencies block writes. |
 | Horse speed, power and four abilities | Read-only. Native natural category limits, ability acquisition/slot prerequisites and battle effects are unqualified. |
 | Campaign materials / gold / troops | Existing separate research codec inspects raw candidate rows. Actual native PS3 resource order and owner identity bridge remain unresolved. Single offsets `0x5F84/0x5F88/0x5F8C` are row 4 of the 40-row array, not a global resource pool. |
@@ -107,7 +110,7 @@ Save, automatic backup and restore.
 `DW8E_PS3_SYSTEM_COPY` optionally selects a private genuinely sourced
 PFD-decrypted SYSTEM export with its original matching `PARAM.SFO`. Genuine
 checks separately establish byte-exact no-op and surgical edits of every
-qualified occupied Body Type, preserving every other decoded byte. Console
+qualified occupied appearance member, preserving every other decoded byte. Console
 loading/re-saving and battle validation are **not tested**. Procedural and GUI
 success do not claim in-game verification.
 

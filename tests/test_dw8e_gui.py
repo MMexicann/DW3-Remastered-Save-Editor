@@ -36,7 +36,8 @@ class DW8EmpiresGuiTests(unittest.TestCase):
         editor = self.editor
         editor.search.set('Final Horse')
         editor.refresh()
-        self.assertEqual(editor.fields.get_children(), ('horse_149_body',))
+        self.assertEqual(set(editor.fields.get_children()),
+                         {f'horse_149_{key}' for key, _, _ in backend.SLIDERS})
         editor.fields.selection_set('horse_149_body')
         editor.selected()
         editor.value.set('4')

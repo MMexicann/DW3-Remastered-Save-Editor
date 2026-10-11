@@ -123,7 +123,23 @@ manufacture eligibility. Held byte +3 is **not exposed as quantity**: all examin
 occupied held records have zero there. Convoy amount and held amount semantics
 must remain separate. Recruitment and death flags are never written.
 
-## Separate read-only mechanics and missing write evidence
+Instruction motivation is now editable at character `+0xC4` in exact steps
+0/25/50/75/100 for original unique living available/joined base-unit IDs 2–34.
+Byleth IDs 0/1 and unusual original values are excluded. This changes the
+instruction budget only: proficiency, budding talents, supports, professor EXP
+and remaining lesson activity are preserved.
+
+Five equipped-ability bytes at `+0x7F..+0x83` now offer only originally equipped
+IDs whose original learned bits are set, plus Empty (240). Original loadouts
+must be distinct, nonempty and undeployed (flag bit 18 clear), with the same
+qualified base-unit ownership as held equipment. Clear an ability's old slot
+before moving it. Complete staged loadouts reject duplicate nonempty IDs;
+ownership bits, class, personal/class-derived abilities and reward flags remain
+unchanged. These choices are excluded from Max. Source facts, native checks and
+remaining dependencies are detailed in
+[HYRULE_FIRE_EMBLEM_DEPTH.md](HYRULE_FIRE_EMBLEM_DEPTH.md).
+
+## Separate mechanics and remaining write evidence
 
 Character record mappings include u16 EXP +`0x2C`, eleven u16 proficiency EXP
 values +`0x32`, u16 current class EXP +`0x48`, level/class/HP +`0x4A..0x4C`, nine
@@ -145,7 +161,7 @@ roster/ability/class order.
 | Stats / level / EXP | Clean displayed-value and one-level-up/stat-booster/certification pairs; base versus effective stats, character caps, statue cap rewards and growth processing. |
 | Proficiency / movement | Rank-threshold and budding-talent pairs, primary/mirror handling and learned spell/ability/arts rewards. Riding/Flying/Heavy Armour proficiency differs from Movement stat. |
 | Class mastery | Certification/current-class/mastery transitions and reward ownership, per-class mirrors, class-dependent art use and DLC exam prerequisites. |
-| Abilities / combat arts | Licensed factual ID/eligibility evidence, learned versus equipped state, personal/class-derived abilities, crest/weapon/class prerequisites. |
+| Abilities / combat arts | Existing qualified equipped abilities can be cleared or rearranged using their original learned IDs. Adding unequipped abilities, changing ownership or editing combat arts still needs factual ID/applicability evidence, personal/class distinctions and crest/weapon/class prerequisites. |
 | Battalions | Hire, assignment/swap, level-up and endurance loss/replenishment pairs; catalog identity, Authority/flying restrictions, equipped-copy synchronization and gambit-use semantics. |
 | Repair / inventories | Known ordinary item type/use bounds, single-use/repair/trade/equip pairs and prerequisite costs; safe full transaction before repair, creation or transfer. |
 | Renown / professor progression | Balance versus NG+ historical purchases/clear rewards/statue state and remaining activity points; no generic reward grants. |
