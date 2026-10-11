@@ -222,6 +222,10 @@ GAMES = (
          '', '.bin', '#91613d', 'koei_editor.games.kens_rage2_ps3.editor', 'koei_editor.games.kens_rage2_ps3.parser',
          False, 'KR2', True, 'PlayStation 3', scalar_backend='koei_editor.games.kens_rage2_ps3.parser'),
 
+    Game('rotk13_pc', 'ROMANCE OF THE THREE KINGDOMS XIII', 'Original PC · revision 14 · TC',
+         'City gold, supplies, population, wounded troops, fealty, commerce, farming, culture and troop proficiencies.',
+         '', '.s13', '#806126', 'koei_editor.games.rotk13.editor', 'koei_editor.games.rotk13.parser',
+         True, 'XIII', True, scalar_backend='koei_editor.games.rotk13.parser'),
 )
 
 # Opaque research tools stay outside the gameplay library.

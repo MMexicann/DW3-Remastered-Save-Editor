@@ -51,6 +51,7 @@ from .game_registry import GAMES
 # gundam1_ps3: DYNASTY WARRIORS: GUNDAM / US/EU · decrypted DATA.BIN + PARAM.SFO [PlayStation 3]
 # kens_rage1_ps3: FIST OF THE NORTH STAR: KEN'S RAGE / US/EU · decrypted DATA.BIN + PARAM.SFO [PlayStation 3]
 # kens_rage2_ps3: FIST OF THE NORTH STAR: KEN'S RAGE 2 / EU · decrypted DATA.BIN + PARAM.SFO [PlayStation 3]
+# rotk13_pc: ROMANCE OF THE THREE KINGDOMS XIII / Original PC · revision 14 · TC [Windows PC]
 # END GENERATED SUPPORTED GAME INDEX
 
 

@@ -850,6 +850,15 @@
       "evidence": "Two publicly shared genuine US/EU DATA.BIN copies qualify exact 0xC0000-byte 32-byte header profile. Independently implemented published low-u16 skill-point patches for eight base fighters with positive original balance and zero candidate-word high bytes; existing unusual/higher values preserved. No native gameplay checksum algorithm is established; published patches use direct writes and external PFD authentication.",
       "needed": "Actual console edited load after Apollo reimport/resign; native serializer/integrity confirmation, fighter ownership and controlled skill-point spend/Meridian Chart, equipped skill, growth and mission/reward pairs. DLC and other platforms need separately qualified profiles.",
       "editing_verified": false
+    },
+    {
+      "id": "rotk13_pc",
+      "title": "Romance of the Three Kingdoms XIII",
+      "platform": "Windows PC",
+      "status": "Original revision-14 city-resource and development editor",
+      "editing_verified": true,
+      "evidence": "Seven public native TC original PC campaign copies independently decoded with matching preview checksums and native tagged city records. Original native serialization and field getters qualify city money, supplies, separate population components, wounded troops, fealty, commerce/farming/culture and spear/horse/bow proficiency. Surgical edits preserve district/force references, preview and unrelated bytes; no invented gameplay Max.",
+      "needed": "Edited in-game load/re-save; exact executable build provenance, independent additional regional fixtures, Power Up Kit profiles, officer attribute serialization, relationships/equipment and other dependencies."
     }
   ],
   "scope": "Windows application with explicitly selected game/platform parsers and separate backup identities.",

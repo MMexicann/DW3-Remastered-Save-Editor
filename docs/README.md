@@ -82,6 +82,9 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Monster Rancher 1 & 2 DX Windows qualification](MONSTER_RANCHER_DX_RESEARCH.md)
 - [Atelier and other Gust follow-up](ATELIER_NEXT_RESEARCH.md)
 
+- [Romance of the Three Kingdoms XIII original PC format](ROTK13_FORMAT.md)
+- [Strategy-game candidates and remaining inputs](STRATEGY_EXPANSION.md)
+
 ## Mechanics and source research
 
 - [Game mechanics and stored/derived distinctions](GAME_MECHANICS.md)

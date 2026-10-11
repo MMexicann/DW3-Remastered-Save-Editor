@@ -97,6 +97,16 @@ neither that permission nor a tested native save mapping.
 | Ken's Rage, US/EU PS3 | Positive existing eight base-fighter skill-point balances; anomalous/empty records inspected. | Decrypted `BLUS30504-00`/`BLES01062-00` `DATA.BIN` plus `PARAM.SFO`; native serializer/integrity proof, edited console load, ownership and one skill purchase/Meridian Chart, equip, growth or mission/reward pair. DLC/other platforms require separate profiles. [Evidence](LICENSED_MUSOU.md) |
 | Gundam 2 / 3 / Reborn | Unregistered PS3 patch leads; no native profile. | Complete decrypted regional `DATA.BIN` with build/revision provenance, identity/length/full integrity and controlled resource/growth/parts-or-plan/equipment/friendship/reward pairs. PS2/Xbox 360/Vita filenames and layouts need separate proof. [Per-title details](LICENSED_MUSOU.md) |
 
+## Strategy-game profiles
+
+Original PC XIII revision-14 city quantities are implemented. Additional regions,
+exact executable build/DLC provenance, officer serialization and dependencies,
+and edited game load/re-save remain unqualified. XIV requires a verified `LWC`
+decoder/encoder plus integrity and record mappings. Sphere of Influence and
+Taishi require accessible complete native campaigns and edition-specific disk
+codec/field evidence. See [the candidate review](STRATEGY_EXPANSION.md) for exact
+download, format and mechanics blockers; system/unlock files do not fill those gaps.
+
 ## Other researched PC formats
 
 The [licensed action RPG status](LICENSED_ACTION_RPG_STATUS.md) distinguishes

@@ -229,6 +229,7 @@ Optional copied real saves are selected locally:
 | `OROCHIZ_NATIVE_SAVE` | Native Orochi Z revision2 `save.dat` for unchanged/surgical field and GUI checks |
 | `DW8E_SAVE_FOLDER` | Reviewed native DW8 Empires system/campaign/quick copies for codec checks |
 | `KATANA_GOLDEN_DIR` | Locally reviewed upstream encrypted/decrypted reference-pair directory |
+| `ROTK13_SAVE_COPIES` | Private folder of reviewed original PC revision-14 TC XIII campaign `.s13` copies |
 | `DW3_TEST_REPORTED_SAVE` | Explicit DW3 regression copy used by `test_save_variants.py` |
 
 For example:

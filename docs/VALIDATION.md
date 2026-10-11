@@ -724,3 +724,44 @@ backup/restore workflow or edited game load. No native Fate file was acquired,
 so no Fate file test ran. No target-specific adapter, malformed-input test or
 GUI editing workflow could be qualified. No edited save was loaded/re-saved
 in any of these three games and no native Windows EXE build was validated.
+
+## Strategy expansion: original PC XIII
+
+Linux Python 3.12.14/Tk 9 under Xvfb completed **971 tests in 199.283 seconds:
+673 passed, 298 skipped, zero failures or errors**. `ROTK13_SAVE_COPIES` supplied
+all seven privately held genuine original-PC revision-14 TC campaign copies.
+The skips are existing private-fixture and Windows-specific cases; no skipped
+case is counted as passed. The unchanged base had 958 tests: 660 passed and 298
+skipped. All thirteen added format/contract/GUI cases pass without skips.
+
+Native tests establish seven byte-exact unchanged roundtrips, **84 targeted edits**
+(each of twelve quantities on each save), preview checksum/header preservation,
+field-only body changes, staging/unstaging and seven safe-save/backup/restore
+workflows with unchanged source hashes. Procedural checks cover identity,
+revision/section rejection, a frozen generator vector, unsigned 16-/32-bit
+boundaries, unusual higher values, separate population components, unknown
+district references, forged snapshots, changed sources, immutable destinations,
+foreign backups and live-directory/resolved-alias rejection.
+
+Actual Tk tests pass on both a genuine and a procedural campaign, covering search,
+manual edits, disabled bulk Max, Undo, Review Changes, inspection, retained edits
+across game/theme switching, Save As, backup restore and foreign-input rejection.
+Two existing selector checks initially rejected the new card's word
+"development"; naming commerce, farming and culture explicitly fixed the wording
+without weakening those tests, and the complete suite was repeated successfully.
+
+The genuine copied-save CLI self-test also passes: **720 fields checked, zero
+changed**, input preserved, byte-exact no-op roundtrip and backup restoration.
+No natural Max is established, so targeted manual edits are tested separately.
+Its checksum result describes native preview integrity, not a campaign-body
+checksum. All **23 registered interfaces** initialize in the startup smoke test.
+Generated inventories match; packaging verifies **339 reviewed public files**
+and includes all **120 required runtime files**. Windows build configuration
+includes the qualified XIII backend/editor; no new runtime dependency is added.
+
+**No edited save was loaded or re-saved in a game.** No native Windows EXE build
+or Windows CNG run was performed. Exact executable build/DLC provenance,
+additional regions, PK/console profiles and officer/relationship/equipment
+dependencies remain unqualified. The [format evidence](ROTK13_FORMAT.md) and
+[candidate review](STRATEGY_EXPANSION.md) record these and the XIV/Nobunaga blockers.
+This development branch changes no version, tag or release.

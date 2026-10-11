@@ -72,6 +72,8 @@ Ninja Gaiden 2 Black use different formats.
 | DYNASTY WARRIORS: GUNDAM — US/EU · decrypted DATA.BIN + PARAM.SFO | PlayStation 3 | Learn native skill flags on six qualified level-30 pilots; inspect EXP, levels and equipment. |
 | FIST OF THE NORTH STAR: KEN'S RAGE — US/EU · decrypted DATA.BIN + PARAM.SFO | PlayStation 3 | Manual existing skill-point balances for eight base fighters; inspect progression resources. |
 | FIST OF THE NORTH STAR: KEN'S RAGE 2 — EU · decrypted DATA.BIN + PARAM.SFO | PlayStation 3 | Unlock locked music, movie and event gallery entries; preserve existing collection states. |
+
+| ROMANCE OF THE THREE KINGDOMS XIII — Original PC · revision 14 · TC | Windows PC | City gold, supplies, population, wounded troops, fealty, commerce, farming, culture and troop proficiencies. |
 <!-- END SUPPORTED GAMES -->
 
 ## Download and use
