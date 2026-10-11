@@ -40,6 +40,21 @@ all passed**. Manifest/privacy verification passed for **414 reviewed public
 source files** (plus the manifest itself); the Windows build configuration was
 inspected without producing or executing a Windows EXE.
 
+The publication-disabled [Windows workflow](https://github.com/MMexicann/Universal-Koei-Tecmo-Save-Editor/actions/runs/38096642271)
+then tested implementation commit `bea25520e408b2676a551e9424b42014fb1e41f7`
+on Windows/Python 3.14: **1,163 tests in 404.467 seconds, 822 passed, 341 skipped,
+zero failures/errors**. The twelve new procedural cases ran; the three optional
+genuine-copy cases skipped because private saves were not uploaded to CI.
+The locally completed genuine-file tests above remain separate evidence.
+
+All **29 source interfaces**, themes and switching passed GUI startup. The
+standalone Windows EXE built and passed frozen GUI startup, embedded metadata/
+module privacy verification and local archive packaging. The workflow uploaded
+validation artifacts only; `publish=false`, and both `prepare_release` and
+`release` jobs were **skipped**. No merge, version bump, tag or GitHub release
+occurred. The follow-up commit records these results and refreshes only the
+documentation manifest hashes; runtime code/data remain the tested bytes.
+
 No title-specific surgical edit, dependency/backup/Undo/Review Changes/save GUI
 workflow is claimed because no writable Berserk/AoT adapter exists. Linux tests
 do not validate Windows CNG, a Windows EXE or actual edited game loading. No
