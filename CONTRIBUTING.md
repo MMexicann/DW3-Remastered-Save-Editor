@@ -78,6 +78,13 @@ be excluded from bulk Max, such as historical counters or dependency-sensitive
 choices. The backend's `limit_values` and `maximums` must honor that metadata,
 preserve higher existing values and use validated original records to select fields.
 
+When native title identity requires a companion file, qualify that context on
+file reads and safe saves. The optional backend hook
+`prepare_self_test_copy(document, destination)` can create only the minimal
+identity companion required for the copied-save CLI. Use bounded selective
+metadata parsing and atomic new-file storage; never copy account or signing
+fields into that generated context. In-memory `decode` remains a profile parser.
+
 Optional backend `record_label`, `field_hint` and `inspection_rows` hooks supply
 data for the standard inspector. Richer read-only views subclass
 `ScalarPresentation` in [scalar_presentation.py](src/koei_editor/shared/scalar_presentation.py), returning

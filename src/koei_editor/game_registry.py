@@ -207,6 +207,21 @@ GAMES = (
          '', '.dat', '#92353b', 'koei_editor.games.ninja_gaiden_ii.editor', 'koei_editor.games.ninja_gaiden_ii.parser',
          True, 'NG II', True, 'Xbox 360 / Xenia', scalar_backend='koei_editor.games.ninja_gaiden_ii.parser'),
 
+    Game('gundam1_ps3', 'DYNASTY WARRIORS: GUNDAM', 'US/EU · decrypted DATA.BIN + PARAM.SFO',
+         'Learn native skill flags on six qualified level-30 pilots; inspect EXP, levels and equipment.',
+         '', '.bin', '#475f8d', 'koei_editor.games.gundam1_ps3.editor', 'koei_editor.games.gundam1_ps3.parser',
+         True, 'GUNDAM', True, 'PlayStation 3', scalar_backend='koei_editor.games.gundam1_ps3.parser'),
+
+    Game('kens_rage1_ps3', "FIST OF THE NORTH STAR: KEN'S RAGE", 'US/EU · decrypted DATA.BIN + PARAM.SFO',
+         'Manual existing skill-point balances for eight base fighters; inspect progression resources.',
+         '', '.bin', '#91613d', 'koei_editor.games.kens_rage1_ps3.editor', 'koei_editor.games.kens_rage1_ps3.parser',
+         False, 'KR1', True, 'PlayStation 3', scalar_backend='koei_editor.games.kens_rage1_ps3.parser'),
+
+    Game('kens_rage2_ps3', "FIST OF THE NORTH STAR: KEN'S RAGE 2", 'EU · decrypted DATA.BIN + PARAM.SFO',
+         'Unlock locked music, movie and event gallery entries; preserve existing collection states.',
+         '', '.bin', '#91613d', 'koei_editor.games.kens_rage2_ps3.editor', 'koei_editor.games.kens_rage2_ps3.parser',
+         False, 'KR2', True, 'PlayStation 3', scalar_backend='koei_editor.games.kens_rage2_ps3.parser'),
+
 )
 
 # Opaque research tools stay outside the gameplay library.

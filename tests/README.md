@@ -108,3 +108,10 @@ inputs outside live save folders:
 
 The Arland checks qualify layout and byte preservation, not integrity or writable
 support. Procedural checks do not establish genuine-file or actual game loading.
+
+Licensed Musou tests in `test_gundam1_ps3*`, `test_kens_rage1_ps3*` and `test_kens_rage2_ps3*` cover
+qualified decrypted PS3 profiles, identity-only companions, native integrity,
+manual dependency guards and copied GUI workflows. Genuine fixture paths are
+selected explicitly; see [format and evidence notes](../docs/LICENSED_MUSOU.md).
+The genuine Ken's Rage 2 samples have completed galleries: unchanged preservation
+is genuine evidence; unlock edits currently use procedural locked entries.

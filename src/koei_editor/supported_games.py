@@ -48,6 +48,9 @@ from .game_registry import GAMES
 # wo3u_ps3: WARRIORS OROCHI 3 ULTIMATE / US · decrypted APP.BIN · NPUB31505 [PlayStation 3]
 # nioh3: NIOH 3 / Windows PC · USER revisions 0x01030001 / 0x01040000 [Windows PC]
 # ninjagaiden2_x360: NINJA GAIDEN II / Original Xbox 360 / Xenia · extracted revision-6 story [Xbox 360 / Xenia]
+# gundam1_ps3: DYNASTY WARRIORS: GUNDAM / US/EU · decrypted DATA.BIN + PARAM.SFO [PlayStation 3]
+# kens_rage1_ps3: FIST OF THE NORTH STAR: KEN'S RAGE / US/EU · decrypted DATA.BIN + PARAM.SFO [PlayStation 3]
+# kens_rage2_ps3: FIST OF THE NORTH STAR: KEN'S RAGE 2 / EU · decrypted DATA.BIN + PARAM.SFO [PlayStation 3]
 # END GENERATED SUPPORTED GAME INDEX
 
 

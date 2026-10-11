@@ -17,6 +17,12 @@ console keys and account data are not redistributed. The new cipher and editor
 code was independently written from factual format observations. See
 `KOEI_FORMATS.md` for inspected commits, sample fingerprints and limits.
 
+The Gundam and Ken's Rage PS3 adapters independently implement factual patch
+positions, native integrity and observed layout rules. Apollo GPL patch/library
+source and external player samples are research references only; no implementation,
+catalog, save, console/account metadata or game asset is redistributed. See
+[licensed Musou evidence](LICENSED_MUSOU.md).
+
 Additional mechanics research references `gamesaves/OPPW3`, published native PC
 instruction/structure annotations from `Hexorg/CheatEngineTables`, PC runtime
 research by `Glubus/oppw4-sdk` and `Glubus/oppw4-data`, and tutorial translation

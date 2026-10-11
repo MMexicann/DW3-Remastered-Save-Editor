@@ -43,4 +43,8 @@ Generated from `koei_editor.game_registry.GAMES`. Run `python -m tools.update_su
 | NIOH 3 — Windows PC · USER revisions 0x01030001 / 0x01040000 | Windows PC | Amrita and Gold deductions, existing common-item quantity reductions; separate equipment level, pre-forge and reinforcement inspection. |
 | NINJA GAIDEN II — Original Xbox 360 / Xenia · extracted revision-6 story | Xbox 360 / Xenia | Yellow Essence, existing consumable and ammunition reductions; searchable inventory and separate Karma inspection. |
 
+| DYNASTY WARRIORS: GUNDAM — US/EU · decrypted DATA.BIN + PARAM.SFO | PlayStation 3 | Learn native skill flags on six qualified level-30 pilots; inspect EXP, levels and equipment. |
+| FIST OF THE NORTH STAR: KEN'S RAGE — US/EU · decrypted DATA.BIN + PARAM.SFO | PlayStation 3 | Manual existing skill-point balances for eight base fighters; inspect progression resources. |
+| FIST OF THE NORTH STAR: KEN'S RAGE 2 — EU · decrypted DATA.BIN + PARAM.SFO | PlayStation 3 | Unlock locked music, movie and event gallery entries; preserve existing collection states. |
+
 Scope is specific to each edition and supported save revision. File-level qualification and actual game loading are separate; see [coverage and blockers](EXPANSION_COVERAGE.md) and [validation](VALIDATION.md). Research-only codecs are excluded.

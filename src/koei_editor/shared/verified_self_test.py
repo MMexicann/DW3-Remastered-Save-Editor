@@ -29,6 +29,12 @@ def _run(backend, game_id, source, output):
         prepare_context(original, output)
     extension = original.source.suffix
     working_path = atomic_new(original.raw, output / ('input-copy' + extension))
+    # Some console gameplay profiles require an identity companion. Backends
+    # prepare only the context they independently need; account/signing data
+    # remains outside this generic copied-save workflow.
+    prepare_copy = getattr(backend.backend, 'prepare_self_test_copy', None)
+    if prepare_copy is not None:
+        prepare_copy(original, working_path)
     working = backend.read_save(working_path, game_id)
     snapshot = backend.backup(working)
     changes = backend.maximums(working, {})

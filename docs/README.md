@@ -73,6 +73,8 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Dragon Quest Heroes II, Berserk and Attack on Titan PC follow-up](OTHER_KOEI_PC_RESEARCH.md)
 - [Additional editor survey](ADDITIONAL_EDITOR_SURVEY.md)
 - [Bladestorm: Nightmare PC candidate and evidence gate](BLADESTORM_PC_RESEARCH.md)
+
+- [Licensed Musou: Gundam and Ken's Rage](LICENSED_MUSOU.md)
 - [Atelier and other Gust follow-up](ATELIER_NEXT_RESEARCH.md)
 
 ## Mechanics and source research
