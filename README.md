@@ -77,6 +77,8 @@ Ninja Gaiden 2 Black use different formats.
 | FIST OF THE NORTH STAR: KEN'S RAGE 2 — EU · decrypted DATA.BIN + PARAM.SFO | PlayStation 3 | Unlock locked music, movie and event gallery entries; preserve existing collection states. |
 
 | ROMANCE OF THE THREE KINGDOMS XIII — Original PC · revision 14 · TC | Windows PC | City gold, supplies, population, wounded troops, fealty, commerce, farming, culture and troop proficiencies. |
+
+| FIRE EMBLEM: THREE HOUSES — Switch · gameplay save-format v13/v23 | Nintendo Switch | Gold and twelve ordinary weapon types’ existing convoy quantity/durability reductions; separate mechanics inspection. |
 <!-- END SUPPORTED GAMES -->
 
 ## Download and use

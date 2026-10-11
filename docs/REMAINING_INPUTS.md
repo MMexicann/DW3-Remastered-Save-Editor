@@ -120,6 +120,8 @@ Taishi require accessible complete native campaigns and edition-specific disk
 codec/field evidence. See [the candidate review](STRATEGY_EXPANSION.md) for exact
 download, format and mechanics blockers; system/unlock files do not fill those gaps.
 
+| Fire Emblem: Three Houses, Switch | Exact gameplay serialization v13/v23; gold and existing convoy quantity/equipment durability reductions; distinct read-only mechanics. | Clean extracted main-campaign copies with exact game revision/region/DLC provenance; controlled level/stat-booster/certification, rank/talent/mastery/reward, repair/trade/equip, battalion hire/assignment/endurance and support-conversation pairs plus unchanged controls. v12, padded exports, system/suspend and Cindered Shadows side-story framing need separate qualification. Edited Switch game load/re-save is untested. [Details](THREE_HOUSES_FORMAT.md). |
+
 ## Other researched PC formats
 
 The [licensed action RPG status](LICENSED_ACTION_RPG_STATUS.md) distinguishes

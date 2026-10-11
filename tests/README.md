@@ -142,3 +142,13 @@ check malformed changes, unusual-value preservation, dependencies, retained
 GUI sessions and live-path protection. See the separate
 [SW2](../docs/SW2_PC_FORMAT.md) and [Orochi](../docs/WO1_PC_FORMAT.md) evidence;
 generated fixtures and file-level tests do not establish edited game loading.
+
+`test_three_houses.py` and `test_three_houses_audit.py` distinguish procedural
+gameplay save-format v13/v23 fixtures from optional private extracted slots.
+`THREE_HOUSES_SAVE_COPY` selects a reviewed copied slot;
+`THREE_HOUSES_REVIEW_COPIES` selects multiple copied slots separated by the
+local `os.pathsep`. Tests cover checksum/shape rejection, original-record
+eligibility, ordinary-item restrictions, unlimited-durability protection,
+unusual values, immutable staged changes, surgical edits, guarded backups and
+restore. Live Tk workflows skip when no existing display is available. These
+checks do not establish exact software build, DLC entitlement or Switch loading.

@@ -93,3 +93,11 @@ independent native checksum qualification. Its title-specific records and qualit
 writer are independently authored. Original Sophie and the read-only Arland
 inspectors derive format facts from public references and genuine native copies;
 no external editor implementation, restricted catalog or player data is bundled.
+
+The Three Houses Nintendo Switch adapter is independently written from factual
+serialization and a small ordinary-equipment identity set, checked against
+privately retained public extracted-save candidates. Evidence is pinned in
+[THREE_HOUSES_FORMAT.md](THREE_HOUSES_FORMAT.md). The original imouto1994 editor
+has no licence; hashcade's MIT additions explicitly exclude unlicensed upstream
+code and assets. Neither implementation nor bulk catalog is reused. No editor
+binary, game asset, player data or third-party website prose is bundled.

@@ -175,6 +175,25 @@ for the complete feature table and [the supplier checklist](REMAINING_INPUTS.md)
 for further input needs. Their controls do not imply another platform, ownership
 creation, automatic story completion or unqualified natural-cap bulk actions.
 
+## Fire Emblem: Three Houses — separate Switch adapter
+
+[Exact gameplay v13/v23 profiles](THREE_HOUSES_FORMAT.md) use independently
+implemented native byte-sum integrity, original inventory/count qualification
+and source-backed base-owner eligibility. Gold, twelve specifically identified
+ordinary-equipment convoy quantities and finite durability have decrease-only
+controls, all excluded from Max. Unknown/quest/relic/accessory/consumable/material
+items, unknown/DLC owners and entitlement stay read-only. Eight public extracted
+candidates have file validation; no clean exact-build/DLC-labelled control or
+edited Switch game-load/re-save was available.
+
+Read-only inspection distinguishes character EXP/stats, eleven proficiency
+rank/EXP pairs and mirrors, class mastery/certification, ability/art ownership
+and equips, barracks/equipped battalion copies and anonymous support-point
+records. The [mechanics checklist](THREE_HOUSES_MECHANICS.md) lists prerequisite
+and controlled-action inputs for each system, with main campaign, free revisions
+and Cindered Shadows/Expansion Pass scope separately qualified. This title does
+not use the Fire Emblem Warriors or Three Hopes parser.
+
 ## Validation boundaries and follow-up inputs
 
 Regional/Special candidates remain separate from the supported inventory.

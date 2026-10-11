@@ -234,6 +234,11 @@ GAMES = (
          'City gold, supplies, population, wounded troops, fealty, commerce, farming, culture and troop proficiencies.',
          '', '.s13', '#806126', 'koei_editor.games.rotk13.editor', 'koei_editor.games.rotk13.parser',
          True, 'XIII', True, scalar_backend='koei_editor.games.rotk13.parser'),
+    Game('three_houses', 'FIRE EMBLEM: THREE HOUSES', 'Switch · gameplay save-format v13/v23',
+         'Gold and twelve ordinary weapon types’ existing convoy quantity/durability reductions; separate mechanics inspection.',
+         '', '', '#657b43', 'koei_editor.games.three_houses.editor', 'koei_editor.games.three_houses.parser',
+         True, 'THREE HOUSES', True, 'Nintendo Switch', scalar_backend='koei_editor.games.three_houses.parser'),
+
 )
 
 # Opaque research tools stay outside the gameplay library.

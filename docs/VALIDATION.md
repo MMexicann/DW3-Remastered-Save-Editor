@@ -925,3 +925,70 @@ guard/mount and story/reward pairs are listed separately in
 [SW2](SW2_PC_FORMAT.md) and [Warriors Orochi](WO1_PC_FORMAT.md). Linux file,
 application and packaging tests do not establish those missing validations.
 Version 1.6 is unchanged; no merge, tag or release is part of this work.
+
+## Three Houses development branch — 2026-10-11
+
+The separately registered Nintendo Switch Three Houses adapter accepts exact
+main-campaign gameplay serialization v13 and v23 profiles. It is separate from
+Warriors and Three Hopes. Public extracted candidates establish framing and
+native payload-byte integrity, not authenticated title/region/build/DLC or clean
+unmodified gameplay controls. Exact prerequisites and missing inputs are in
+[THREE_HOUSES_FORMAT.md](THREE_HOUSES_FORMAT.md) and
+[THREE_HOUSES_MECHANICS.md](THREE_HOUSES_MECHANICS.md).
+
+Final focused `tests.test_three_houses` + `tests.test_three_houses_audit` results:
+**29 run, 28 passed, 1 skipped** with the optional private copied-file variables
+configured. The single skip is the real Tk workflow because no existing display
+was available. Without private inputs: **29 run, 26 passed, 3 skipped**. Two
+headless shared-GUI callback tests pass Apply Selected/atomic batch validation,
+Review Changes, Undo, new-destination Save As, source preservation and backup /
+restore. This exercises callbacks and native storage, not rendered Tk controls.
+
+Eight exact-length public extracted candidates (four v13, four v23) pass
+byte-exact unchanged roundtrips, native checksum validation, all **82 exposed
+field checks** and original-source preservation. Of those, **74 deliberately
+changed fields** have surgical byte differences confined to the declared scalar
+and checksum bytes 0–3; the remaining eight controls are already at their minimum
+and are verified no-ops. Ordinary equipment identities, unknown records,
+original flags, DLC owners, progression/mirrors and all other bytes survive.
+Eight shared copied-save self-tests additionally pass input preservation,
+native integrity, byte-exact roundtrip, backups and restores. Their automated
+bulk-Max edit count is **0**, because every field is excluded from Max; the
+independent explicit decrease tests provide edit evidence.
+
+Adversarial checks cover bad checksum, truncation/trailer, wrong native profile,
+foreign selected adapter, count/NPC structure mismatches, malformed staged
+batches, unknown/duplicate/unjoined/dead/DLC owners, unknown item IDs, unusual
+high values and prohibited unlimited-durability grants. Restores validate native
+integrity even when an attacker adjusts the backup manifest hash. Changed
+sources, resolved aliases and existing destinations cannot be overwritten.
+
+`python -m koei_editor --smoke-test` was attempted and returned exit 1 at Tk root
+creation: `TclError: no display name and no $DISPLAY environment variable`.
+Live GUI validation remains blocked. A downloaded distribution Xvfb runtime was
+briefly started during setup, contrary to the assignment's no-downloaded-binary
+constraint; it and that preliminary test run were stopped. Those results are not
+used as validation evidence. Subsequent checks use the existing Python/runtime
+packages and source code, without that display runtime. No downloaded save-editor
+or game executable was run.
+
+No edited save has been imported, loaded or re-saved on Nintendo Switch. No
+Windows EXE was built. This branch does not bump versions, tag, merge or release;
+the application/package version and latest-release links remain v1.6.
+
+The final full public regression run completed **1,177 tests: 760 passed,
+417 skipped, zero failures/errors** in 205.501 seconds. Skips report unavailable
+private fixtures/inputs, displays or native Windows prerequisites; they are not
+claimed as passes. Five previously unguarded Tk-only appearance/weapon-label
+tests now use the same no-display skip policy as other GUI tests, preserving
+their display-enabled behavior. The final integration group (adapter/audit,
+inventory, package/privacy, adapter contract and new-game integration) with
+private Three Houses copies completed **75 tests: 73 passed, 2 display skips**.
+The preliminary catalog-schema mismatch and stale in-progress inventory were
+corrected before that final full run; catalog validation remains strict.
+
+`tools.update_supported_games --check` passes for all 30 registered source
+adapters. `tools.package_release --verify-only` verifies all **417 public source
+files** at unchanged v1.6, and `tools.build_windows --print-config` includes the
+qualified Three Houses editor/parser imports. No native Windows executable or
+release artifact is produced by these checks.
