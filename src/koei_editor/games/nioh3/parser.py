@@ -19,7 +19,7 @@ from koei_editor.shared.save_safety import safe_path
 
 GAME_ID = 'nioh3'
 SAVE_SIZE = codec.USER_SIZE
-INTEGRITY_KIND = 'native signed-qword body checksum'
+INTEGRITY_KIND = 'checksum'
 
 
 @dataclass(frozen=True)

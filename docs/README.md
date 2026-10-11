@@ -9,6 +9,7 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Architecture and package boundaries](ARCHITECTURE.md)
 - [Supported games and platforms](SUPPORTED_GAMES.md)
 - [Prepared unreleased update](PREPARED_UPDATE.md)
+- [Combined pull-request review](INTEGRATION_REVIEW.md)
 - [Windows build and packaging](BUILDING.md)
 - [Validation and evidence boundaries](VALIDATION.md)
 - [Current release notes](RELEASE_NOTES.md), [v1.5 release notes](releases/v1.5.md)

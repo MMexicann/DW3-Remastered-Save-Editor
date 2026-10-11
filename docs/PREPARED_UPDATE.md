@@ -1,33 +1,37 @@
 # Prepared update — unreleased
 
-This branch prepares the next update without a version bump, tag, release,
-main-branch merge or public executable upload. The latest published download
-remains **v1.6**. The registry-derived [supported inventory](SUPPORTED_GAMES.md)
-reflects the development source. Build artifacts from pull-request checks are
-validation artifacts, not a new GitHub release.
+The combined development source prepares the next update without a version
+bump, tag or GitHub release. The latest published download remains **v1.6**.
+The registry-derived [supported inventory](SUPPORTED_GAMES.md) reflects source
+support. A Windows preview build is provided as a workflow artifact after the
+combined checks; it does not replace the published release.
 
 ## Added game/platform profiles
 
-| Game | Platform | Implemented controls |
+| Game / edition | Platform | Implemented controls |
 | --- | --- | --- |
-| Samurai Warriors 4-II | Windows PC, revision `0x31A4` | Manual current gold, five held strategy-tome resources, five stored base stats on qualified existing standard officers, existing own-pool weapon selection and attached attribute magnitudes, and occupied-mount combat stats. Exact native checksum spans are qualified. Growth, skill trees, acquisition and story/reward transitions remain separate. |
-
-| Samurai Warriors 2, original 2008 edition | Windows PC, save revision 2 | Money, eight stored growth stats for owned officers, acquired ordinary skill ranks and existing weapon bonus amounts; separate officer/weapon/guard inspection. |
-| Warriors Orochi, original 2008 edition | Windows PC, save revision 2 | Shared Growth Points, existing weapon attack bonuses, attribute capacity and acquired named effect ranks; separate officer growth and existing weapon inspection. |
-| Dynasty Warriors 5 Special / Shin Sangokumusou 4 Special | Windows PC | Existing ordinary item ranks; existing own-family stored weapon attack adjustment, named weight choices and existing attribute ranks; searchable named officers, weapons, items, bodyguards and separate Shura resources. |
-| Dynasty Warriors 8 Empires | Windows PC | Existing custom-horse body type; searchable appearance, stats and ability records in SystemSave.dat. Campaign files remain separate. |
-| Hyrule Warriors Legends | Nintendo 3DS | Rupees, existing named materials and base-map cards, generic weapon stars, ordinary seal KO reductions and existing ASCII My Fairy names; named character/food/fairy inspection. |
-| Persona 5 Strikers | Windows PC | Occupied-slot money, Persona points, unspent BOND points and existing named ordinary consumable/cooking quantities; character-level and held-Persona inspection. |
-| Wo Long: Fallen Dynasty | Windows PC | Available Genuine Qi, copper, accolades, existing ordinary stack reductions and searchable inventory/equipment/companions/progression. |
-| Fire Emblem Warriors: Three Hopes | Nintendo Switch | Existing gold reductions and owned Shez/Byleth name customization with synchronized mirrors; named character and weapon inspection. |
-| Fire Emblem: Three Houses | Nintendo Switch, exact gameplay save-format v13/v23 | Gold reductions, existing convoy quantity reductions and qualified existing equipment durability reductions; read-only inspection keeps progression, proficiency, mastery, abilities, combat arts, battalions and support points distinct. Exact software patch and DLC entitlement are separately unqualified. |
-| Atelier Ayesha: The Alchemist of Dusk | PlayStation 3, US/Japanese decrypted exports | Cole and existing ordinary stack reductions; searchable inventory with float qualities, potentials/effects and distinct memory values. Apollo handles reimport/resigning. |
-| Atelier Sophie: The Alchemist of the Mysterious Book | Original Steam PC | Cole, Tess exchange tickets and existing integral basket/container quality; numeric inventory and alchemy level/EXP inspection. DX is a separate unqualified format. |
-| Atelier Ryza 2: Lost Legends & the Secret Fairy | Original Steam PC | Existing ordinary inventory/equipment quality 1–100 with native checksum preservation. Higher skill caps are not mapped; Max is disabled. |
-| Fatal Frame II: Crimson Butterfly Remake | Steam PC | Shared system Photo Point reductions; gameplay inventory, camera and collection inspection. Native checksums, lexical JSON and binary photos are preserved. |
-
-| Nioh 3 | Windows PC, USER revisions 0x01030001 / 0x01040000 | Existing known common-item quantity reductions in native tagged pools; equipment current level, pre-forge level and reinforcement inspection. |
-| Ninja Gaiden II | Original Xbox 360 / Xenia, extracted revision-6 story | Manual Yellow Essence and existing unique ordinary consumable/ammunition reductions; searchable inventory and separate Karma inspection. CON/STFS signing remains external. |
+| Atelier Sophie — Original Steam PC · GAMEDATA slots | Windows PC | Cole, Tess tickets and existing basket/container quality; searchable inventory and alchemy progression. |
+| Atelier Ryza 2 — Lost Legends & the Secret Fairy · original Steam PC | Windows PC | Existing ordinary item and equipment quality from 1–100; searchable inventory and equipment. |
+| Fatal Frame Ii — Crimson Butterfly REMAKE · Steam PC | Windows PC | Shared system Photo Point reductions; per-slot inventory, camera and collection inspection. |
+| Warriors Orochi — Original Windows PC · save revision 2 | Windows PC | Growth Points and existing weapon attack bonuses, attribute capacity and owned effect ranks. |
+| Samurai Warriors 4-Ii — Windows PC edition | Windows PC | Gold, tomes, officer stats, existing weapons and mount stats. |
+| Samurai Warriors 2 — Original Windows PC · save revision 2 | Windows PC | Money, stored officer growth, acquired ordinary skill ranks and existing weapon bonuses. |
+| Dynasty Warriors 8 Empires — Windows PC · SystemSave.dat | Windows PC | Existing custom-horse body type; searchable appearance, stats and ability records. |
+| Wo Long: Fallen Dynasty — Windows PC · USERDATA | Windows PC | Genuine Qi, copper, accolades, existing ordinary stack reductions and searchable equipment. |
+| Persona 5 Strikers — Windows PC · SAVEDATA.BIN | Windows PC | Money, Persona points, unspent BOND points and existing named consumable/cooking quantities. |
+| Hyrule Warriors Legends — Nintendo 3DS · zmha.bin | Nintendo 3DS | Rupees, materials, existing map cards, weapon stars, ordinary seal counters and My Fairy names. |
+| Atelier Ayesha — The Alchemist of Dusk · PS3 US/Japanese export | PlayStation 3 | Cole, existing stack reductions and searchable inventory quality, properties and effects. |
+| Dynasty Warriors 5 Special — Shin Sangokumusou 4 Special · Windows PC | Windows PC | Existing ordinary item ranks, weapon attack/weight and attributes; named officer/bodyguard inspection. |
+| Fire Emblem Warriors: Three Hopes — Switch · extracted SlotData exports | Nintendo Switch | Gold reductions, owned Shez/Byleth name customization and searchable character/weapon records. |
+| Dynasty Warriors 8 Empires — US · decrypted SYSTEM APP.BIN | PlayStation 3 | Existing custom-horse Body Type; searchable appearance, stats and ability records. |
+| Warriors Orochi 3 Ultimate — US · decrypted APP.BIN · NPUB31505 | PlayStation 3 | Manual unallocated growth points and gems; searchable officer, weapon and inventory inspection. |
+| Nioh 3 — Windows PC · USER revisions 0x01030001 / 0x01040000 | Windows PC | Amrita and Gold deductions, existing common-item quantity reductions; separate equipment level, pre-forge and reinforcement inspection. |
+| Ninja Gaiden Ii — Original Xbox 360 / Xenia · extracted revision-6 story | Xbox 360 / Xenia | Yellow Essence, existing consumable and ammunition reductions; searchable inventory and separate Karma inspection. |
+| Dynasty Warriors: Gundam — US/EU · decrypted DATA.BIN + PARAM.SFO | PlayStation 3 | Learn native skill flags on six qualified level-30 pilots; inspect EXP, levels and equipment. |
+| Fist Of The North Star: Ken'S Rage — US/EU · decrypted DATA.BIN + PARAM.SFO | PlayStation 3 | Manual existing skill-point balances for eight base fighters; inspect progression resources. |
+| Fist Of The North Star: Ken'S Rage 2 — EU · decrypted DATA.BIN + PARAM.SFO | PlayStation 3 | Unlock locked music, movie and event gallery entries; preserve existing collection states. |
+| Romance Of The Three Kingdoms Xiii — Original PC · revision 14 · TC | Windows PC | City gold, supplies, population, wounded troops, fealty, commerce, farming, culture and troop proficiencies. |
+| Fire Emblem: Three Houses — Switch · gameplay save-format v13/v23 | Nintendo Switch | Gold and twelve ordinary weapon types’ existing convoy quantity/durability reductions; separate mechanics inspection. |
 
 Each has its own parser and explicit identity/revision gates. Resource ceilings
 without natural-cap proof are manual editing limits and are excluded from Max.

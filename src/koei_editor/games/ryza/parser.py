@@ -251,8 +251,9 @@ def decode(raw, game_id=GAME_ID, source=Path('copy.dat')):
 
 
 def validate_document(document):
-    if (type(document) is not Document or not isinstance(document.format, Format)
-            or document.format != get_format(document.format.id) or type(document.seed) is not int):
+    if (type(document) is not Document or type(document.format) is not Format
+            or type(document.format.id) is not str
+            or document.format is not get_format(document.format.id) or type(document.seed) is not int):
         raise SaveError('Unregistered Ryza snapshot.')
     original = decode(document.raw, document.format.id, document.source)
     if document != original or any(type(getattr(document, key)) is not bytes
@@ -308,6 +309,8 @@ def fields_for(document):
 
 def stage(document, changes, key, value):
     changed_payload(document, changes)
+    if type(key) is not str:
+        raise SaveError('Unmapped Ryza field, empty record or important item.')
     field = field_map(document).get(key)
     if field is None:
         raise SaveError('Unmapped Ryza field, empty record or important item.')
@@ -326,7 +329,7 @@ def changed_payload(document, changes):
         raise SaveError('Ryza staged changes must be a field/value mapping.')
     output = bytearray(document.payload)
     for key, value in changes.items():
-        if key not in fields:
+        if type(key) is not str or key not in fields:
             raise SaveError('Unmapped Ryza field, empty record or important item.')
         field = fields[key]
         if type(value) is int and value == field.value(document.payload):
@@ -353,7 +356,7 @@ def limit_values(document, changes, keys):
     fields = field_map(document)
     result = {}
     for key in keys:
-        if key not in fields:
+        if type(key) is not str or key not in fields:
             raise SaveError('Unmapped Ryza field.')
         field = fields[key]
         current = changes.get(key, field.value(document.payload))
@@ -421,7 +424,7 @@ def item_records(document):
 
 
 def field_hint(document, key):
-    if key not in field_map(document):
+    if type(key) is not str or key not in field_map(document):
         raise SaveError('Unmapped Ryza field.')
     note = 'Existing item quality only; adjacent synthesis data, traits, effects, ownership and equipment remain intact.'
     if document.format.id != GAME_ID:

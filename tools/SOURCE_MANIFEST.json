@@ -33,8 +33,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 10531,
-      "sha256": "f72c9acfc4de40ca705981ef644bddd106a9728a4abc1392ceaa727988641865"
+      "bytes": 10112,
+      "sha256": "d4132ddddc16ecd25c6cd7b3e018e90332bd3099070f750386b230679b16bcd4"
     },
     {
       "path": "docs/ADDITIONAL_EDITOR_SURVEY.md",
@@ -227,6 +227,11 @@
       "sha256": "f412f99ba3fd2ca6ec244c7cb7c0d5294b0e6da84f278516c0465fb81afbb9f0"
     },
     {
+      "path": "docs/INTEGRATION_REVIEW.md",
+      "bytes": 4992,
+      "sha256": "6bdd5a2dc7fbf986f4737b433c473f439b39cc633376ffc80db4b4f4b0925bd7"
+    },
+    {
       "path": "docs/KOEI_FORMATS.md",
       "bytes": 13604,
       "sha256": "8336b23e289669d1175ef7be9d6906cedcda7ba43e2000882668a2334bf851e3"
@@ -238,8 +243,8 @@
     },
     {
       "path": "docs/LICENSED_MUSOU.md",
-      "bytes": 16302,
-      "sha256": "72695944aad6620306984d2d46aa10b3ffde8af70f7150cafa46a9e48f169904"
+      "bytes": 16492,
+      "sha256": "32f502b49eba707dba32660a2c1569bff60e53484bf0d63501c8d0c0d4399f91"
     },
     {
       "path": "docs/MONSTER_RANCHER_DX_RESEARCH.md",
@@ -298,8 +303,8 @@
     },
     {
       "path": "docs/PREPARED_UPDATE.md",
-      "bytes": 10687,
-      "sha256": "ac99dbb3132e70ab4439a81d12644b7ef2312a17eed78049702611cfb744e5eb"
+      "bytes": 10775,
+      "sha256": "0cc155969cbe8dc57708fb650d512e628aa7fc82b4862c569fd0b226d3e382e7"
     },
     {
       "path": "docs/PS3_EXPANSION.md",
@@ -318,8 +323,8 @@
     },
     {
       "path": "docs/README.md",
-      "bytes": 6264,
-      "sha256": "e8899ad1bf7740a7fc9d56797baa6ccde55dc33d72e64af091af772d4ebf14ec"
+      "bytes": 6320,
+      "sha256": "19ab9cb9a2a22e9e97cf4609dfc5ff96d83b26f04c10cbbc7c3f92cc695b92b5"
     },
     {
       "path": "docs/REGIONAL_EDITION_SCOPE.md",
@@ -403,8 +408,8 @@
     },
     {
       "path": "docs/SUPPORTED_GAMES.md",
-      "bytes": 7948,
-      "sha256": "5a0dd135f5d3b6df53e58ac560105717148ebd1b2479d5af52847e47396d4754"
+      "bytes": 7943,
+      "sha256": "c805b1bf045e9e42341a762625d226c9ee7216f70f150f945dc3a7da57c588d2"
     },
     {
       "path": "docs/SW2HD_PS3.md",
@@ -1039,7 +1044,7 @@
     {
       "path": "src/koei_editor/games/gundam1_ps3/parser.py",
       "bytes": 14709,
-      "sha256": "1ab22934f6eb1f85fc560a97931cf490ada9eacf8ce118d96319fc354c21efa0"
+      "sha256": "98185a6852ca2d7aa77f2cefacf87b6059166f8622c0b626c6d3b29408fcc7b0"
     },
     {
       "path": "src/koei_editor/games/hyrule_definitive/__init__.py",
@@ -1114,7 +1119,7 @@
     {
       "path": "src/koei_editor/games/kens_rage1_ps3/parser.py",
       "bytes": 12441,
-      "sha256": "786f5356df675d25750fb50d435fca803a27da5f0799ed4c3d4e1fc8f0864e77"
+      "sha256": "e69fdadbbbb41a1541803e855ec20dc6c5083953e8d059a9b84222425dee2f74"
     },
     {
       "path": "src/koei_editor/games/kens_rage2_ps3/__init__.py",
@@ -1129,7 +1134,7 @@
     {
       "path": "src/koei_editor/games/kens_rage2_ps3/parser.py",
       "bytes": 13676,
-      "sha256": "69cbff9111720671507359c6b0bd84b71a6d654ec28eea7381fd3b9585d754a9"
+      "sha256": "5e17d074b26cad40d7e7dd3a0d5e614dc9e34da64f995a476346bb92259f73ee"
     },
     {
       "path": "src/koei_editor/games/ninja_gaiden_ii/__init__.py",
@@ -2007,6 +2012,11 @@
       "sha256": "8aea46a98f76daeb10a06bc74f718e9e80dd10ce3372a44246283caffa120d80"
     },
     {
+      "path": "tests/test_console_context_regressions.py",
+      "bytes": 8842,
+      "sha256": "daf2d81884a1bf1492e0abfccf8fe42108c9463ef407210eef37ec5bcca18ac4"
+    },
+    {
       "path": "tests/test_console_expansion_registry.py",
       "bytes": 3264,
       "sha256": "4f6591df459b1329c8719f6aee73cb110bc78c5c25a209e7a89160e4afc3e285"
@@ -2197,6 +2207,11 @@
       "sha256": "eff12bac8254d730a6b9bec07bb3b9fbe500528296db1acdb5ba204ed0fd37b6"
     },
     {
+      "path": "tests/test_gust_input_regressions.py",
+      "bytes": 5751,
+      "sha256": "573e1b9fcd0a62e90e3ee8057b2104de9cf27ef71fa28418a33641a202164889"
+    },
+    {
       "path": "tests/test_gust_save_safety.py",
       "bytes": 2138,
       "sha256": "aa15bf8028ceb740ec86566cbc564dbb367af8229be7a6c1cf4143da8ab3402a"
@@ -2275,6 +2290,11 @@
       "path": "tests/test_library_search.py",
       "bytes": 3906,
       "sha256": "5bfbb87391a7417a3692d3b4141874743f0a2fe9a5a1a0b09c547d9b0462659d"
+    },
+    {
+      "path": "tests/test_licensed_musou_context_regressions.py",
+      "bytes": 7724,
+      "sha256": "a5137d095549f8576f0ba7b2f445606045c5d64cd0504d432a1c0cda7cfa0abb"
     },
     {
       "path": "tests/test_licensed_musou_integration.py",
@@ -2533,8 +2553,13 @@
     },
     {
       "path": "tests/test_rotk13_gui.py",
-      "bytes": 5836,
-      "sha256": "a5f00b8d3ece8457dd599e4620588b721f17c98794726faf3f3b7db332b47190"
+      "bytes": 5949,
+      "sha256": "ff8b1519f51843400500ed1d310479e5eb2f6a0cdca771021618983b29825a89"
+    },
+    {
+      "path": "tests/test_rotk13_input_regressions.py",
+      "bytes": 4360,
+      "sha256": "616e41a2330c9fa2d2745a78c1b238c68d72735a7ae7c107e66ea04f9d69eb11"
     },
     {
       "path": "tests/test_ryza_audit.py",
@@ -2700,6 +2725,11 @@
       "path": "tests/test_team_ninja_gui.py",
       "bytes": 7083,
       "sha256": "1dd25f1f4dced9363358095392ee55200af291ba52240c12b431847ea6e090fc"
+    },
+    {
+      "path": "tests/test_team_ninja_integrity_regressions.py",
+      "bytes": 4734,
+      "sha256": "ba4540a947fbd61f3234f9deb116586ad00dea45e277a1f2970fec7c3f6a00f0"
     },
     {
       "path": "tests/test_team_ninja_review.py",

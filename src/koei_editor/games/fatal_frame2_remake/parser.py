@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 import hashlib
 import json
+import math
 from pathlib import Path
 import re
 from types import MappingProxyType
@@ -90,6 +91,13 @@ def _pairs(pairs):
     return result
 
 
+def _finite_float(text):
+    value = float(text)
+    if not math.isfinite(value):
+        raise ValueError('Nonfinite JSON.')
+    return value
+
+
 @lru_cache(maxsize=2)
 def _json(body):
     # Native gameplay carries binary photo data after the terminator. Do not
@@ -99,7 +107,7 @@ def _json(body):
         raise SaveError('FF2 remake JSON terminator is missing or outside the reviewed processing bound.')
     encoded = body[16:end]
     try:
-        value = json.loads(encoded.decode('utf-8'), object_pairs_hook=_pairs,
+        value = json.loads(encoded.decode('utf-8'), object_pairs_hook=_pairs, parse_float=_finite_float,
                            parse_constant=lambda _: (_ for _ in ()).throw(ValueError('Nonfinite JSON.')))
     except (ValueError, UnicodeDecodeError, RecursionError) as error:
         raise SaveError('FF2 remake JSON is malformed or ambiguous.') from error
@@ -257,7 +265,7 @@ def changed_payload(document, changes):
         raise SaveError('FF2 remake changes must be a field/value mapping.')
     output = bytearray(document.payload)
     for key, value in changes.items():
-        if key not in mapping:
+        if type(key) is not str or key not in mapping:
             raise SaveError('Only a qualified system Photo Point reduction is writable.')
         field = mapping[key]
         if type(value) is int and value == field.value(document.payload):
@@ -286,7 +294,7 @@ def serialize(document, changes):
 def stage(document, changes, key, value):
     changed_payload(document, changes)
     mapping = field_map(document)
-    if key not in mapping:
+    if type(key) is not str or key not in mapping:
         raise SaveError('FF2 remake gameplay and unlock records are inspection only.')
     result = dict(changes)
     if type(value) is int and value == mapping[key].value(document.payload):
@@ -299,7 +307,7 @@ def stage(document, changes, key, value):
 def limit_values(document, changes, keys):
     mapping = field_map(document)
     changed_payload(document, changes)
-    if any(key not in mapping for key in keys):
+    if any(type(key) is not str or key not in mapping for key in keys):
         raise SaveError('FF2 remake requested field is not writable.')
     return {}
 
@@ -342,7 +350,7 @@ def restore(backup_path, destination, game_id=GAME_ID):
 
 
 def field_hint(document, key):
-    if key not in field_map(document):
+    if type(key) is not str or key not in field_map(document):
         raise SaveError('FF2 remake requested field is not writable.')
     return ('Reduce the opened shared Photo Point balance. This system resource applies to all '
             'gameplay slots; per-slot exchanged items are separate. Natural cap and increases '

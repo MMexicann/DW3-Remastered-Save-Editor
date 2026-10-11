@@ -110,8 +110,11 @@ checksum or actual edited console acceptance.
 Both genuine inputs pass all eight one-field surgical edits (16 total), with
 the original bytes preserved through GUI edit/review/Undo/Save As/backup/restore.
 The US/EU header and published mappings are independently identical; this
-profile accepts either supported `-00` companion for output/restore. It does not
-validate account ownership or convert signed regional containers.
+Save As requires the same exact supported title/slot companion as the opened
+copy and rechecks source and destination identity immediately before writing.
+Restore requires its admitted destination title/slot to remain unchanged while
+validating backup bytes. It does not validate account ownership or convert
+signed regional containers.
 
 Further inputs: native serializer/integrity confirmation and edited console
 load/re-save; fighter ownership flags and controlled SP purchase/Meridian Chart,

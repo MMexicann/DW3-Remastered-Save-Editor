@@ -120,13 +120,22 @@ def _context(path):
     return hashlib.sha256(_context_raw(path)).hexdigest()
 
 
+def _require_opened_context(document, destination=None):
+    if not document.context_digest or _context(document.source) != document.context_digest:
+        raise SaveError('The opened export context changed. Reopen before copying or saving.')
+    if destination is not None and _context(destination) != document.context_digest:
+        raise SaveError('Use the same unchanged export context for the destination.')
+
+
 def prepare_copy_context(document, output_dir):
     """Keep opaque source metadata private beside shared self-test copies."""
     validate_document(document)
     raw = _context_raw(document.source)
     if not document.context_digest or hashlib.sha256(raw).hexdigest() != document.context_digest:
         raise SaveError('The opened export context changed. Reopen before copying.')
-    atomic_new(raw, safe_path(Path(output_dir) / 'PARAM.SFO'))
+    destination = safe_path(Path(output_dir) / 'PARAM.SFO')
+    _require_opened_context(document)
+    atomic_new(raw, destination)
 
 
 def seal(payload):
@@ -159,6 +168,8 @@ def read_save(path, game_id=GAME_ID):
     digest = _context(path)
     with path.open('rb') as stream:
         document = decode(stream.read(SAVE_SIZE + 1), game_id, path)
+    if _context(path) != digest:
+        raise SaveError('The export context changed while opening the copy. Reopen it.')
     return Document(FORMAT, path, document.raw, document.payload, digest)
 
 
@@ -252,11 +263,7 @@ def save_as(document, changes, destination):
     destination = safe_path(destination)
     if destination.suffix.lower() != '.bin':
         raise SaveError('Choose a new decrypted .bin copy destination.')
-    digest = _context(document.source)
-    if not document.context_digest or digest != document.context_digest:
-        raise SaveError('The opened export context changed. Reopen before saving.')
-    if _context(destination) != digest:
-        raise SaveError('Use the same unchanged export context for the destination.')
+    _require_opened_context(document, destination)
     if destination.exists():
         raise FileExistsError('Choose a new destination; existing files are never replaced.')
     with safe_path(document.source).open('rb') as stream:
@@ -264,15 +271,24 @@ def save_as(document, changes, destination):
             raise SaveError('The opened copy changed on disk. Reopen it before saving.')
     raw = serialize(document, changes)
     backup(document)
+    _require_opened_context(document, destination)
+    with safe_path(document.source).open('rb') as stream:
+        if stream.read(SAVE_SIZE + 1) != document.raw:
+            raise SaveError('The opened copy changed on disk. Reopen it before saving.')
     atomic_new(raw, destination)
     return read_save(destination)
 
 
 def restore(backup_path, destination, game_id=GAME_ID):
     get_format(game_id)
-    _context(safe_path(destination))
+    destination = safe_path(destination)
+    digest = _context(destination)
+    def validate_restore(raw):
+        decode(raw, GAME_ID)
+        if _context(destination) != digest:
+            raise SaveError('The destination export context changed during restore.')
     return restore_snapshot(backup_path, destination, GAME_ID, '.bin', SAVE_SIZE,
-                            validate_raw=lambda raw: decode(raw, GAME_ID))
+                            validate_raw=validate_restore)
 
 
 def record_label(slot, group='Officers'):

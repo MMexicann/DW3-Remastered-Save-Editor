@@ -248,7 +248,7 @@ def changed_payload(document, changes):
         raise SaveError('Original Sophie changes must be a field/value mapping.')
     output = bytearray(document.payload)
     for key, value in changes.items():
-        if key not in mapping:
+        if type(key) is not str or key not in mapping:
             raise SaveError('Only Cole, tickets and qualified occupied item quality are writable.')
         field = mapping[key]
         if type(value) is int and value == field.value(document.payload):
@@ -266,7 +266,7 @@ def serialize(document, changes):
 def stage(document, changes, key, value):
     changed_payload(document, changes)
     mapping = field_map(document)
-    if key not in mapping:
+    if type(key) is not str or key not in mapping:
         raise SaveError('The original Sophie field is unmapped or the item is not eligible.')
     result = dict(changes)
     if type(value) is int and value == mapping[key].value(document.payload):
@@ -280,7 +280,7 @@ def stage(document, changes, key, value):
 def limit_values(document, changes, keys):
     changed_payload(document, changes)
     mapping = field_map(document)
-    if any(key not in mapping for key in keys):
+    if any(type(key) is not str or key not in mapping for key in keys):
         raise SaveError('An original Sophie Max selection contains an unmapped field.')
     return {}  # No natural currency or per-item synthesis cap has been qualified.
 
@@ -331,6 +331,8 @@ def item_records(document):
 
 
 def field_hint(document, key):
+    if type(key) is not str:
+        raise SaveError('The original Sophie field is unmapped.')
     field = field_map(document).get(key)
     if field is None:
         raise SaveError('The original Sophie field is unmapped.')

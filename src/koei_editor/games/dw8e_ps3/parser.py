@@ -15,7 +15,7 @@ from koei_editor.games.dw3.models import SaveError
 from koei_editor.games.dw8e_ps3 import codec
 from koei_editor.shared.copy_storage import atomic_new, restore_snapshot, snapshot_backup
 from koei_editor.shared.save_safety import safe_path
-from koei_editor.shared.ps3_export import MAX_SFO_SIZE, savedata_directory, validate_optional_context
+from koei_editor.shared.ps3_export import MAX_SFO_SIZE, savedata_directory
 
 GAME_ID = 'dw8e_ps3'
 TITLE_IDS = ('NPUB31656-SYSTEM',)
@@ -82,6 +82,7 @@ class Document:
     raw: bytes
     payload: bytes
     seed: int
+    context_digest: str = ''
 
     @property
     def sha256(self):
@@ -111,11 +112,30 @@ def decode(raw, game_id=GAME_ID, source=Path('system-copy.bin')):
     return Document(FORMAT, Path(source), frozen, payload, seed)
 
 
-def _context(path, required=False):
-    if required and not (Path(path).parent / 'PARAM.SFO').is_file():
+def _context_raw(path):
+    companion = safe_path(Path(path).parent / 'PARAM.SFO')
+    try:
+        with companion.open('rb') as stream:
+            metadata = stream.read(MAX_SFO_SIZE + 1)
+    except FileNotFoundError as error:
         raise SaveError('Keep the matching NPUB31656-SYSTEM PARAM.SFO beside the copied APP.BIN; '
-                        'the gameplay payload does not independently identify its region.')
-    validate_optional_context(path, TITLE_IDS, exact=True)
+                        'the gameplay payload does not independently identify its region.') from error
+    if savedata_directory(metadata) != TITLE_IDS[0]:
+        raise SaveError('The copied PS3 context must identify exactly NPUB31656-SYSTEM.')
+    return metadata
+
+
+def _context(path, required=False):
+    if not required and not (Path(path).parent / 'PARAM.SFO').exists():
+        return ''
+    return hashlib.sha256(_context_raw(path)).hexdigest()
+
+
+def _require_opened_context(document, destination=None):
+    if not document.context_digest or _context(document.source, required=True) != document.context_digest:
+        raise SaveError('The opened export context changed. Reopen before copying or saving.')
+    if destination is not None and _context(destination, required=True) != document.context_digest:
+        raise SaveError('Use the same unchanged export context for the destination.')
 
 
 def prepare_copy_context(document, output_dir):
@@ -125,14 +145,13 @@ def prepare_copy_context(document, output_dir):
     This is export context, never rebuilt console metadata or signing support.
     """
     validate_document(document)
-    companion = safe_path(document.source.parent / 'PARAM.SFO')
-    with companion.open('rb') as stream:
-        metadata = stream.read(MAX_SFO_SIZE + 1)
-    if savedata_directory(metadata) != TITLE_IDS[0]:
-        raise SaveError('The copied PS3 context must identify exactly NPUB31656-SYSTEM.')
+    metadata = _context_raw(document.source)
+    if not document.context_digest or hashlib.sha256(metadata).hexdigest() != document.context_digest:
+        raise SaveError('The opened export context changed. Reopen before copying.')
     destination = safe_path(Path(output_dir) / 'PARAM.SFO')
     if destination.exists():
         raise FileExistsError('Self-test context must have a new PARAM.SFO destination.')
+    _require_opened_context(document)
     return atomic_new(metadata, destination)
 
 
@@ -141,15 +160,18 @@ def read_save(path, game_id=GAME_ID):
     path = safe_path(path)
     if path.suffix.lower() != '.bin':
         raise SaveError('Open a separate decrypted PS3 APP.BIN copy.')
-    _context(path, required=True)
+    digest = _context(path, required=True)
     with path.open('rb') as stream:
-        return decode(stream.read(SAVE_SIZE + 1), game_id, path)
+        document = decode(stream.read(SAVE_SIZE + 1), game_id, path)
+    if _context(path, required=True) != digest:
+        raise SaveError('The export context changed while opening the copy. Reopen it.')
+    return Document(FORMAT, path, document.raw, document.payload, document.seed, digest)
 
 
 def validate_document(document):
     if (type(document) is not Document or document.format is not FORMAT
             or type(document.raw) is not bytes or type(document.payload) is not bytes
-            or type(document.seed) is not int):
+            or type(document.seed) is not int or type(document.context_digest) is not str):
         raise SaveError('A frozen US PS3 DW8 Empires SYSTEM snapshot is required.')
     if document.seed != codec.SYSTEM_SEED or codec.decode(document.raw) != document.payload:
         raise SaveError('The opened DW8 Empires SYSTEM snapshot was changed externally.')
@@ -260,8 +282,7 @@ def save_as(document, changes, destination):
     destination = safe_path(destination)
     if destination.suffix.lower() != '.bin':
         raise SaveError('Choose a new decrypted PS3 .bin copy destination.')
-    _context(document.source, required=True)
-    _context(destination, required=True)
+    _require_opened_context(document, destination)
     if destination.exists():
         raise FileExistsError('Choose a new file; existing files are never replaced.')
     with safe_path(document.source).open('rb') as stream:
@@ -269,15 +290,24 @@ def save_as(document, changes, destination):
             raise SaveError('The opened SYSTEM copy changed on disk. Reopen it before saving.')
     raw = serialize(document, changes)
     backup(document)
+    _require_opened_context(document, destination)
+    with safe_path(document.source).open('rb') as stream:
+        if stream.read(SAVE_SIZE + 1) != document.raw:
+            raise SaveError('The opened SYSTEM copy changed on disk. Reopen it before saving.')
     atomic_new(raw, destination)
-    return decode(raw, GAME_ID, destination)
+    return read_save(destination)
 
 
 def restore(backup_path, destination, game_id=GAME_ID):
     get_format(game_id)
-    _context(safe_path(destination), required=True)
+    destination = safe_path(destination)
+    digest = _context(destination, required=True)
+    def validate_restore(raw):
+        decode(raw, GAME_ID)
+        if _context(destination, required=True) != digest:
+            raise SaveError('The destination export context changed during restore.')
     return restore_snapshot(backup_path, destination, GAME_ID, '.bin', SAVE_SIZE,
-                            validate_raw=lambda raw: decode(raw, GAME_ID))
+                            validate_raw=validate_restore)
 
 
 def record_label(slot, group='Horse appearance'):

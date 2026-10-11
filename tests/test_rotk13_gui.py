@@ -57,6 +57,8 @@ class ROTK13GuiTests(unittest.TestCase):
                 self.assertEqual(editor.changes, {field.id: value})
                 editor.undo()
                 self.assertEqual(editor.changes, {})
+                self.assertEqual(int(editor.value.get()), original)
+                editor.value.set(str(value))
                 editor.apply_selected()
                 app.select_game('dw3')
                 app.apply_theme('Dark')

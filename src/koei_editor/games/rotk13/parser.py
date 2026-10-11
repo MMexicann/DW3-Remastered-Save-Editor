@@ -3,6 +3,7 @@
 Native section framing and the city members are qualified independently
 against the original PC serializer. Switch/PK offsets are not used here.
 """
+from collections.abc import Mapping
 from dataclasses import dataclass
 from functools import lru_cache
 import hashlib
@@ -129,7 +130,7 @@ def read_save(path, game_id=GAME_ID):
 
 
 def validate_document(document):
-    if (type(document) is not Document or document.format != FORMAT
+    if (type(document) is not Document or document.format is not FORMAT
             or type(document.raw) is not bytes or type(document.payload) is not bytes
             or type(document.header) is not bytes):
         raise SaveError('A frozen original Windows XIII campaign document is required.')
@@ -164,12 +165,24 @@ def field_map(document):
     return MappingProxyType({field.id: field for field in fields_for(document)})
 
 
-def changed_payload(document, changes):
+def _pending_fields(document, changes):
     mapping = field_map(document)
+    if not isinstance(changes, Mapping):
+        raise SaveError('Pending XIII edits must be a field/value mapping.')
+    for key, value in changes.items():
+        if type(key) is not str or key not in mapping:
+            raise SaveError('Only qualified existing city quantities are writable.')
+        field = mapping[key]
+        if type(value) is int and value == field.value(document.payload):
+            continue
+        field.validate(value)
+    return mapping
+
+
+def changed_payload(document, changes):
+    mapping = _pending_fields(document, changes)
     result = bytearray(document.payload)
     for key, value in changes.items():
-        if key not in mapping:
-            raise SaveError('Only qualified existing city quantities are writable.')
         field = mapping[key]
         if type(value) is int and value == field.value(document.payload):
             continue
@@ -188,8 +201,8 @@ def serialize(document, changes):
 
 
 def stage(document, changes, key, value):
-    mapping = field_map(document)
-    if key not in mapping:
+    mapping = _pending_fields(document, changes)
+    if type(key) is not str or key not in mapping:
         raise SaveError('The requested XIII field is not editable.')
     result = dict(changes)
     if type(value) is int and value == mapping[key].value(document.payload):
@@ -197,22 +210,24 @@ def stage(document, changes, key, value):
     else:
         mapping[key].validate(value)
         result[key] = value
-    changed_payload(document, result)
     return result
 
 
 def limit_values(document, changes, keys):
-    mapping = field_map(document)
-    changed_payload(document, changes)
+    mapping = _pending_fields(document, changes)
+    try:
+        keys = tuple(keys)
+    except TypeError as error:
+        raise SaveError('Choose mapped city field IDs for the Max action.') from error
     for key in keys:
-        if key not in mapping:
+        if type(key) is not str or key not in mapping:
             raise SaveError('The requested XIII field is not editable.')
     # Storage width is not a demonstrated natural gameplay maximum.
     return {}
 
 
 def maximums(document, changes, group=None):
-    changed_payload(document, changes)
+    _pending_fields(document, changes)
     return dict(changes)
 
 
@@ -268,7 +283,7 @@ def cities(document):
 
 
 def field_hint(document, key):
-    if key not in field_map(document):
+    if type(key) is not str or key not in field_map(document):
         raise SaveError('The requested XIII field is not editable.')
     if key.endswith('_military_population'):
         meaning = 'Stored military population; deployed units, returning troops and wounded are separate.'

@@ -188,7 +188,7 @@ def validated_changes(document, changes):
         raise SaveError('Staged skills must be a mapping.')
     fields = field_map(document)
     for key, value in changes.items():
-        if key not in fields:
+        if type(key) is not str or key not in fields:
             raise SaveError('This skill is not qualified for the opened pilot record.')
         field = fields[key]
         field.validate(value)
@@ -223,7 +223,7 @@ def serialize(document, changes):
 
 def stage(document, changes, key, value):
     fields = validated_changes(document, changes)
-    if key not in fields:
+    if type(key) is not str or key not in fields:
         raise SaveError('This skill is not qualified for the opened pilot record.')
     fields[key].validate(value)
     result = dict(changes)
@@ -237,7 +237,7 @@ def stage(document, changes, key, value):
 
 def limit_values(document, changes, keys):
     fields = validated_changes(document, changes)
-    if any(key not in fields for key in keys):
+    if any(type(key) is not str or key not in fields for key in keys):
         raise SaveError('Unknown or unqualified pilot skill.')
     return {}
 
@@ -289,6 +289,8 @@ def save_as(document, changes, destination):
             raise SaveError('The opened copy changed on disk. Reopen before saving.')
     raw = serialize(document, changes)
     backup(document)
+    if context(document.source) != document.native_directory or context(destination) != document.native_directory:
+        raise SaveError('Source or destination PARAM.SFO identity changed before writing.')
     atomic_new(raw, destination)
     return decode(raw, GAME_ID, destination)
 
@@ -304,9 +306,9 @@ def restore(backup_path, destination, game_id=GAME_ID):
     if context(destination) != directory:
         raise SaveError('Restore needs the same original PARAM.SFO save identity as the backup.')
     def validate_restore(raw):
+        decode(raw, GAME_ID, destination)
         if context(destination) != directory:
             raise SaveError('The restore destination identity changed.')
-        decode(raw, GAME_ID, destination)
 
     return restore_snapshot(backup_path, destination, GAME_ID, '.bin', SAVE_SIZE,
                             validate_raw=validate_restore)

@@ -219,6 +219,7 @@ class DW8EmpiresHorseTests(unittest.TestCase):
         # Extra private metadata bytes stay opaque and are copied byte-exact.
         metadata = metadata_path.read_bytes() + b'opaque-test-context\0\xAA\xBB'
         metadata_path.write_bytes(metadata)
+        self.document = backend.read_save(self.source)
         folder = self.folder / 'context-only'
         prepared = backend.prepare_copy_context(self.document, folder)
         self.assertEqual(prepared.read_bytes(), metadata)

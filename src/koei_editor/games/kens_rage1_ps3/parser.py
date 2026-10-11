@@ -12,7 +12,7 @@ import struct
 from koei_editor.games.dw3.models import SaveError
 from koei_editor.shared.copy_storage import atomic_new, snapshot_backup, restore_snapshot
 from koei_editor.shared.save_safety import safe_path
-from koei_editor.shared.ps3_export import MAX_SFO_SIZE, savedata_directory, validate_optional_context
+from koei_editor.shared.ps3_export import MAX_SFO_SIZE, savedata_directory
 
 
 @dataclass(frozen=True)
@@ -56,6 +56,7 @@ class Document:
     source: Path
     raw: bytes
     payload: bytes
+    native_directory: str | None = None
 
     @property
     def sha256(self):
@@ -104,14 +105,21 @@ def get_format(game_id=GAME_ID):
 def decode(raw, game_id=GAME_ID, source=Path('copy.bin')):
     get_format(game_id)
     qualify(raw)
-    return Document(FORMAT, Path(source), raw, raw)
+    directory = validate_context(source) if (Path(source).parent / 'PARAM.SFO').exists() else None
+    return Document(FORMAT, Path(source), raw, raw, directory)
 
 
 def validate_context(path):
-    if not (Path(path).parent / 'PARAM.SFO').exists():
+    companion = safe_path(Path(path).parent / 'PARAM.SFO')
+    try:
+        with companion.open('rb') as stream:
+            directory = savedata_directory(stream.read(MAX_SFO_SIZE + 1))
+    except FileNotFoundError as error:
         raise SaveError('Keep decrypted DATA.BIN and edited copies beside the '
-                        'original BLUS30504-00 or BLES01062-00 PARAM.SFO companion.')
-    validate_optional_context(path, ('BLUS30504-00', 'BLES01062-00'), exact=True)
+                        'original BLUS30504-00 or BLES01062-00 PARAM.SFO companion.') from error
+    if directory not in ('BLUS30504-00', 'BLES01062-00'):
+        raise SaveError('PARAM.SFO is not a qualified US/EU Ken\'s Rage save.')
+    return directory
 
 
 def read_save(path, game_id=GAME_ID):
@@ -119,15 +127,22 @@ def read_save(path, game_id=GAME_ID):
     path = safe_path(path)
     if path.suffix.lower() != '.bin':
         raise SaveError('Open a separate decrypted PS3 .bin export copy.')
-    validate_context(path)
+    directory = validate_context(path)
     with path.open('rb') as stream:
-        return decode(stream.read(SAVE_SIZE + 1), game_id, path)
+        raw = stream.read(SAVE_SIZE + 1)
+    qualify(raw)
+    if validate_context(path) != directory:
+        raise SaveError('The PS3 metadata identity changed while opening the copy.')
+    return Document(FORMAT, path, raw, raw, directory)
 
 
 def validate_document(document):
     if (type(document) is not Document or document.format is not FORMAT
             or type(document.raw) is not bytes or type(document.payload) is not bytes
-            or document.raw != document.payload):
+            or document.raw != document.payload
+            or (document.native_directory is not None
+                and (type(document.native_directory) is not str
+                     or document.native_directory not in ('BLUS30504-00', 'BLES01062-00')))):
         raise SaveError('A frozen decrypted PS3 snapshot is required.')
     qualify(document.raw)
 
@@ -153,7 +168,7 @@ def changed_payload(document, changes):
         raise SaveError('Staged changes must be a field-value mapping.')
     result = bytearray(document.payload)
     for key, value in changes.items():
-        if key not in fields:
+        if type(key) is not str or key not in fields:
             raise SaveError('This field is not qualified for the opened PS3 profile.')
         field = fields[key]
         if type(value) is int and value == field.value(document.payload):
@@ -174,7 +189,7 @@ def serialize(document, changes):
 def stage(document, changes, key, value):
     changed_payload(document, changes)
     fields = field_map(document)
-    if key not in fields:
+    if type(key) is not str or key not in fields:
         raise SaveError('This field is not qualified for the opened PS3 profile.')
     result = dict(changes)
     if type(value) is int and value == fields[key].value(document.payload):
@@ -189,7 +204,7 @@ def limit_values(document, changes, keys):
     fields = field_map(document)
     changed_payload(document, changes)
     for key in keys:
-        if key not in fields:
+        if type(key) is not str or key not in fields:
             raise SaveError('This field is not qualified for the opened PS3 profile.')
     # Published cheat targets are manual editing bounds, not natural gameplay
     # caps. No automatic Max action is authorized by this source evidence.
@@ -210,6 +225,8 @@ def review(document, changes):
 
 def backup(document):
     validate_document(document)
+    if validate_context(document.source) != document.native_directory:
+        raise SaveError('The original PS3 metadata identity changed.')
     return snapshot_backup(document.raw, document.source, GAME_ID,
                            document.source.parent / 'UniversalEditorBackups')
 
@@ -219,8 +236,9 @@ def save_as(document, changes, destination):
     destination = safe_path(destination)
     if destination.suffix.lower() != '.bin':
         raise SaveError('Choose a new decrypted .bin copy destination.')
-    validate_context(document.source)
-    validate_context(destination)
+    if (validate_context(document.source) != document.native_directory
+            or validate_context(destination) != document.native_directory):
+        raise SaveError('Source and destination need the same original PARAM.SFO save identity.')
     if destination.exists():
         raise FileExistsError('Choose a new destination; existing files are never replaced.')
     with safe_path(document.source).open('rb') as stream:
@@ -228,15 +246,24 @@ def save_as(document, changes, destination):
             raise SaveError('The opened copy changed on disk. Reopen it before saving.')
     raw = serialize(document, changes)
     backup(document)
+    if (validate_context(document.source) != document.native_directory
+            or validate_context(destination) != document.native_directory):
+        raise SaveError('Source or destination PARAM.SFO identity changed before writing.')
     atomic_new(raw, destination)
     return decode(raw, GAME_ID, destination)
 
 
 def restore(backup_path, destination, game_id=GAME_ID):
     get_format(game_id)
-    validate_context(safe_path(destination))
+    destination = safe_path(destination)
+    directory = validate_context(destination)
+    def validate_restore(raw):
+        decode(raw, GAME_ID, destination)
+        if validate_context(destination) != directory:
+            raise SaveError('The restore destination identity changed.')
+
     return restore_snapshot(backup_path, destination, GAME_ID, '.bin', SAVE_SIZE,
-                            validate_raw=lambda raw: decode(raw, GAME_ID))
+                            validate_raw=validate_restore)
 
 
 def record_label(slot, group='Fighters'):
@@ -272,9 +299,9 @@ def inspection_rows(document):
 def prepare_self_test_copy(document, destination):
     """Write only title/slot identity; never copy player/account metadata."""
     validate_document(document)
-    validate_context(document.source)
-    with safe_path(document.source.parent / 'PARAM.SFO').open('rb') as stream:
-        directory = savedata_directory(stream.read(MAX_SFO_SIZE + 1))
+    directory = validate_context(document.source)
+    if directory != document.native_directory:
+        raise SaveError('The original PS3 metadata identity changed.')
     key = b'SAVEDATA_DIRECTORY' + bytes(1)
     value = directory.encode('ascii') + bytes(1)
     identity = (struct.pack('<5I', 0x46535000, 0x101, 36, 36 + len(key), 1)
