@@ -130,6 +130,28 @@ dependencies need controlled native pairs. No private save is requested for Git.
 | Ninja Gaiden Sigma 2 Master Collection PC | Genuine story corpus acquired and metadata CRC recovered. Need the second native body-integrity algorithm/serializer and controlled essence/stack, weapon/Ninpo, ownership and reward pairs. PS3/Vita/Switch layouts remain separate. |
 | Ninja Gaiden 2 Black Steam PC | Genuine GVAS story/system corpus acquired and typed wrapper bounded. Need native embedded story-body integrity at 0x14, separate SYSTEM integrity and resource/record/ownership/dependency pairs. Its Steam editor is not native integrity proof; PS5/Xbox Series are separate. |
 
+## Hunting and monster development: Windows candidates
+
+No editor qualified for these four candidates. Acquired Toukiden archives are
+private research inputs, without proved native codec/integrity or writable
+fields. The requested library registration, runtime metadata and supported
+inventory additions therefore remain blocked together; the existing 29-game
+inventory is unchanged. The game notes give a specific blocker for every
+investigated mechanic.
+
+| Candidate | Exact next inputs |
+| --- | --- |
+| [Toukiden Kiwami](TOUKIDEN_KIWAMI_RESEARCH.md), Steam app363130 | Complete original `DATA0.BIN`/`DATA1.BIN`/`DATA2.BIN` and `DATASYS.BIN` copies; build, language, DLC and selected slot. Matching native save/load/integrity routine or source-backed codec evidence; unchanged control and separate Haku purchase, existing-material consumption, acquire/equip, fortify/reforge, Mitama growth/Boost selection and mission/reward pairs. |
+| [Toukiden 2](TOUKIDEN2_RESEARCH.md), Steam app551730 | Retain all actual `play??_user.bin`, `play??_chkp.bin`, `play??_safe.bin`, `play??_btle.bin` partners and `system.bin`, with build/language/DLC and slot/role labels. Matching native serializer/integrity or controlled encrypted/plain references; unchanged control and separate Haku, existing material, equip/fortify/reforge, Mitama/Boost, facility/story/reward pairs. Plain-looking partners cannot replace active files without native proof. |
+| [Monster Rancher 1 DX](MONSTER_RANCHER_DX_RESEARCH.md), Steam app1716120 | Complete private original `mfdx_en`/`mfdx` contents, actual extensionless `BISLPS-*` slots and companions, game/language/build and vanilla/mod status. Native serializer/checksum proof; unchanged control, active/frozen occupancy, money, stat/work/training, rest/item condition, weekly age/lifespan and freeze/thaw/unlock pairs. |
+| [Monster Rancher 2 DX](MONSTER_RANCHER_DX_RESEARCH.md), Steam app1716120 | Same complete original folder, preserving actual slot names and `psdata001.bin` when present to resolve the reported directory dependency. Separate drill/errantry, stress/fatigue, lifespan-item and one-use flags, expedition, freeze/thaw and reward/prerequisite captures. Runtime monster editors and InfiniteFreezer sidecars do not establish native serialization. |
+
+Keep owner identifiers, source copies and static analysis private. Each eventual
+editor needs native unchanged roundtrips, surgical integrity/dependency tests,
+safe-storage and GUI checks, followed by actual edited Windows game loading and
+re-saving. Neither public save acquisition nor existing-game regressions count
+as those qualifications.
+
 No edited PC or console game-load/re-save was performed by this project during
 this expansion. A successful file roundtrip, GUI workflow or Windows app build
 is reported separately from that remaining validation.

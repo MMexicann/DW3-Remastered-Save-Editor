@@ -209,3 +209,16 @@ runtime tables and planners informed factual investigation; their offsets,
 runtime pointers and asset IDs were not promoted to native mappings without
 qualification. Restricted-source implementations and extracted catalogs are
 not included in the expansion.
+
+## Hunting and monster-development candidates
+
+[Toukiden Kiwami](TOUKIDEN_KIWAMI_RESEARCH.md),
+[Toukiden 2](TOUKIDEN2_RESEARCH.md) and
+[Monster Rancher 1 & 2 DX](MONSTER_RANCHER_DX_RESEARCH.md) were investigated
+separately from the Warriors, Team Ninja, Gust and strategy work. None qualified
+a Windows gameplay writer in this pass. Public Toukiden archives provide
+candidate file observations, without native revision/codec/integrity proof;
+complete native Monster Rancher DX files remain missing. Their separate notes
+record mechanics, source/licence evidence, unsuccessful qualification attempts
+and controlled captures needed for each system. No new adapter, game card or
+runtime metadata was added for an unqualified candidate.

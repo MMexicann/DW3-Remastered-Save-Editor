@@ -75,6 +75,10 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Bladestorm: Nightmare PC candidate and evidence gate](BLADESTORM_PC_RESEARCH.md)
 
 - [Licensed Musou: Gundam and Ken's Rage](LICENSED_MUSOU.md)
+
+- [Toukiden Kiwami Windows qualification](TOUKIDEN_KIWAMI_RESEARCH.md)
+- [Toukiden 2 Windows qualification](TOUKIDEN2_RESEARCH.md)
+- [Monster Rancher 1 & 2 DX Windows qualification](MONSTER_RANCHER_DX_RESEARCH.md)
 - [Atelier and other Gust follow-up](ATELIER_NEXT_RESEARCH.md)
 
 ## Mechanics and source research
