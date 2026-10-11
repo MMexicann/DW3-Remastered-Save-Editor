@@ -115,6 +115,16 @@ creation, automatic story completion or unqualified natural-cap bulk actions.
 
 ## Validation boundaries and follow-up inputs
 
+Regional/Special candidates remain separate from the supported inventory.
+[DW6 Special](DW6_SPECIAL_REGIONAL_RESEARCH.md), [DW7 Special](DW7_SPECIAL_PSP_RESEARCH.md)
+and [Orochi/Samurai PSP Special](PSP_SPECIAL_RESEARCH.md) have publisher product
+evidence and, where acquired, metadata-only encrypted-envelope observations.
+No authenticated plaintext, gameplay roundtrip or safe writer is qualified.
+[Additional regional scope](REGIONAL_EDITION_SCOPE.md) tracks which apparent
+differences are product branding, text encoding or demonstrably distinct native
+profiles. DW5 Special's existing equipment editor remains one revision-3
+Windows profile; regional product evidence does not imply interchangeable saves.
+
 Genuine privately held copies qualify unchanged roundtrips and targeted file
 edits for DW7 XL, WO3 Ultimate, SW4 DX and PW4. Existing DW8 XL/PW3 genuine-file
 qualification is retained. DW8 Empires genuine PC SystemSave files now qualify existing custom-horse

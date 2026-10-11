@@ -103,13 +103,23 @@
     },
     {
       "path": "docs/DW5_SPECIAL.md",
-      "bytes": 7688,
-      "sha256": "dca3a3e92f22b1974493fb8fe6fec66fb0f26f6f423a42f97d767638b6002dea"
+      "bytes": 11264,
+      "sha256": "e50d4ef4ff161dbdf30b4b2776980385776f8973328abf15c8dd71740f6a5b22"
     },
     {
       "path": "docs/DW6_RESEARCH.md",
       "bytes": 10205,
       "sha256": "e4dcbad09d76b703dac206e1ee6feb0d9963769f269c8542ef60f574424ab46b"
+    },
+    {
+      "path": "docs/DW6_SPECIAL_REGIONAL_RESEARCH.md",
+      "bytes": 15310,
+      "sha256": "72cdd03f01c9802644b6a6c81ed551b9a9443339273720a7a9948336964e7593"
+    },
+    {
+      "path": "docs/DW7_SPECIAL_PSP_RESEARCH.md",
+      "bytes": 8236,
+      "sha256": "98e5318eacf94e874f3443cd6acc6479f54bccc90530f4c0b76b6294b8f93b77"
     },
     {
       "path": "docs/DW8E_CUSTOM_HORSES.md",
@@ -133,8 +143,8 @@
     },
     {
       "path": "docs/EXPANSION_COVERAGE.md",
-      "bytes": 30533,
-      "sha256": "63ac09ccdb8dabb4c51b7bdbdadf6c7b894f6f97b59b3d15ca1189350675c1b9"
+      "bytes": 31245,
+      "sha256": "2aa6006207f4ad869e770e666d5405fb023a6358788981d3ed2ced874eb58837"
     },
     {
       "path": "docs/FAMILY_NEXT_RESEARCH.md",
@@ -208,13 +218,18 @@
     },
     {
       "path": "docs/PREPARED_UPDATE.md",
-      "bytes": 5992,
-      "sha256": "a606d90c03aef19cdb5b8cae67933b10974652b6cac4d8cac695e172d3cb8dae"
+      "bytes": 6743,
+      "sha256": "99b76e2da4b50bd0dd323ee13d0d5da2d4f34ac87ffed63685c9de144c07952c"
     },
     {
       "path": "docs/PS3_EXPANSION.md",
       "bytes": 16146,
       "sha256": "f48bbbdb00f6e867e41dc69b80c052c72b92fe9449aa4e064cdc7cdfc568e93d"
+    },
+    {
+      "path": "docs/PSP_SPECIAL_RESEARCH.md",
+      "bytes": 15192,
+      "sha256": "c589958c6a26804d56f2bef1b74d35718f8c74e794d14de8783de3514c073037"
     },
     {
       "path": "docs/PW3_COVERAGE.md",
@@ -223,8 +238,13 @@
     },
     {
       "path": "docs/README.md",
-      "bytes": 3556,
-      "sha256": "9a6c4ec9b771d7fe3b93f9561c07ff5cbbdf97fa33a93688e4de939337d5c996"
+      "bytes": 3867,
+      "sha256": "92bfe742a244c6e29717f54b9cff50b25778e65f3a6f74b025f1085aa03a5c8f"
+    },
+    {
+      "path": "docs/REGIONAL_EDITION_SCOPE.md",
+      "bytes": 9423,
+      "sha256": "2664a4c136380d3329146796c8a2bdce0de214af45cc63e1d297be324f8f2382"
     },
     {
       "path": "docs/RELEASE_NOTES.md",
@@ -233,8 +253,8 @@
     },
     {
       "path": "docs/REMAINING_INPUTS.md",
-      "bytes": 16474,
-      "sha256": "0993b907fa239f2d260314929f957dc831b9a074f5aff9f34cbc7fed5338ea3d"
+      "bytes": 19078,
+      "sha256": "cdef2a6a18ee83bde2580f1f3413c3fb5bd8e8b29d221f6bbd818496f4bf45fc"
     },
     {
       "path": "docs/REPOSITORY_METADATA.md",
@@ -298,8 +318,8 @@
     },
     {
       "path": "docs/VALIDATION.md",
-      "bytes": 18416,
-      "sha256": "74378de63c495a2866bb36457004ce555542f612d81736576566ddf90ae792ec"
+      "bytes": 22831,
+      "sha256": "1e6ec3f1f7cc1bfe4fe2d2ea09ec2f3a21aa192453246ace3bf4d036daf2914f"
     },
     {
       "path": "docs/WEAPON_ATTRIBUTES_FIX.md",
@@ -443,8 +463,8 @@
     },
     {
       "path": "src/koei_editor/data/support_catalog.json",
-      "bytes": 32777,
-      "sha256": "dbf9621479196fd1d93a78addcda95d85753e0fbd2de85b166da7f08d1b70571"
+      "bytes": 36371,
+      "sha256": "08bd40db0dfe5a0729964abb45945180d46e2d866cc101c50723bdd9117a6a26"
     },
     {
       "path": "src/koei_editor/data/unique_weapons.json",
@@ -1217,6 +1237,16 @@
       "sha256": "793c0e0a3f42d5a6d88d000a4ed020afc7a93b73e5efd0a05d576e33defd74d2"
     },
     {
+      "path": "src/koei_editor/research/psp_special/__init__.py",
+      "bytes": 80,
+      "sha256": "67090b1a7ea1e5522b4561f3d33d0908166962935d30b00ec650fdd97e96f59e"
+    },
+    {
+      "path": "src/koei_editor/research/psp_special/envelope.py",
+      "bytes": 5694,
+      "sha256": "3cd5f8cf9674d036545c988ddc00dce26b05f4b9428a21ee34005b1720e8fa93"
+    },
+    {
       "path": "src/koei_editor/research/stars/__init__.py",
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1767,6 +1797,11 @@
       "sha256": "10ded33e1458bd20b8bb468edaabc754db34f8a3cedd096991f42e8e38bd59bd"
     },
     {
+      "path": "tests/test_psp_special_envelope.py",
+      "bytes": 10760,
+      "sha256": "f295605e6b8779e90a3912e1ca37e0a7b63d89aa85f537221011aaea2758f077"
+    },
+    {
       "path": "tests/test_pw4_format.py",
       "bytes": 11710,
       "sha256": "f508ffee696126ed62cb7360e570d3c557c68fb82ef333d9b22fcc43f21e41fc"
@@ -1835,6 +1870,11 @@
       "path": "tests/test_sophie2_inventory.py",
       "bytes": 7585,
       "sha256": "6f6850f423fbf7ac4aab4a85266a21decbb6b4084c6081b9b2953531f620f4a7"
+    },
+    {
+      "path": "tests/test_special_regional_scope.py",
+      "bytes": 1759,
+      "sha256": "47a58a976081fb96756fb67efd5a9c4629e7a766f64c645d2bca0925a2d6d568"
     },
     {
       "path": "tests/test_stars_audit.py",
@@ -1913,8 +1953,8 @@
     },
     {
       "path": "tests/test_verified_editors.py",
-      "bytes": 20590,
-      "sha256": "c5f0c9b51d8b2df0c7bdbe0243f4b85ecb1d618de50eb84fbbeb225162ea8227"
+      "bytes": 20614,
+      "sha256": "4c93500038b8f9fff0c786aa49b7a0980686de7be3e91c06dace9d8c0aa813d2"
     },
     {
       "path": "tests/test_verified_snapshot_review.py",

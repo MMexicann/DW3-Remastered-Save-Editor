@@ -88,3 +88,27 @@ neither that permission nor a tested native save mapping.
 No edited PC or console game-load/re-save was performed by this project during
 this expansion. A successful file roundtrip, GUI workflow or Windows app build
 is reported separately from that remaining validation.
+
+## Regional and PSP Special inputs
+
+Provide complete private original folders with exact product/platform,
+language/build, original filenames and export-tool/version/settings. For PSP,
+include an unchanged encrypted directory and its matching authenticated
+decrypted export; a decrypted payload alone is not a console-importable package.
+Native gameplay identity/revision, serialization, integrity and unknown-byte
+preservation must qualify before any write. External import/re-encryption and
+secure metadata updates remain outside the research inspector.
+
+| Candidate | Exact next inputs |
+| --- | --- |
+| DW5 Special Windows regional qualification | Unmodified Japanese, Traditional Chinese and mainland Simplified Chinese `save.dat` copies with build/language provenance and a matched unchanged control/action pair. Existing shared Traditional-Chinese premodified evidence cannot qualify Japanese/Simplified-Chinese serialization or bodyguard text. See [DW5 qualification](DW5_SPECIAL.md). |
+| DW6 Special PS2/PSP | Each region's complete native export; PS2 container and game integrity; PSP secure title-key/mode and authenticated plaintext. Then controlled officer/skill/Meng Huo, weapon/equip, horse and story/reward pairs. Claimed native Windows Special first needs product/build evidence; ordinary Chinese Windows is a different candidate. [Details](DW6_SPECIAL_REGIONAL_RESEARCH.md). |
+| DW7 Special PSP | Matching plaintext for the acquired encrypted Japanese envelope plus a second independent state; native integrity and money purchase, growth/reset, weapon acquisition/equip and Story/Chronicle pairs. Taiwan catalog branding is not translation/save-format proof. [Details](DW7_SPECIAL_PSP_RESEARCH.md). |
+| Orochi 3 Special PSP | Complete original Japanese secure-save package and matching authenticated decrypted export; native profile/integrity plus growth-reset, Rachel/Abe no Seimei, resources, bonds and weapon/fusion/reward pairs. [Details](PSP_SPECIAL_RESEARCH.md). |
+| SW3 Z Special PSP | Clean encrypted package without foreign PS3 artifacts and matching authenticated plaintext; native profile/integrity plus officer growth, weapon/equip, custom-officer, creation/history/challenge and reward pairs. [Details](PSP_SPECIAL_RESEARCH.md). |
+
+The [additional regional checklist](REGIONAL_EDITION_SCOPE.md) records other
+verified product/format distinctions and assignment boundaries. No player data,
+owner context, assets or title keys should be posted on the PR; keep those
+inputs local. Actual edited game-load/re-save follows qualified file tests and
+remains separately required.
