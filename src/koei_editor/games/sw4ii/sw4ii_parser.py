@@ -51,7 +51,7 @@ FORMAT = Format(GAME_ID, 'Samurai Warriors 4-II (Windows PC)', SAVE_SIZE, _BASE_
                 'Native PC revision 0x31A4. Manual gold, '
                 'five current strategy-tome resources and stored base stats on existing '
                 'standard officers, equipped existing own-pool weapons, attached attribute '
-                'magnitudes on known existing weapons, and existing mount combat stats. '
+                'magnitudes on known existing weapons, existing mount combat stats and qualified existing mount selection. '
                 'Numeric limits are storage bounds, not gameplay caps. '
                 'EXP, growth, skill trees, new equipment and story/rewards remain read only.')
 
@@ -116,6 +116,10 @@ def _fields(payload):
         for key, label, relative in STATS:
             result.append(Field(f'officer_{index}_{key}', label, base + relative,
                                 2, 0xffff, 'Officers', index + 1, maxable=False))
+        if _mount_choices(payload):
+            result.append(Field(f'officer_{index}_equipped_mount', 'Equipped existing mount slot',
+                                base + 0x3D, 1, MOUNT_COUNT - 1, 'Mount equipment',
+                                index + 1, maxable=False))
     for owner in range(OFFICER_COUNT):
         allowed = _weapon_choices(payload, owner)
         if _equipment_choices(payload, owner):
@@ -168,6 +172,10 @@ def _equipment_choices(payload, owner):
     return tuple(slot for slot in _weapon_choices(payload, owner) if slot < 15)
 
 
+def _mount_choices(payload):
+    return tuple(index for index in range(MOUNT_COUNT) if _mount_qualified(payload, index))
+
+
 def fields_for(document):
     validate_document(document)
     return _fields(document.payload)
@@ -197,6 +205,9 @@ def changed_payload(document, changes):
         if (field.group == 'Equipment' and value != field.value(document.payload)
                 and value not in _equipment_choices(document.payload, field.slot - 1)):
             raise SaveError("Equip an existing known weapon in this standard officer's own pool.")
+        if (field.group == 'Mount equipment' and value != field.value(document.payload)
+                and value not in _mount_choices(document.payload)):
+            raise SaveError('Equip an existing qualified occupied mount; empty and unknown types are unavailable.')
         result[field.offset:field.offset + field.size] = value.to_bytes(field.size, 'little')
     codec.qualify_payload(result, integrity=False)
     for offset, checksum in zip(codec.CHECKSUM_OFFSETS, codec.checksums(result)):
@@ -272,7 +283,7 @@ def restore(backup_path, destination, game_id=GAME_ID):
 
 
 def record_label(slot, group='Officers'):
-    if group in ('Officers', 'Equipment') and slot:
+    if group in ('Officers', 'Equipment', 'Mount equipment') and slot:
         return f'Standard officer ID {slot - 1}'
     if group == 'Weapons' and slot:
         owner, weapon = divmod(slot - 1, WEAPON_SLOTS)
@@ -288,11 +299,18 @@ def field_options(document, field):
     if mapped.group == 'Equipment':
         return tuple((slot, f'Existing own-pool slot {slot}')
                      for slot in _equipment_choices(document.payload, mapped.slot - 1))
+    if mapped.group == 'Mount equipment':
+        return tuple((slot, f'Existing mount slot {slot} (type ID {document.payload[MOUNT_BASE + slot * MOUNT_STRIDE]})')
+                     for slot in _mount_choices(document.payload))
     return ()
 
 
 def field_hint(document, field):
     mapped = field_map(document)[field.id if isinstance(field, Field) else field]
+    if mapped.group == 'Mount equipment':
+        return ('Select a known occupied mount from the opened inventory. This changes only '
+                'the standard officer mount reference. Ownership, type, growth, abilities, '
+                'mount stats and rewards are preserved. Max leaves equipment choices unchanged.')
     if mapped.group == 'Equipment':
         return ("Choose an existing known normal/rare weapon in this standard officer's "
                 'own pool. This changes equipment only; no acquisition, reward, DLC, '
@@ -330,6 +348,11 @@ def inspection_rows(document):
                      'value': f'Equipped weapon slot {equipped}; '
                               f'qualified occupied own-pool slots {", ".join(map(str, choices)) or "none"}; '
                               f'opened reference qualified: {equipped in choices}'})
+        mount = payload[base + 0x3D]
+        rows.append({'group': 'Mount equipment', 'label': f'Standard officer ID {index}',
+                     'value': f'Equipped mount slot {mount}; qualified occupied targets '
+                              f'{", ".join(map(str, _mount_choices(payload))) or "none"}; '
+                              f'opened reference qualified: {mount in _mount_choices(payload)}'})
         for slot in choices:
             weapon = WEAPON_BASE + (index * WEAPON_SLOTS + slot) * WEAPON_STRIDE
             identity = int.from_bytes(payload[weapon:weapon + 2], 'little')

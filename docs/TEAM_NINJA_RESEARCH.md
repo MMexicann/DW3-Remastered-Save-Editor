@@ -28,7 +28,8 @@ disable integrity or rebind the save owner. An unchanged file is returned byte
 for byte. Changed integer tokens retain the spelling and ordering of every other
 JSON token, original header context, overall file size and zero padding. Both
 checksums are rebuilt, the original input representation is retained, and the
-output is reparsed and verified before saving a new copy.
+output is reparsed and verified before saving a new copy. Selected custom-name
+string tokens use the same lexical preservation and native integrity workflow.
 
 ### Current controls and limits
 
@@ -46,6 +47,14 @@ output is reparsed and verified before saving a new copy.
   capacities and reward/ownership dependencies are not yet qualified. Max is
   disabled. The acquired USER has 59 such carried and 18 stored stacks; these
   counts are fixture observations, not a required occupancy count.
+- Existing enabled battle-set custom names: manual renaming of the matching
+  `UIData.ui_battleset_slot_data_info` string when both native arrays have
+  exactly 50 slots and the corresponding `BattleSetData.enable_flag` is boolean
+  true. Input accepts 1..16 printable ASCII characters, a conservative editor
+  limit rather than a proved game cap; opened Unicode/longer names remain
+  preserved and reversible. This changes only the display-name token, padding
+  and native checksums. Enabling a set or changing its equipment, Virtues and
+  spells remains unavailable. Max is disabled.
 - Searchable inspection: every populated record in the 600 carried and 2,000
   stored physical slots, including numeric item key, instance, quantity, rarity,
   stored item-level and weapon-skill fields, equipment part/slot and flags;
@@ -63,6 +72,13 @@ source protection. [GUI tests](../tests/test_wolong_gui.py) cover search, manual
 edits, Review/Undo, inspection, themes and saving. `WOLONG_SAVE_COPY` enables the
 private genuine USER test. Edited game-load/re-save validation has not been
 performed by this project.
+
+The [expansion evidence and tests](TEAM_NINJA_DEPTH.md) distinguish generated
+enabled-set renaming from native qualification: the genuine USER/BACKUP corpus
+has no enabled battle sets or nonempty custom names. Positive name editing has
+generated surgical-format and actual Tk Save As coverage, but no native enabled
+named-set qualification or actual game-load/re-save validation. An intact
+current-revision copy with such a set and a controlled rename pair are required.
 
 ### Mechanics coverage and remaining proof
 
@@ -84,7 +100,8 @@ ceilings.
 | Equipment reinforcement and rarity | Read-only inspection. In the genuine file, stored `item_level` 17 accompanies the author's reported +16 equipment: the stored field is not a direct displayed upgrade value. Need native conversion and material/reward/cap prerequisites before writes. |
 | Martial Arts and replacement | Stored `weapon_skill_level`, inscriptions and DLC inscription arrays are separate systems. Need replacement/unlock/upgrade pairs and native derived-value/cache consumers. |
 | Embedment, special effects, graces, Jewelry Essence | Native nested orb/inscription schemas exist; names, categories, allowed combinations, per-category magnitudes, costs and locked/premium distinctions need a licensed independently qualified catalog plus native consumers or controlled pairs. No affix/code injection is offered. |
-| Equipment references, battle sets, appearance | Existing references, entry/instance numbers and appearance are preserved. Need equip/swap/remodel pairs that identify every cross-reference and any cache updates. |
+| Battle-set custom names | Existing enabled sets can be renamed conservatively; positive native named-set and controlled rename-pair qualification remains missing. No loadout or enable-flag writes. |
+| Equipment references, battle-set loadouts, appearance | Existing references, entry/instance numbers and appearance are preserved. Need equip/swap/remodel pairs that identify every cross-reference and any cache updates. |
 | Companions and bonds | Read-only IDs, bond levels, points and flags. Need named ID mapping, bond thresholds and gear/reward flags before any bond/unlock writer. |
 | Divine Beasts, Dragon's Cure Pot, customization | Native save fields exist but acquisition/upgrade dependencies and tamper checks require native routines or controlled pairs. |
 | Mission progress, flags, DLC, NG+ and Thousand-Mile Journey | Native mission structures are preserved. Need mission/flag/reward and DLC ownership pairs; story completion remains separate from resources. |
@@ -119,8 +136,8 @@ no console schema is transplanted into a PC writer.
 ## Nioh 3: implemented native USER editor
 
 The [registered PC adapter](../src/koei_editor/games/nioh3/parser.py) implements
-Amrita/Gold deductions and existing positive quantity reductions for seven known common item IDs in the
-item box and storehouse. The two genuine USER revisions `0x01030001` and
+Amrita/Gold deductions and existing positive quantity reductions for eighteen
+known common item IDs in the item box and storehouse. The two genuine USER revisions `0x01030001` and
 `0x01040000` qualify the native cipher/body checksum and actual tagged arrays:
 2,500 equipment records, 1,500 item-box records and 400 storehouse records.
 Published fixed bases address the wrong bytes; native tags, both lengths and
@@ -136,6 +153,8 @@ separate. Original keys, seeds, header, tail and unknown bytes are preserved;
 integrity is rebuilt and the output reparsed. No integrity flags are cleared.
 
 See [native format, validation and exact mechanic blockers](NIOH3_RESEARCH.md).
+The [expansion note](TEAM_NINJA_DEPTH.md) records the eleven additional ordinary
+item identities, independent native corroboration and unchanged reduction rules.
 Genuine encrypted/decoded edits and actual Tk Save As/backup/restore workflows
 are distinct from edited game-load/re-save validation, which is unperformed.
 Currency increases/purchase dependencies, level/EXP, skills/proficiency, equipment transformations, affixes,
@@ -199,8 +218,8 @@ are still required. No neighbouring Team Ninja schema is automatically selected
 when the chosen parser rejects a file.
 
 The optional [older native corpus tests](../tests/test_teamninja_native.py) use
-`TEAM_NINJA_NATIVE_DIR` for privately held Nioh and Wo Long files. This branch
-leaves the Wo Long adapter unchanged. New format, independent audit and
-[GUI workflow tests](../tests/test_team_ninja_gui.py) exercise the separate
+`TEAM_NINJA_NATIVE_DIR` for privately held Nioh and Wo Long files. The Wo Long
+expansion has separate generated name-edit tests and native regression checks.
+New format, independent audit and [GUI workflow tests](../tests/test_team_ninja_gui.py) exercise the separate
 registered Nioh 3 and original Ninja Gaiden II backends. Player files, source
 copies, binaries and owner identifiers remain outside the checkout and bundles.

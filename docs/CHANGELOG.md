@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Expanded existing equipment, mount, horse appearance, officer stats and
+  upgrade-stone controls across Dynasty, Samurai, Orochi and Gundam editors.
+- Added P5 Strikers incenses, remedies and selected skill cards; Ryza 2 SP
+  reductions; eleven more Nioh 3 consumables; existing Wo Long battle-set names.
+- Added Three Houses motivation and existing ability loadouts, and Legends
+  fairy trust reductions.
+- Added validated relative adjustments and selective Revert to scalar editors.
+- Kept application version 1.6; no new release or additional supported profile.
+
 ## v1.6
 
 - Added Dynasty Warriors 6 PC named officer unlocks, existing horse combat stats

@@ -183,7 +183,10 @@ class OrochiPCFormatTests(unittest.TestCase):
             self.assertEqual(backend.serialize(doc, {}), raw)
             for field in backend.fields_for(doc):
                 original = field.value(raw)
-                value = field.minimum if original != field.minimum else field.maximum
+                choices = backend.field_options(doc, field.id)
+                value = (next(choice for choice, _ in choices if choice != original)
+                         if choices else
+                         field.minimum if original != field.minimum else field.maximum)
                 result = backend.serialize(doc, {field.id: value})
                 self.assertEqual(field.value(backend.decode(result).payload), value)
                 allowed = set(range(field.offset, field.offset + field.size)) | set(

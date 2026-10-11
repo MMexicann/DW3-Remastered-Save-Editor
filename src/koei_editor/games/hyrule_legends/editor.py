@@ -34,5 +34,5 @@ class Editor(ScalarEditor):
     save_extension = '.bin'
     presentation_type = Presentation
     subtitle = 'Nintendo 3DS — extracted zmha.bin (1.0.0 profile)'
-    summary = ('Rupees, owned materials, weapon stars, ordinary seal KOs, map cards and owned fairy names; searchable inventory. '
+    summary = ('Rupees, owned materials, weapon stars, ordinary seal KOs, map cards, owned fairy names and trust reductions; searchable inventory. '
                'Character growth, equipment, ownership and story are preserved.')

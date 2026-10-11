@@ -8,7 +8,7 @@ class Editor(ScalarEditor):
     backend = sw4ii_parser
     subtitle = 'Windows PC save editor'
     summary = ('Manual current gold, five strategy tomes, officer base stats, existing '
-               'weapon attributes, own-pool equipment selection and existing mount stats. '
+               'weapon attributes, own-pool weapon selection, existing mount selection and mount stats. '
                'Level, EXP, growth, skills, acquisition and rewards remain separate.')
 
 

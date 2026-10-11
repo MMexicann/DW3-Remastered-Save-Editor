@@ -105,6 +105,13 @@ immutable original snapshot; pending edits cannot manufacture records.
 | Existing attribute ranks | `0xC801C + weapon*0x1C + attr_slot`, u8 | Proven standard IDs 5..11 use 1..10; Verity ID31 is binary rank1 |
 | Other existing native ranked effects | Same rank span, native IDs 0..25 and 32..45 | Individual and Max through ten; new labels use native numeric IDs until the exact localization association is proved |
 | Existing reinforcement | `0xC8013 + weapon*0x1C`, u8 | Existing 1..99 only, manual decrease to 0..opened value; raising and bulk Max are disabled |
+| Unallocated upgrade stones | Officer `+52`, u16 | Already promoted original records with balance 0..891 only; manual 0..891, excluded from Max; allocation, promotion and growth unchanged |
+| Existing owned ordinary-item equipment | Officer `+38`..`+43`, active count `+44` | Original owned positive-rank non-mount item choices or empty; qualified active slots only, no duplicates, no Max or ownership changes |
+
+The [existing-editor depth review](OROCHI_DYNASTY_DEPTH.md) documents the native
+serializer, allocation clamp, ownership/rank getter and complete staged equipment
+guard that qualify these two additional controls. Higher original stone balances
+and unsupported equipment layouts stay opaque.
 
 Growth-point, gem, orb and material edit bounds come from public patch limits;
 their natural caps have not yet been recovered from native gameplay clamps.
@@ -138,7 +145,7 @@ path protections and source-change detection remain in force.
 | 145 playable officers' five stored stats | Writable, tested; higher values preserved; five internal slots protected |
 | Character identity/names | Record indices and progression inspected; native roster-ID/name association not proved, so names are not guessed |
 | Level and EXP | Read-only stored level/EXP; controlled level-up and promotion pairs needed to prove recalculation, rewards and level reset |
-| Promotions and upgrade stones | Read-only promotion count; promotion rewards, allocated stones, remaining stones and item-slot dependencies need controlled before/after saves |
+| Promotions and upgrade stones | Manual unallocated balance 0..891 for qualified already promoted records; promotion, allocated stones, growth/rewards and slot-count transitions remain protected pending complete transition proof |
 | Proficiency and abilities | Public source separates multiple bytes/ranks; natural progression/skill prerequisites and packed semantics need controlled pairs |
 | Weapon ownership/types | Existing IDs inspected; no cloning, empty-record manufacture or guessed weapon names |
 | Weapon attribute slots | Safe existing-record expansion/reduction; reduction cannot hide owned attributes; expansion cannot activate dormant IDs |
@@ -146,9 +153,9 @@ path protections and source-change detection remain in force.
 | Weapon compatibility and reinforcement | Existing ordinary reinforcement decreases are writable. Increases need grade-specific caps. Compatibility is a preserved packed u32, distinct from reinforcement and descriptor attack; its progression clamp remains unqualified |
 | Attribute-orb inventory | 58 balances editable; ID-to-name catalogue and natural clamps pending |
 | Crafting inventory/recipes | 295 balances editable; materials' names, receipt/new flags, recipe unlocks and natural clamps pending |
-| Equipped items and item enhancement | Preserved; normal enhancement, special ownership and equipped references must be distinguished with controlled equip/upgrade pairs |
+| Equipped items and item enhancement | Qualified active ordinary-item selectors can choose original owned positive-rank items or empty; duplicates rejected. Enhancement/acquisition, mounts and slot-count changes require further dependency proof |
 | Bonds and companions | Low-bond genuine fixture available; pair symmetry, support thresholds, consumption and maximum semantics not yet mapped |
-| Mounts | Existing item/mount relationship and ownership IDs not proved; require equip/acquisition pairs |
+| Mounts | Native menu separates item IDs 28..31; mount assignment/acquisition dependencies remain protected and require further proof |
 | Costumes and color customization | Annotated changed colors present; exact character/color-channel association and costume prerequisites not proved |
 | Story, stages and campaigns | Preserved and separate from resources/stats; chapter endings, Redux/side-story unlocks and rewards need controlled completion pairs |
 | Gauntlet/exploration, keystones and allies | Public patches indicate regions; four keystone types, summon ownership, progression/rewards and ally consumption need native mappings and controlled pairs |

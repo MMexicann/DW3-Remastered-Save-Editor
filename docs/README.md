@@ -9,6 +9,7 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Architecture and package boundaries](ARCHITECTURE.md)
 - [Supported games and platforms](SUPPORTED_GAMES.md)
 - [Prepared unreleased update](PREPARED_UPDATE.md)
+- [Existing editor expansion and whole-library review](RICH_EDITOR_EXPANSION.md)
 - [Combined pull-request review](INTEGRATION_REVIEW.md)
 - [Windows build and packaging](BUILDING.md)
 - [Validation and evidence boundaries](VALIDATION.md)
@@ -19,6 +20,13 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Reviewed bug fixes](BUG_REVIEW.md)
 
 ## Game formats and feature coverage
+
+- Current editor-depth reviews: [Team Ninja](TEAM_NINJA_DEPTH.md),
+  [Persona/Gust/Fatal Frame](PERSONA_GUST_DEPTH.md),
+  [Samurai/early Dynasty](SAMURAI_DYNASTY_DEPTH.md),
+  [Orochi/modern Dynasty](OROCHI_DYNASTY_DEPTH.md),
+  [Hyrule/Fire Emblem](HYRULE_FIRE_EMBLEM_DEPTH.md),
+  [console/Pirate/strategy](CONSOLE_PIRATE_STRATEGY_DEPTH.md).
 
 - [Expansion coverage and remaining inputs](EXPANSION_COVERAGE.md)
 - [Per-game supplier input checklist](REMAINING_INPUTS.md)

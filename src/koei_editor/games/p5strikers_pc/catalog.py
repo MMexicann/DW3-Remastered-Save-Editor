@@ -42,3 +42,35 @@ INGREDIENTS = (
 
 CHARACTERS = ('Protagonist', 'Ryuji', 'Morgana', 'Ann', 'Yusuke', 'Makoto',
               'Haru', 'Futaba', 'Sophia', 'Zenkichi')
+
+# Selected consumable identities, individually cross-checked against the public
+# worksheet and editor reference. Editing the stack does not apply the item.
+INCENSES = (
+    (0x869C6, 'Power Incense'), (0x869C8, 'Magic Incense'),
+    (0x869CA, 'Guard Incense'), (0x869CC, 'Speed Incense'),
+    (0x869CE, 'Luck Incense'), (0x869D0, 'HP Incense'),
+    (0x869D2, 'SP Incense'),
+)
+REMEDIES = (
+    (0x86A16, 'Hot and Sour Tea'), (0x86A18, 'Super Jolt'),
+    (0x86A1A, 'Mental Floss'), (0x86A1C, 'Donut-Worry'),
+    (0x86A1E, 'Soothing Towel'), (0x86A20, 'Wide Eye Drops'),
+    (0x86A22, 'Repentance Ashes'), (0x86A24, 'Hiranya'),
+    (0x86A26, 'Amrita Soda'),
+)
+SKILL_CARDS = (
+    (0x871CA, 'Agi'), (0x871CC, 'Agilao'), (0x871CE, 'Agidyne'),
+    (0x871D2, 'Maragi'), (0x871DA, 'Bufu'), (0x871DC, 'Bufula'),
+    (0x871DE, 'Bufudyne'), (0x871E2, 'Mabufu'),
+    (0x871EA, 'Zio'), (0x871EC, 'Zionga'), (0x871EE, 'Ziodyne'),
+    (0x871F2, 'Mazio'), (0x871FA, 'Garu'), (0x871FC, 'Garula'),
+    (0x871FE, 'Garudyne'), (0x87202, 'Magaru'),
+    (0x8720A, 'Psi'), (0x87212, 'Mapsi'),
+    (0x8721A, 'Frei'), (0x87222, 'Mafrei'),
+    (0x8722A, 'Kouha'), (0x8723E, 'Eiha'),
+    (0x87272, 'Dia'), (0x87278, 'Media'),
+)
+
+ITEM_GROUPS = (('Consumables', CONSUMABLES), ('Cooking ingredients', INGREDIENTS),
+               ('Incenses', INCENSES), ('Ailment remedies', REMEDIES),
+               ('Skill cards', SKILL_CARDS))

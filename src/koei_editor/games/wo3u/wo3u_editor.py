@@ -5,7 +5,7 @@ from koei_editor.shared.scalar_presentation import ScalarPresentation, Inspectio
 
 
 class WO3Presentation(ScalarPresentation):
-    extra_groups = ('Weapons',)
+    extra_groups = ('Weapons', 'Equipment', 'Upgrade stones')
 
     def inspection_tables(self, document):
         rows = self.backend.inspection_rows(document)
@@ -32,7 +32,7 @@ class Editor(ScalarEditor):
     presentation_type = WO3Presentation
     backend = wo3u_parser
     subtitle = 'Steam Windows PC save editor'
-    summary = 'Officer stats, growth points, gems, crafting and existing weapons.'
+    summary = 'Officer stats, upgrade stones, owned items, growth points, crafting and weapons.'
 
 
 def read_save(path):

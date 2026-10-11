@@ -12,7 +12,7 @@ class SpecialPresentation(ScalarPresentation):
                             ('ID', 'Officer', 'Unlocked byte', 'Outfit', 'Life', 'Musou',
                              'Attack', 'Defense', 'Merit', 'Title ID', 'Weapon slot', 'KO count'),
                             records['officers'],
-                            'Officer growth and titles are separate stored values. Unlocks, growth, equipment selections and story remain read only.'),
+                            'Officer growth and titles are separate stored values. Stored Attack/Defense are manually editable on playable officers; unlocks, merit/title, Life/Musou, equipment selections and story stay read only.'),
             InspectionTable('Weapons',
                             ('Officer ID', 'Officer', 'Slot', 'Weapon ID', 'Identity high byte',
                              'Weight', 'Evolution byte', 'Stored attack adjustment', 'Attribute ranks (0 = level 1)', 'Unknown byte'),
@@ -36,7 +36,7 @@ class Editor(ScalarEditor):
     backend = backend
     presentation_type = SpecialPresentation
     subtitle = 'Shin Sangokumusou 4 Special · Windows PC'
-    summary = 'Existing item ranks, stored attack adjustment, attribute ranks and named weight choices, with searchable officers and equipment.'
+    summary = 'Stored officer Attack/Defense, existing item ranks, stored attack adjustment, attribute ranks and named weight choices, with searchable officers and equipment.'
 
 
 def read_save(path):

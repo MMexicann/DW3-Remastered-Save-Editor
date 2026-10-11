@@ -44,6 +44,7 @@ class Field:
     maxable: bool = False
     kind: str = 'integer'
     forbidden: tuple = ()
+    choices: tuple = ()
 
     def value(self, payload):
         return codec.uint(payload, self.offset, self.size)
@@ -53,6 +54,8 @@ class Field:
             raise SaveError(f'{self.label} requires a whole number from {self.minimum:,} to {self.maximum:,}.')
         if value in self.forbidden:
             raise SaveError('The native unlimited-durability sentinel cannot be granted by a numeric edit.')
+        if self.choices and value not in self.choices:
+            raise SaveError(f'{self.label} requires one of its qualified native choices.')
 
 
 @dataclass(frozen=True)
@@ -186,6 +189,28 @@ def _field_index(raw):
     for owner in _character_rows(raw):
         if not owner['qualified_owner']:
             continue
+        base = owner['offset']
+        # Motivation is a standalone instruction budget, not proficiency EXP.
+        # Native Byleth profiles 0/1 cannot receive ordinary instruction.
+        if owner['id'] not in (0, 1) and raw[base + 0xC4] in (0, 25, 50, 75, 100):
+            fields.append(Field(f"character:{owner['index']}:motivation",
+                f"Character slot {owner['slot']} / ID {owner['id']} motivation",
+                base + 0xC4, 1, 100, 'Motivation', owner['slot'],
+                choices=(0, 25, 50, 75, 100)))
+        equipped = tuple(raw[base + 0x7F:base + 0x84])
+        occupied = tuple(identity for identity in equipped if identity != 240)
+        # Preserve unrecognized/default/duplicate loadouts. An original equipped
+        # identity must also be learned; pending edits never grant ownership.
+        if (occupied and not owner['flags'] & (1 << 18)
+                and len(set(occupied)) == len(occupied) and all(identity < 240
+                and raw[base + 0x61 + identity // 8] & (1 << (identity % 8))
+                for identity in occupied)):
+            choices = tuple(sorted(set(occupied))) + (240,)
+            for slot in range(5):
+                fields.append(Field(f"character:{owner['index']}:ability:{slot}",
+                    f"Character slot {owner['slot']} / ID {owner['id']}, ability slot {slot + 1}",
+                    base + 0x7F + slot, 1, 240, 'Existing ability loadout',
+                    owner['slot'], choices=choices))
         for index in range(6):
             base = owner['offset'] + index * codec.ITEM_STRIDE
             identity = codec.item_id(raw, base)
@@ -219,6 +244,16 @@ def changed_payload(document, changes):
         field.validate(value)
         if value != field.value(document.payload):
             output[field.offset:field.offset + field.size] = value.to_bytes(field.size, BYTEORDER)
+    # Validate the final staged loadout, including edits already pending. Empty
+    # slots can repeat, but a standard ability cannot occupy two slots.
+    for owner in _character_rows(document.payload):
+        prefix = f"character:{owner['index']}:ability:"
+        if not any(key.startswith(prefix) for key in changes):
+            continue
+        base = owner['offset'] + 0x7F
+        occupied = [identity for identity in output[base:base + 5] if identity != 240]
+        if len(occupied) != len(set(occupied)):
+            raise SaveError('An ability may occupy only one equipped slot per character.')
     return codec.encode(bytes(output), document.raw)
 
 
@@ -240,7 +275,23 @@ def stage(document, changes, key, value):
     else:
         fields[key].validate(value)
         result[key] = value
+    changed_payload(document, result)
     return result
+
+
+def field_options(document, key):
+    field = field_map(document).get(key)
+    if field is None:
+        raise SaveError('This original record is not qualified for edits.')
+    if field.group == 'Motivation':
+        return tuple((value, f'{value} motivation ({value // 25} instruction attempts)')
+                     for value in field.choices)
+    if field.group == 'Existing ability loadout':
+        owner = next(row for row in _character_rows(document.payload) if row['slot'] == field.slot)
+        opened = document.payload[owner['offset'] + 0x7F:owner['offset'] + 0x84]
+        return tuple((value, 'Empty' if value == 240 else f'Ability from opened slot {opened.index(value) + 1}')
+                     for value in field.choices)
+    return ()
 
 
 def limit_values(document, changes, keys):
@@ -301,6 +352,14 @@ def field_hint(document, key):
     field = field_map(document).get(key)
     if field is None:
         raise SaveError('This original record is not qualified for edits.')
+    if field.group == 'Motivation':
+        return ('Instruction motivation in steps of 25, from 0 to 100. Only original unique living '
+                'joined base units other than Byleth qualify. No instruction is performed: '
+                'proficiency, budding talents, support points, professor EXP and lesson activity remain unchanged. No Max.')
+    if field.group == 'Existing ability loadout':
+        return ('Select an ability already equipped and learned in this opened character, or Empty. '
+                'Clear its old slot before moving it; duplicate equipped abilities are rejected. '
+                'The original learned bitmap, class, personal/class abilities and all reward flags remain unchanged. No Max.')
     return ('Decrease this opened balance/value only; no natural Max is asserted. '
             'Existing identity, record count, ownership and equipped references are preserved. '
             'Equipment writes require a reviewed ordinary weapon ID; held writes additionally '

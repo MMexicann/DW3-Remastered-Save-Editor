@@ -54,6 +54,29 @@ class Field:
 
 
 @dataclass(frozen=True)
+class EquippedField:
+    id: str
+    label: str
+    offset: int
+    slot: int
+    size: int = 1
+    minimum: int = 0
+    maximum: int = SKILL_COUNT - 1
+    group: str = 'Equipped skills'
+    maxable: bool = False
+    kind: str = 'int'
+    encoding: str = 'unsigned byte; native learned skill reference'
+    evidence: str = 'Four US/EU native copies; CONSOLE_PIRATE_STRATEGY_DEPTH.md'
+
+    def value(self, payload):
+        return payload[self.offset]
+
+    def validate(self, value):
+        if type(value) is not int or not 0 <= value < SKILL_COUNT:
+            raise SaveError('Choose an already learned native skill ID from 0 to 35.')
+
+
+@dataclass(frozen=True)
 class Format:
     id: str
     title: str
@@ -72,7 +95,8 @@ FORMAT = Format(GAME_ID, 'Dynasty Warriors: Gundam (PS3, US/EU decrypted export)
                 'Learn skills on six qualified existing level-30 pilots. Open a decrypted DATA.BIN '
                 'copy with its original PARAM.SFO companion. Output also needs the matching '
                 'PARAM.SFO. Reimport and resign with Apollo; this is a decrypted gameplay '
-                'writer. EXP, levels, equipped skills and mission progress are inspected only.')
+                'writer. Equip already learned skills in four qualified slots; inherent skills, '
+                'EXP, levels and mission progress are preserved.')
 
 
 @dataclass(frozen=True)
@@ -176,7 +200,18 @@ def qualified_pilots(document):
 
 def fields_for(document):
     slots = qualified_pilots(document)
-    return tuple(field for field in FIELDS if field.slot in slots)
+    fields = [field for field in FIELDS if field.slot in slots]
+    for slot in slots:
+        key, name, offset = PILOTS[slot - 1]
+        # Six distinct references distinguish four selected slots from the two
+        # inherent skills. Ambiguous/duplicate original layouts stay untouched.
+        if len(set(document.payload[offset + 23:offset + 29])) != 6:
+            continue
+        fields.extend(EquippedField(f'{key}_equipped_{index}',
+                                    f'{name}: Equipped skill {index + 1}',
+                                    offset + 23 + index, slot)
+                      for index in range(4))
+    return tuple(fields)
 
 
 def field_map(document):
@@ -192,9 +227,18 @@ def validated_changes(document, changes):
             raise SaveError('This skill is not qualified for the opened pilot record.')
         field = fields[key]
         field.validate(value)
-        if value < field.value(document.payload):
+        if isinstance(field, EquippedField):
+            if value not in dict(field_options(document, key)):
+                raise SaveError('Only originally learned, non-inherent skills can be equipped.')
+        elif value < field.value(document.payload):
             raise SaveError('Skills can only be learned. Removing learned skills could '
                             'invalidate equipment or other prerequisites.')
+    for slot in {field.slot for field in fields.values() if isinstance(field, EquippedField)}:
+        selected = [changes.get(field.id, field.value(document.payload))
+                    for field in fields.values()
+                    if isinstance(field, EquippedField) and field.slot == slot]
+        if len(set(selected)) != 4:
+            raise SaveError('Each equipped skill must be distinct; use the selector to swap occupied slots.')
     return fields
 
 
@@ -203,7 +247,9 @@ def changed_payload(document, changes):
     result = bytearray(document.payload)
     for key, value in changes.items():
         field = fields[key]
-        if value:
+        if isinstance(field, EquippedField):
+            result[field.offset] = value
+        elif value:
             result[field.offset] |= 1 << field.bit
     payload = bytes(result)
     return seal(payload) if payload != document.payload else payload
@@ -227,12 +273,33 @@ def stage(document, changes, key, value):
         raise SaveError('This skill is not qualified for the opened pilot record.')
     fields[key].validate(value)
     result = dict(changes)
+    field = fields[key]
+    if isinstance(field, EquippedField):
+        # Selecting a skill already in another slot atomically swaps the
+        # two slots. Review/Undo sees the complete dependency-safe edit.
+        previous = changes.get(key, field.value(document.payload))
+        for other in fields.values():
+            if (isinstance(other, EquippedField) and other.slot == field.slot
+                    and other.id != key
+                    and changes.get(other.id, other.value(document.payload)) == value):
+                if previous == other.value(document.payload):
+                    result.pop(other.id, None)
+                else:
+                    result[other.id] = previous
     if value == fields[key].value(document.payload):
         result.pop(key, None)
     else:
-        validated_changes(document, {key: value})
         result[key] = value
+    validated_changes(document, result)
     return result
+
+
+def _equipped_options(document, field):
+    offset = PILOTS[field.slot - 1][2]
+    flags = document.payload[offset + 29:offset + 34]
+    inherent = document.payload[offset + 27:offset + 29]
+    return tuple((skill, f'Learned skill ID {skill}') for skill in range(SKILL_COUNT)
+                 if skill not in inherent and flags[skill // 8] & (1 << (skill % 8)))
 
 
 def limit_values(document, changes, keys):
@@ -320,11 +387,20 @@ def record_label(slot, group='Learned skills'):
 
 def field_options(document, field_id):
     field = field_map(document)[field_id]
+    if isinstance(field, EquippedField):
+        return _equipped_options(document, field)
     return ((1, 'Learned'),) if field.value(document.payload) else ((0, 'Not learned'), (1, 'Learned'))
 
 
 def field_hint(document, field_id):
     field = field_map(document)[field_id]
+    if isinstance(field, EquippedField):
+        return ('Choose an originally learned skill ID. Selecting an already equipped '
+                'skill swaps the two slots together. Undo reverses the whole swap; '
+                'select both affected slots for Revert Selected. Inherent skills cannot be selected; '
+                'duplicate references and unlearned skills are rejected. Learning a skill '
+                'requires saving and reopening before it becomes an equipment choice. '
+                'Max leaves equipment unchanged. Reimport and resign with Apollo.')
     return (f'Level-30 pilot persistent learned flag for native skill ID {field.skill_id}. Set 1 to learn; '
             '0 can undo a staged learning change when the original was unlearned. '
             'Already learned skills cannot be removed. Skill names/order are not inferred. '

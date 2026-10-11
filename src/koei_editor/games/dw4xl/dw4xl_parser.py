@@ -123,7 +123,7 @@ FORMAT = Format(
     'The gameplay file is BASLUS-20812, exactly 34,064 bytes; its offset depends on '
     'the export contents. Export and import through a suitable PS2 memory-card tool. '
     'Standard officer stats/points, weapon EXP, items, bodyguard '
-    'points, difficulty and owned harness/orb assignments are editable; general '
+    'points, difficulty, owned harness/orb assignments and occupied known-owned general-slot replacements are editable; empty general '
     'equipment slots and names are inspected without changing them. PSU metadata/icons/padding and unrelated gameplay bytes are '
     'preserved. The 8 MiB container limit is an input read cap, not the save size.'
 )
@@ -263,16 +263,30 @@ def validate_document(document):
 
 def field_map(document):
     validate_document(document)
-    return FIELD_MAP
+    return MappingProxyType({field.id: field for field in fields_for(document)})
 
 
 def fields_for(document):
     validate_document(document)
-    return FORMAT.fields
+    fields = list(FORMAT.fields)
+    for officer in range(OFFICER_COUNT):
+        base = OFFICER_BASE + officer * OFFICER_STRIDE
+        for slot in range(2, 8):
+            identity = document.payload[base + 8 + slot]
+            if identity in _general_items() and document.payload[ITEM_BASE + identity] != 255:
+                fields.append(Field(f'officer_{officer}_general_item_{slot}',
+                                    f'{OFFICER_NAMES[officer]}: Existing general slot {slot - 1}',
+                                    base + 8 + slot, 1, 41, 'General equipment',
+                                    officer + 1, maxable=False))
+    return tuple(fields)
+
+
+def _general_items():
+    return (*range(13), *range(24, 41))
 
 
 def record_label(slot, group='Officers'):
-    if group in ('Officers', 'Weapons', 'Equipment') and type(slot) is int and 1 <= slot <= OFFICER_COUNT:
+    if group in ('Officers', 'Weapons', 'Equipment', 'General equipment') and type(slot) is int and 1 <= slot <= OFFICER_COUNT:
         return OFFICER_NAMES[slot - 1]
     if group == 'Bodyguards' and type(slot) is int and 1 <= slot <= 4:
         return f'Bodyguard team {slot}'
@@ -281,18 +295,31 @@ def record_label(slot, group='Officers'):
 
 def changed_payload(document, changes):
     validate_document(document)
+    mapped = field_map(document)
     result = bytearray(document.payload)
     for key, value in changes.items():
-        if key not in FIELD_MAP:
+        if key not in mapped:
             raise SaveError('The requested field is not mapped for PS2 USA DW4 XL.')
-        field = FIELD_MAP[key]
+        field = mapped[key]
         result[field.offset:field.offset + field.size] = field.encoded(value)
     for key, value in changes.items():
+        field = mapped[key]
+        if field.group == 'General equipment' and value != field.value(document.payload):
+            if value != 41 and (value not in _general_items() or document.payload[ITEM_BASE + value] == 255
+                               or result[ITEM_BASE + value] == 255):
+                raise SaveError('Replace with an originally owned general item, or choose Empty.')
+            officer = field.slot - 1
+            base = OFFICER_BASE + officer * OFFICER_STRIDE
+            if result[WEAPON_EXP_BASE + officer * 2:WEAPON_EXP_BASE + officer * 2 + 2] != document.payload[WEAPON_EXP_BASE + officer * 2:WEAPON_EXP_BASE + officer * 2 + 2]:
+                raise SaveError('Preserve weapon EXP while replacing an existing general equipment slot.')
+            equipped = [item for item in result[base + 10:base + 16] if item != 41]
+            if len(equipped) != len(set(equipped)):
+                raise SaveError('An officer cannot equip the same general item in multiple slots.')
         if key.endswith(('_harness', '_orb')) and value != 41:
             allowed = range(19, 24) if key.endswith('_harness') else range(13, 19)
             if value not in allowed or result[ITEM_BASE + value] == 0xFF:
                 raise SaveError('Equip an owned item of the correct category, or choose 41 for Empty.')
-        if key.startswith('item_') and value == 0 and FIELD_MAP[key].value(document.payload) > 0:
+        if key.startswith('item_') and value == 0 and mapped[key].value(document.payload) > 0:
             identity = int(key.split('_')[1])
             for index in range(OFFICER_COUNT):
                 base = OFFICER_BASE + OFFICER_STRIDE * index
@@ -315,28 +342,29 @@ def serialize(document, changes):
 
 
 def stage(document, changes, key, value):
-    validate_document(document)
-    if key not in FIELD_MAP:
+    changed_payload(document, changes)
+    mapped = field_map(document)
+    if key not in mapped:
         raise SaveError('The requested field is not mapped for PS2 USA DW4 XL.')
-    field = FIELD_MAP[key]
+    field = mapped[key]
     result = dict(changes)
     if type(value) is int and value == field.value(document.payload):
         result.pop(key, None)
     else:
         field.validate(value)
         result[key] = value
-    if field.group in ('Equipment', 'Items'):
-        changed_payload(document, result)
+    changed_payload(document, result)
     return result
 
 
 def limit_values(document, changes, keys):
     changed_payload(document, changes)
+    mapped = field_map(document)
     result = {}
     for key in keys:
-        if key not in FIELD_MAP:
+        if key not in mapped:
             raise SaveError('The requested field is not mapped for PS2 USA DW4 XL.')
-        field = FIELD_MAP[key]
+        field = mapped[key]
         current = changes.get(key, field.value(document.payload))
         if field.maxable and type(current) is int and field.minimum <= current <= field.maximum:
             result[key] = field.maximum
@@ -354,7 +382,7 @@ def maximums(document, changes, group=None):
 def review(document, changes):
     changed_payload(document, changes)
     return [(field, field.value(document.payload), changes[field.id])
-            for field in FORMAT.fields if field.id in changes]
+            for field in fields_for(document) if field.id in changes]
 
 
 def backup(document):
@@ -424,9 +452,14 @@ def inspection_rows(document):
 def field_hint(document, field):
     validate_document(document)
     key = field.id if isinstance(field, Field) else field
-    if key not in FIELD_MAP:
+    fields = field_map(document)
+    if key not in fields:
         raise SaveError('The requested field is not mapped for PS2 USA DW4 XL.')
-    mapped = FIELD_MAP[key]
+    mapped = fields[key]
+    if mapped.group == 'General equipment':
+        return ('Replace or unequip an originally occupied known-owned general slot. Empty '
+                'slots cannot be filled; weapon EXP must remain unchanged in this batch. '
+                'Targets must already be owned and cannot duplicate another general slot. Max excludes choices.')
     if mapped.group == 'Equipment':
         return ('Equip owned items only: harness IDs 19 Red Hare, 20 Hex Mark, 21 Storm, '
                 '22 Shadow, 23 Elephant; orb IDs 13 Fire, 14 Lightning, 15 Vorpal, '
@@ -461,4 +494,10 @@ def field_options(document, key):
     if field.group == 'Equipment':
         identities = range(19, 24) if key.endswith('_harness') else range(13, 19)
         return ((41, 'Empty'),) + tuple((index, ITEM_NAMES[index]) for index in identities)
+    if field.group == 'General equipment':
+        base = OFFICER_BASE + (field.slot - 1) * OFFICER_STRIDE
+        other = {document.payload[base + relative] for relative in range(10, 16)
+                 if base + relative != field.offset}
+        return ((41, 'Empty'),) + tuple((index, ITEM_NAMES[index]) for index in _general_items()
+                                       if document.payload[ITEM_BASE + index] != 255 and index not in other)
     return ()

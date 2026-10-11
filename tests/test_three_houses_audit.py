@@ -117,6 +117,10 @@ class ThreeHousesAuditTests(unittest.TestCase):
             for field in backend.fields_for(document):
                 original = field.value(document.payload)
                 target = max(field.minimum, original - 1)
+                if field.group == 'Motivation':
+                    target = 0 if original else 25
+                elif field.group == 'Existing ability loadout':
+                    target = 240
                 if target in field.forbidden:
                     target -= 1
                 encoded = backend.serialize(document, {field.id: target})

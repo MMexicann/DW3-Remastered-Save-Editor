@@ -1,7 +1,7 @@
 """Shared scalar save editor with retained independent sessions."""
 import json
 import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
+from tkinter import filedialog, messagebox, simpledialog, ttk
 from koei_editor.shared.appearance import Appearance
 from koei_editor.shared.copy_storage import atomic_new
 from koei_editor.shared.adapter_contract import BoundScalarAdapter
@@ -84,6 +84,15 @@ class Editor(Appearance):
         inspect = ttk.Button(tools, text='Inspect Data', command=self.show_inspector, state='disabled')
         inspect.pack(side='right', padx=4)
         self.edit_buttons.append(inspect)
+        bulk = ttk.Frame(host, padding=(22, 0, 22, 8))
+        bulk.pack(fill='x')
+        for label, callback in (('Adjust Selected...', self.adjust_selected),
+                                ('Revert Selected', self.revert_selected)):
+            button = ttk.Button(bulk, text=label, command=callback, state='disabled')
+            button.pack(side='left', padx=(0, 8))
+            self.edit_buttons.append(button)
+        ttk.Label(bulk, text='Adjust adds or subtracts from each value; Revert restores opened values.',
+                  style='Muted.TLabel').pack(side='left')
         # Reserve field guidance and status before the expanding table.
         feedback = ttk.Frame(host)
         feedback.pack(side='bottom', fill='x')
@@ -280,13 +289,16 @@ class Editor(Appearance):
             result = dict(self.changes)
             for key, value in values.items():
                 result = self.adapter.stage(self.document, result, key, value)
-            if result != self.changes:
-                self.history.append(dict(self.changes))
-                self.changes = result
-                self.refresh()
-            self.status.set(f'{len(self.changes)} pending field edits. Review changes before saving a new copy.')
+            self._accept_pending(result)
         except Exception as error:
             messagebox.showerror('Cannot Stage Edit', str(error))
+
+    def _accept_pending(self, result):
+        if result != self.changes:
+            self.history.append(dict(self.changes))
+            self.changes = result
+            self.refresh()
+        self.status.set(f'{len(self.changes)} pending field edits. Review changes before saving a new copy.')
 
     def apply_selected(self):
         keys = self.fields.selection()
@@ -310,6 +322,40 @@ class Editor(Appearance):
     def max_selected(self):
         if self.document:
             self.stage_values(self.adapter.limit_values(self.document, self.changes, self.fields.selection()))
+
+    def adjust_selected(self):
+        keys = self.fields.selection()
+        if not keys or self.document is None:
+            return
+        fields = self.adapter.field_map(self.document)
+        if any(type(fields[key].value(self.document.payload)) is not int
+               or self.field_options(fields[key]) for key in keys):
+            messagebox.showerror('Cannot Adjust Selection',
+                                 'Select numeric quantities or stats. Use Apply Selected for names and choices.')
+            return
+        delta = simpledialog.askinteger('Adjust Selected',
+                                        f'Add to each of the {len(keys)} selected values.\n'
+                                        'Enter a negative number to subtract. Each game\n'
+                                        'validates the complete batch before staging it.',
+                                        parent=self.root)
+        if delta is None or delta == 0:
+            return
+        self.stage_values({key: self.changes.get(key, fields[key].value(self.document.payload)) + delta
+                           for key in keys})
+
+    def revert_selected(self):
+        if self.document is None:
+            return
+        selected = set(self.fields.selection())
+        result = {key: value for key, value in self.changes.items() if key not in selected}
+        try:
+            # Restore the whole selection in one transaction. Sequentially
+            # unstaging a reordered loadout can create a transient duplicate
+            # even when the final original loadout is valid.
+            self.adapter.changed_payload(self.document, result)
+            self._accept_pending(result)
+        except Exception as error:
+            messagebox.showerror('Cannot Revert Selection', str(error))
 
     def max_visible(self):
         if self.document:

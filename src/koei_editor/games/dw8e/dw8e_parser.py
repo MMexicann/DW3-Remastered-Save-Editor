@@ -23,9 +23,11 @@ SLIDERS = (('body', 'Body type', 0x10), ('head', 'Head size', 0x11),
            ('neck', 'Neck length', 0x12), ('torso', 'Torso length', 0x13),
            ('legs', 'Leg length', 0x14), ('tail', 'Tail length', 0x15),
            ('muscle', 'Muscle volume', 0x16))
-# The native-save report explicitly qualifies positions 0..4 for Body Type.
-# Adjacent named sliders are inspection-only until their own limits are proven.
-EDITABLE_SLIDERS = SLIDERS[:1]
+# Body Type has an explicit source-backed 0..4 bound. Other named members admit
+# only same-member positions witnessed in existing original ordinary PC horses.
+EDITABLE_SLIDERS = SLIDERS
+QUALIFIED_MENU_TYPES = frozenset(range(8))
+QUALIFIED_MODELS = frozenset(range(0x96, 0x9E))
 
 
 @dataclass(frozen=True)
@@ -143,6 +145,9 @@ def _mapped_fields(payload):
             continue
         name = _name(payload, start)
         for key, label, relative in EDITABLE_SLIDERS:
+            if key != 'body' and (payload[start + 15] not in QUALIFIED_MENU_TYPES
+                                  or payload[start + 0x1E] not in QUALIFIED_MODELS):
+                continue
             if 0 <= payload[start + relative] <= 4:
                 fields.append(Field(f'horse_{identity}_{key}', f'{name}: {label}',
                                     start + relative, slot=identity + 1))
@@ -158,6 +163,17 @@ def field_map(document):
     return MappingProxyType({field.id: field for field in fields_for(document)})
 
 
+def field_options(document, key):
+    fields = field_map(document)
+    if type(key) is not str or key not in fields:
+        raise SaveError('The requested custom-horse slider is not editable.')
+    member = key.rsplit('_', 1)[-1]
+    positions = range(5) if member == 'body' else sorted({
+        field.value(document.payload) for field in fields.values()
+        if field.id.rsplit('_', 1)[-1] == member})
+    return tuple((position, f'Position {position}') for position in positions)
+
+
 def changed_payload(document, changes):
     if not isinstance(changes, Mapping):
         raise SaveError('Pending SYSTEM edits must be a field/value mapping.')
@@ -169,6 +185,9 @@ def changed_payload(document, changes):
         field = mapping[key]
         if type(value) is int and value == field.value(document.payload):
             continue
+        field.validate(value)
+        if value not in dict(field_options(document, key)):
+            raise SaveError('Choose a position witnessed for this slider in the opened ordinary PC horses.')
         result[field.offset:field.offset + field.size] = field.encoded(value)
     return bytes(result)
 
@@ -193,6 +212,7 @@ def stage(document, changes, key, value):
     else:
         field.validate(value)
         result[key] = value
+        changed_payload(document, result)
     return result
 
 
@@ -267,7 +287,9 @@ def field_hint(document, field):
     key = field.id if isinstance(field, Field) else field
     if key not in field_map(document):
         raise SaveError('The requested custom-horse slider is not editable.')
-    return ('Existing custom-horse appearance slider, position 0..4 from left to right. '
+    return ('Existing custom-horse appearance slider. Body Type has positions 0..4; '
+            'other choices are positions witnessed for that same slider in original '
+            'ordinary PC horse records. '
             'Max leaves appearance choices unchanged; name, type, model, abilities, '
             'combat stats and ownership are preserved.')
 

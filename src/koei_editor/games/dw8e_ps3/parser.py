@@ -1,4 +1,4 @@
-"""US PS3 DW8 Empires SYSTEM: existing custom-horse Body Type only.
+"""US PS3 DW8 Empires SYSTEM: existing custom-horse appearance sliders.
 
 The PS3 table is independently identified in a genuine console export; see
 docs/DW8E_PS3.md for console profile, semantic evidence and validation limits.
@@ -27,10 +27,10 @@ SLIDERS = (('body', 'Body type', 0x10), ('head', 'Head size', 0x11),
            ('neck', 'Neck length', 0x12), ('torso', 'Torso length', 0x13),
            ('legs', 'Leg length', 0x14), ('tail', 'Tail length', 0x15),
            ('muscle', 'Muscle volume', 0x16))
-# Published horse schema names Body Type and positions 0..4; official console
-# Edit Mode documentation and the independent PS3 table corroborate this subset.
-# Other named sliders remain inspection-only pending their own qualification.
-EDITABLE_SLIDERS = SLIDERS[:1]
+# The seven names/offsets have source and native corroboration. Only Body Type
+# has an explicit published complete bound; other sliders admit positions
+# witnessed for that same member in qualified original ordinary horse records.
+EDITABLE_SLIDERS = SLIDERS
 
 
 @dataclass(frozen=True)
@@ -213,6 +213,19 @@ def field_map(document):
     return MappingProxyType({field.id: field for field in fields_for(document)})
 
 
+def field_options(document, key):
+    fields = field_map(document)
+    if key not in fields:
+        raise SaveError('The requested custom-horse slider is not editable.')
+    member = key.rsplit('_', 1)[-1]
+    if member == 'body':
+        positions = range(5)
+    else:
+        positions = sorted({field.value(document.payload) for field in fields.values()
+                            if field.id.rsplit('_', 1)[-1] == member})
+    return tuple((position, f'Position {position}') for position in positions)
+
+
 def changed_payload(document, changes):
     if not isinstance(changes, Mapping):
         raise SaveError('Pending SYSTEM edits must be a field/value mapping.')
@@ -224,6 +237,9 @@ def changed_payload(document, changes):
         field = mapping[key]
         if type(value) is int and value == field.value(document.payload):
             continue
+        field.validate(value)
+        if value not in dict(field_options(document, key)):
+            raise SaveError('Choose a position witnessed for this slider in the opened ordinary horses.')
         result[field.offset:field.offset + field.size] = field.encoded(value)
     return bytes(result)
 
@@ -248,6 +264,7 @@ def stage(document, changes, key, value):
     else:
         field.validate(value)
         result[key] = value
+        changed_payload(document, result)
     return result
 
 
@@ -333,7 +350,9 @@ def field_hint(document, field):
     key = field.id if isinstance(field, Field) else field
     if key not in field_map(document):
         raise SaveError('The requested custom-horse slider is not editable.')
-    return ('Existing custom-horse appearance slider, position 0..4 from left to right. '
+    return ('Existing custom-horse appearance slider. Body Type has positions 0..4; '
+            'other choices are positions already witnessed for that same slider in '
+            'the opened ordinary horse records. '
             'Unknown type/model records are inspection-only. Max leaves appearance choices unchanged; '
             'name, type, model, abilities, '
             'combat stats and ownership are preserved. Reimport and resign edited exports '

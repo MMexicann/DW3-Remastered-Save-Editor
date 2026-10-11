@@ -60,8 +60,8 @@ def procedural_raw():
 def edit_values(document):
     result = {}
     for field in parser.fields_for(document):
-        if field.group == 'Equipment':
-            options = parser.field_options(document, field)
+        options = parser.field_options(document, field)
+        if options:
             result[field.id] = next((value for value, _ in options if value != field.value(document.payload)), options[0][0])
         else:
             result[field.id] = max(field.minimum, (field.value(document.payload) + 1) % (field.maximum + 1))

@@ -59,8 +59,16 @@ provide independent record positions and integrity facts. Genuine saves were
 reviewed against Apollo saves commit `c6fa97f2f4ef1b3469f0421c727997108821e188`.
 Pilot and mobile-suit points represent growth/EXP rather than an established
 spendable currency. The patches change both EXP and stored levels, without
-proving level thresholds or derived stat updates. Those fields are inspected,
-along with equipped skill IDs, and are not independently writable.
+proving level thresholds or derived stat updates. EXP and levels remain read
+only. Four equipped skill references are now writable on qualified level-30
+records with six distinct, in-range, learned selected/inherent references.
+Choices use only originally learned non-inherent IDs. Selecting an already
+equipped skill atomically swaps the two slots; duplicate, unlearned and inherent
+choices are rejected. Learned bits and both inherent references stay unchanged;
+a newly learned staged skill becomes an equipment choice after saving and
+reopening. Equipment choices have no Max. Exact source/native corroboration and
+swap/Undo dependencies are in
+[CONSOLE_PIRATE_STRATEGY_DEPTH.md](CONSOLE_PIRATE_STRATEGY_DEPTH.md).
 
 Further inputs: controlled EXP/level/stat and skill-acquisition pairs,
 lower-level skill prerequisites, mobile-suit growth and parts/equipment pairs,

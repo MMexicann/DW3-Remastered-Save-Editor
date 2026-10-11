@@ -89,7 +89,7 @@ class DW6FormatTests(unittest.TestCase):
 
     def test_existing_horse_stats_preserve_high_values_and_neighbors(self):
         mapping = backend.field_map(self.document)
-        self.assertEqual(len(mapping), 41 + 8 + 41)
+        self.assertEqual(len(mapping), 41 + 8 + 41 + 41)
         self.assertEqual(backend.maximums(self.document, {})['horse_0_speed'], 500)
         self.assertNotIn('horse_1_speed', backend.maximums(self.document, {}))
         changes = backend.stage(self.document, {}, 'horse_1_speed', 499)

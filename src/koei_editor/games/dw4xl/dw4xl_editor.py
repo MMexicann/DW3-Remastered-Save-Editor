@@ -8,7 +8,7 @@ class Editor(ScalarEditor):
     backend = dw4xl_parser
     save_extension = '.psu'
     subtitle = 'PlayStation 2 save export · USA'
-    summary = 'Officers, Lv.11 weapons, items and bodyguards.'
+    summary = 'Officers, Lv.11 weapons, items, existing general-item equipment and bodyguards.'
 
 
 def read_save(path):

@@ -24,4 +24,5 @@ class Editor(ScalarEditor):
 class Ryza2Editor(Editor):
     game_id = 'atelier_ryza2'
     subtitle = 'Original Steam PC · native 100-byte item layout'
-    summary = 'Existing item/equipment quality (1–100); higher skill caps remain unmapped.'
+    summary = ('Existing item/equipment quality (1–100) and unspent skill-tree SP reductions. '
+               'Higher quality caps and learned skills remain unmapped.')

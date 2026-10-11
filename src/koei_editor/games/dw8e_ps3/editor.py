@@ -15,8 +15,8 @@ class PS3HorsePresentation(ScalarPresentation):
                                 ('Slot', 'Name preview', 'Occupied flag', 'Record ID',
                                  'Appearance sliders (7)', 'Type ID', 'Model byte',
                                  'Speed', 'Power', 'Ability IDs (4)'), rows,
-                                'Body Type is manually editable on qualified occupied rows. '
-                                'Other appearance positions, identity, ownership, type, model, '
+                                'Seven appearance sliders are manually editable on qualified occupied rows. '
+                                'Identity, ownership, type, model, '
                                 'stats and abilities are read-only.'),)
 
 
@@ -26,7 +26,7 @@ class Editor(ScalarEditor):
     backend = backend
     presentation_type = PS3HorsePresentation
     subtitle = 'US PS3 SYSTEM custom-horse editor'
-    summary = ('Existing custom-horse Body Type only. Open a decrypted SYSTEM APP.BIN '
+    summary = ('Seven appearance sliders for existing custom horses. Open a decrypted SYSTEM APP.BIN '
                'copy with matching PARAM.SFO, then reimport and resign with Apollo.')
 
 

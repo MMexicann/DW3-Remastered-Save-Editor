@@ -13,7 +13,7 @@ import unicodedata
 
 from koei_editor.games.dw3.models import SaveError
 from koei_editor.games.p5strikers_pc import codec
-from koei_editor.games.p5strikers_pc.catalog import CONSUMABLES, INGREDIENTS, CHARACTERS
+from koei_editor.games.p5strikers_pc.catalog import ITEM_GROUPS, CHARACTERS
 from koei_editor.shared.copy_storage import atomic_new, restore_snapshot, snapshot_backup
 from koei_editor.shared.save_safety import safe_path
 
@@ -63,7 +63,7 @@ class Format:
     game_load_verified: bool = False
     note: str = ('Observed encrypted PC English layout 0x20012000. '
                  'Money, persona points, unspent BOND points and existing named '
-                 'ordinary consumable/cooking stacks; individual edits only. '
+                 'consumable/cooking, incense, remedy and skill-card stacks; individual edits only. '
                  'No console conversion, ownership, character or story writes.')
 
 
@@ -147,7 +147,7 @@ def _fields(payload):
         for identity, label, relative, maximum in RESOURCE_MAP:
             fields.append(Field(f'slot_{slot}_{identity}', label, base + relative,
                                 4, maximum, 'Resources', slot))
-        for group, records in (('Consumables', CONSUMABLES), ('Cooking ingredients', INGREDIENTS)):
+        for group, records in ITEM_GROUPS:
             for relative, name in records:
                 offset = base + relative
                 # Published editor identifies the low quantity byte. The next
@@ -270,7 +270,7 @@ def item_records(document):
     for slot in range(1, codec.PC_SLOT_COUNT):
         if not _occupied(document.payload, slot):
             continue
-        for group, records in (('Consumables', CONSUMABLES), ('Cooking ingredients', INGREDIENTS)):
+        for group, records in ITEM_GROUPS:
             for relative, name in records:
                 offset = _base(slot) + relative
                 quantity, opaque = document.payload[offset:offset + 2]
@@ -300,6 +300,11 @@ def progression_records(document):
 
 def field_hint(document, key):
     field = field_map(document)[key]
-    return (f'Individual edit range {field.minimum:,}–{field.maximum:,}; Max leaves this field unchanged. '
+    mechanic = ''
+    if field.group == 'Incenses':
+        mechanic = 'Changes the existing incense stack only; character/Persona stats change when the game applies the item. '
+    elif field.group == 'Skill cards':
+        mechanic = 'Changes the existing card stack only; teaching, compatible Personas and learned skill sets remain under game control. '
+    return (mechanic + f'Individual edit range {field.minimum:,}–{field.maximum:,}; Max leaves this field unchanged. '
             'This range is a conservative editor limit, not a verified natural cap. '
             'Existing higher/unknown values and acquisition/progression records are preserved.')

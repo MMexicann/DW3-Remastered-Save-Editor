@@ -65,7 +65,8 @@ four bodyguard point values, difficulty and 84 harness/orb assignments. Existing
 identified custom appearances expose up to five cosmetic fields each: color,
 head, chest, arms/legs and hip. Named choices distinguish gender-specific clothing.
 Creation, gender, moveset, weapon model, names and unknown metadata stay unchanged.
-Unknown cosmetic enums remain read only. The genuine sample exposes 435 fields.
+Unknown cosmetic enums remain read only. The genuine sample exposes 435
+base/custom fields plus 192 qualified occupied general-item slots, totaling 627.
 
 An existing custom's five manual stat/EXP controls are additionally offered only
 when its 24-byte appearance/roster originals already match, its model copies are
@@ -73,20 +74,24 @@ known and equal, and its duplicate Attack/Defense values agree. These writes
 synchronize only the mapped value across all corresponding copies. The supplied
 public Hyper reference has four differing appearance templates and grown roster
 records: its stat/EXP controls are therefore excluded, while its cosmetics remain
-editable. No edit repairs or reconciles different templates. Up to 455 fields can
-appear on a fully matching layout; those matching-record tests are procedural.
+editable. No edit repairs or reconciles different templates. Up to 455 base/custom
+fields can appear on a fully matching layout, plus qualified occupied general
+slots; those matching-custom-record tests are procedural.
 Custom stat 255 and EXP 65,535 are manual storage bounds, excluded from Max.
 
 Equipment, bodyguard names, custom identities, challenge top-10 tables and the
 suspended timer are searchable inspections. Challenge scores distinguish points
 from Time Attack's frames at 60 fps. Suspended phase bytes can change within a
-battle and are not story-clear flags. General equipment slots and live battle
-entities remain unchanged.
+battle and are not story-clear flags. Originally occupied known-owned general
+slots now allow replacement or unequip; empty/unqualified general slots and
+live battle entities remain unchanged.
 
-The XL adapter's scope is 382 bounded integer fields: 42 officers' four stats,
+The XL adapter's base scope is 382 bounded integer fields: 42 officers' four stats,
 character points and weapon EXP, 41 semantic items, four bodyguard point values
-and difficulty, plus 84 owned harness/orb assignments. General equipment
-references and bodyguard names remain read only. The officer record's first byte is published as a constant marker;
+and difficulty, plus 84 owned harness/orb assignments. Additional originally
+occupied known-owned general slots allow replacement or unequip; the tested
+native export exposes 189 such slots, totaling 571 fields. Empty/unqualified
+general slots and bodyguard names remain read only. The officer record's first byte is published as a constant marker;
 it is not treated as Hyper's playable/unlocked flag.
 
 | Value | Published meaning and editing bound |
@@ -104,11 +109,19 @@ stats and guard availability are reported as point-derived. Equipment-slot
 availability grows with weapon progression; granting items must preserve existing
 equipment references. Harness slot 0 permits owned IDs 19–23 and orb slot 1
 permits owned IDs 13–18; each platform retains its own empty sentinel. Pending
-item grants can precede equipment assignments. Locking an owned item is rejected
+item grants can precede harness/orb assignments. Locking an owned item is rejected
 while an officer still equips it. Granting a rare item does not clear its stage.
 General-slot availability thresholds and their weapon-progression dependency
-remain unqualified, so slots 2–7 are not writable. These relationships still
-require independent game-load checks.
+remain unqualified. Slots 2–7 are writable only when the original position
+contains a known-owned general item: general IDs 0–12 and 24–31 for Hyper,
+0–12 and 24–40 for XL. They can be replaced by an originally owned general item
+or cleared with the platform's empty sentinel; empty original slots cannot be
+filled, and pending grants cannot qualify a target. Final ownership and unique
+general-item assignments are checked, and that officer's weapon EXP must stay
+unchanged in the same staged batch. Max excludes these choices. The field proof,
+independent native matrices and Tk checks are recorded in
+[Samurai / classic Dynasty editor depth](SAMURAI_DYNASTY_DEPTH.md).
+These relationships still require independent game-load checks.
 
 Bulk Max uses the published weapon/item limits and preserves higher existing
 weapon EXP. Uncertain stat/character-point/bodyguard-point bounds and difficulty
@@ -150,8 +163,8 @@ converter, external implementation or sample is shipped. Neither gameplay
 reference repository declares a licence; its factual offsets and names informed
 independent Python implementations rather than a source-code import.
 
-Focused checks include per-field genuine surgical edits (435 Hyper fields and
-382 XL fields), unchanged roundtrips, exact source preservation, integrity,
+Focused checks include per-field genuine surgical edits (627 Hyper fields and
+571 XL fields in the latest qualified copies), unchanged roundtrips, exact source preservation, integrity,
 unknown bytes/container files/padding, copied-file Tk named equipment/custom
 controls, Review, Undo, Max exclusion, backup and same-bytes validated restore.
 Fixtures are opt-in through `DW4HYPER_SAVE_COPY` and `DW4XL_PSU_COPY`; unavailable
@@ -181,7 +194,7 @@ source or release package.
 | --- | --- |
 | Standard stats and character EXP/points | Bounded manual edits; natural stat caps and EXP/stat growth thresholds are not qualified for automatic Max. |
 | Weapons | Published EXP-derived progression and each platform's special weapon values; general-slot thresholds need controlled progression/equipment pairs. No XL Lv.11 value is offered in Hyper. |
-| Items and equipped harness/orb | Named levels/ownership and category-checked owned assignments; general slots require their availability rules. No stage/rare-item reward completion is bundled in grants. |
+| Items and equipment | Named levels/ownership, category-checked owned harness/orb assignments and replacement/unequip in originally occupied known-owned general slots. Empty general positions remain unwritable pending availability thresholds; no stage/rare-item reward completion is bundled in grants. |
 | Bodyguards | Team points edit; names inspected. Natural thresholds, count/type/growth effects and safe name encoding writes need action pairs. |
 | Hyper custom characters | Existing identified cosmetics and matching-record manual stat/EXP edits; differing template/grown roster data preserved. Creation, deletion, gender/moveset/model changes need full coupled initialization and stat-generation qualification. |
 | Hyper challenge rankings | Sorted record order, officer IDs and points/frame scores inspected. Editing needs legitimate score bounds and safe insertion/sort/reward dependencies. |

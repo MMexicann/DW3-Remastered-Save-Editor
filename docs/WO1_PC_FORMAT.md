@@ -98,6 +98,11 @@ automatic backups, validated restore and atomic Save As to a new copied `.dat`.
 | Existing weapon attack bonus | Existing own-family weapon byte `+5`; individual edits use explicit byte storage range `0..255`. Bulk Max excludes it. Normal fusion guides describe +20, but a PC game clamp has not been proved; unusual/higher opened values are retained. |
 | Existing weapon capacity | Byte `+4`, between the opened ownership-mask bit count and eight; individual only, no bulk Max. Decreasing cannot hide an owned effect, increasing cannot acquire or activate an absent effect. |
 | Already owned named effect ranks | Byte `+6+enum`, stored as displayed rank minus one; fourteen named effects use `1..10` with the original PC manual's natural maximum. Native enum 5, absent effects and mask identities remain untouched. Higher opened ranks survive Max; assigning the opened value unstages a prior edit. |
+| Existing equipped weapon | Officer byte `+1`, displayed as slot 1..8; only qualified original own-family weapon choices with a supported original selector and at least two choices; no Max, ownership or pool changes |
+
+The [existing-editor depth review](OROCHI_DYNASTY_DEPTH.md) records the selector
+proof, 63 qualifying genuine early-save choices, exact checksum/byte tests and
+native Tk selector/Review/Undo/backup/Save As/restore validation.
 
 Writable weapon properties require an original descriptor in this record's four
 IDs `4*record..4*record+3`, no unknown mask bit 15, and a capacity that holds all
@@ -152,7 +157,8 @@ It is a mechanics corroboration, not a PC disk-offset or revision reference.
 | Abilities/skills | Acquisition flags, global recomputed rank, prerequisites and seven equipped references remain preserved. Native acquire/equip pairs and exact flag-to-ability correspondence are needed before coherent edits. |
 | Existing weapons and attributes | Qualified bonus/capacity/owned rank values writable. The four-tier identity stays unchanged, and records with unqualified layouts remain read only. |
 | Weapon acquisition and fusion transactions | Preserved. Native before/after acquisition and fusion pairs must identify source-consumption, ownership, collection/equipped references, costs and rewards before creating or consuming weapons/effects. |
-| Equipped weapon/costume/ability choice | Existing selector bytes preserved. Controlled equip pairs and original PC display/selection validation are needed before offering new choices. |
+| Equipped weapon choice | Existing original own-family qualified weapon pool selectable; unsupported original selectors and unqualified targets remain opaque. No new weapon acquired. |
+| Costume/ability choice | Existing selector bytes preserved. Matching acquisition/prerequisite and display/selection proof is still needed. |
 | Unique items and mounts | Ownership/reward flags and Cavalier/lead-character mount dependencies remain protected. Controlled acquire/equip pairs are needed; no invented horse inventory. |
 | Bodyguards | No persistent original PC bodyguard subsystem established; no unrelated-game offsets used. |
 | Story, stage results and gallery rewards | Preserved and separate from resources. Controlled original-PC stage-clear/unlock pairs are needed to associate stages, clear state, result counters, character/unique-item unlocks and coupled gallery rewards. |

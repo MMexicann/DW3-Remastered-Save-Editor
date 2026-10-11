@@ -12,6 +12,12 @@ source adds further adapters and richer existing editors described in
 [inventory](SUPPORTED_GAMES.md) is authoritative;
 research-only formats below remain separate from those editors.
 
+The current source has **44 profiles**. The latest
+[existing-editor expansion](RICH_EDITOR_EXPANSION.md) reviews every supported
+profile except DW3 Remastered and adds content to 19 existing profiles. Its
+per-lane checklists supersede earlier read-only claims for the specific new
+controls; unproved progression, acquisition and reward transitions remain blocked.
+
 Attached executables were investigated as static data. They were never run.
 Private static analysis copies, freely shared player saves, owner identifiers,
 game assets and personal paths are excluded from source packages and releases.
@@ -56,7 +62,7 @@ candidates have no editable library card or gameplay writer.
 
 | Game | Validated bounds and safeguards |
 | --- | --- |
-| DW7 XL | Gold 999,999; health 1,000; attack/defense 1,400; power/speed 100; skill points 9,999. Native NPC records remain unchanged. Active weapon is a choice, excluded from Max, and must resolve to an already equipped owned valid record. Seal meters and purchased-skill flags remain inspection-only. |
+| DW7 XL | Gold 999,999; health 1,000; attack/defense 1,400; power/speed 100; skill points 9,999. Native NPC records remain unchanged. Active weapon is a choice, excluded from Max, and must resolve to an already equipped owned valid record. Qualified owned unlearned positive seal meters permit reductions; purchased-skill flags remain inspection-only. The native sample has no eligible positive unlearned meters; see the depth checklist. |
 | WO3 Ultimate | Health/Musou/attack/defense 999; natural speed 180. Existing higher values, including the acquired sample's speed 200, survive Max. Resource limits are published edit bounds rather than recovered natural clamps, so growth points/gems/orbs/materials are excluded from Max. Standard proven attribute ranks are 1–10; Verity is rank 1. Empty/unknown weapons, zero/unknown attributes and unsupported slot layouts are read-only; slot changes cannot hide or activate dormant attributes. |
 | SW4 DX | Gold 999,999 and eight gems 99. Base stat edits use the stored u16 range and have no Max because growth caps are unresolved. Skill Max respects each existing ceiling, unusual values and locked state; IDs/ceilings are preserved. Equip selection stays in the officer's occupied own pool. Character unlock requires an occupied qualified equipped weapon and applies the native new-character marker without setting stage completion. |
 | DW9 Empires | Current SYSTEMDATA only, exact `0x2F1C28` size and `0x210602F0` revision. Existing item quantities 1..999 edited manually; zero/higher entries, identities and acquisition state preserved. All inventory controls excluded from Max; campaign currency and custom-officer records are not writable. |
@@ -72,8 +78,8 @@ edit does not simulate a purchase, fusion, promotion or stage reward.
 
 | Game | Further systems requiring specific evidence |
 | --- | --- |
-| DW7 XL | Named roster/equipment, seal learning and system seal rewards require the native parameter/localization tables. Purchased skills/EX unlocks need officer definitions, costs, prerequisite masks and stat rewards. Guardian beasts, titles, bonds/sworn allies, Story/Conquest/Legend/town progression and gallery require ownership/record identities and reward pairs. No persistent level/EXP mapping has been proved; another game's level field is not substituted. |
-| WO3 Ultimate | Stored level/EXP/promotions/item slots are inspected, while level reset, allocated/remaining upgrade stones and promotion rewards require controlled pairs. Proficiency/abilities, compatibility/reinforcement and derived attack need exact semantics and grade caps. Full orb/material names, recipes, attribute acquisition/fusion, equipment, mounts, bonds/companions, costumes/colors, Story/Redux/stage rewards, Gauntlet/keystones/allies, Duel cards and gallery need native ID tables and one-action acquisition/equip/clear pairs. |
+| DW7 XL | Named roster/equipment, seal grants/learning completion and system seal rewards require native parameter/localization tables. Qualified unlearned seal-meter reductions do not grant learned flags. Purchased skills/EX unlocks need officer definitions, costs, prerequisite masks and stat rewards. Guardian beasts, titles, bonds/sworn allies, Story/Conquest/Legend/town progression and gallery require ownership/record identities and reward pairs. No persistent level/EXP mapping has been proved; another game's level field is not substituted. |
+| WO3 Ultimate | Stored level/EXP/promotions are inspected. Qualified originally promoted officers expose unallocated upgrade stones, and owned ordinary-item slots permit guarded equipment choices. Level reset, allocated stones and promotion rewards remain blocked. Proficiency/abilities, compatibility/reinforcement and derived attack need exact semantics and grade caps. Full orb/material names, recipes, attribute acquisition/fusion, unowned or special-item equipment, mounts, bonds/companions, costumes/colors, Story/Redux/stage rewards, Gauntlet/keystones/allies, Duel cards and gallery need native ID tables and one-action acquisition/equip/clear pairs. |
 | SW4 DX | Level/EXP/proficiency are inspected; external threshold/growth tables block consistent writes. Rare/DLC weapon creation, skill replacement and ceilings need templates and exclusion rules. Personal skills/gauges, consumables, mounts, custom character appearance/names, Chronicle goals/mentors/friendship/companions/biographies and stage/rare-weapon/collection unlocks need qualified asset dictionaries or controlled pairs. Historical kills/spending remain records rather than spendable resources. Older migration revisions need genuine samples and layouts. |
 | PW4 | Coin rarity/name catalogs, acquisition and growth-map spending remain separate from quantity edits. Character/DLC unlocks, beginning/character Growth Maps, derived stats, skill ownership/equips/specials, Soul Maps, costumes, Dramatic/Free/Treasure Log, DLC challenges and gallery need native named record maps and prerequisite/reward pairs. System saves, three-/four-step regional variants and revision 22 migration are unqualified. Conventional weapon fusion/mount controls are not invented for this title. |
 | Orochi Z | Stock EXP, native bounded base attack and existing weapon bonus/capacity/owned ranks are implemented. Exact officer names require native `/etc/unitbase.bin` association; embedded surname/given fragments cannot be indexed directly. Other four stats, level transitions and proficiency remain protected: native growth uses nonserialized RNG and linked skill/costume/wallpaper rewards. Coherent already progressed officers have manual EXP edits confined to their opened level; no automatic level transition or Max. New weapons/attributes and full fusion transactions require collection/ownership/cost maps; alchemy requires recipes, crafted stock and equipped-mask dependencies. Treasures are permanent prerequisites, not consumable material counts; mounts derive from Cavalier skill/faction rather than an invented inventory. Story/Dramatic/Versus/Survival and gallery need labelled eligibility, result and reward pairs. |
@@ -182,13 +188,13 @@ implemented native byte-sum integrity, original inventory/count qualification
 and source-backed base-owner eligibility. Gold, twelve specifically identified
 ordinary-equipment convoy quantities and finite durability have decrease-only
 controls, all excluded from Max. Unknown/quest/relic/accessory/consumable/material
-items, unknown/DLC owners and entitlement stay read-only. Eight public extracted
+items, unknown/DLC owners and entitlement stay read-only. Qualified joined base owners also have instruction motivation and original learned/equipped ability choices. Eight public extracted
 candidates have file validation; no clean exact-build/DLC-labelled control or
 edited Switch game-load/re-save was available.
 
 Read-only inspection distinguishes character EXP/stats, eleven proficiency
 rank/EXP pairs and mirrors, class mastery/certification, ability/art ownership
-and equips, barracks/equipped battalion copies and anonymous support-point
+and inactive equips beyond original learned loadout movement, barracks/equipped battalion copies and anonymous support-point
 records. The [mechanics checklist](THREE_HOUSES_MECHANICS.md) lists prerequisite
 and controlled-action inputs for each system, with main campaign, free revisions
 and Cindered Shadows/Expansion Pass scope separately qualified. This title does
@@ -209,13 +215,11 @@ Windows profile; regional product evidence does not imply interchangeable saves.
 Genuine privately held copies qualify unchanged roundtrips and targeted file
 edits for DW7 XL, WO3 Ultimate, SW4 DX and PW4. Existing DW8 XL/PW3 genuine-file
 qualification is retained. DW8 Empires genuine PC SystemSave files qualify
-existing custom-horse body-type edits; its campaign files and Nioh 3 genuine
-files qualify codecs only. The separate US PS3 DW8 Empires SYSTEM horse adapter and
+existing custom-horse appearance edits; its campaign files qualify codecs only.
+The separate US PS3 DW8 Empires SYSTEM horse adapter and
 US PS3 WO3 Ultimate resource adapter have genuine no-op/surgical and Tk
 qualification. WO3's public resource edit/load report is external evidence,
-not a local game-load test or global integrity claim. DW6 and PS3 DW7/SW4/DW7 Empires native public samples qualify their specific profiles;
-
-existing custom-horse body-type edits. Nioh 3 genuine encrypted/decoded USER
+not a local game-load test or global integrity claim. Nioh 3 genuine encrypted/decoded USER
 profiles and original Ninja Gaiden II extracted stories qualify targeted
 gameplay-field edits. DW6 and PS3 DW7/SW4/DW7 Empires native public samples
 qualify their specific profiles;

@@ -35,11 +35,33 @@ class DW8EmpiresGuiTests(unittest.TestCase):
             self.editor.open()
         self.assertEqual(self.errors, [])
 
+    def test_new_head_choice_witnessed_positions_apply_undo_and_save(self):
+        editor = self.editor
+        editor.fields.selection_set('horse_0_head')
+        editor.selected()
+        self.assertEqual(set(editor._choice_values.values()), {1, 3})
+        editor.choice_value.set(next(label for label, value in editor._choice_values.items() if value == 3))
+        editor.selected_choice()
+        editor.apply_selected()
+        self.assertEqual(editor.changes, {'horse_0_head': 3})
+        editor.review()
+        editor.revert_selected()
+        self.assertEqual(editor.changes, {})
+        editor.undo()
+        self.assertEqual(editor.changes, {'horse_0_head': 3})
+        before = self.source.read_bytes()
+        editor.save_to(self.source.with_name('head-edited.bin'))
+        self.assertEqual(self.errors, [])
+        self.assertEqual(self.source.read_bytes(), before)
+        self.assertEqual(backend.field_map(editor.document)['horse_0_head'].value(editor.document.payload), 3)
+        self.assertEqual(backend.restore(editor.backup, self.source.with_name('head-restored.bin')).read_bytes(), before)
+
     def test_existing_named_body_apply_review_undo_max_inspection_save_backup(self):
         editor = self.editor
         editor.search.set('Final Horse')
         editor.refresh()
-        self.assertEqual(editor.fields.get_children(), ('horse_149_body',))
+        self.assertEqual(set(editor.fields.get_children()),
+                         {f'horse_149_{key}' for key, _, _ in backend.SLIDERS})
         editor.fields.selection_set('horse_149_body')
         editor.selected()
         editor.value.set('4')

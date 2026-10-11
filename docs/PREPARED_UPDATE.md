@@ -6,6 +6,11 @@ The registry-derived [supported inventory](SUPPORTED_GAMES.md) reflects source
 support. A Windows preview build is provided as a workflow artifact after the
 combined checks; it does not replace the published release.
 
+The subsequent [existing-editor expansion](RICH_EDITOR_EXPANSION.md) adds editing
+content to 19 of the 44 registered profiles, with shared relative adjustment and
+selective revert controls. Its table is the current feature delta; the tables
+below describe the preceding integration. Version and publication stay unchanged.
+
 ## Added game/platform profiles
 
 | Game / edition | Platform | Implemented controls |

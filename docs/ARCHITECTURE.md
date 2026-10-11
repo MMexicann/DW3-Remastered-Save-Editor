@@ -64,6 +64,13 @@ manufactured by pending edits. Max honors field metadata, dependency rules and
 higher/unusual original values. Search follows labels/groups/records, and Max
 Visible applies only to filtered rows without dropping hidden pending edits.
 
+Adjust Selected applies an integer delta to each selected pending value through
+backend validation, preserving hidden edits and recording one Undo batch. Text
+and named choices use their own controls. Revert Selected removes selected
+pending keys together and validates the complete final payload, so restoring a
+whole loadout does not fail on transient duplicate states. Partial restoration
+that leaves invalid dependencies is rejected without changing edits or history.
+
 [scalar_presentation.py](../src/koei_editor/shared/scalar_presentation.py)
 defines data-only inspection tables, hints and filename guidance. A game can
 provide a presentation class or optional backend hooks without introducing

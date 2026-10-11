@@ -1,0 +1,135 @@
+# Existing Team Ninja editors: implemented expansion and proof limits
+
+These changes extend existing adapters without adding a game/platform or
+changing their native revision profiles. No game or third-party editor binary
+was executed. Edited game-load/re-save validation remains unperformed.
+
+## Wo Long: existing battle-set custom names
+
+The qualified PC USER revision `0x23121200` contains two separate 50-slot
+serializer arrays:
+
+- `UIData.ui_battleset_slot_data_info[i].UiBattleSetSlotInfo.str`: a JSON string
+  for the slot's custom display name.
+- `PlayerData.battleset_data_list[i].BattleSetData`: the loadout, including a
+  boolean `enable_flag`, level, Virtues, spells and equipment references.
+
+The [official update history](https://www.teamninja-studio.com/wolong/us/update/),
+Ver1.300 (December 12, 2023), explicitly identifies custom names in the Battle
+Set menu and warns:
+“Changes made to custom names will not be saved if they contain characters not
+supported by the game.” It separately describes automatically registered battle
+set names. The independently observed serializer keeps UI names separate from
+the gameplay loadout. No external implementation or catalog supplies this
+writer.
+
+The new controls select a name only when both arrays have exactly 50 slots,
+both wrappers match, the name is already a string and the corresponding
+`enable_flag` is the boolean `true`. Missing, unknown or malformed optional
+arrays generate no name fields and remain unchanged. Editing cannot create or
+enable a battle set, equip its gear, allocate its Virtues or unlock its spells.
+The stable field ID is `battle_set_<zero-based-slot>_name`; the visible slot is
+one-based. Storage is the existing variable-width UTF-8 JSON string token.
+
+Manual input accepts 1..16 printable ASCII bytes. This is a conservative editor
+limit, **not a recovered natural game limit**. Quotes and backslashes use JSON
+escaping. Unicode and longer original names remain byte-exact on no-op; assigning
+the opened string unstages an edit even when that string exceeds the input
+limit. Max is disabled. Only the selected string token, body zero-padding and
+native checksums change; all loadout records, other JSON spelling, owner context
+and original cipher representation survive. Existing currencies and names can
+be staged together with shared Review Changes, Undo, backup and Save As.
+
+The genuine USER/BACKUP corpus confirms these arrays and wrapper shapes, but
+contains **no enabled battle sets or nonempty custom names**. Genuine no-op and
+currency/stack regressions validate the unchanged native profile. Enabled-set
+renaming is covered by generated surgical-format and actual Tk Save As tests;
+it has **not** been validated on an enabled native battle set or loaded in game.
+An intact current-revision native copy with an existing named enabled set, plus
+a controlled rename pair, is the precise next qualification input.
+
+Equipment reinforcement, lock/favorite bits, Martial Arts, virtues, skill
+points and Wizardry remain blocked by the specific dependencies recorded in
+[TEAM_NINJA_RESEARCH.md](TEAM_NINJA_RESEARCH.md). Native nested orb/inscription
+fields and suggestive names do not prove allowed categories, caps, cache updates
+or prerequisites. A public unlicensed runtime-memory trainer found during the
+search does not qualify a PC disk mapping; its code and catalog were not copied.
+No quantity range or flag eligibility was broadened from that source.
+
+The Wo Long safe-save path now rechecks the opened bytes after serialization
+and after backup, preventing a detected source change from reaching a new
+destination. Wrong selection types and non-Path forged snapshots raise the
+standard save error. These changes preserve the shared safety workflow.
+
+## Nioh 3: eleven more ordinary consumables
+
+Existing reduction controls now cover eighteen factual ordinary-item IDs in
+the qualified item-box/storehouse arrays. The eleven additions are:
+
+| Native little-endian u16 ID | Name |
+| --- | --- |
+| `0x6514` | Antidote |
+| `0xFA6E` | Antiparalytic Needle |
+| `0x96A7` | Arrowproof Amulet |
+| `0x4E22` | Daion-Jin's Sake |
+| `0xE7D3` | Dung Ball |
+| `0x4D66` | Fireproof Amulet |
+| `0xFC7A` | Sacred Ash |
+| `0x5A51` | Smoke Ball |
+| `0x4C5F` | Throwing Stone |
+| `0x5943` | Travel Amulet |
+| `0x304E` | Water Amulet |
+
+Each factual name/byte identity was checked against the Apache-2.0
+[public editor at commit b5d0789](https://github.com/alfizari/Nioh-3-Save-Editor/tree/b5d0789791fe31d06ad325d4012aa0333c60cd8f)
+and independently found in genuine native revision `0x01030001` or `0x01040000`
+records with matching identity/appearance, positive quantity, zero equipment
+levels/reinforcement and a nonzero instance. The
+[official equipment manual](https://www.gamecity.ne.jp/manual/nioh3/eng/6300.html)
+also independently identifies Throwing Stones, Antidotes and Antiparalytic
+Needles as ordinary usable items. Only these small factual corroborations are
+included; no external catalog, extracted game asset or source implementation
+is incorporated.
+
+The existing qualification and dependency rules remain authoritative: a unique
+known record in a native item pool, original positive quantity, ordinary shape,
+`1..opened quantity`, no increases, no removal, no equipment writes and no Max.
+Quantity remains u16 at record `+0x04`; only those bytes and the native body
+checksum change. Unusual high original quantities remain reversible. Identity,
+instance, flags, shortcuts, acquisition, rewards, native seeds and ciphertext
+context stay intact. Native revisions retain their exact tagged array profiles.
+
+Generated tests edit every new item in both pools and revisions, reject
+nonordinary shapes and wrong values, verify mixed changes/Undo, and compare
+all changed bytes against selected quantity/checksum ranges. Genuine tests edit
+eligible additions in both native revisions and verify original-file
+preservation; actual Tk tests search Antidote, stage/review/undo and save a copy
+with an automatic backup. These are native parser/write and GUI qualifications,
+not actual game-load evidence.
+
+## Original Ninja Gaiden II: audit outcome
+
+The original Xbox 360/Xenia revision-6 parser already selects all eleven
+source-named ordinary consumables/ammunition records, preserves variants and
+rejects duplicate identities. Reinspection of the published source found no
+additional independently proved ordinary-item mapping. Public health/Ninpo
+writes normalize duplicated halfwords without proving their distinct consumers;
+weapon upgrade codes likewise do not establish equipped references or learned
+moves. No new stat, weapon, ownership or story writer was invented. The existing
+format/native and Tk workflows are regression-tested alongside the additions;
+[NINJA_GAIDEN_RESEARCH.md](NINJA_GAIDEN_RESEARCH.md) keeps those exact blockers.
+
+## Focused validation
+
+- `tests.test_wolong_expansion`: surgical escaped/custom-name token writes,
+  enabled-set qualification, limits, original Unicode/high-value Undo, mixed
+  numeric/text changes, actual Tk save/backup workflow and source-change races.
+- `tests.test_nioh3_expansion`: both revisions/pools, all eleven additions,
+  nonordinary/unknown preservation, high originals, actual Tk workflow and
+  optional genuine-file surgical edits.
+- Existing Wo Long/Nioh 3/NGII native and format suites, plus
+  `tests.test_team_ninja_gui`, retain independent regression coverage.
+
+Private fixtures remain outside source and bundles. Environment variables select
+reviewed local copies; no player bytes, identifiers or personal paths are
+published here.

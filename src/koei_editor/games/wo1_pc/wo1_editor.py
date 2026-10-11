@@ -39,7 +39,7 @@ class Editor(ScalarEditor):
     backend = backend
     presentation_type = OrochiPresentation
     subtitle = 'Original 2008 Windows PC save.dat editor'
-    summary = 'Shared Growth Points and existing weapon attack bonus, capacity and owned effect ranks.'
+    summary = 'Shared Growth Points, existing weapon properties and owned-weapon equipment.'
 
 
 def read_save(path):

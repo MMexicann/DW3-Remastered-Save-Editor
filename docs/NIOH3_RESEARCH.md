@@ -2,8 +2,8 @@
 
 The registered adapter in `src/koei_editor/games/nioh3` accepts native encrypted
 or decoded Windows PC USER copies with revisions `0x01030001` and `0x01040000`.
-It reduces existing positive quantities of seven identified common items in the
-item box and storehouse, and deducts source-mapped Amrita and Gold balances.
+It reduces existing positive quantities of eighteen identified common items
+in the item box and storehouse, and deducts source-mapped Amrita and Gold balances.
 Assigning the opened amount undoes an edit. Increases, zeroing item records and
 bulk Max remain unavailable. Equipment, unknown items,
 progression, acquisition and rewards remain read only. The previous no-write
@@ -32,11 +32,19 @@ the published 393. This does not qualify any unobserved revision or later DLC.
 
 ## Writable record qualification and dependencies
 
-Seven factual disk IDs are independently corroborated against the public editor
-and genuine record tables: `0x05E7` Elixir, `0x382A` Sacred Water, `0xF3EE` Arrow,
+Eighteen factual disk IDs are independently corroborated against the public
+editor and genuine record tables. The original seven are `0x05E7` Elixir,
+`0x382A` Sacred Water, `0xF3EE` Arrow,
 `0xA70B` Incendiary Arrow, `0xF8DD` Ochoko Cup, `0x8A41` Salt and `0x79CF` Rifle
 Ammunition. These are little-endian u16 values, rather than byte-order text. No
 external item or affix catalog is incorporated.
+
+The eleven additions are Antidote, Antiparalytic Needle, Arrowproof Amulet,
+Daion-Jin's Sake, Dung Ball, Fireproof Amulet, Sacred Ash, Smoke Ball, Throwing
+Stone, Travel Amulet and Water Amulet. Their exact IDs, pinned Apache-2.0 factual
+source, native-record corroboration and official manual evidence are recorded
+in [the expansion note](TEAM_NINJA_DEPTH.md). The same original-record
+qualification and reduction-only rules below apply to every addition.
 
 An eligible original item-box/storehouse record has a known ID at `+0x00`, the
 same appearance ID at `+0x02`, a positive u16 quantity at `+0x04`, zero level,
@@ -154,7 +162,7 @@ exposed, and the original seed, wrapped keys and excluded tail remain intact.
 | --- | --- |
 | Native identity/revision/size and body checksum | Implemented game adapter and retained no-write inspector; genuine files and malformed-input tests |
 | Native encryption/decryption | Genuine encrypted USER pair qualifies decoded representation, surgical quantity/balance writes/reparse and exact no-op ciphertext |
-| Common consumables and ammunition | Reduce existing positive quantities of seven identified ordinary item-box/storehouse IDs; no acquisition, removal or Max |
+| Common consumables and ammunition | Reduce existing positive quantities of eighteen identified ordinary item-box/storehouse IDs; no acquisition, removal or Max |
 | Quantity increases and natural capacities | Need build-labelled displayed capacities, prerequisite/upgrade state and controlled pickup/restock/transfer pairs; storage ceilings and cheat targets are not natural caps |
 | Amrita and Gold balances | Historical source and explicit native tag profiles qualify u64 deductions `0..opened`, including zero; no Max, increases, transaction history or level-up simulation |
 | Currency increases, lifetime/grave state and transaction dependencies | Need controlled held/spent/recovered/reward pairs and displayed values; independent state is preserved and not inferred from the balance fields |
@@ -213,8 +221,10 @@ no-write inspector regressions. `tests/test_nioh3_format.py` covers generated
 revision/tag/length boundaries, unknown/empty/nonordinary records, duplicate IDs,
 unusual u16/u64 originals, malformed pending maps/snapshots, surgical edits, seeds/tail,
 shared scalar contracts, source changes during serialization/backup and validated
-backup/restore. Optional locally held native copies are
-selected using `NIOH3_NATIVE_DIR`; the pair uses `NIOH3_ENCRYPTED_COPY` and
+backup/restore. [Expansion tests](../tests/test_nioh3_expansion.py) additionally
+cover all eleven new identities in both pools/revisions, native eligible
+reductions and the actual Tk control workflow. Optional locally held native
+copies are selected using `NIOH3_NATIVE_DIR`; the pair uses `NIOH3_ENCRYPTED_COPY` and
 `NIOH3_DECRYPTED_COPY`. Shared GUI workflows in `tests/test_team_ninja_gui.py`
 exercise opening copies, field editing, Undo, Review Changes, themes, new-copy
 saving and backup restoration, with optional native `NIOH3_SAVE_COPY` input.

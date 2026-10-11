@@ -15,7 +15,7 @@ class Presentation(ScalarPresentation):
             InspectionTable('Named ordinary item stacks',
                             ('Save slot', 'Category', 'Item', 'Quantity byte', 'Preserved adjacent byte', 'Availability'),
                             self.backend.item_records(document),
-                            'Existing known positive stacks only; no recipes, equipment, item creation or story changes.'),
+                            'Existing positive consumable, ingredient, incense, remedy and skill-card stacks. Incense application and Persona teaching remain under game control.'),
             InspectionTable('Character growth', ('Save slot', 'Character', 'Stored level byte'), characters,
                             'Read only. EXP, derived stats and unlock prerequisites remain unchanged.'),
             InspectionTable('Held Persona records', ('Save slot', 'Held slot', 'Raw Persona ID word'), personas,
