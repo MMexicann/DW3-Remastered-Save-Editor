@@ -16,6 +16,7 @@ validation artifacts, not a new GitHub release.
 | Persona 5 Strikers | Windows PC | Occupied-slot money, Persona points, unspent BOND points and existing named ordinary consumable/cooking quantities; character-level and held-Persona inspection. |
 | Wo Long: Fallen Dynasty | Windows PC | Available Genuine Qi, copper, accolades, existing ordinary stack reductions and searchable inventory/equipment/companions/progression. |
 | Fire Emblem Warriors: Three Hopes | Nintendo Switch | Existing gold reductions and owned Shez/Byleth name customization with synchronized mirrors; named character and weapon inspection. |
+| Fire Emblem: Three Houses | Nintendo Switch, exact gameplay save-format v13/v23 | Gold reductions, existing convoy quantity reductions and qualified existing equipment durability reductions; read-only inspection keeps progression, proficiency, mastery, abilities, combat arts, battalions and support points distinct. Exact software patch and DLC entitlement are separately unqualified. |
 | Atelier Ayesha: The Alchemist of Dusk | PlayStation 3, US/Japanese decrypted exports | Cole and existing ordinary stack reductions; searchable inventory with float qualities, potentials/effects and distinct memory values. Apollo handles reimport/resigning. |
 
 Each has its own parser and explicit identity/revision gates. Resource ceilings

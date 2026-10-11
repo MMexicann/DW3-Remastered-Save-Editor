@@ -65,3 +65,13 @@ exercise field eligibility, malformed staging, all-field surgical edits and
 preserved integrity/dependencies. Library search, named choices, text controls,
 column sorting, Ctrl+C and existing editor sessions have real Tk regression
 checks. Native-file tests are not actual edited game-load tests.
+
+`test_three_houses.py` and `test_three_houses_audit.py` distinguish procedural
+gameplay save-format v13/v23 fixtures from optional private extracted slots.
+`THREE_HOUSES_SAVE_COPY` selects a reviewed copied slot;
+`THREE_HOUSES_REVIEW_COPIES` selects multiple copied slots separated by the
+local `os.pathsep`. Tests cover checksum/shape rejection, original-record
+eligibility, ordinary-item restrictions, unlimited-durability protection,
+unusual values, immutable staged changes, surgical edits, guarded backups and
+restore. Live Tk workflows skip when no existing display is available. These
+checks do not establish exact software build, DLC entitlement or Switch loading.

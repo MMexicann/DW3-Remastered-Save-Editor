@@ -33,5 +33,6 @@ Generated from `koei_editor.game_registry.GAMES`. Run `python -m tools.update_su
 | ATELIER AYESHA — The Alchemist of Dusk · PS3 US/Japanese export | PlayStation 3 | Cole, existing stack reductions and searchable inventory quality, properties and effects. |
 | DYNASTY WARRIORS 5 SPECIAL — Shin Sangokumusou 4 Special · Windows PC | Windows PC | Existing ordinary item ranks, weapon attack/weight and attributes; named officer/bodyguard inspection. |
 | FIRE EMBLEM WARRIORS: THREE HOPES — Switch · extracted SlotData exports | Nintendo Switch | Gold reductions, owned Shez/Byleth name customization and searchable character/weapon records. |
+| FIRE EMBLEM: THREE HOUSES — Switch · gameplay save-format v13/v23 | Nintendo Switch | Gold and twelve ordinary weapon types’ existing convoy quantity/durability reductions; separate mechanics inspection. |
 
 Scope is specific to each edition and supported save revision. File-level qualification and actual game loading are separate; see [coverage and blockers](EXPANSION_COVERAGE.md) and [validation](VALIDATION.md). Research-only codecs are excluded.

@@ -39,6 +39,8 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Hyrule Warriors Definitive Edition Switch coverage](SWITCH_WARRIORS_RESEARCH.md)
 - [Fire Emblem Warriors Switch format](FIRE_EMBLEM_WARRIORS_FORMAT.md)
 - [Fire Emblem Warriors: Three Hopes](THREE_HOPES_FORMAT.md)
+- [Fire Emblem: Three Houses Switch slot formats](THREE_HOUSES_FORMAT.md) and
+  [mechanics, revision and expansion dependencies](THREE_HOUSES_MECHANICS.md)
 - [Origins native format and progression](ORIGINS_FORMAT.md)
 - [WO3 Ultimate and Orochi Z coverage](OROCHI_RESEARCH.md)
 - [Samurai Warriors 4 DX and 5 coverage](SAMURAI_RESEARCH.md)

@@ -20,7 +20,9 @@
     "https://github.com/zarroboogs/p5spc.saveutil",
     "https://github.com/marcrobledo/savegame-editors",
     "https://github.com/BtEtta/save-editors",
-    "https://github.com/bucanero/apollo-lib"
+    "https://github.com/bucanero/apollo-lib",
+    "https://github.com/imouto1994/fe3h-editor/tree/5e4a73b71f28feb271ccdbc614ea934517c235b5",
+    "https://github.com/hashcade/feth-save-editor/tree/b9f53f0e01a3dd2cd24c96f97f1a829e51a1f00d"
   ],
   "games": [
     {
@@ -490,6 +492,15 @@
       "editing_verified": true,
       "evidence": "Six independently shared complete native SlotData exports qualify 143 top-level plus one nested own-body checksum. Manual gold reductions and qualified original owned/deployed character names update exact header/body mirrors; all other game systems remain byte-identical. Searchable named character and weapon inspection.",
       "needed": "Edited game loading; controlled growth/EXP/class/mastery, materials/acquisition, weapon forging/equipment, support and route/reward action pairs. Other revisions/Unicode name encoding require independent profiles."
+    },
+    {
+      "id": "three_houses",
+      "title": "Fire Emblem: Three Houses",
+      "platform": "Nintendo Switch",
+      "status": "Native gameplay export editor; save-format v13/v23",
+      "editing_verified": true,
+      "evidence": "Independent implementation of public format facts, checked against eight genuine publicly shared extracted gameplay candidates. Exact separate v13/v23 lengths and native payload byte-sum integrity; surgical gold reductions, twelve identified ordinary weapon types’ existing convoy quantity and durability reductions. Held equipment requires an original unique living/available/joined base owner ID0–34; DLC/unknown owners and items stay read-only. Progression, mastery, proficiency, abilities, combat arts, battalions and supports are inspected separately. No guessed Max or ownership grants.",
+      "needed": "Edited Switch load/re-save; exact-build/region/DLC-labelled clean controls and action pairs for progression/rewards, item repair/transfer, battalion assignment and supports. Precise patch/DLC entitlement is not encoded by the accepted save-format version. v12, padded exports, system/suspend and Cindered Shadows side-story saves need separate qualification; structurally matching side-story payloads cannot yet be distinguished. See docs/THREE_HOUSES_FORMAT.md for exact inputs."
     }
   ],
   "scope": "Windows application with explicitly selected game/platform parsers and separate backup identities.",

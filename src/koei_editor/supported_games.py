@@ -40,6 +40,7 @@ from .game_registry import GAMES
 # ayesha_ps3: ATELIER AYESHA / The Alchemist of Dusk · PS3 US/Japanese export [PlayStation 3]
 # dw5special: DYNASTY WARRIORS 5 SPECIAL / Shin Sangokumusou 4 Special · Windows PC [Windows PC]
 # three_hopes: FIRE EMBLEM WARRIORS: THREE HOPES / Switch · extracted SlotData exports [Nintendo Switch]
+# three_houses: FIRE EMBLEM: THREE HOUSES / Switch · gameplay save-format v13/v23 [Nintendo Switch]
 # END GENERATED SUPPORTED GAME INDEX
 
 

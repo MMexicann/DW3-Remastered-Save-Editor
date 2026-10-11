@@ -1,6 +1,7 @@
 """Exercise weapon stat labels through selection, staging and change review."""
 from copy import deepcopy
 from pathlib import Path
+import os
 import sys
 import tkinter as tk
 import unittest
@@ -11,6 +12,8 @@ import koei_editor.games.dw3.gui as gui
 from koei_editor.games.dw3.models import Change
 
 
+@unittest.skipUnless(os.name == 'nt' or os.environ.get('DISPLAY'),
+                     'A graphical display is required.')
 class WeaponBonusLabelTests(unittest.TestCase):
     def setUp(self):
         self.root = tk.Tk()

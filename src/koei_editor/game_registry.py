@@ -174,6 +174,11 @@ GAMES = (
          '', '', '#657b43', 'koei_editor.games.three_hopes.editor', 'koei_editor.games.three_hopes.parser',
          True, 'THREE HOPES', True, 'Nintendo Switch', scalar_backend='koei_editor.games.three_hopes.parser'),
 
+    Game('three_houses', 'FIRE EMBLEM: THREE HOUSES', 'Switch · gameplay save-format v13/v23',
+         'Gold and twelve ordinary weapon types’ existing convoy quantity/durability reductions; separate mechanics inspection.',
+         '', '', '#657b43', 'koei_editor.games.three_houses.editor', 'koei_editor.games.three_houses.parser',
+         True, 'THREE HOUSES', True, 'Nintendo Switch', scalar_backend='koei_editor.games.three_houses.parser'),
+
 )
 
 # Opaque research tools stay outside the gameplay library.

@@ -61,3 +61,11 @@ where noted. No GPL, noncommercial or no-derivatives implementation, external
 editor, game executable, extracted game data or player save is incorporated.
 New Sophie 2 refill/presentation logic follows the published MIT ItemRecord;
 its existing full MIT notice remains included.
+
+The Three Houses Nintendo Switch adapter is independently written from factual
+serialization and a small ordinary-equipment identity set, checked against
+privately retained public extracted-save candidates. Evidence is pinned in
+[THREE_HOUSES_FORMAT.md](THREE_HOUSES_FORMAT.md). The original imouto1994 editor
+has no licence; hashcade's MIT additions explicitly exclude unlicensed upstream
+code and assets. Neither implementation nor bulk catalog is reused. No editor
+binary, game asset, player data or third-party website prose is bundled.
