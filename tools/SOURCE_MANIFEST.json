@@ -228,8 +228,8 @@
     },
     {
       "path": "docs/INTEGRATION_REVIEW.md",
-      "bytes": 5687,
-      "sha256": "db7fd5cfbd2f905d2c16a70c1ea22407c4278547cd64f49548afbdd8cac11d63"
+      "bytes": 5912,
+      "sha256": "2016730be011f5a71195b554c46c79a28cf39e0a12490185e2c274405b33ac12"
     },
     {
       "path": "docs/KOEI_FORMATS.md",
@@ -2613,8 +2613,8 @@
     },
     {
       "path": "tests/test_sopffo_native.py",
-      "bytes": 10339,
-      "sha256": "ffa59ac4c0bd6440eb01368a655246fd4cf5c4310b32e7fc2ba44d26120e78ce"
+      "bytes": 10494,
+      "sha256": "b1cb6e7db3a56f93ce28be3421341b78a0001c42d88ef3255b892144a7ba8bfd"
     },
     {
       "path": "tests/test_sophie2_audit.py",
@@ -2723,8 +2723,8 @@
     },
     {
       "path": "tests/test_team_ninja_gui.py",
-      "bytes": 7083,
-      "sha256": "1dd25f1f4dced9363358095392ee55200af291ba52240c12b431847ea6e090fc"
+      "bytes": 7103,
+      "sha256": "21dc7716966802d92d4b55cc0ee61ae0577c2e77b21d15af739c3700917c2363"
     },
     {
       "path": "tests/test_team_ninja_integrity_regressions.py",
@@ -2753,8 +2753,8 @@
     },
     {
       "path": "tests/test_three_houses.py",
-      "bytes": 22898,
-      "sha256": "ed7f7b97d4beee1a6ab9d7b0f69c7f61b148f59d0ea3465eb98c3813f1265d7e"
+      "bytes": 23243,
+      "sha256": "271484ec1d337d4754e8e5fa01d0f19f0475e8fbd4eefc538e9a26c04ac8d765"
     },
     {
       "path": "tests/test_three_houses_audit.py",

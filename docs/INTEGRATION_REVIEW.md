@@ -47,6 +47,9 @@ including reduction-only controls and read-only inspectors where appropriate.
   source-backed scope; native integrity/edit qualification is not overstated.
 - Keep GUI Undo tests consistent with restoring the opened field value before
   explicitly applying a new edit.
+- Complete mocked Review dialog font/scrollbar setup and compare canonical
+  saved-file identities in Windows GUI tests. Synthetic CBC fixtures use
+  immutable bytes, matching the native Windows encryption provider contract.
 
 ## Validation
 

@@ -89,7 +89,7 @@ class CopyWorkflow:
                     editor.save_as()
                 self.assertEqual(errors, [])
                 self.assertEqual(editor.changes, {})
-                self.assertEqual(editor.document.source, destination)
+                self.assertEqual(editor.document.source.resolve(), destination.resolve())
                 saved = adapter.read_save(destination)
                 self.assertEqual(field.value(saved.payload), opened - 1)
                 self.assertEqual(resource.value(saved.payload), resource_opened - 1)

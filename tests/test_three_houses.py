@@ -318,6 +318,8 @@ class ThreeHousesHeadlessCallbackTests(unittest.TestCase):
         editor.document = editor.adapter.read_save(self.source)
         editor.changes, editor.history, editor.backup = {}, [], None
         editor.root = Mock()
+        editor.style = Mock()
+        editor.style.lookup.return_value = 'TkDefaultFont'
         editor.fields, editor.value, editor.status, editor.theme_name = Mock(), Mock(), Mock(), Mock()
         editor.refresh, editor.update_filename, editor.apply_theme = Mock(), Mock(), Mock()
         editor.theme_name.get.return_value = 'Light'
@@ -337,9 +339,13 @@ class ThreeHousesHeadlessCallbackTests(unittest.TestCase):
         self.assertEqual(editor.history, [{}])
         with patch('koei_editor.shared.verified_gui.tk.Toplevel'), \
              patch('koei_editor.shared.verified_gui.ttk.Label'), \
+             patch('koei_editor.shared.verified_gui.ttk.Frame'), \
+             patch('koei_editor.shared.verified_gui.ttk.Scrollbar'), \
              patch('koei_editor.shared.verified_gui.ttk.Button'), \
              patch('koei_editor.shared.verified_gui.attach_sorting'), \
+             patch('tkinter.font.Font') as font, \
              patch('koei_editor.shared.verified_gui.ttk.Treeview') as tree:
+            font.return_value.measure.return_value = 400
             editor.review()
             values = [call.kwargs['values'][1:] for call in tree.return_value.insert.call_args_list]
             self.assertEqual(values, [(12000, 2), (3, 2)])
@@ -366,7 +372,7 @@ class ThreeHousesHeadlessCallbackTests(unittest.TestCase):
             error.assert_not_called()
             self.assertEqual(dialog.call_args.kwargs['defaultextension'], '')
             self.assertEqual(dialog.call_args.kwargs['initialfile'], 'slot-copy-edited')
-        self.assertEqual(editor.document.source, destination)
+        self.assertEqual(editor.document.source, destination.resolve())
         self.assertEqual(editor.changes, {})
         self.assertEqual(editor.history, [])
         self.assertEqual(p.field_map(editor.document)['gold'].value(editor.document.payload), 11999)

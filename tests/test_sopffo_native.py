@@ -31,7 +31,9 @@ def procedural_payload(file_kind='user', revision=native.LAUNCH_REVISION):
 
 
 def encrypted(payload):
-    return native.katana_codec._cbc(payload, native.katana_codec._SOP_KEY,
+    # Production callers supply immutable bytes; ctypes-backed Windows CNG
+    # requires the same contract for mutated procedural fixture buffers.
+    return native.katana_codec._cbc(bytes(payload), native.katana_codec._SOP_KEY,
                                    native.katana_codec._SOP_IV, 'encrypt')
 
 
