@@ -43,6 +43,8 @@ including reduction-only controls and read-only inspectors where appropriate.
   unknown lexical values and native binary/photo bytes.
 - Declare Nioh 3 integrity using the shared checksum contract, restoring the
   registered copied-save self-test.
+- Align Ken's Rage backend self-test qualification flags with their registered
+  source-backed scope; native integrity/edit qualification is not overstated.
 - Keep GUI Undo tests consistent with restoring the opened field value before
   explicitly applying a new edit.
 
@@ -54,7 +56,15 @@ Public source tests do not distribute player files. Native file serialization
 and GUI testing are separate from actual edited game load/re-save validation,
 which has not been performed.
 
-Combined Linux/Tk and Windows test/build results are recorded after completion.
+Combined Linux/Tk and Windows test/build results are recorded in
+[integration PR #19](https://github.com/MMexicann/Universal-Koei-Tecmo-Save-Editor/pull/19).
 The Windows workflow must verify source manifests, registered interfaces,
 standalone EXE startup, embedded metadata/privacy and packaged archive hashes
 before its artifact is offered as the preview download.
+
+The ROTK XIII author reports seven genuine Traditional Chinese campaigns in
+its branch validation. The integration review independently rechecked the
+original period reader/writer's encoding, revision and field facts, procedural
+GUI/format tests and rejection of unrelated native exports. The seven campaign
+inputs and original public download provenance were unavailable to this review,
+so those seven positive native checks were not independently repeated.

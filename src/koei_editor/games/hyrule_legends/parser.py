@@ -360,6 +360,11 @@ def record_label(slot, group='Resources'):
 def field_hint(document, key):
     if key not in field_map(document):
         raise SaveError('This field or existing record is not qualified for edits.')
+    if key.startswith('fairy_') and key.endswith('_name'):
+        return ('Rename this owned My Fairy with 1 to 8 printable ASCII characters. '
+                'Only its eight-byte name field changes; shorter names are zero padded. '
+                'Assigning the opened name restores the original bytes. Ownership, stats, '
+                'clothing and trust are preserved; names are excluded from Max.')
     if key.endswith('_kos'):
         return ('Existing ordinary skill seal: decrease remaining KOs only; zero removes its '
                 'KO requirement. Identity, state, base power and equipped references are preserved. '

@@ -27,7 +27,10 @@ class SupportedInventoryTests(unittest.TestCase):
                 self.assertEqual(inventory[game.id].platform, game.platform)
                 self.assertTrue(inventory[game.id].features)
                 if game.scalar_backend:
-                    self.assertEqual(game.get_scalar_adapter().get_format().id, game.id)
+                    layout = game.get_scalar_adapter().get_format()
+                    self.assertEqual(layout.id, game.id)
+                    self.assertIs(getattr(layout, 'sample_verified', True), game.editing_verified,
+                                  'Self-test qualification must match the registered support scope')
 
     def test_readme_document_and_code_index_are_current(self):
         for path, expected in update_supported_games.expected_files():

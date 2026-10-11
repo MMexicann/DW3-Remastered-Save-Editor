@@ -330,13 +330,30 @@ class Editor(Appearance):
         dialog.title('Review Changes')
         dialog.geometry('700x480')
         ttk.Label(dialog, text=f'{self.layout.title}\n{len(rows)} staged field edits', padding=15).pack(anchor='w')
-        tree = ttk.Treeview(dialog, columns=('field', 'before', 'after'), show='headings')
+        body = ttk.Frame(dialog)
+        body.pack(fill='both', expand=True, padx=15)
+        body.rowconfigure(0, weight=1)
+        body.columnconfigure(0, weight=1)
+        tree = ttk.Treeview(body, columns=('field', 'before', 'after'), show='headings')
         for column, label in (('field', 'Field / slot'), ('before', 'Before'), ('after', 'After')):
             tree.heading(column, text=label)
         attach_sorting(tree)
+        from tkinter.font import Font
+        label_font = Font(root=dialog, font=self.style.lookup('Treeview', 'font') or 'TkDefaultFont')
+        label_width = 300
         for field, before, after in rows:
-            tree.insert('', 'end', values=(field.label + (f' / {self.record_name(field)}' if field.slot else ''), before, after))
-        tree.pack(fill='both', expand=True, padx=15)
+            label = field.label + (f' / {self.record_name(field)}' if field.slot else '')
+            label_width = max(label_width, label_font.measure(label) + 24)
+            tree.insert('', 'end', values=(label, before, after))
+        tree.column('field', width=label_width, minwidth=300, stretch=False)
+        tree.column('before', width=140, minwidth=100)
+        tree.column('after', width=140, minwidth=100)
+        tree.grid(row=0, column=0, sticky='nsew')
+        vertical = ttk.Scrollbar(body, orient='vertical', command=tree.yview)
+        vertical.grid(row=0, column=1, sticky='ns')
+        horizontal = ttk.Scrollbar(body, orient='horizontal', command=tree.xview)
+        horizontal.grid(row=1, column=0, sticky='ew')
+        tree.configure(yscrollcommand=vertical.set, xscrollcommand=horizontal.set)
         def export():
             path = filedialog.asksaveasfilename(title='Export Change Review', defaultextension='.changes.json')
             if path:

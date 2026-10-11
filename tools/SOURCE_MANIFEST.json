@@ -38,8 +38,8 @@
     },
     {
       "path": "docs/ADDITIONAL_EDITOR_SURVEY.md",
-      "bytes": 7051,
-      "sha256": "adddb861ad4fb283b8f9eb0aa29fbafd948d92f36f1ed5bf25550573cfcad263"
+      "bytes": 7153,
+      "sha256": "e2492f625eee810b5462c4fc46bc4700030f3f4b3c43ab55813c9c5d8b8a8aa4"
     },
     {
       "path": "docs/AGENTS.md",
@@ -193,8 +193,8 @@
     },
     {
       "path": "docs/EXPANSION_COVERAGE.md",
-      "bytes": 46695,
-      "sha256": "ec13b113f749607dd778ff391997829a21716da8f76a844f487adfa72ce696ae"
+      "bytes": 46811,
+      "sha256": "71d34430cc2736481b10c0ce92e7c74f251ca3b5147201adbb12b43d989ae790"
     },
     {
       "path": "docs/FAMILY_NEXT_RESEARCH.md",
@@ -228,8 +228,8 @@
     },
     {
       "path": "docs/INTEGRATION_REVIEW.md",
-      "bytes": 4992,
-      "sha256": "6bdd5a2dc7fbf986f4737b433c473f439b39cc633376ffc80db4b4f4b0925bd7"
+      "bytes": 5687,
+      "sha256": "db7fd5cfbd2f905d2c16a70c1ea22407c4278547cd64f49548afbdd8cac11d63"
     },
     {
       "path": "docs/KOEI_FORMATS.md",
@@ -338,8 +338,8 @@
     },
     {
       "path": "docs/REMAINING_INPUTS.md",
-      "bytes": 36221,
-      "sha256": "7693b506c597536891280ca285afd9318242fa6feb6634759d05d99496f710ac"
+      "bytes": 36232,
+      "sha256": "8644422756b65306250047e9400789e9b69e08ae0ede329bf2a3587e4aae95f9"
     },
     {
       "path": "docs/REPOSITORY_METADATA.md",
@@ -1083,8 +1083,8 @@
     },
     {
       "path": "src/koei_editor/games/hyrule_legends/parser.py",
-      "bytes": 15675,
-      "sha256": "080ba53ee6e9dd3ed5c460d31c08e4417a1e5fc135c3cab55ba6be5d72351fbc"
+      "bytes": 16084,
+      "sha256": "52cb9122bf52887d8ce52a792e1e2d383843c75ae4da74d7169e23aafaf4fb1b"
     },
     {
       "path": "src/koei_editor/games/hyrule_warriors/__init__.py",
@@ -1118,8 +1118,8 @@
     },
     {
       "path": "src/koei_editor/games/kens_rage1_ps3/parser.py",
-      "bytes": 12441,
-      "sha256": "e69fdadbbbb41a1541803e855ec20dc6c5083953e8d059a9b84222425dee2f74"
+      "bytes": 12442,
+      "sha256": "ae6a456dc03c10b0091eb5417f8ef62c072f45e5934a59073fb63a106de54049"
     },
     {
       "path": "src/koei_editor/games/kens_rage2_ps3/__init__.py",
@@ -1133,8 +1133,8 @@
     },
     {
       "path": "src/koei_editor/games/kens_rage2_ps3/parser.py",
-      "bytes": 13676,
-      "sha256": "5e17d074b26cad40d7e7dd3a0d5e614dc9e34da64f995a476346bb92259f73ee"
+      "bytes": 13677,
+      "sha256": "2ed0628b140a4833816568a4c0204666582d02d4b75cd5ce1cd54a642fdf4dcd"
     },
     {
       "path": "src/koei_editor/games/ninja_gaiden_ii/__init__.py",
@@ -1928,8 +1928,8 @@
     },
     {
       "path": "src/koei_editor/shared/verified_gui.py",
-      "bytes": 20795,
-      "sha256": "d601a9c248542a7aa6dab7b2f33a3c2ffe78346697b14f25fc2347e851da68a3"
+      "bytes": 21759,
+      "sha256": "8812eccaac3f5c7127bea341c2c58eee9b37545118b99f9a1c2ef61a12020375"
     },
     {
       "path": "src/koei_editor/shared/verified_self_test.py",
@@ -2278,8 +2278,8 @@
     },
     {
       "path": "tests/test_kens_rage2_ps3.py",
-      "bytes": 10676,
-      "sha256": "8b9022faa0a4b5f1965aa82dfdfbc653e3f6ff59891c1505d4425cd83ded8561"
+      "bytes": 10797,
+      "sha256": "a76ce57f1b4c8726c64427e34adb79e92c03673caae09d4cbfb9a8db95557dd9"
     },
     {
       "path": "tests/test_kens_rage2_ps3_gui.py",
@@ -2678,8 +2678,8 @@
     },
     {
       "path": "tests/test_supported_inventory.py",
-      "bytes": 3205,
-      "sha256": "ed070d533e4f43c68292af446bde492d25981cc2b7a69d25484e4b4e9ac738b5"
+      "bytes": 3441,
+      "sha256": "ef49d54ff630e17f9a63cc732690ebce08d8b8f602ce93f6f9235607b2749cd1"
     },
     {
       "path": "tests/test_sw2_pc_format.py",

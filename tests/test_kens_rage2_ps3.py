@@ -167,7 +167,9 @@ class KenRage2FormatTests(unittest.TestCase):
             from koei_editor.shared.verified_self_test import run
             report = run(parser.GAME_ID, source, source.parent / 'cli-self-test')
             self.assertTrue(report['success'])
-            self.assertTrue(report['native_integrity_verified'])
+            self.assertTrue(report['checksum_verified'])
+            self.assertFalse(report['format_sample_verified'])
+            self.assertFalse(report['native_integrity_verified'])
             self.assertEqual(report['fields_changed'], 0)
             self.assertFalse(report['in_game_load_tested'])
             copied_context = source.parent / 'cli-self-test' / 'PARAM.SFO'

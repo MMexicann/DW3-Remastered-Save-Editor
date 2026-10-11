@@ -167,8 +167,8 @@ dependencies need controlled native pairs. No private save is requested for Git.
 No editor qualified for these four candidates. Acquired Toukiden archives are
 private research inputs, without proved native codec/integrity or writable
 fields. The requested library registration, runtime metadata and supported
-inventory additions therefore remain blocked together; the existing 29-game
-inventory is unchanged. The game notes give a specific blocker for every
+inventory additions therefore remain blocked together; these candidates do not
+change the supported inventory. The game notes give a specific blocker for every
 investigated mechanic.
 
 | Candidate | Exact next inputs |

@@ -47,7 +47,7 @@ class Format:
     size: int
     fields: tuple
     note: str
-    sample_verified: bool = True
+    sample_verified: bool = False
 
 
 @dataclass(frozen=True)
