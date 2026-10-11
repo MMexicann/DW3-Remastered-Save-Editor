@@ -32,6 +32,8 @@ def _check(path):
         raise SaveError('Use a separate copy outside the live Persona 5 Strikers save folder.')
     if re.search(r'/koei/shin sangokumusou 4 special/savedata(?:/|$)', text):
         raise SaveError('Use a separate copy outside the live Dynasty Warriors 5 Special save folder.')
+    if re.search(r'/koei/sengoku musou 2 tw/savedata(?:/|$)', text):
+        raise SaveError('Use a separate copy outside the live Samurai Warriors 2 save folder.')
     if re.search(r'/steam/userdata(?:/|$)', text) or re.search(r'/userdata/[^/]+/[^/]+/remote(?:/|$)', text):
         raise SaveError('Steam Cloud folders cannot be accessed. Use a separate save copy.')
     if text.rsplit('/', 1)[-1] in ('steam_autocloud.vdf', 'remotecache.vdf'):

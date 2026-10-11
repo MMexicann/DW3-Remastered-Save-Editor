@@ -14,7 +14,9 @@ Generated from `koei_editor.game_registry.GAMES`. Run `python -m tools.update_su
 | DYNASTY WARRIORS 4 — Xtreme Legends · SLUS-20812 | PlayStation 2 | Character stats, weapon levels, items, owned harness/orb assignments and bodyguard growth. |
 | DYNASTY WARRIORS: ORIGINS — Steam PC · slot saves | Windows PC | Gold, Skill Points, bonds, provincial peace, weapon upgrades and battle history. |
 | WARRIORS OROCHI 3 ULTIMATE — Definitive Edition · PC | Windows PC | Officer stats, growth points, gems, crafting, existing ranked attributes and reinforcement reductions. |
+| WARRIORS OROCHI — Original Windows PC · save revision 2 | Windows PC | Growth Points and existing weapon attack bonuses, attribute capacity and owned effect ranks. |
 | SAMURAI WARRIORS 4 DX — Windows PC edition | Windows PC | Gold, gems, officers, existing weapons and attached skills. |
+| SAMURAI WARRIORS 2 — Original Windows PC · save revision 2 | Windows PC | Money, stored officer growth, acquired ordinary skill ranks and existing weapon bonuses. |
 | DYNASTY WARRIORS 6 — Native Windows PC edition | Windows PC | Named officer unlocks, existing horse combat stats, named weapon element choices and searchable records. |
 | DYNASTY WARRIORS 9 EMPIRES — Windows PC · SYSTEMDATA | Windows PC | Existing item quantities; searchable inventory and custom officer records. |
 | WARRIORS OROCHI Z — Native Windows PC edition | Windows PC | Stock EXP, officer base attack, existing weapon bonuses/attributes and own-pool equipment selection. |

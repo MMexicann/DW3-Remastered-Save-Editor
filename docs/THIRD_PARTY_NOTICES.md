@@ -4,6 +4,13 @@ The Windows executable includes Python, the Tcl/Tk runtime, and the PyInstaller 
 
 The editor uses Windows CNG from the operating system; no separate crypto library is redistributed. Original editor code is covered by the MIT `LICENSE` file.
 
+The original Windows Samurai Warriors 2 and Warriors Orochi adapters are
+independent implementations of factual save layouts observed in period Van
+editors and independently shared native saves. Those editors are research
+references, not bundled dependencies. Their binaries, implementations,
+translations and extracted resources are not redistributed. Original PC format
+notes document provenance and validation separately from other editions.
+
 Non-Windows source development can optionally use the installed cryptography
 package as an AES test provider. It is not bundled by the Windows build, which
 continues to use native CNG. Origins reference metadata cites public resources;

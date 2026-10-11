@@ -65,3 +65,14 @@ exercise field eligibility, malformed staging, all-field surgical edits and
 preserved integrity/dependencies. Library search, named choices, text controls,
 column sorting, Ctrl+C and existing editor sessions have real Tk regression
 checks. Native-file tests are not actual edited game-load tests.
+
+Original Windows PC Samurai Warriors 2 and Warriors Orochi have separate
+`test_sw2_pc_format.py` / `test_sw2_pc_gui.py` and
+`test_wo1_pc_format.py` / `test_wo1_pc_gui.py` suites. Set `SW2_PC_SAVE_COPY`
+to a reviewed SW2 `.dat` copy and `WO1_NATIVE_SAVES` to a folder of reviewed
+flat Orochi `.dat` copies to enable genuine-file tests. Missing inputs skip.
+`test_classic_musou_review.py` and `test_classic_musou_safety.py` independently
+check malformed changes, unusual-value preservation, dependencies, retained
+GUI sessions and live-path protection. See the separate
+[SW2](../docs/SW2_PC_FORMAT.md) and [Orochi](../docs/WO1_PC_FORMAT.md) evidence;
+generated fixtures and file-level tests do not establish edited game loading.
