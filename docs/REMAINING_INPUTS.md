@@ -28,6 +28,19 @@ Never put player saves, game binaries/assets, owner identifiers or personal path
 in Git or public issue attachments. Owner-dependent inputs must be shared privately;
 no account passwords or console credentials are needed.
 
+## Original Windows PC additions
+
+For the original 2008 Windows PC additions, see the separate
+[SW2](SW2_PC_FORMAT.md) and [Warriors Orochi](WO1_PC_FORMAT.md) profiles:
+
+| Original PC game | Implemented controls | Exact next evidence |
+| --- | --- | --- |
+| Samurai Warriors 2 | Money, owned officers' stored growth, acquired ordinary skills and existing weapon bonuses. | Revision-2 native `save.dat`, installed language/build, unchanged control and a single level-up, skill purchase, weapon upgrade/equip, guard hire/growth, mount purchase or Survival/story reward pair. A matching original Windows serializer and growth/parameter tables would qualify caps and dependent transitions; an edited copy must be loaded/re-saved in the original game. |
+| Warriors Orochi | Shared Growth Points and qualified existing weapon bonus, capacity and acquired effect ranks. | Revision-2 native `save.dat`, installed language/build, unchanged control and one EXP allocation/level-up, proficiency/ability acquisition, equipped weapon/ability, fusion, unique-item or stage/reward pair. Matching original Windows weapon/character tables would qualify names and dependent transitions; an edited copy must be loaded/re-saved in the original game. |
+
+Keep these inputs separate from SW2 HD/XL/Empires, console editions, Orochi Z
+and later Orochi games. They do not substitute for either original PC format.
+
 ## Ten attached games
 
 | Game | Current implementation / remaining gap | Exact useful files and next evidence |

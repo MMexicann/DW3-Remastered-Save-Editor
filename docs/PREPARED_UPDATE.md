@@ -11,6 +11,9 @@ validation artifacts, not a new GitHub release.
 | Game | Platform | Implemented controls |
 | --- | --- | --- |
 | Samurai Warriors 4-II | Windows PC, revision `0x31A4` | Manual current gold, five held strategy-tome resources, five stored base stats on qualified existing standard officers, existing own-pool weapon selection and attached attribute magnitudes, and occupied-mount combat stats. Exact native checksum spans are qualified. Growth, skill trees, acquisition and story/reward transitions remain separate. |
+
+| Samurai Warriors 2, original 2008 edition | Windows PC, save revision 2 | Money, eight stored growth stats for owned officers, acquired ordinary skill ranks and existing weapon bonus amounts; separate officer/weapon/guard inspection. |
+| Warriors Orochi, original 2008 edition | Windows PC, save revision 2 | Shared Growth Points, existing weapon attack bonuses, attribute capacity and acquired named effect ranks; separate officer growth and existing weapon inspection. |
 | Dynasty Warriors 5 Special / Shin Sangokumusou 4 Special | Windows PC | Existing ordinary item ranks; existing own-family stored weapon attack adjustment, named weight choices and existing attribute ranks; searchable named officers, weapons, items, bodyguards and separate Shura resources. |
 | Dynasty Warriors 8 Empires | Windows PC | Existing custom-horse body type; searchable appearance, stats and ability records in SystemSave.dat. Campaign files remain separate. |
 | Hyrule Warriors Legends | Nintendo 3DS | Rupees, existing named materials and base-map cards, generic weapon stars, ordinary seal KO reductions and existing ASCII My Fairy names; named character/food/fairy inspection. |
@@ -78,6 +81,12 @@ decrypt, edit or encrypt gameplay. See [PSP responsibilities](PSP_SPECIAL_RESEAR
 [DW6 product distinctions](DW6_SPECIAL_REGIONAL_RESEARCH.md) and
 [DW7 qualification](DW7_SPECIAL_PSP_RESEARCH.md). No native Windows DW6 Special
 product/profile or cross-region conversion is claimed.
+
+The original PC profiles above have independent period disk-reader/writer
+evidence and two independently shared genuine files each. SW2 HD PS3, console
+containers, Orochi Z and later Orochi games are separate profiles. The
+[SW2](SW2_PC_FORMAT.md) and [Orochi](WO1_PC_FORMAT.md) notes record native
+integrity, serialization, per-mechanic blockers and validation distinctions.
 
 The three newly supplied files identify Orochi Z, WO3 Ultimate Definitive PC
 and SW4 DX respectively; the file described as DW7 is an Orochi Z file.

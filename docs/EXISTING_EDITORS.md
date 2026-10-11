@@ -15,6 +15,14 @@ console editor does not establish a compatible native PC disk-save writer.
   See [exact profiles, dependencies and blockers](LICENSED_MUSOU.md). Console
   reimport/signing and actual edited game-load tests remain external.
 
+
+- Original Samurai Warriors 2 and Warriors Orochi Windows saves were acquired
+  independently from public sharing pages and compared with their period Van
+  disk editors. The original PC investigations are separate from SW2 HD PS3,
+  Orochi Z and later games. Editor executables were inspected as data, never
+  run; no editor code, binaries or player files are redistributed. Their
+  game-specific format notes distinguish verified writes from remaining
+  mechanics and game-load checks.
 - Native executable analysis and genuine files now support DW7 XL Definitive,
   WO3 Ultimate Definitive, SW4 DX, PW4, Orochi Z and All-Stars PC controls.
   DW9 Empires SYSTEMDATA quantity editing is native-source-backed; a genuine

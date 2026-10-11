@@ -879,3 +879,49 @@ additional regions, PK/console profiles and officer/relationship/equipment
 dependencies remain unqualified. The [format evidence](ROTK13_FORMAT.md) and
 [candidate review](STRATEGY_EXPANSION.md) record these and the XIV/Nobunaga blockers.
 This development branch changes no version, tag or release.
+
+## Original Windows PC SW2 and Warriors Orochi additions
+
+The expansion branch is based on `codex/prepare-next-update` at `bdb3833`.
+The full Python/Tk suite under Xvfb completed **1,189 tests in 273.674 seconds:
+854 passed, 335 skipped, no failures or errors**. Only the new original-PC
+fixture variables were configured; unrelated unavailable private fixtures and
+platform-specific cases remain skips. After the final SW2 malformed-Mapping
+guard and terminology clarification, the combined original-PC format/contract,
+actual Tk GUI, independent review and path-safety checks passed **42 tests in
+24.824 seconds, zero skips, no failures or errors**.
+
+Two independently acquired original Windows PC saves per game qualified the
+period title-specific disk-reader/writer facts. All four passed byte-exact
+unchanged roundtrips. Every exposed field was individually changed and reparsed
+surgically: **2,329 + 2,314 SW2 fields and 2,468 + 791 Orochi fields, 7,902 edits
+in total**. Independent simultaneous all-field edits also preserved every
+byte outside mapped fields and the native checksum. Originals remained intact.
+Procedural corruption, foreign-profile, malformed staging, eligibility,
+dependency, unknown-byte and unusual/higher-value tests are separate evidence.
+Actual Tk tests exercise the registered cards, retained sessions, both themes,
+search, staging, Review Changes, Undo, protected Max, inspection, automatic
+backup, Save As, validated restore, changed-source rejection and live-path
+protection. Neither game falls back to a related game's parser.
+
+The registered copied-save CLI self-tests passed for SW2 (2,329 fields) and
+Orochi (791 fields). All **31 registered interfaces** passed application startup,
+themes and game switching. Inventory generation/checking passed; the existing
+Windows build configuration includes both qualified editor/parser imports and
+runtime metadata without a build-core change.
+
+An independent private wheel build and isolated installation passed with zero
+repository import paths: **31 registrations, 31 inventory entries, 31 CLI
+listings, 92 module references / 61 distinct imports, 30 scalar formats and all
+14 runtime JSON resources**. The installed package additionally passed four
+genuine-file unchanged roundtrips, surgical edits, integrity reparses and
+source-preservation checks. No wheel or player data was published.
+
+**Actual edited game-load/re-save and native Windows EXE build/startup validation
+were not performed.** An installed original Windows release, exact language/build
+and player-run load/re-save of a surgical edit are still needed. Native natural
+caps/catalogs and controlled progression, acquisition/equipment, fusion,
+guard/mount and story/reward pairs are listed separately in
+[SW2](SW2_PC_FORMAT.md) and [Warriors Orochi](WO1_PC_FORMAT.md). Linux file,
+application and packaging tests do not establish those missing validations.
+Version 1.6 is unchanged; no merge, tag or release is part of this work.

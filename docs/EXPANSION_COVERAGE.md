@@ -18,6 +18,18 @@ game assets and personal paths are excluded from source packages and releases.
 The initial oversized Dynasty Warriors 9 Empires transfer was resolved with an
 accessible replacement. Its native save code was inspected statically.
 
+## Original Windows PC additions
+
+The original 2008 Windows PC SW2 and Warriors Orochi additions are qualified
+separately from this earlier attached-game survey. Both have integrated scalar
+editors, period original-PC disk-reader/writer evidence and two independent
+genuine files. [SW2](SW2_PC_FORMAT.md) covers money, owned-officer growth,
+acquired ordinary skills and existing weapon bonuses;
+[Warriors Orochi](WO1_PC_FORMAT.md) covers shared Growth Points and existing
+weapon bonuses, capacity and acquired effect ranks. The notes keep original PC,
+console and later editions separate and list per-system dependencies and exact
+remaining inputs. No edited game load or native Windows EXE validation is claimed.
+
 ## Ten attached games
 
 | Attachment / game | Delivered scope | Qualification and remaining essential input |

@@ -201,6 +201,8 @@ Optional copied real saves are selected locally:
 | `DW7XL_SAVE_COPY` | Native PC DW7 XL Definitive gameplay `.dat` copy |
 | `WO3U_SAVE_COPY` | Native PC WO3 Ultimate Definitive `SAVEDATA.BIN` copy |
 | `SW4DX_SAVE_COPY` | Current-revision SW4 DX gameplay `.dat` copy |
+| `SW2_PC_SAVE_COPY` | Original 2008 Windows PC Samurai Warriors 2 revision-2 gameplay `.dat` copy; not HD/XL/console |
+| `WO1_NATIVE_SAVES` | Folder of reviewed flat original 2008 Windows PC Warriors Orochi revision-2 `.dat` copies; not Z/later/console |
 | `PW3_SAVE_COPY` | Native PC Pirate Warriors 3 `.dat` |
 | `PW4_SAVE_COPY` | Native revision-15 one-step-region PW4 gameplay `.dat` copy |
 | `DW4HYPER_SAVE_COPY` | Native PC Hyper `save.dat` copy |

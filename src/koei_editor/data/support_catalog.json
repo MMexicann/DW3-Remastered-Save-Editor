@@ -125,11 +125,11 @@
     {
       "id": "sw2",
       "title": "Samurai Warriors 2",
-      "platform": "Windows PC (legacy edition)",
-      "status": "Save search unresolved",
-      "evidence": "Located PC Sugoroku tool modifies SW2.exe map properties rather than saves. It is not a save decoder; no native PC sample or integrity evidence verified.",
-      "needed": "Unchanged copied native PC save, checksum/identity evidence and single-value character/weapon pairs.",
-      "editing_verified": false
+      "platform": "Windows PC (original 2008 edition)",
+      "status": "Original PC revision-2 editor",
+      "evidence": "Two independent native PC saves and period original PC disk-editor reader/writer qualify exact size, revision, byte-sum integrity, owned officer growth, acquired ordinary skill ranks and existing weapon bonus amounts. Unknown bytes, higher values, skill flags, ownership, level/EXP and story are preserved.",
+      "needed": "Edited original-PC game-load/re-save validation; native stat/growth caps and controlled progression, rare-skill, weapon identity/equip, guard/mount ownership and Survival/story reward pairs.",
+      "editing_verified": true
     },
     {
       "id": "sw5",
@@ -170,11 +170,11 @@
     {
       "id": "wo1",
       "title": "Warriors Orochi",
-      "platform": "Windows PC (legacy edition)",
-      "status": "Save search unresolved",
-      "evidence": "Bounded native PC decoder/sample search found no applicable disk reader. This is a missing-evidence blocker, not a demonstrated decryption failure.",
-      "needed": "Unchanged copied native PC save and controlled progression, weapon and resource pairs.",
-      "editing_verified": false
+      "platform": "Windows PC (original 2008 edition)",
+      "status": "Original PC revision-2 editor",
+      "evidence": "Two independent native PC saves and period original PC disk-editor reader/writer qualify exact size, revision, additive byte integrity, shared Growth Points and existing weapon bonus/capacity/owned effect ranks. Modified higher ranks, unknown effects, ownership, character growth, ability acquisition, rewards and story remain preserved.",
+      "needed": "Edited original-PC game-load/re-save validation; qualified named character/weapon catalogs and controlled level/EXP, proficiency, ability acquisition/equipment, fusion, unique-item and story reward pairs.",
+      "editing_verified": true
     },
     {
       "id": "wo3u",

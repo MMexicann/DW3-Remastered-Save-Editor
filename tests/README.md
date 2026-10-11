@@ -131,3 +131,14 @@ immutable snapshots, exact byte preservation and absence of gameplay/file-write
 APIs. Optional genuine tests use `BERSERK_SAVE_COPY`, `AOT1_SAVE_COPY` and
 `AOT2_PK_SAVE_COPY`; missing inputs skip. These prove no gameplay mappings or
 edited game loads. See [the evidence note](../docs/OTHER_KOEI_PC_RESEARCH.md).
+
+Original Windows PC Samurai Warriors 2 and Warriors Orochi have separate
+`test_sw2_pc_format.py` / `test_sw2_pc_gui.py` and
+`test_wo1_pc_format.py` / `test_wo1_pc_gui.py` suites. Set `SW2_PC_SAVE_COPY`
+to a reviewed SW2 `.dat` copy and `WO1_NATIVE_SAVES` to a folder of reviewed
+flat Orochi `.dat` copies to enable genuine-file tests. Missing inputs skip.
+`test_classic_musou_review.py` and `test_classic_musou_safety.py` independently
+check malformed changes, unusual-value preservation, dependencies, retained
+GUI sessions and live-path protection. See the separate
+[SW2](../docs/SW2_PC_FORMAT.md) and [Orochi](../docs/WO1_PC_FORMAT.md) evidence;
+generated fixtures and file-level tests do not establish edited game loading.
