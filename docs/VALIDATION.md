@@ -689,3 +689,38 @@ no Windows executable was built or release published in this task. No game or
 third-party editor binary was executed and no integrity flag was cleared.
 See [Team Ninja research](TEAM_NINJA_RESEARCH.md) and its per-game coverage tables
 for the exact remaining integrity consumers, mechanic dependencies and inputs.
+
+## Licensed action RPG Windows qualification — blocked
+
+The 11 October 2026 investigation on `codex/licensed-action-rpg-expansion`
+adds no DQH I/II or Fate/Samurai Remnant adapter or gameplay field. See
+[the evidence and exact enabling inputs](LICENSED_ACTION_RPG_STATUS.md).
+
+Linux Python 3.12.14 / Tk 9.0 under the environment's existing Xvfb display ran
+the complete public suite: **1,148 tests in 245.878 seconds, 813 passed,
+335 skipped, zero failures or errors**. Unavailable private fixtures and
+platform-specific cases remain skipped. An initial headless run had five Tk
+display errors; the complete displayed run resolved them. No additional native
+fixture environment variables were supplied for this investigation.
+
+The source application smoke test initialized **all 29 existing registered
+game/platform interfaces**, both themes, platform selection and game switching.
+Those regression and GUI tests cover the existing editors and procedural
+workflows; they are not DQH or Fate gameplay-edit validation.
+
+After the documentation/research-metadata changes, **46 focused inventory,
+source packaging, universal packaging, dependency-review and release-preparation
+tests passed in 1.861 seconds with zero skips, failures or errors**. The generated
+inventory check still reports 29 adapters. The explicit source manifest verifies
+409 public files at unchanged version 1.6, including the new status document;
+no saves, owner identifiers, private reports, assets or downloaded binaries were
+added. `git diff --check` passes.
+
+Privately acquired DQH1 bytes passed a complete bounded compressed-stream
+decode (61,648 consumed; 642,716 produced). DQH2's complete 1,575,744-byte file
+was inspected/reacquired. These checks prove neither title's native checksum,
+unchanged serialization roundtrip, surgical edit, dependency enforcement,
+backup/restore workflow or edited game load. No native Fate file was acquired,
+so no Fate file test ran. No target-specific adapter, malformed-input test or
+GUI editing workflow could be qualified. No edited save was loaded/re-saved
+in any of these three games and no native Windows EXE build was validated.

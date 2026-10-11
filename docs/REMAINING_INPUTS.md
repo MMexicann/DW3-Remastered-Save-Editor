@@ -99,8 +99,15 @@ neither that permission nor a tested native save mapping.
 
 ## Other researched PC formats
 
+The [licensed action RPG status](LICENSED_ACTION_RPG_STATUS.md) distinguishes
+the acquired evidence from missing native proof. These three candidates have no
+registered editor or qualified gameplay edits.
+
 | Game | Exact next input |
 | --- | --- |
+| Dragon Quest Heroes: Slime Edition, Windows | Complete original `SAVEDATA.BIN`, exact Steam build/edition/DLC and unchanged control; matching original Windows loader/serializer/integrity implementation or source-backed native editor. One gold/mini-medal gain/spend, existing ingredient change, character growth, skill allocation, equipment and accessory-alchemy pair with displayed values. Public LZP2 decoding alone proves no native checksum or writable field. Retain any owner context privately. |
+| Dragon Quest Heroes II, Windows | Complete original `SAVEDATA.BIN` with exact build/edition/DLC and unchanged control; matching Windows loader/serializer/integrity implementation. Label slots and provide separate resource/material, protagonist vocation growth, companion growth, weapon proficiency, skill allocation, equip and accessory-enhancement pairs. PS3/Vita checksum services and PS4 patches do not qualify Windows integrity. |
+| Fate/Samurai Remnant, Windows | Complete original full-game save folder retaining `Savedata/SAVEDATA*.BIN` and any `SavesDir/*.sav`, exact build/DLC and unchanged control, plus matching native serializer/integrity evidence. Identify demo copies separately. One resource/material, Iori growth/skill, Saber/other Servant growth/skill, mounting upgrade/equip/disassembly and workshop renovation/carving/reward pair. Owner context stays private; asset extractors and runtime trainers do not supply the disk contract. |
 | DW8 Empires PC | Existing occupied custom-horse body type is implemented in qualified `SystemSave.dat`. Supply controlled examples for the other six appearance sliders, names, stats/abilities and campaign resource ownership; `EmpireSave*.dat`/`QuickSave*.dat` remain separate. |
 | Sophie 2 PC | Genuine Steam1.08 `data.dat`, unchanged control and one quality/use/refill, alchemy EXP, trait/effect, equipment or recipe/action pair. Native item applicability and derived progression need separate proof. |
 

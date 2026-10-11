@@ -234,9 +234,9 @@
       "id": "fate",
       "title": "Fate/Samurai Remnant",
       "platform": "Windows PC",
-      "status": "Candidate only",
-      "evidence": "Research candidate; no native gameplay parser or safe field mapping verified.",
-      "needed": "Choose a specific edition and platform; provide copied native saves and controlled value pairs; verify identity, encryption and integrity.",
+      "status": "Windows mechanics researched; native save missing",
+      "evidence": "Publisher documentation and distinct full-game/demo cloud profiles reviewed. No complete genuine Windows save, native serializer, integrity contract or safe gameplay map acquired; asset tools and runtime trainers do not qualify disk edits.",
+      "needed": "Complete original full-game save folder, exact build/DLC, unchanged control and matching Windows serialization/integrity evidence; separate resource, Iori/Servant growth/skill, mounting and workshop action pairs. Retain owner context privately and distinguish demo files.",
       "editing_verified": false
     },
     {
@@ -324,9 +324,9 @@
       "id": "dqh1",
       "title": "Dragon Quest Heroes",
       "platform": "Windows PC",
-      "status": "PC runtime evidence only",
-      "evidence": "PC progression runtime tables describe level, EXP, skill points and skill trees. No native save decoder or serialized offsets verified.",
-      "needed": "Copied native PC save and controlled skill/resource/progression pairs.",
+      "status": "Genuine compressed PC save acquired; integrity/map missing",
+      "evidence": "One complete 102400-byte public SAVEDATA.BIN independently decodes its LZP2 stream to 642716 bytes. Wrapper framing is qualified, but game title/revision, native integrity, owner/slot context, serialization roundtrip and safe gameplay fields are not; no adapter.",
+      "needed": "Matching Windows loader/serializer/integrity evidence, exact build/edition and unchanged original control; separate currency, existing material, character growth, skill, equip and accessory-alchemy pairs. Preserve owner context and unusual values.",
       "editing_verified": false
     },
     {
@@ -334,8 +334,8 @@
       "title": "Dragon Quest Heroes II",
       "platform": "Windows PC",
       "status": "Genuine PC save acquired; integrity/map missing",
-      "evidence": "Public complete SAVEDATA.BIN has observed plaintext-looking framing and progressed Teresa/Lazarel slots. Header semantics, native integrity, slot boundaries and safe field mappings are unqualified; no gameplay adapter.",
-      "needed": "Matching PC serializer or controlled resources/vocation/EXP/skills/proficiency/equipment/reward pairs, with exact build/region labels and native integrity evidence.",
+      "evidence": "Complete 1575744-byte public SAVEDATA.BIN reacquired with observed unwrapped framing; uploader progression claims are not native semantic proof. Header/revision, integrity, slot boundaries and safe gameplay fields remain unqualified. Console patches and server-only checksum tools do not qualify Windows edits; no adapter.",
+      "needed": "Matching Windows loader/serializer/integrity evidence, exact build/edition and original control; distinguish protagonist vocation growth, companion growth and weapon proficiency in separate pairs, alongside resources, skills, equipment, accessory enhancement and rewards.",
       "editing_verified": false
     },
     {

@@ -71,6 +71,7 @@ and [AGENTS.md](../AGENTS.md). The application overview is in the
 - [Blue Reflection and other Fatal Frame research](BLUE_REFLECTION_RESEARCH.md)
 - [Hyrule, Fire Emblem and Pirate follow-up](FAMILY_NEXT_RESEARCH.md)
 - [Dragon Quest Heroes II, Berserk and Attack on Titan PC follow-up](OTHER_KOEI_PC_RESEARCH.md)
+- [Dragon Quest Heroes I/II and Fate/Samurai Remnant Windows blockers](LICENSED_ACTION_RPG_STATUS.md)
 - [Additional editor survey](ADDITIONAL_EDITOR_SURVEY.md)
 - [Bladestorm: Nightmare PC candidate and evidence gate](BLADESTORM_PC_RESEARCH.md)
 
