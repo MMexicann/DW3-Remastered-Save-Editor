@@ -293,6 +293,57 @@ non-Windows, install the optional AES development provider with
 for Tk tests (for example, a locally installed Xvfb). Windows remains the target
 for the standalone EXE and native CNG validation.
 
+## Regional and Special edition qualification — 2026-10-11
+
+Branch `codex/special-regional-editions` is based on the current preparation
+commit `bdb3833a1ad4169c12d3f889d5e971dc481c9cc2`. This work implements an
+**unregistered, read-only PSP envelope inspector**, clarifies DW5 Special's
+regional evidence, and records product/format research. It adds **no gameplay
+editor, writable field, regional conversion or supported-game entry**. All 29
+existing adapters remain registered and the application version remains 1.6.
+
+Validation used Linux Python 3.12.14, Tk 9.0, a preexisting Xvfb testing runtime
+and the optional development crypto provider. No downloaded game/editor binary
+was executed. The three privately acquired PSP references were explicitly
+configured; unrelated private gameplay fixtures were not supplied.
+
+| Check | Exact result and limit |
+| --- | --- |
+| Complete corrected public suite | **1,165 tests in 370.497 seconds: 830 passed, 335 skipped, zero failures/errors.** Skips require unavailable private fixtures or platform checks. Includes existing corruption, integrity, dependencies, unusual-value preservation, safe storage, backups/restore and procedural GUI regressions. |
+| Focused regional/PSP/DW5/inventory suite | **39 tests in 1.165 seconds: 37 passed, 2 skipped, zero failures/errors.** Both skips require the missing private DW5 genuine copy. The procedural DW5 Tk workflow covers Apply, Review, Undo, manual-only Max, copied saving and backups. |
+| PSP inspector alone, with references | **15 passed, zero skips/failures:** 12 procedural boundary/privacy cases and three public-submission envelope cases. No secure hash authentication, decryption, gameplay layout, codec roundtrip or surgical edit is tested. |
+| PSP inspector without references | **12 procedural passes, 3 optional-reference skips.** A same-length altered encrypted payload deliberately remains structurally matchable with both verification flags false. Native file-list MAC/padding regressions protect the independently corrected boundary. |
+| Existing DW5 suites | **18 tests: 16 passed, 2 missing-genuine-fixture skips.** Historical 728-field genuine qualification belongs to the prepared base; no fresh regional genuine roundtrip/edit is claimed. |
+| Interface and inventory | All **29** registered interfaces initialize with themes and switching; generated inventory check passes unchanged. PSP candidates and regional aliases cannot select a writer. |
+| Build/source/privacy | Windows build configuration prints successfully; all **416** reviewed public source entries verify, version 1.6. No private saves, identifiers, game assets, downloaded source copies or binaries are packaged. Whitespace and modified-document local links pass. No Windows executable was built. |
+
+An independent source/fixture review found a secure-file declaration offset
+error in the first inspector and procedural generator. The corrected native
+13-byte filename / 16-byte hash / 3-byte padding rule has two adversarial
+regressions. An earlier full run was interrupted to apply the correction and is
+not counted above; the complete run uses the corrected implementation.
+
+Additional private data inspections establish PSP metadata for DW6/DW7/SW3 Z
+Special, two exact-length decoded PS2 CodeBreaker outer streams and matching
+additive stored values in three US PS2 DW6 payloads. These are narrower factual
+observations, not authenticated native gameplay or registered-adapter tests.
+The X-Port outer checksum remains unchecked. No genuine Orochi Special gameplay
+export or fresh DW5 regional control was acquired.
+
+**Zero new-edition gameplay roundtrips, surgical edits or actual edited
+game-load/re-save validations were performed.** PSP authentication/decryption
+and console re-encryption/import remain external and unqualified; payload
+identity/revision, integrity, semantic fields and controlled mechanic pairs
+remain blockers. DW6 PS2 additionally lacks complete native integrity/field
+proof; DW5 Japanese/Simplified-Chinese compatibility and regional text remain
+unproved. See [DW6](DW6_SPECIAL_REGIONAL_RESEARCH.md),
+[DW7](DW7_SPECIAL_PSP_RESEARCH.md), [PSP responsibilities](PSP_SPECIAL_RESEARCH.md),
+[DW5 regional qualification](DW5_SPECIAL.md),
+[additional regional scope](REGIONAL_EDITION_SCOPE.md) and
+[exact supplier inputs](REMAINING_INPUTS.md#regional-and-psp-special-inputs).
+
+## Earlier development checks
+
 A prior cloud run completed **486 tests: 236 passed, 250 skipped, no failures
 or errors**. Skips are predominantly private-fixture integration tests, plus
 Windows-only checks. Existing regressions were retained. New tests cover game

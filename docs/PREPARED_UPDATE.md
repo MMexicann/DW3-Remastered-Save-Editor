@@ -68,6 +68,17 @@ platform's mapping is presented as a native save field.
 
 ## Research and validation
 
+The [regional-edition follow-up](REGIONAL_EDITION_SCOPE.md) distinguishes
+publisher-verified products from proved save compatibility. DW5 Special keeps
+its existing Windows equipment adapter with explicit regional evidence limits.
+DW6 Special PS2/PSP, DW7 Special PSP, Orochi 3 Special PSP and SW3 Z Special PSP
+remain research-only. A bounded unregistered PSP envelope inspector checks
+selected product metadata and secure declarations; it cannot authenticate,
+decrypt, edit or encrypt gameplay. See [PSP responsibilities](PSP_SPECIAL_RESEARCH.md),
+[DW6 product distinctions](DW6_SPECIAL_REGIONAL_RESEARCH.md) and
+[DW7 qualification](DW7_SPECIAL_PSP_RESEARCH.md). No native Windows DW6 Special
+product/profile or cross-region conversion is claimed.
+
 The three newly supplied files identify Orochi Z, WO3 Ultimate Definitive PC
 and SW4 DX respectively; the file described as DW7 is an Orochi Z file.
 [The supplier table](REMAINING_INPUTS.md) lists exact remaining inputs.

@@ -1,14 +1,40 @@
 # Dynasty Warriors 5 Special — Windows equipment editor
 
-This is **Shin Sangokumusou 4 Special / 真・三國無雙4 Special**, the Windows
-Special edition released in Japanese and Chinese. Western series numbering calls
-it Dynasty Warriors 5 Special. It is distinct from DW5/XL on PS2, DW5 Empires,
-and Shin Sangokumusou 5 Special (DW6 Special).
+This is **Shin Sangokumusou 4 Special / 真・三國無双4 Special**, the Windows
+Special edition. **Dynasty Warriors 5 Special** is the corresponding Western
+series numbering; that name alone does not establish a Western Windows release.
+It is distinct from DW5/XL on PS2, DW5 Empires, and Shin Sangokumusou 5 Special
+(DW6 Special).
 
 Open a separate copy of the native `save.dat`, originally stored under
 `Documents/KOEI/Shin Sangokumusou 4 Special/Savedata/`. This adapter supports the
 46,000-byte revision-3 profile. It does not convert memory-card containers or
 support console formats.
+
+## Regional qualification
+
+Product existence and native-format qualification are separate:
+
+| Product / regional title | Product evidence | Save evidence and current scope |
+| --- | --- | --- |
+| Japan: 真・三國無双4 Special / Shin Sangokumusou 4 Special, Windows | [KOEI's 2006 history](https://www.gamecity.ne.jp/history_2006_1.htm) records the Windows launch on June 22, 2006; the [Windows product page](https://www.gamecity.ne.jp/smusou4sp/win/) also remains available. | No separately provenance-qualified Japanese native save was available for this regional investigation. Product identity does not prove compatibility with the tested profile. |
+| Taiwan: 真‧三國無雙4 Special, Traditional Chinese Windows | [Taiwan KOEI's catalog](https://www.gamecity.com.tw/products/products/ee/Rlsmusou4sp.htm) explicitly lists Windows XP Chinese retail/bundle products separately from Xbox 360. [Contemporary launch coverage](https://gnn.gamer.com.tw/detail.php?sn=23858) announces the Traditional Chinese PC first sale on June 22, 2006. | The previously qualified [3DM CG-save listing](https://dl.3dmgame.com/patch/2672.html) labels its genuine premodified save **Traditional Chinese**. This qualifies the source-labeled 46,000-byte revision-3 sample and mapped equipment fields; it does not authenticate the executable's locale/build or establish interchangeability with Japanese saves. |
+| Mainland China: 真三国无双4 Special, Simplified Chinese Windows | [Contemporary release reporting](https://www.gamersky.com/news/200811/128779.shtml) identifies Netyuan/网元网 as distributor and November 5, 2008 as launch date. | No matching native save, executable serializer or controlled action pair was obtained. Compatibility, text encoding and any revision differences remain unqualified. |
+
+The existing `dw5special` adapter is retained. No regional clone, conversion or
+extra supported-game entry is justified by these product names or retail bundles.
+The byte-count, revision word and checksum identify the supported profile; **no
+native region discriminator has been proved**. A successfully parsed file is
+not evidence that Japanese, Traditional Chinese and Simplified Chinese editions
+share an interchangeable format. Bodyguard name bytes remain opaque, and no
+regional name conversion is performed.
+
+To qualify another region, obtain a native copy with the actual region/build
+recorded privately, its unchanged control, and one-field before/after actions.
+Verify profile, record addressing, encoding and integrity independently, then
+exercise surgical edits through this adapter. An edited load and subsequent
+native re-save are needed to establish game acceptance; a product page or
+unchanged file roundtrip cannot establish that result.
 
 ## Implemented equipment
 
@@ -66,7 +92,8 @@ copied into the project.
 A separate freely shared native save from
 [3DM's Special CG-save page](https://dl.3dmgame.com/patch/2672.html)
 independently matches the native profile, all 48 officer records, weapon
-identities, empty sentinels and item rank table. It is a **genuine premodified
+identities, empty sentinels and item rank table. Its listing labels the download
+Traditional Chinese, without specifying an executable build. It is a **genuine premodified
 save**; unusually boosted stats and weapons are not evidence for natural caps.
 [Fourth-weapon mechanics](https://kongming.net/dw5/4th_weapons/) distinguish
 weapon base attack, weight and individual bonuses; [rare-item mechanics](https://kongming.net/dw5/rare_items/)
@@ -112,3 +139,13 @@ a genuine unchanged roundtrip and surgical edits of all 728 qualified fields,
 plus independent procedural and genuine Tk workflows for named choices,
 Apply, Review, Undo, manual-only Max, inspection, copied saves, backup and restore.
 No original sample was changed and no edited save was loaded in the game.
+
+The regional follow-up reran the unchanged DW5 suites with Tk/Xvfb: **18 tests
+discovered, 16 passed, 2 skipped** (both private-native cases). The procedural
+GUI case exercises Apply, Review, Undo, manual-only Max, copied saving and
+backups. The historical genuine/GUI results above belong to the
+prepared adapter's earlier qualification, not a new cross-region validation.
+No 46,000-byte DW5 native copy was present in the current private research
+inputs. Reacquiring the previously documented CG-save download was blocked by
+an HTTP timeout and HTTPS 502 from its legacy download host. No region-specific
+genuine edits or actual game loads were performed in this follow-up.

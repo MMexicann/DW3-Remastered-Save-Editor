@@ -307,8 +307,8 @@
       "title": "Dynasty Warriors 5 Special / Shin Sangokumusou 4 Special",
       "platform": "Windows PC",
       "status": "Native-file editor implemented",
-      "evidence": "Independent static native save-guide/editor I/O facts and genuine revision3 player file qualify plaintext byte-sum integrity. Manual existing ordinary item ranks and own-family weapon attack adjustment, weight choices and existing attribute ranks preserve acquisition, growth, story and Shura dependencies.",
-      "needed": "Unmodified native control, matching catalogs and one item/weapon/equip/growth/bodyguard/Shura action pair; edited game loading. Other editions/platforms need their own native profile.",
+      "evidence": "Independent static native save-guide/editor I/O facts and a prior genuine revision3 player file qualify plaintext byte-sum integrity. The public sample listing labels Traditional Chinese; its executable locale/build and native locale discriminator remain unqualified. Manual existing item ranks and own-family weapon attack adjustment, weight and attributes preserve acquisition, growth, story and Shura dependencies.",
+      "needed": "Unmodified Japanese/Traditional-Chinese/Simplified-Chinese region/build-labelled native controls and action pairs before regional interchange or name encoding claims; catalogs and item/weapon/equip/growth/bodyguard/Shura pairs; edited game loading.",
       "editing_verified": true
     },
     {
@@ -859,6 +859,42 @@
       "editing_verified": true,
       "evidence": "Seven public native TC original PC campaign copies independently decoded with matching preview checksums and native tagged city records. Original native serialization and field getters qualify city money, supplies, separate population components, wounded troops, fealty, commerce/farming/culture and spear/horse/bow proficiency. Surgical edits preserve district/force references, preview and unrelated bytes; no invented gameplay Max.",
       "needed": "Edited in-game load/re-save; exact executable build provenance, independent additional regional fixtures, Power Up Kit profiles, officer attribute serialization, relationships/equipment and other dependencies."
+    },
+    {
+      "id": "dw6special_psp",
+      "title": "Dynasty Warriors 6 Special / Shin Sangokumusou 5 Special",
+      "platform": "PlayStation Portable",
+      "status": "Japanese and Chinese PSP products verified; encrypted Japanese envelope observed",
+      "evidence": "Publisher distinguishes PS2/PSP Special from ordinary Chinese Windows DW6. One public Japanese PSP package has matching bounded title metadata, DATA.BIN 168592 bytes and declared secure parameters; hashes and inner gameplay remain unauthenticated.",
+      "needed": "Matching authenticated decrypted export and region/build provenance; title-key/mode, payload revision/layout/integrity and controlled growth, Meng Huo, equipment, horse and reward pairs. Chinese PSP and PS2 need their own native qualification.",
+      "editing_verified": false
+    },
+    {
+      "id": "dw7special_psp",
+      "title": "Dynasty Warriors 7 Special / Shin Sangokumusou 6 Special",
+      "platform": "PlayStation Portable",
+      "status": "Japanese PSP product verified; encrypted envelope observed",
+      "evidence": "Publisher verifies two-UMD PSP and Vita-compatible PSP download, not a native Vita edition. Taiwan catalog branding does not prove Chinese localization. One public package has DATA.BIN 297481 bytes and matching PSP title/secure metadata; no authenticated gameplay decoder.",
+      "needed": "Matching authenticated decrypted export, exact region/build/tool; native revision/layout/integrity and money-purchase, officer-growth/reset, owned weapon/equip and Story/Chronicle pairs. PS3-save bonus is not cross-platform format compatibility.",
+      "editing_verified": false
+    },
+    {
+      "id": "wo3special_psp",
+      "title": "Warriors Orochi 3 Special / Musou Orochi 2 Special",
+      "platform": "PlayStation Portable",
+      "status": "Japanese PSP product and added mechanics verified; native sample missing",
+      "evidence": "Publisher verifies PSP Special with Rachel and Abe no Seimei, growth reset, four-player battle royal and PS3-save character bonus. PC/PS3 Ultimate and other Orochi numbering are separate products; no genuine native Special save inspected.",
+      "needed": "Complete encrypted PSP folder and matched authenticated decrypted export, exact title/build/region/tool; native identity/revision/layout/integrity and growth-reset, weapons/fusion, bonds, resources and reward pairs.",
+      "editing_verified": false
+    },
+    {
+      "id": "sw3zspecial_psp",
+      "title": "Samurai Warriors 3 Z Special / Sengoku Musou 3 Z Special",
+      "platform": "PlayStation Portable",
+      "status": "Japanese PSP product verified; encrypted envelopes observed",
+      "evidence": "Publisher verifies 40-character PSP product and separate custom-officer/creation/history/challenge systems. Three public archives expose matching PSP title and declared secure DATA.BIN; one includes foreign PS3 artifacts and is not a clean PSP export. No authenticated plaintext or native gameplay map.",
+      "needed": "Clean complete encrypted PSP package and matched authenticated decrypted export; exact build/region/tool, payload identity/revision/integrity and growth, existing weapons/equip, custom officers, history/creation/challenge and reward pairs.",
+      "editing_verified": false
     }
   ],
   "scope": "Windows application with explicitly selected game/platform parsers and separate backup identities.",
@@ -866,7 +902,7 @@
   "qualification_reference": "docs/PC_EDITOR_ATTEMPTS.md",
   "pursuit_policy": "Implement only evidenced platform-specific save formats. Published-format availability is labelled separately from independent genuine-file and in-game verification.",
   "retry_reference": "docs/PC_RESEARCH_RETRY.md",
-  "console_scope": "Separate PS2 PSU, Wii U APP.BIN, Switch svdt and decrypted PS3 APP.BIN/DATA.BIN adapters; PS3 signing remains external.",
+  "console_scope": "Separate PS2 PSU, Wii U APP.BIN, Switch svdt and decrypted PS3 APP.BIN/DATA.BIN adapters; PS3 signing remains external. PSP Special encrypted-envelope research is unregistered; decrypted gameplay and console authentication/re-encryption remain unqualified.",
   "pc_scope_exclusions": [
     "Dynasty Warriors 1\u00e2\u20ac\u201c3 original console editions and console-only expansions",
     "Dynasty Warriors 4\u00e2\u20ac\u201c7 Empires",
